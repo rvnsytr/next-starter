@@ -84,6 +84,7 @@ const tabs: { section: string; content?: (keyof typeof comp)[] }[] = [
   { section: "Form", content: ["form"] },
   { section: "Typography", content: ["typography"] },
   { section: "Chart", content: ["pieChart", "timelineChart"] },
+  { section: "Event Calendar" },
   { section: "Form Builder" },
 ];
 

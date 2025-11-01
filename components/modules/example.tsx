@@ -85,6 +85,7 @@ const selectAndRadioData = [
 const checkboxData = ["firefox", "chrome", "safari", "edge"] as const;
 
 export function ExampleForm() {
+  const today = new Date();
   const fileType: FileType = "image";
 
   type FormSchema = z.infer<typeof formSchema>;
@@ -117,9 +118,9 @@ export function ExampleForm() {
       text: "Hello World",
       numeric: 100000,
       phone: 81234567890,
-      date: new Date(),
-      dateMultiple: [new Date()],
-      dateRange: { from: new Date(), to: addDays(new Date(), 6) },
+      date: today,
+      dateMultiple: [today],
+      dateRange: { from: today, to: addDays(today, 6) },
       select: "spade",
       multiSelect: ["spade"],
       radio: "spade",

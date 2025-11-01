@@ -68,11 +68,12 @@ export function DatePicker({
         <Button
           variant={invalid ? "outline_destructive" : "outline"}
           className={cn(
+            "justify-between",
             !isSelected && "text-muted-foreground",
             invalid && "border-destructive text-destructive",
           )}
         >
-          <Icon /> {placeholder}
+          {placeholder} <Icon />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="size-fit p-0">

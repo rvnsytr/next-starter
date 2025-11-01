@@ -1,10 +1,13 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
-export const delay = (seconds: number) =>
-  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+export function delay(seconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
 
 export * from "./array";
 export * from "./date";
