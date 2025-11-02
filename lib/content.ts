@@ -63,6 +63,18 @@ export const messages = {
   numberTooLarge: (field: string, max: number) =>
     `${capitalize(field, "first")} tidak boleh lebih dari ${max}.`,
 
+  dateToFew: (field: string, min: number) =>
+    `${capitalize(field, "first")} harus terdiri dari minimal ${min} tanggal.`,
+  dateTooMany: (field: string, max: number) =>
+    `${capitalize(field, "first")} tidak boleh melebihi ${max} tanggal.`,
+
+  fileToFew: (field: string, min: number) =>
+    `Silakan unggah minimal ${min} ${field}.`,
+  fileTooMany: (field: string, max: number) =>
+    `Anda hanya dapat mengunggah hingga ${max} ${field}.`,
+  fileTooLarge: (field: string, sizeInMb: string | number) =>
+    `${capitalize(field, "first")} melebihi batas ukuran maksimum ${sizeInMb} MB.`,
+
   outOfRange: (
     field: string,
     min: number,

@@ -10,37 +10,126 @@ z.config(id());
 export const zodSchemas = {
   string: (field: string, options?: { min?: number; max?: number }) => {
     const { invalidType, required, stringTooShort, stringTooLong } = messages;
-    let schema = z.string({ error: invalidType(field, "string") }).trim();
 
     const min = options?.min;
     const max = options?.max;
+
+    let schema = z.string({ error: invalidType(field, "string") }).trim();
 
     if (min) {
       const message = min <= 1 ? required : stringTooShort;
       schema = schema.min(min, { error: message(field, min) });
     }
 
-    if (max) schema = schema.max(max, { error: stringTooLong(field, max) });
+    if (max) {
+      const message = stringTooLong(field, max);
+      schema = schema.max(max, { error: message });
+    }
 
     return schema;
   },
 
   number: (field: string, options?: { min?: number; max?: number }) => {
     const { invalidType, required, numberTooSmall, numberTooLarge } = messages;
-    let schema = z.number({ error: invalidType(field, "number") });
 
     const min = options?.min;
     const max = options?.max;
+
+    let schema = z.number({ error: invalidType(field, "number") });
 
     if (min) {
       const message = min <= 1 ? required : numberTooSmall;
       schema = schema.min(min, { error: message(field, min) });
     }
 
-    if (max) schema = schema.max(max, { error: numberTooLarge(field, max) });
+    if (max) {
+      const message = numberTooLarge(field, max);
+      schema = schema.max(max, { error: message });
+    }
 
     return schema;
   },
+
+  file: (
+    type: FileType,
+    options?: {
+      min?: number;
+      max?: number;
+      maxFileSize?: number;
+    },
+  ) => {
+    const { fileToFew, fileTooMany, fileTooLarge } = messages;
+
+    const { displayName, size, mimeTypes } = fileMeta[type];
+
+    const min = options?.min;
+    const max = options?.max;
+
+    const maxFileSize = options?.maxFileSize ?? size.bytes;
+    const maxFileSizeInMB = toMegabytes(maxFileSize).toFixed(2);
+
+    let schema = z.array(
+      z
+        .file()
+        .mime(mimeTypes, { error: `Tipe ${displayName} tidak valid.` })
+        .min(1)
+        .max(maxFileSize, {
+          error: fileTooLarge(displayName, maxFileSizeInMB),
+        }),
+    );
+
+    if (min) {
+      const message = fileToFew(displayName, min);
+      schema = schema.min(min, { error: message });
+    }
+
+    if (max && max > 0) {
+      const message = fileTooMany(displayName, max);
+      schema = schema.max(max, { error: message });
+    }
+
+    return schema;
+  },
+
+  date: (field?: string) =>
+    z.coerce.date({
+      error: messages.invalidType(
+        `tanggal${field ? ` ${field.toLowerCase()}` : ""}`,
+        "date",
+      ),
+    }),
+
+  dateMultiple: (options?: { field?: string; min?: number; max?: number }) => {
+    const { invalidType, required, dateToFew, dateTooMany } = messages;
+
+    const field = `tanggal${options?.field ? ` ${options.field.toLowerCase()}` : ""}`;
+    const min = options?.min;
+    const max = options?.max;
+
+    let schema = z.array(z.date({ error: invalidType(field, "date") }), {
+      error: "Beberapa tanggal yang dimasukkan tidak valid.",
+    });
+
+    if (min) {
+      const message = min <= 1 ? required : dateToFew;
+      schema = schema.min(min, { error: message(field, min) });
+    }
+
+    if (max) {
+      const message = dateTooMany(field, max);
+      schema = schema.max(max, { error: message });
+    }
+
+    return schema;
+  },
+
+  dateRange: z.object(
+    {
+      from: z.date({ error: "Pilih tanggal mulai yang valid." }),
+      to: z.date({ error: "Pilih tanggal akhir yang valid." }),
+    },
+    { error: "Pilih rentang tanggal yang valid." },
+  ),
 
   email: z
     .email({ error: messages.invalid("Alamat email") })
@@ -71,64 +160,6 @@ export const zodSchemas = {
 
   updatedAt: z.coerce.date({ error: "Field 'updatedAt' tidak valid." }),
   createdAt: z.coerce.date({ error: "Field 'createdAt' tidak valid." }),
-
-  date: (field?: string) =>
-    z.coerce.date({
-      error: `Pilih tanggal ${field ? `${field.toLowerCase()} ` : ""}yang valid.`,
-    }),
-
-  dateMultiple: z.array(z.date({ error: "Pilih tanggal yang valid." }), {
-    error: "Beberapa tanggal yang dimasukkan tidak valid.",
-  }),
-
-  dateRange: z.object(
-    {
-      from: z.date({ error: "Pilih tanggal mulai yang valid." }),
-      to: z.date({ error: "Pilih tanggal akhir yang valid." }),
-    },
-    { error: "Pilih rentang tanggal yang valid." },
-  ),
-
-  file: (
-    type: FileType,
-    options?: {
-      optional?: boolean;
-      min?: number;
-      max?: number;
-      maxFileSize?: number;
-    },
-  ) => {
-    const { displayName, size, mimeTypes } = fileMeta[type];
-
-    const optional = options?.optional ?? false;
-    const min = optional ? 0 : options?.min || 1;
-    const max = options?.max;
-
-    const maxFileSize = options?.maxFileSize ?? size.bytes;
-    const maxFileSizeInMB = toMegabytes(maxFileSize).toFixed(2);
-
-    let schema = z.array(
-      z
-        .file()
-        .mime(mimeTypes, { error: `Tipe ${displayName} tidak valid.` })
-        .min(1)
-        .max(maxFileSize, {
-          error: `Ukuran ${displayName} tidak boleh melebihi ${maxFileSizeInMB} MB.`,
-        }),
-    );
-
-    if (!optional) {
-      const message = `Silakan unggah minimal ${min} ${displayName}.`;
-      schema = schema.min(min, { error: message });
-    }
-
-    if (max && max > 0) {
-      const message = `Jumlah maksimum ${displayName} yang dapat diunggah adalah ${max}.`;
-      schema = schema.max(max, { error: message });
-    }
-
-    return schema;
-  },
 };
 
 export const zodApiResponse = z.object({

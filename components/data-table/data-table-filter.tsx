@@ -392,22 +392,17 @@ function renderFilter<TData, T extends ColumnDataType>(
   meta: ColumnMeta<TData, unknown> & { type: T },
   table: Table<TData>,
 ) {
-  const { value } = filter;
+  const { id, value } = filter;
 
   return (
-    <ButtonGroup key={`filter-${filter.id}`} className="**:text-xs">
+    <ButtonGroup key={`filter-${id}`} className="**:text-xs">
       <FilterSubject meta={meta} />
       <FilterOperator column={column} columnMeta={meta} filter={value} />
-      <FilterValue
-        id={filter.id}
-        column={column}
-        columnMeta={meta}
-        table={table}
-      />
+      <FilterValue id={id} column={column} columnMeta={meta} table={table} />
       <Button
         size="icon-sm"
         variant="outline"
-        onClick={() => table.getColumn(filter.id)?.setFilterValue(undefined)}
+        onClick={() => table.getColumn(id)?.setFilterValue(undefined)}
       >
         <X />
       </Button>
