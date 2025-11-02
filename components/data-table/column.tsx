@@ -1,28 +1,17 @@
 "use client";
 
-import { filterFn } from "@/lib/filters";
-import { Role, rolesMeta } from "@/lib/permission";
-import { cn, formatDate } from "@/utils";
-import { Column, createColumnHelper, Row, Table } from "@tanstack/react-table";
-import { UserWithRole } from "better-auth/plugins";
+import { cn } from "@/utils";
+import { CellContext, HeaderContext } from "@tanstack/react-table";
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUpDown,
-  CalendarCheck2,
-  CalendarSync,
-  CircleDot,
-  Mail,
   Pin,
   PinOff,
-  UserRound,
-  UserSquare2,
   X,
 } from "lucide-react";
-import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "../modules/user";
-import { UserDetailSheet } from "../modules/user-client";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox, CheckboxProps } from "../ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,22 +19,25 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-function headerColumn<C, T>(
-  column: Column<C, T>,
-  title: React.ReactNode,
-  center: boolean = false,
-) {
+export function ColumnHeader<TData, TValue>({
+  column,
+  className,
+  children,
+}: Pick<HeaderContext<TData, TValue>, "column"> & {
+  className?: string;
+  children: React.ReactNode;
+}) {
   const columnPinned = column.getIsPinned();
   const ColumnPinIcon = columnPinned ? PinOff : Pin;
 
   return (
     <div
       className={cn(
-        "flex items-center gap-x-2",
-        center ? "justify-center" : "justify-start",
+        "flex items-center justify-start gap-x-2 font-medium",
+        className,
       )}
     >
-      <span className="font-medium">{title}</span>
+      {children}
 
       <div className="flex gap-x-px">
         {column.getCanSort() && (
@@ -96,7 +88,11 @@ function headerColumn<C, T>(
   );
 }
 
-function headerCheckbox<T>(table: Table<T>) {
+export function ColumnHeaderCheckbox<TData, TValue>({
+  table,
+  ...props
+}: Pick<HeaderContext<TData, TValue>, "table"> &
+  Omit<CheckboxProps, "checked" | "onCheckedChange">) {
   return (
     <Checkbox
       aria-label="Select all"
@@ -105,112 +101,22 @@ function headerCheckbox<T>(table: Table<T>) {
         table.getIsAllPageRowsSelected() ||
         (table.getIsSomePageRowsSelected() && "indeterminate")
       }
+      {...props}
     />
   );
 }
 
-function cellNum(num: number) {
-  return <div className="text-center">{num}</div>;
-}
-
-function cellCheckbox<R>(row: Row<R>, disabled: boolean = false) {
+export function ColumnCellCheckbox<TData, TValue>({
+  row,
+  ...props
+}: Pick<CellContext<TData, TValue>, "row"> &
+  Omit<CheckboxProps, "checked" | "onCheckedChange">) {
   return (
     <Checkbox
+      aria-label="Select row"
       checked={row.getIsSelected()}
       onCheckedChange={(value) => row.toggleSelected(!!value)}
-      aria-label="Select row"
-      disabled={disabled}
+      {...props}
     />
   );
 }
-
-const createUserColumn = createColumnHelper<UserWithRole>();
-export const getUserColumn = (currentUserId: string) => [
-  createUserColumn.display({
-    id: "select",
-    header: ({ table }) => headerCheckbox(table),
-    cell: ({ row }) => cellCheckbox(row),
-    enableHiding: false,
-    enableSorting: false,
-  }),
-  createUserColumn.display({
-    id: "no",
-    header: "No",
-    cell: ({ row }) => cellNum(row.index + 1),
-    enableHiding: false,
-  }),
-  createUserColumn.accessor(({ image }) => image, {
-    id: "Foto Profil",
-    header: ({ column }) => headerColumn(column, "Foto Profil", true),
-    cell: ({ row }) => (
-      <div className="flex justify-center">
-        <UserAvatar {...row.original} className="size-20" />
-      </div>
-    ),
-    filterFn: filterFn("text"),
-    meta: { displayName: "Foto Profil", type: "text", icon: UserSquare2 },
-    enableSorting: false,
-    enableColumnFilter: false,
-    enableGlobalFilter: false,
-    enablePinning: true,
-  }),
-  createUserColumn.accessor(({ name }) => name, {
-    id: "name",
-    header: ({ column }) => headerColumn(column, "Nama"),
-    cell: ({ row }) => (
-      <UserDetailSheet
-        data={row.original}
-        isCurrentUser={row.original.id === currentUserId}
-      />
-    ),
-    filterFn: filterFn("text"),
-    meta: { displayName: "Nama", type: "text", icon: UserRound },
-  }),
-  createUserColumn.accessor(({ email }) => email, {
-    id: "email",
-    header: ({ column }) => headerColumn(column, "Alamat Email"),
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-x-2">
-          <span>{row.original.email}</span>
-          {!row.original.emailVerified && <UserVerifiedBadge withoutText />}
-        </div>
-      );
-    },
-    filterFn: filterFn("text"),
-    meta: { displayName: "Alamat Email", type: "text", icon: Mail },
-  }),
-  createUserColumn.accessor(({ role }) => role, {
-    id: "role",
-    header: ({ column }) => headerColumn(column, "Role"),
-    cell: ({ cell }) => <UserRoleBadge role={cell.getValue() as Role} />,
-    filterFn: filterFn("option"),
-    meta: {
-      displayName: "Role",
-      type: "option",
-      icon: CircleDot,
-      transformOptionFn: (value) => {
-        const { displayName, icon } = rolesMeta[value as Role];
-        return { value, label: displayName, icon };
-      },
-    },
-  }),
-  createUserColumn.accessor(({ updatedAt }) => updatedAt, {
-    id: "Terakhir Diperbarui",
-    header: ({ column }) => headerColumn(column, "Terakhir Diperbarui"),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: {
-      displayName: "Terakhir Diperbarui",
-      type: "date",
-      icon: CalendarSync,
-    },
-  }),
-  createUserColumn.accessor(({ createdAt }) => createdAt, {
-    id: "Waktu Dibuat",
-    header: ({ column }) => headerColumn(column, "Waktu Dibuat"),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: { displayName: "Waktu Dibuat", type: "date", icon: CalendarCheck2 },
-  }),
-];

@@ -3,6 +3,7 @@
 import { appMeta, fileMeta } from "@/constants";
 import { authClient } from "@/lib/auth-client";
 import { actions, messages } from "@/lib/content";
+import { filterFn } from "@/lib/filters";
 import { allRoles, Role, rolesMeta } from "@/lib/permission";
 import { dashboardRoute, signInRoute } from "@/lib/routes";
 import { zodSchemas, zodUser } from "@/lib/zod";
@@ -13,12 +14,17 @@ import {
   revokeUserSessions,
 } from "@/server/action";
 import { getFilePublicUrl, uploadFiles } from "@/server/s3";
+import { formatDate } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Session } from "better-auth";
 import { UserWithRole } from "better-auth/plugins";
 import {
   ArrowUpRight,
   Ban,
+  CalendarCheck2,
+  CalendarSync,
+  CircleDot,
   Gamepad2,
   Info,
   Layers2,
@@ -39,6 +45,7 @@ import {
   TvMinimal,
   UserRound,
   UserRoundPlus,
+  UserSquare2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -47,7 +54,11 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { UAParser } from "ua-parser-js";
 import { z } from "zod";
-import { getUserColumn } from "../data-table/column";
+import {
+  ColumnCellCheckbox,
+  ColumnHeader,
+  ColumnHeaderCheckbox,
+} from "../data-table/column";
 import { DataTable, OtherDataTableProps } from "../data-table/data-table";
 import { SheetDetails } from "../layouts/sections";
 import {
@@ -126,6 +137,107 @@ const sharedText = {
 /*
  * --- USER ---
  */
+
+const createUserColumn = createColumnHelper<UserWithRole>();
+const getUserColumn = (currentUserId: string) => [
+  createUserColumn.display({
+    id: "select",
+    header: ({ table }) => <ColumnHeaderCheckbox table={table} />,
+    cell: ({ row }) => <ColumnCellCheckbox row={row} />,
+    enableHiding: false,
+    enableSorting: false,
+  }),
+  createUserColumn.display({
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+    enableHiding: false,
+  }),
+  createUserColumn.accessor(({ image }) => image, {
+    id: "image",
+    header: ({ column }) => (
+      <ColumnHeader column={column} className="justify-center">
+        Foto Profil
+      </ColumnHeader>
+    ),
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        <UserAvatar {...row.original} className="size-20" />
+      </div>
+    ),
+    filterFn: filterFn("text"),
+    meta: { displayName: "Foto Profil", type: "text", icon: UserSquare2 },
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enablePinning: true,
+  }),
+  createUserColumn.accessor(({ name }) => name, {
+    id: "name",
+    header: ({ column }) => <ColumnHeader column={column}>Nama</ColumnHeader>,
+    cell: ({ row }) => (
+      <UserDetailSheet
+        data={row.original}
+        isCurrentUser={row.original.id === currentUserId}
+      />
+    ),
+    filterFn: filterFn("text"),
+    meta: { displayName: "Nama", type: "text", icon: UserRound },
+  }),
+  createUserColumn.accessor(({ email }) => email, {
+    id: "email",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Alamat Email</ColumnHeader>
+    ),
+    cell: ({ row, cell }) => {
+      return (
+        <div className="flex items-center gap-x-2">
+          <span>{cell.getValue()}</span>
+          {!row.original.emailVerified && <UserVerifiedBadge withoutText />}
+        </div>
+      );
+    },
+    filterFn: filterFn("text"),
+    meta: { displayName: "Alamat Email", type: "text", icon: Mail },
+  }),
+  createUserColumn.accessor(({ role }) => role, {
+    id: "role",
+    header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
+    cell: ({ cell }) => <UserRoleBadge role={cell.getValue() as Role} />,
+    filterFn: filterFn("option"),
+    meta: {
+      displayName: "Role",
+      type: "option",
+      icon: CircleDot,
+      transformOptionFn: (value) => {
+        const { displayName, icon } = rolesMeta[value as Role];
+        return { value, label: displayName, icon };
+      },
+    },
+  }),
+  createUserColumn.accessor(({ updatedAt }) => updatedAt, {
+    id: "updatedAt",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Terakhir Diperbarui</ColumnHeader>
+    ),
+    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    filterFn: filterFn("date"),
+    meta: {
+      displayName: "Terakhir Diperbarui",
+      type: "date",
+      icon: CalendarSync,
+    },
+  }),
+  createUserColumn.accessor(({ createdAt }) => createdAt, {
+    id: "createdAt",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Waktu Dibuat</ColumnHeader>
+    ),
+    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    filterFn: filterFn("date"),
+    meta: { displayName: "Waktu Dibuat", type: "date", icon: CalendarCheck2 },
+  }),
+];
 
 export function UserDataTable({
   data: fallbackData,
@@ -424,7 +536,7 @@ export function SignInForm() {
               checked={field.value}
               onCheckedChange={field.onChange}
             />
-            <FieldLabel htmlFor={field.name}>Ingat Saya</FieldLabel>
+            <Label htmlFor={field.name}>Ingat Saya</Label>
           </Field>
         )}
       />
@@ -1070,17 +1182,15 @@ export function RevokeSessionButton({
           <DeviceIcons className="shrink-0" />
         </div>
 
-        <div className="space-y-1">
+        <div className="grid gap-y-1">
           <small className="font-medium">
             {`${browser.name || "Browser tidak diketahui"} di ${os.name || "sistem operasi yang tidak diketahui"}`}
           </small>
 
           {isCurrentSession ? (
-            <small className="text-success order-1 font-medium">
-              Sesi saat ini
-            </small>
+            <small className="text-success">Sesi saat ini</small>
           ) : (
-            <small className="text-muted-foreground order-3 line-clamp-1 font-normal">
+            <small className="text-muted-foreground">
               {messages.thingAgo("Terakhir terlihat", updatedAt)}
             </small>
           )}

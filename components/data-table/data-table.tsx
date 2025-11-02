@@ -152,6 +152,7 @@ export function DataTable<TData>({
       pagination: { pageIndex: 0, pageSize: defaultRowsLimit },
       ...initialState,
     },
+
     state: {
       sorting,
       globalFilter,

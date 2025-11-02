@@ -68,7 +68,7 @@ export default async function Page() {
           {sessionList.map((item) => (
             <RevokeSessionButton
               key={item.id}
-              currentSessionId={session.user.id}
+              currentSessionId={session.session.id}
               {...item}
             />
           ))}

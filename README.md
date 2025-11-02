@@ -80,3 +80,9 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
   ]
 }
 ```
+
+## TODO
+
+- Server Side Data Table
+- Dashboard Menu Search (ctrl + k), pinning, and last used
+- Event Calendar
