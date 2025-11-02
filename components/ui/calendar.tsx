@@ -13,11 +13,12 @@ import { DayPicker, getDefaultClassNames } from "react-day-picker";
 export type CalendarProps = ComponentProps<typeof DayPicker>;
 
 export function Calendar({
-  className,
-  classNames,
+  numberOfMonths = 2,
   showOutsideDays = true,
   captionLayout = "dropdown",
   formatters,
+  className,
+  classNames,
   components,
   ...props
 }: CalendarProps) {
@@ -25,19 +26,20 @@ export function Calendar({
 
   return (
     <DayPicker
+      numberOfMonths={numberOfMonths}
       showOutsideDays={showOutsideDays}
       captionLayout={captionLayout}
+      formatters={{
+        formatMonthDropdown: (date) => formatDate(date, "MMM"),
+        formatWeekdayName: (date) => formatDate(date, "EEEEEE"),
+        ...formatters,
+      }}
       className={cn(
         "bg-background group/calendar p-2 [--cell-size:--spacing(8)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className,
       )}
-      formatters={{
-        formatMonthDropdown: (date) => formatDate(date, "MMM"),
-        formatWeekdayName: (date) => formatDate(date, "EEEEEE"),
-        ...formatters,
-      }}
       classNames={{
         root: cn("w-fit", defaultClassNames.root),
         months: cn(

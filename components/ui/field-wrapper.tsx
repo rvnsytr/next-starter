@@ -30,8 +30,8 @@ export function FieldWrapper({
   children,
   props,
 }: {
-  label: ReactNode;
-  htmlFor: string;
+  label?: ReactNode;
+  htmlFor?: string;
   fieldError: Pick<FieldErrorProps, "errors">["errors"];
   description?: ReactNode;
   children: ReactNode;
@@ -46,23 +46,28 @@ export function FieldWrapper({
 }) {
   return (
     <Field
-      data-invalid={!!fieldError}
-      {...props?.field}
       className={cn(
         "has-required:*:data-[slot=field-label]:after:content-['*']",
         props?.field?.className,
       )}
+      data-invalid={!!fieldError}
+      {...props?.field}
     >
-      <FieldLabel
-        htmlFor={htmlFor}
-        className={cn("after:text-destructive", props?.label?.className)}
-      >
-        {label}
-      </FieldLabel>
+      {label && (
+        <FieldLabel
+          htmlFor={htmlFor}
+          className={cn("after:text-destructive", props?.label?.className)}
+        >
+          {label}
+        </FieldLabel>
+      )}
+
       {children}
+
       {description && (
         <FieldDescription {...props?.fieldDesc}>{description}</FieldDescription>
       )}
+
       <FieldError errors={fieldError} {...props?.fieldError} />
     </Field>
   );

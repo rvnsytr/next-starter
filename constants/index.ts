@@ -8,13 +8,6 @@ export type DataType =
   | "array"
   | "object";
 
-export type ActionResponse<T> = {
-  code: number;
-  success: boolean;
-  message: string;
-  data: T | null;
-};
-
 export const allGenders = ["m", "f"] as const;
 export type Gender = (typeof allGenders)[number];
 export const genderMeta: Record<

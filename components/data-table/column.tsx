@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/utils";
 import { CellContext, HeaderContext } from "@tanstack/react-table";
 import {

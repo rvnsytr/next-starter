@@ -91,24 +91,28 @@ export function ExampleForm() {
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z.object({
     text: zodSchemas.string("Text", { min: 1 }),
-    numeric: zodSchemas.number("Numeric", { min: 1 }),
+    textarea: zodSchemas.string("Text Area", { min: 1, max: 255 }),
+
+    number: zodSchemas.number("number", { min: 1 }),
     phone: zodSchemas.number("Phone", { min: 1 }),
+
     date: zodSchemas.date(),
-    dateMultiple: zodSchemas.dateMultiple.min(1),
+    dateMultiple: zodSchemas.dateMultiple({ min: 1 }),
     dateRange: zodSchemas.dateRange,
+
     select: z.enum(card),
     multiSelect: z.array(z.enum(card)).min(1),
     radio: z.enum(card),
-    textarea: zodSchemas.string("Text Area", { min: 1, max: 255 }),
-    file: zodSchemas.file(fileType, {
-      optional: true,
-      // min: 2,
-      // max: 5,
-      // maxFileSize: toBytes(1),
-    }),
+
     switch: z.boolean(),
     checkbox: z.array(z.enum(checkboxData)).refine((v) => v.some((i) => i), {
       error: "At least one checkbox must be selected",
+    }),
+
+    file: zodSchemas.file(fileType, {
+      // min: 1,
+      // max: 5,
+      // maxFileSize: toBytes(1),
     }),
   });
 
@@ -116,18 +120,23 @@ export function ExampleForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       text: "Hello World",
-      numeric: 100000,
+      textarea: "The Brown Fox Jumping Over The Lazy Dog",
+
+      number: 100000,
       phone: 81234567890,
+
       date: today,
       dateMultiple: [today],
       dateRange: { from: today, to: addDays(today, 6) },
+
       select: "spade",
       multiSelect: ["spade"],
       radio: "spade",
-      textarea: "The Brown Fox Jumping Over The Lazy Dog",
-      file: [],
+
       switch: false,
       checkbox: ["firefox"],
+
+      file: [],
     },
   });
 
@@ -167,7 +176,7 @@ export function ExampleForm() {
         />
 
         <Controller
-          name="numeric"
+          name="number"
           control={form.control}
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FieldWrapper

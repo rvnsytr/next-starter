@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod";
-import { ActionResponse, appMeta } from "../constants";
+import { appMeta } from "../constants";
 import { messages } from "./content";
 import { zodApiResponse } from "./zod";
 
@@ -33,9 +33,8 @@ export async function apiFetcher<T>(
 export function response<T>(
   code: number,
   jsonData: { message?: string; data?: T },
-): ActionResponse<T> {
+): ApiResponse<T> {
   const success = code >= 200 && code < 300;
-  const { message = success ? "Sukses" : messages.error, data = null } =
-    jsonData;
-  return { code, success, message, data };
+  const { message = success ? "Sukses" : messages.error, data } = jsonData;
+  return { code, success, message, data: data as T };
 }

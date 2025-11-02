@@ -165,7 +165,6 @@ const getUserColumn = (currentUserId: string) => [
         <UserAvatar {...row.original} className="size-20" />
       </div>
     ),
-    filterFn: filterFn("text"),
     meta: { displayName: "Foto Profil", type: "text", icon: UserSquare2 },
     enableSorting: false,
     enableColumnFilter: false,
