@@ -148,7 +148,8 @@ export function FileUpload({
         </EmptyHeader>
 
         <EmptyTitle className="text-sm">
-          Seret dan lepaskan {displayName} di sini, atau klik untuk mengunggah
+          Seret dan lepaskan {displayName.toLowerCase()} di sini, atau klik
+          untuk mengunggah
         </EmptyTitle>
 
         <EmptyDescription className="flex flex-col gap-y-2 text-xs md:flex-row md:items-center">
@@ -166,7 +167,7 @@ export function FileUpload({
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-center gap-x-2 tabular-nums">
             <small className="font-medium capitalize">
-              Total {valueLength} {displayName}
+              Total {valueLength} {displayName.toLowerCase()}
             </small>
             <Separator orientation="vertical" className="h-4" />
             <small className="text-muted-foreground text-xs">

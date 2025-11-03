@@ -13,7 +13,6 @@ import { DayPicker, getDefaultClassNames } from "react-day-picker";
 export type CalendarProps = ComponentProps<typeof DayPicker>;
 
 export function Calendar({
-  numberOfMonths = 2,
   showOutsideDays = true,
   captionLayout = "dropdown",
   formatters,
@@ -26,7 +25,6 @@ export function Calendar({
 
   return (
     <DayPicker
-      numberOfMonths={numberOfMonths}
       showOutsideDays={showOutsideDays}
       captionLayout={captionLayout}
       formatters={{

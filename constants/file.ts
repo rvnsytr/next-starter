@@ -64,7 +64,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
   },
 
   spreadsheet: {
-    displayName: "lembar kerja",
+    displayName: "lembar kerja (spreadsheet)",
     mimeTypes: [
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -75,7 +75,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
   },
 
   presentation: {
-    displayName: "presentasi",
+    displayName: "presentasi (ppt)",
     mimeTypes: [
       "application/vnd.ms-powerpoint",
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",

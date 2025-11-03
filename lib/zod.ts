@@ -35,7 +35,7 @@ export const zodSchemas = {
     const min = options?.min;
     const max = options?.max;
 
-    let schema = z.number({ error: invalidType(field, "number") });
+    let schema = z.coerce.number({ error: invalidType(field, "number") });
 
     if (min) {
       const message = min <= 1 ? required : numberTooSmall;
