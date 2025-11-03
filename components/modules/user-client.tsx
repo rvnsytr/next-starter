@@ -389,13 +389,13 @@ export function SignOutButton() {
         setIsLoading(true);
         authClient.signOut({
           fetchOptions: {
-            onError: ({ error }) => {
-              toast.error(error.message);
-              setIsLoading(false);
-            },
             onSuccess: () => {
               toast.success("Berhasil keluar - Sampai jumpa!");
               router.push(signInRoute);
+            },
+            onError: ({ error }) => {
+              setIsLoading(false);
+              toast.error(error.message);
             },
           },
         });
@@ -421,12 +421,12 @@ export function SignOnGithubButton() {
             errorCallbackURL: signInRoute,
           },
           {
-            onError: ({ error }) => {
-              toast.error(error.message);
-              setIsLoading(false);
-            },
             onSuccess: () => {
               toast.success(sharedText.signIn);
+            },
+            onError: ({ error }) => {
+              setIsLoading(false);
+              toast.error(error.message);
             },
           },
         );
@@ -458,12 +458,12 @@ export function SignInForm() {
     authClient.signIn.email(
       { ...formData, callbackURL: dashboardRoute },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
           toast.success(sharedText.signIn);
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -581,16 +581,16 @@ export function SignUpForm() {
     authClient.signUp.email(
       { password, ...rest },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
+          setIsLoading(false);
+          form.reset();
           toast.success(
             "Akun berhasil dibuat. Silakan masuk untuk melanjutkan.",
           );
+        },
+        onError: ({ error }) => {
           setIsLoading(false);
-          form.reset();
+          toast.error(error.message);
         },
       },
     );
@@ -772,14 +772,14 @@ export function ProfilePicture({
     authClient.updateUser(
       { image: url },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsChange(false);
-        },
         onSuccess: () => {
-          toast.success("Foto profil Anda berhasil diperbarui.");
           setIsChange(false);
           router.refresh();
+          toast.success("Foto profil Anda berhasil diperbarui.");
+        },
+        onError: ({ error }) => {
+          setIsChange(false);
+          toast.error(error.message);
         },
       },
     );
@@ -792,14 +792,14 @@ export function ProfilePicture({
     await authClient.updateUser(
       { image: null },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsRemoved(false);
-        },
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil dihapus.");
           setIsRemoved(false);
           router.refresh();
+        },
+        onError: ({ error }) => {
+          toast.error(error.message);
+          setIsRemoved(false);
         },
       },
     );
@@ -892,14 +892,14 @@ export function PersonalInformation({ ...props }: UserWithRole) {
     authClient.updateUser(
       { name: newName },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success("Profil Anda berhasil diperbarui.");
           setIsLoading(false);
           router.refresh();
+          toast.success("Profil Anda berhasil diperbarui.");
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1005,15 +1005,15 @@ export function ChangePasswordForm() {
   const formHandler = (formData: FormSchema) => {
     setIsLoading(true);
     authClient.changePassword(formData, {
-      onError: ({ error }) => {
-        toast.error(error.message);
-        setIsLoading(false);
-      },
       onSuccess: () => {
-        toast.success("Kata sandi Anda berhasil diperbarui.");
         setIsLoading(false);
         form.reset();
         router.refresh();
+        toast.success("Kata sandi Anda berhasil diperbarui.");
+      },
+      onError: ({ error }) => {
+        setIsLoading(false);
+        toast.error(error.message);
       },
     });
   };
@@ -1161,14 +1161,14 @@ export function RevokeSessionButton({
     authClient.revokeSession(
       { token },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success("Sesi berhasil dicabut.");
           setIsLoading(false);
           router.refresh();
+          toast.success("Sesi berhasil dicabut.");
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1238,14 +1238,14 @@ export function RevokeOtherSessionsButton() {
     setIsLoading(true);
     authClient.revokeOtherSessions({
       fetchOptions: {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success("Semua sesi aktif lainnya berhasil dicabut.");
           setIsLoading(false);
           router.refresh();
+          toast.success("Semua sesi aktif lainnya berhasil dicabut.");
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     });
@@ -1291,14 +1291,13 @@ export function DeleteMyAccountButton({ image }: Pick<UserWithRole, "image">) {
     authClient.deleteUser(
       { callbackURL: signInRoute },
       {
-        onRequest: () => setIsLoading(true),
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success("Akun Anda berhasil dihapus.");
           router.push(signInRoute);
+          toast.success("Akun Anda berhasil dihapus.");
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1380,15 +1379,15 @@ export function AdminCreateUserDialog() {
     authClient.admin.createUser(
       { password: newPassword, ...rest },
       {
+        onSuccess: () => {
+          setIsLoading(false);
+          mutate("users");
+          form.reset();
+          toast.success(`Akun atas nama ${rest.name} berhasil dibuat.`);
+        },
         onError: ({ error }) => {
           toast.error(error.message);
           setIsLoading(false);
-        },
-        onSuccess: () => {
-          toast.success(`Akun atas nama ${rest.name} berhasil dibuat.`);
-          setIsLoading(false);
-          form.reset();
-          mutate("users");
         },
       },
     );
@@ -1611,17 +1610,17 @@ function AdminChangeUserRoleForm({
     authClient.admin.setRole(
       { userId: data.id, role: newRole },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success(
-            `Role ${data.name} berhasil diperbarui menjadi ${newRole}.`,
-          );
           setIsLoading(false);
           setIsOpen(false);
           mutate("users");
+          toast.success(
+            `Role ${data.name} berhasil diperbarui menjadi ${newRole}.`,
+          );
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1701,13 +1700,13 @@ function AdminRevokeUserSessionsDialog({
     authClient.admin.revokeUserSessions(
       { userId: id },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success(`Semua sesi aktif milik ${name} berhasil dicabut.`);
           setIsLoading(false);
+          toast.success(`Semua sesi aktif milik ${name} berhasil dicabut.`);
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1779,16 +1778,16 @@ function AdminRemoveUserDialog({
     authClient.admin.removeUser(
       { userId: data.id },
       {
-        onError: ({ error }) => {
-          toast.error(error.message);
-          setIsLoading(false);
-        },
         onSuccess: () => {
-          toast.success(`Akun atas nama ${data.name} berhasil dihapus.`);
           setIsLoading(false);
           setIsOpen(false);
           setSheetOpen(false);
           mutate("users");
+          toast.success(`Akun atas nama ${data.name} berhasil dihapus.`);
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1859,7 +1858,6 @@ function AdminRemoveUserDialog({
   );
 }
 
-// TODO: Close Dialog State
 function AdminActionRevokeUserSessionsDialog({
   ids,
   onSuccess,
@@ -1873,16 +1871,14 @@ function AdminActionRevokeUserSessionsDialog({
     setIsLoading(true);
     toast.promise(revokeUserSessions(ids), {
       loading: messages.loading,
+      success: (res) => {
+        onSuccess();
+        const successLength = res.filter(({ success }) => success).length;
+        return `${successLength} dari ${ids.length} sesi pengguna berhasil dicabut.`;
+      },
       error: (e) => {
         setIsLoading(false);
         return e;
-      },
-      success: (res) => {
-        setIsLoading(false);
-        onSuccess();
-
-        const successLength = res.filter(({ success }) => success).length;
-        return `${successLength} dari ${ids.length} sesi pengguna berhasil dicabut.`;
       },
     });
   };
@@ -1922,7 +1918,6 @@ function AdminActionRevokeUserSessionsDialog({
   );
 }
 
-// TODO: Close Dialog State
 function AdminActionRemoveUsersDialog({
   data,
   onSuccess,
@@ -1931,6 +1926,7 @@ function AdminActionRemoveUsersDialog({
   onSuccess: () => void;
 }) {
   const [input, setInput] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const inputValue = `Hapus ${String(data.length)} pengguna`;
@@ -1952,23 +1948,25 @@ function AdminActionRemoveUsersDialog({
     setIsLoading(true);
     toast.promise(deleteUsers(data), {
       loading: messages.loading,
-      error: (e) => {
-        setIsLoading(false);
-        return e;
-      },
       success: (res) => {
         setIsLoading(false);
+        setIsOpen(false);
+
         onSuccess();
         mutate("users");
 
         const successLength = res.filter(({ success }) => success).length;
         return `${successLength} dari ${data.length} akun pengguna berhasil dihapus.`;
       },
+      error: (e) => {
+        setIsLoading(false);
+        return e;
+      },
     });
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
