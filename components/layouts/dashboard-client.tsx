@@ -15,7 +15,7 @@ export function DashboardMainContent({
   return layout ? (
     <div
       className={cn(
-        "relative z-10 flex flex-1 flex-col gap-y-4 py-4",
+        "relative z-10 flex flex-1 flex-col gap-4 py-4",
         layout === "fullwidth" ? "px-4" : "container",
         className,
       )}

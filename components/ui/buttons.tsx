@@ -1,5 +1,3 @@
-"use client";
-
 import { actions } from "@/lib/content";
 import { cn } from "@/utils";
 import { RotateCcw } from "lucide-react";

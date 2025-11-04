@@ -27,6 +27,7 @@ export function DashboardMain({
           <ThemeButton align="end" />
         </div>
       </nav>
+
       <DashboardMainContent className={className}>
         {children}
       </DashboardMainContent>

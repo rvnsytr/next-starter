@@ -2,7 +2,7 @@
 
 import { useIsMobile } from "@/hooks";
 import { actions, messages } from "@/lib/content";
-import { cn } from "@/utils";
+import { cn, formatNumber } from "@/utils";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -285,7 +285,8 @@ export function DataTable<TData>({
         />
 
         <small className="text-muted-foreground order-3 shrink-0 lg:order-2">
-          {selectedRows.length} dari {filteredRows.length} baris dipilih
+          {formatNumber(selectedRows.length)} dari{" "}
+          {formatNumber(filteredRows.length)} baris dipilih
         </small>
 
         <small className="text-muted-foreground order-1 mx-auto text-sm lg:order-3">
@@ -293,7 +294,7 @@ export function DataTable<TData>({
         </small>
 
         <small className="order-2 shrink-0 tabular-nums lg:order-4">
-          Halaman {pageNumber} dari {totalPage}
+          Halaman {formatNumber(pageNumber)} dari {formatNumber(totalPage)}
         </small>
 
         <Pagination
@@ -555,7 +556,7 @@ function RowsPerPage<TData>({
         <SelectContent>
           {rowsLimitArr.map((item) => (
             <SelectItem key={item} value={String(item)}>
-              {item}
+              {formatNumber(item)}
             </SelectItem>
           ))}
         </SelectContent>
