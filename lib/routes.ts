@@ -12,6 +12,5 @@ export const routesMeta: Record<Route, RouteMeta> = {
   "/dashboard/users": { displayName: "Pengguna", role: ["admin"] },
 };
 
-export const allRoutes = Object.keys(routesMeta) as Route[];
 export const signInRoute: Route = "/sign-in";
 export const dashboardRoute: Route = "/dashboard";

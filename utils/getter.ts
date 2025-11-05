@@ -2,7 +2,7 @@ import { Route } from "next";
 import { appMeta } from "../constants";
 import { dashboardMenu, Menu } from "../lib/menu";
 import { Role } from "../lib/permission";
-import { allRoutes, RouteRole, routesMeta } from "../lib/routes";
+import { RouteRole, routesMeta } from "../lib/routes";
 
 export function getTitle(route: Route) {
   return `${routesMeta[route].displayName} | ${appMeta.name}`;
@@ -45,19 +45,20 @@ export function getMenuByRole(
 
   return filteredMenu.filter((item) => item !== null);
 }
-
 export function getActiveRoute(pathname: string) {
+  const allRoutes = Object.keys(routesMeta) as Route[];
+  const allMenuRoutes = dashboardMenu.flatMap((m) =>
+    m.content.map((c) => c.route),
+  );
+
   const parts = pathname.split("/").filter(Boolean);
   const paths: string[] = [];
 
-  for (let i = parts.length; i > 0; i--) {
+  for (let i = parts.length; i > 0; i--)
     paths.push("/" + parts.slice(0, i).join("/"));
-  }
 
   paths.push("/");
 
-  for (const p of paths) {
-    const activeRoute = allRoutes.find((item) => item === p);
-    if (activeRoute) return activeRoute;
-  }
+  for (const p of paths)
+    if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
 }

@@ -246,8 +246,8 @@ export function UserDataTable({
   data: UserWithRole[];
   currentUserId: string;
 }) {
-  const fn = async () => (await getUserList()).users;
-  const { data } = useSWR("users", fn, { fallbackData });
+  const fetcher = async () => (await getUserList()).users;
+  const { data } = useSWR("users", fetcher, { fallbackData });
   const columns = getUserColumn(currentUserId);
   return (
     <DataTable
