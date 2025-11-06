@@ -156,7 +156,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Text field"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
               description="Text field description example"
             >
               <InputGroup>
@@ -182,7 +182,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Number field"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -209,7 +209,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Phone field"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -236,7 +236,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Select"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <Select
                 name={field.name}
@@ -271,7 +271,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Multi Select"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <MultiSelect
                 defaultValue={selectAndRadioData}
@@ -300,7 +300,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Date Picker with Calendar"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <DatePicker
                 id={field.name}
@@ -321,7 +321,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Multiple Date Picker"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <DatePicker
                 id={field.name}
@@ -342,7 +342,7 @@ export function ExampleForm() {
             <FieldWrapper
               label="Date Range Picker"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <DatePicker
                 id={field.name}
@@ -411,6 +411,7 @@ export function ExampleForm() {
               value={field.value}
               onValueChange={field.onChange}
               className="flex-col md:flex-row"
+              required
             >
               {selectAndRadioData.map(({ icon: Icon, ...item }) => (
                 <FieldLabel
@@ -489,7 +490,7 @@ export function ExampleForm() {
           <FieldWrapper
             label="Text Area"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <Textarea
               id={field.name}
@@ -508,7 +509,7 @@ export function ExampleForm() {
           <FieldWrapper
             label="File Upload"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <FileUpload
               id={field.name}

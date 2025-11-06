@@ -5,7 +5,6 @@ import { authClient } from "@/lib/auth-client";
 import { actions, messages } from "@/lib/content";
 import { filterFn } from "@/lib/filters";
 import { allRoles, Role, rolesMeta } from "@/lib/permission";
-import { dashboardRoute, signInRoute } from "@/lib/routes";
 import { zodSchemas, zodUser } from "@/lib/zod";
 import {
   deleteProfilePicture,
@@ -125,6 +124,9 @@ import {
 import { SidebarMenuButton } from "../ui/sidebar";
 import { LoadingSpinner } from "../ui/spinner";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./user";
+
+const signInRoute = "/sign-in";
+const dashboardRoute = "/dashboard";
 
 const sharedText = {
   signIn: "Berhasil masuk - Selamat datang!",
@@ -478,7 +480,7 @@ export function SignInForm() {
           <FieldWrapper
             label="Alamat email"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -504,7 +506,7 @@ export function SignInForm() {
           <FieldWrapper
             label="Kata sandi"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -605,7 +607,7 @@ export function SignUpForm() {
           <FieldWrapper
             label="Nama"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -631,7 +633,7 @@ export function SignUpForm() {
           <FieldWrapper
             label="Alamat email"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -657,7 +659,7 @@ export function SignUpForm() {
           <FieldWrapper
             label="Kata sandi"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -683,7 +685,7 @@ export function SignUpForm() {
           <FieldWrapper
             label="Konfirmasi kata sandi"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <InputGroup>
               <InputGroupInput
@@ -917,7 +919,7 @@ export function PersonalInformation({ ...props }: UserWithRole) {
             <FieldWrapper
               label="Alamat email"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -943,7 +945,7 @@ export function PersonalInformation({ ...props }: UserWithRole) {
             <FieldWrapper
               label="Nama"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -1028,7 +1030,7 @@ export function ChangePasswordForm() {
             <FieldWrapper
               label="Kata sandi saat ini"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -1054,7 +1056,7 @@ export function ChangePasswordForm() {
             <FieldWrapper
               label="Kata sandi baru"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -1080,7 +1082,7 @@ export function ChangePasswordForm() {
             <FieldWrapper
               label="Konfirmasi kata sandi"
               htmlFor={field.name}
-              fieldError={fieldState.error}
+              errors={fieldState.error}
             >
               <InputGroup>
                 <InputGroupInput
@@ -1417,7 +1419,7 @@ export function AdminCreateUserDialog() {
               <FieldWrapper
                 label="Nama"
                 htmlFor={field.name}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
               >
                 <InputGroup>
                   <InputGroupInput
@@ -1443,7 +1445,7 @@ export function AdminCreateUserDialog() {
               <FieldWrapper
                 label="Alamat email"
                 htmlFor={field.name}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
               >
                 <InputGroup>
                   <InputGroupInput
@@ -1469,7 +1471,7 @@ export function AdminCreateUserDialog() {
               <FieldWrapper
                 label="Kata sandi"
                 htmlFor={field.name}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
               >
                 <InputGroup>
                   <InputGroupInput
@@ -1495,7 +1497,7 @@ export function AdminCreateUserDialog() {
               <FieldWrapper
                 label="Konfirmasi kata sandi"
                 htmlFor={field.name}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
               >
                 <InputGroup>
                   <InputGroupInput
@@ -1521,7 +1523,7 @@ export function AdminCreateUserDialog() {
               <FieldWrapper
                 label="Ubah role"
                 htmlFor={field.name}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
               >
                 <RadioGroup
                   name={field.name}
@@ -1635,7 +1637,7 @@ function AdminChangeUserRoleForm({
           <FieldWrapper
             label="Ubah role"
             htmlFor={field.name}
-            fieldError={fieldState.error}
+            errors={fieldState.error}
           >
             <RadioGroup
               name={field.name}
@@ -1822,7 +1824,7 @@ function AdminRemoveUserDialog({
             render={({ field: { onChange, ...field }, fieldState }) => (
               <FieldWrapper
                 label={messages.removeLabel(data.name)}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
                 htmlFor={field.name}
               >
                 <Input
@@ -1994,7 +1996,7 @@ function AdminActionRemoveUsersDialog({
             render={({ field: { onChange, ...field }, fieldState }) => (
               <FieldWrapper
                 label={messages.removeLabel(inputValue)}
-                fieldError={fieldState.error}
+                errors={fieldState.error}
                 htmlFor={field.name}
               >
                 <Input

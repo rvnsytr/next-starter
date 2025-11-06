@@ -1,16 +1,15 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
-import { dashboardRoute, signInRoute } from "./lib/routes";
 
 export function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
   const sessionCookie = getSessionCookie(req);
 
-  if (!sessionCookie && !pathname.startsWith(signInRoute))
-    return NextResponse.redirect(new URL(signInRoute, req.url));
+  if (!sessionCookie && !pathname.startsWith("/sign-in"))
+    return NextResponse.redirect(new URL("/sign-in", req.url));
 
-  if (sessionCookie && pathname.startsWith(signInRoute))
-    return NextResponse.redirect(new URL(dashboardRoute, req.url));
+  if (sessionCookie && pathname.startsWith("/sign-in"))
+    return NextResponse.redirect(new URL("/dashboard", req.url));
 
   const requestHeaders = new Headers(req.headers);
 

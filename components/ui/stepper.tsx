@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/utils";
-import { Slot } from "@radix-ui/react-slot";
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
+import { Slot as SlotPrimitive } from "radix-ui";
 import { createContext, useCallback, useContext, useState } from "react";
 
 type StepperContextValue = {
@@ -88,7 +88,6 @@ function Stepper({
   );
 }
 
-// StepperItem
 type StepperItemProps = React.HTMLAttributes<HTMLDivElement> & {
   step: number;
   completed?: boolean;
@@ -136,7 +135,6 @@ function StepperItem({
   );
 }
 
-// StepperTrigger
 type StepperTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
 };
@@ -152,7 +150,7 @@ function StepperTrigger({
   const { step, isDisabled } = useStepItem();
 
   if (asChild) {
-    const Comp = asChild ? Slot : "span";
+    const Comp = asChild ? SlotPrimitive.Root : "span";
     return (
       <Comp data-slot="stepper-trigger" className={className}>
         {children}
@@ -177,7 +175,6 @@ function StepperTrigger({
   );
 }
 
-// StepperIndicator
 type StepperIndicatorProps = React.HTMLAttributes<HTMLDivElement> & {
   asChild?: boolean;
 };
@@ -227,7 +224,6 @@ function StepperIndicator({
   );
 }
 
-// StepperTitle
 function StepperTitle({
   className,
   ...props
@@ -241,7 +237,6 @@ function StepperTitle({
   );
 }
 
-// StepperDescription
 function StepperDescription({
   className,
   ...props
@@ -255,7 +250,6 @@ function StepperDescription({
   );
 }
 
-// StepperSeparator
 function StepperSeparator({
   className,
   ...props

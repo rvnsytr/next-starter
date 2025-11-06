@@ -25,14 +25,14 @@ import { LabelProps } from "./label";
 export function FieldWrapper({
   label,
   htmlFor,
-  fieldError,
+  errors,
   description,
   children,
   props,
 }: {
   label?: ReactNode;
   htmlFor?: string;
-  fieldError: Pick<FieldErrorProps, "errors">["errors"];
+  errors: Pick<FieldErrorProps, "errors">["errors"];
   description?: ReactNode;
   children: ReactNode;
 
@@ -50,7 +50,7 @@ export function FieldWrapper({
         "has-required:*:data-[slot=field-label]:after:content-['*']",
         props?.field?.className,
       )}
-      data-invalid={!!fieldError}
+      data-invalid={!!errors}
       {...props?.field}
     >
       {label && (
@@ -68,7 +68,7 @@ export function FieldWrapper({
         <FieldDescription {...props?.fieldDesc}>{description}</FieldDescription>
       )}
 
-      <FieldError errors={fieldError} {...props?.fieldError} />
+      <FieldError errors={errors} {...props?.fieldError} />
     </Field>
   );
 }
