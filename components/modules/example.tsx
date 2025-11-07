@@ -165,6 +165,7 @@ export function ExampleForm() {
                   id={field.name}
                   aria-invalid={!!fieldState.error}
                   placeholder="Masukan text"
+                  required
                   {...field}
                 />
                 <InputGroupAddon>

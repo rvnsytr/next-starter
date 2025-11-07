@@ -37,7 +37,7 @@ export default async function Page() {
             Perbarui dan kelola informasi profil {appMeta.name} Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
-            <UserRoleBadge role={session.user.role as Role} />
+            <UserRoleBadge value={session.user.role as Role} />
             {session.user.emailVerified && <UserVerifiedBadge />}
           </CardAction>
         </CardHeader>

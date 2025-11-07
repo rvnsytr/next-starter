@@ -20,7 +20,7 @@ import {
 } from "react";
 import { UserAvatar, UserVerifiedBadge } from "../modules/user";
 import { SignOutButton } from "../modules/user-client";
-import { LinkLoader, RefreshButton } from "../ui/buttons-client";
+import { LinkSpinner, RefreshButton } from "../ui/buttons-client";
 import {
   Collapsible,
   CollapsibleContent,
@@ -156,7 +156,7 @@ function SidebarMain({ data }: SidebarData) {
                         asChild
                       >
                         <Link href={route}>
-                          <LinkLoader icon={{ base: iconElement }} />
+                          <LinkSpinner icon={{ base: iconElement }} />
                           <span className="line-clamp-1">{displayName}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -191,7 +191,7 @@ function SidebarMain({ data }: SidebarData) {
                                         <span className="line-clamp-1">
                                           {label}
                                         </span>
-                                        <LinkLoader />
+                                        <LinkSpinner />
                                       </Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
@@ -237,7 +237,7 @@ function SidebarMain({ data }: SidebarData) {
                 ) : (
                   <SidebarMenuButton size="sm" tooltip={displayName} asChild>
                     <Link href={url}>
-                      <LinkLoader icon={{ base: iconElement }} />
+                      <LinkSpinner icon={{ base: iconElement }} />
                       {displayName}
                     </Link>
                   </SidebarMenuButton>

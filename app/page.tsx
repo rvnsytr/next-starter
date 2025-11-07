@@ -1,6 +1,6 @@
 import { ExampleForm, ExampleTypography } from "@/components/modules/example";
 import { Button } from "@/components/ui/button";
-import { LinkLoader, ThemeButton } from "@/components/ui/buttons-client";
+import { LinkSpinner, ThemeButton } from "@/components/ui/buttons-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, BarChart, PieChart } from "@/components/ui/charts";
 import { R } from "@/components/ui/motion";
@@ -98,7 +98,7 @@ export default function Page() {
 
           <Button variant="outline_primary" asChild>
             <Link href="/dashboard">
-              Ke Dashboard <LinkLoader icon={{ base: <ArrowRight /> }} />
+              Ke Dashboard <LinkSpinner icon={{ base: <ArrowRight /> }} />
             </Link>
           </Button>
         </div>

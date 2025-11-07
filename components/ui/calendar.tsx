@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { ComponentProps } from "react";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { id } from "react-day-picker/locale";
 
 export type CalendarProps = ComponentProps<typeof DayPicker>;
 
@@ -25,6 +26,7 @@ export function Calendar({
 
   return (
     <DayPicker
+      locale={id}
       showOutsideDays={showOutsideDays}
       captionLayout={captionLayout}
       formatters={{

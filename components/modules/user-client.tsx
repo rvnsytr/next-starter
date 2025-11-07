@@ -204,7 +204,7 @@ const getUserColumn = (currentUserId: string) => [
   createUserColumn.accessor(({ role }) => role, {
     id: "role",
     header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
-    cell: ({ cell }) => <UserRoleBadge role={cell.getValue() as Role} />,
+    cell: ({ cell }) => <UserRoleBadge value={cell.getValue() as Role} />,
     filterFn: filterFn("option"),
     meta: {
       displayName: "Role",
@@ -339,7 +339,7 @@ export function UserDetailSheet({
           <Separator />
 
           <div className="flex items-center gap-2">
-            <UserRoleBadge role={data.role as Role} />
+            <UserRoleBadge value={data.role as Role} />
             {data.emailVerified && <UserVerifiedBadge />}
           </div>
 

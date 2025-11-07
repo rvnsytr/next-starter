@@ -26,7 +26,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 type ButtonPropsWithoutChildren = Omit<ButtonProps, "children">;
 type ButtonIconSize = "icon-xs" | "icon-sm" | "icon" | "icon-lg";
 
-export function LinkLoader({ ...props }: Omit<LoadingSpinnerProps, "loading">) {
+export function LinkSpinner({
+  ...props
+}: Omit<LoadingSpinnerProps, "loading">) {
   const { pending } = useLinkStatus();
   return <LoadingSpinner loading={pending} {...props} />;
 }

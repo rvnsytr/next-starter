@@ -7,13 +7,13 @@ import { Badge } from "../ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export function UserRoleBadge({
-  role,
+  value,
   className,
 }: {
-  role: Role;
+  value: Role;
   className?: string;
 }) {
-  const { displayName, desc, icon: Icon, color } = rolesMeta[role];
+  const { displayName, desc, icon: Icon, color } = rolesMeta[value];
   return (
     <Tooltip>
       <TooltipTrigger className={className} asChild>
@@ -24,7 +24,7 @@ export function UserRoleBadge({
             "border-(--badge-color) text-(--badge-color) capitalize",
           )}
         >
-          <Icon /> {displayName || role}
+          <Icon /> {displayName}
         </Badge>
       </TooltipTrigger>
       <TooltipContent

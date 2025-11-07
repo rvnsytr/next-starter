@@ -1,13 +1,21 @@
 import useSWR, { SWRConfiguration, SWRResponse } from "swr";
 import { ZodType } from "zod";
-import { apiFetcher, ApiFetcherConfig, ApiResponse, fetcher } from "../lib/api";
+import {
+  apiFetcher,
+  ApiFetcherConfig,
+  ApiResponse,
+  fetcher,
+  FetcherConfig,
+} from "../lib/api";
 
 export type UseValidatedSWRConfig = {
   swr?: SWRConfiguration;
-  fetcher?: RequestInit;
+  fetcher?: FetcherConfig;
 };
-export type UseApiSWRConfig = Pick<UseValidatedSWRConfig, "swr"> & {
-  fetcher: ApiFetcherConfig;
+
+export type UseApiSWRConfig = {
+  swr?: SWRConfiguration;
+  fetcher?: ApiFetcherConfig;
 };
 
 export function useValidatedSWR<T>(
