@@ -2,6 +2,9 @@
 
 import {
   createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useEffectEvent,
@@ -16,12 +19,12 @@ const defaultLayout: LayoutMode = "centered";
 
 type LayoutContextType = {
   layout: LayoutMode | null;
-  setLayout: React.Dispatch<React.SetStateAction<LayoutMode | null>>;
+  setLayout: Dispatch<SetStateAction<LayoutMode | null>>;
 };
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
-export function LayoutProvider({ children }: { children: React.ReactNode }) {
+export function LayoutProvider({ children }: { children: ReactNode }) {
   const [layout, setLayout] = useState<LayoutMode | null>(null);
 
   const onMount = useEffectEvent(() => {

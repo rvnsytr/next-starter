@@ -7,7 +7,7 @@ import { ComponentProps } from "react";
 
 type RadioGroupProps = ComponentProps<typeof RadioGroupPrimitive.Root>;
 type RadioGroupItemProps = ComponentProps<typeof RadioGroupPrimitive.Item> & {
-  classNames?: { inidicator?: string; circle?: string };
+  classNames?: { indicator?: string; circle?: string };
 };
 
 export function RadioGroup({ className, ...props }: RadioGroupProps) {
@@ -38,7 +38,7 @@ export function RadioGroupItem({
         data-slot="radio-group-indicator"
         className={cn(
           "relative flex items-center justify-center",
-          classNames?.inidicator,
+          classNames?.indicator,
         )}
       >
         <CircleIcon

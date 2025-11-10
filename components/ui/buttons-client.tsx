@@ -43,9 +43,9 @@ export function ThemeButton({
   Pick<ComponentProps<typeof TooltipContent>, "align">) {
   const { setTheme } = useTheme();
 
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  const onTheme = useEffectEvent(() => toggleTheme());
+  const onTheme = useEffectEvent(() =>
+    setTheme((prev) => (prev === "dark" ? "light" : "dark")),
+  );
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {

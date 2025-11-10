@@ -15,9 +15,9 @@
   --shadow-spread: 0px;
   --shadow-opacity: 0.18;
 
-  --success: var(--color-green-500);
-  --warning: var(--color-yellow-500);
   --rvns: var(--color-cyan-500);
+  --success: var(--color-green-600);
+  --warning: var(--color-yellow-600);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.2425 0.005 250);
@@ -75,6 +75,8 @@
 
 .dark {
   --rvns: rgb(20, 255, 236);
+  --success: var(--color-green-500);
+  --warning: var(--color-yellow-500);
 
   --background: oklch(0 0 0);
   --foreground: oklch(0.9675 0.0076 241.66);

@@ -91,9 +91,9 @@ export const zodSchemas = {
     return schema;
   },
 
-  date: (field?: string) =>
+  date: (field?: string, asField: boolean = false) =>
     z.coerce.date({
-      error: messages.invalidType(
+      error: messages[asField ? "required" : "invalidType"](
         `tanggal${field ? ` ${field.toLowerCase()}` : ""}`,
         "date",
       ),
