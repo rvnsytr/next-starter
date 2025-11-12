@@ -109,7 +109,7 @@ export function ExampleForm() {
       error: "At least one checkbox must be selected",
     }),
 
-    file: zodSchemas.file(fileType, {
+    files: zodSchemas.file(fileType, {
       // min: 1,
       // max: 5,
       // maxFileSize: toBytes(1),
@@ -136,7 +136,7 @@ export function ExampleForm() {
       switch: false,
       checkbox: ["firefox"],
 
-      file: [],
+      files: [],
     },
   });
 
@@ -504,7 +504,7 @@ export function ExampleForm() {
       />
 
       <Controller
-        name="file"
+        name="files"
         control={form.control}
         render={({ field, fieldState }) => (
           <FieldWrapper

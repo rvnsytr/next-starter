@@ -68,7 +68,7 @@ function AlertDialogHeader({
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn("`text-start flex flex-col items-start gap-2", className)}
+      className={cn("flex flex-col items-start gap-2 text-start", className)}
       {...props}
     />
   );

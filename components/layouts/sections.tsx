@@ -1,8 +1,6 @@
 import { cn } from "@/utils";
 import { LoaderIcon, PackageX } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
-import { Label } from "../ui/label";
 
 export function Tagline({ className }: { className?: string }) {
   return (
@@ -14,26 +12,6 @@ export function Tagline({ className }: { className?: string }) {
       {" under heavy caffeine influence."}
     </small>
   );
-}
-
-export function SheetDetails({
-  data,
-}: {
-  data: {
-    label: string;
-    content: ReactNode;
-    className?: string;
-    classNames?: { label?: string; content?: string };
-  }[];
-}) {
-  return data.map(({ label, content, className, classNames }, index) => (
-    <div key={index} className={cn("space-y-1", className)}>
-      <Label className={classNames?.label}>{label}</Label>
-      <div className={cn("text-muted-foreground text-sm", classNames?.content)}>
-        {content ?? "-"}
-      </div>
-    </div>
-  ));
 }
 
 export function LoadingFallback({ className }: { className?: string }) {

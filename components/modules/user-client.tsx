@@ -59,7 +59,6 @@ import {
   ColumnHeaderCheckbox,
 } from "../data-table/column";
 import { DataTable, OtherDataTableProps } from "../data-table/data-table";
-import { SheetDetails } from "../layouts/sections";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -75,6 +74,7 @@ import { Button, buttonVariants } from "../ui/button";
 import { ResetButton } from "../ui/buttons";
 import { CardContent, CardFooter } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
+import { DetailListProps } from "../ui/detail-list";
 import {
   Dialog,
   DialogClose,
@@ -313,7 +313,7 @@ export function UserDetailSheet({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const details = [
+  const details: DetailListProps["data"] = [
     { label: "Alamat email", content: data.email },
     { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
     { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
@@ -345,7 +345,7 @@ export function UserDetailSheet({
             {data.emailVerified && <UserVerifiedBadge />}
           </div>
 
-          <SheetDetails data={details} />
+          <DetailListProps data={details} />
 
           {!isCurrentUser && (
             <>
