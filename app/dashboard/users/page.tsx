@@ -34,11 +34,7 @@ export default async function Page() {
 
       <Separator />
 
-      <UserDataTable
-        data={data.users}
-        currentUserId={session.user.id}
-        placeholder="Cari Pengguna..."
-      />
+      <UserDataTable data={data.users} currentUserId={session.user.id} />
     </DashboardMain>
   );
 }

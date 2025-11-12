@@ -243,6 +243,7 @@ const getUserColumn = (currentUserId: string) => [
 export function UserDataTable({
   data: fallbackData,
   currentUserId,
+  searchPlaceholder = "Cari Pengguna...",
   ...props
 }: OtherDataTableProps<UserWithRole> & {
   data: UserWithRole[];
@@ -255,6 +256,7 @@ export function UserDataTable({
     <DataTable
       data={data}
       columns={columns}
+      searchPlaceholder={searchPlaceholder}
       enableRowSelection={({ original }) => original.id !== currentUserId}
       rowSelectionFn={(data, table) => {
         const filteredData = data.map(({ original }) => original);
@@ -1604,20 +1606,20 @@ function AdminChangeUserRoleForm({
   });
 
   const formHandler = (formData: FormSchema) => {
-    const newRole = formData.role;
-    if (newRole === data.role)
+    const { role } = formData;
+    if (role === data.role)
       return toast.info(messages.noChanges(`role ${data.name}`));
 
     setIsLoading(true);
     authClient.admin.setRole(
-      { userId: data.id, role: newRole },
+      { userId: data.id, role },
       {
         onSuccess: () => {
           setIsLoading(false);
           setIsOpen(false);
           mutate("users");
           toast.success(
-            `Role ${data.name} berhasil diperbarui menjadi ${newRole}.`,
+            `Role ${data.name} berhasil diperbarui menjadi ${role}.`,
           );
         },
         onError: ({ error }) => {
@@ -1647,12 +1649,18 @@ function AdminChangeUserRoleForm({
               required
             >
               {allRoles.map((value) => {
-                const { icon: Icon, ...meta } = rolesMeta[value];
+                const {
+                  displayName,
+                  desc,
+                  color,
+                  icon: Icon,
+                } = rolesMeta[value];
+
                 return (
                   <FieldLabel
                     key={value}
                     htmlFor={value}
-                    color={meta.color}
+                    color={color}
                     className="border-(--field-color)/40"
                   >
                     <Field
@@ -1661,10 +1669,10 @@ function AdminChangeUserRoleForm({
                     >
                       <FieldContent>
                         <FieldTitle className="text-(--field-color)">
-                          <Icon /> {meta.displayName}
+                          <Icon /> {displayName}
                         </FieldTitle>
                         <FieldDescription className="text-(--field-color)/80">
-                          {meta.desc}
+                          {desc}
                         </FieldDescription>
                       </FieldContent>
                       <RadioGroupItem

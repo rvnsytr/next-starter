@@ -74,10 +74,15 @@ type DataTableProps<TData> = {
 };
 
 export type TableProps<TData> = { table: DataTableType<TData> };
-export type ToolBoxProps = { withRefresh?: boolean; placeholder?: string };
+export type ToolBoxProps = {
+  searchPlaceholder?: string;
+  withRefresh?: boolean;
+};
 
 export type OtherDataTableProps<TData> = ToolBoxProps & {
   caption?: string;
+  placeholder?: string;
+
   className?: string;
   classNames?: {
     toolbox?: string;
@@ -86,6 +91,7 @@ export type OtherDataTableProps<TData> = ToolBoxProps & {
     table?: string;
     footer?: string;
   };
+
   initialState?: InitialTableState;
   rowSelectionFn?: (
     data: Row<TData>[],
@@ -100,6 +106,7 @@ export function DataTable<TData>({
   data,
   columns,
   caption,
+  placeholder,
   className,
   classNames,
   initialState,
@@ -264,7 +271,7 @@ export function DataTable<TData>({
                 colSpan={columns.length}
                 className="text-muted-foreground py-4 text-center whitespace-pre-line"
               >
-                {messages.empty}
+                {placeholder ?? messages.empty}
               </TableCell>
             </TableRow>
           )}
@@ -309,7 +316,7 @@ export function DataTable<TData>({
 
 function ToolBox<TData>({
   table,
-  placeholder,
+  searchPlaceholder,
   withRefresh = false,
   isMobile = false,
   className,
@@ -345,7 +352,7 @@ function ToolBox<TData>({
         <Reset table={table} />
         <Search
           table={table}
-          placeholder={placeholder}
+          placeholder={searchPlaceholder}
           className="col-span-2"
         />
       </div>
@@ -445,8 +452,7 @@ function Search<TData>({
   table,
   placeholder = "Cari...",
   className,
-}: TableProps<TData> &
-  Pick<ToolBoxProps, "placeholder"> & { className?: string }) {
+}: TableProps<TData> & { placeholder?: string; className?: string }) {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {

@@ -68,15 +68,14 @@ export const zodSchemas = {
     const maxFileSize = options?.maxFileSize ?? size.bytes;
     const maxFileSizeInMB = toMegabytes(maxFileSize).toFixed(2);
 
-    let schema = z.array(
-      z
-        .file()
-        .mime(mimeTypes, { error: `Tipe ${displayName} tidak valid.` })
-        .min(1)
-        .max(maxFileSize, {
-          error: fileTooLarge(displayName, maxFileSizeInMB),
-        }),
-    );
+    let schema = z
+      .file()
+      .mime(mimeTypes, { error: `Tipe ${displayName} tidak valid.` })
+      .min(1)
+      .max(maxFileSize, {
+        error: fileTooLarge(displayName, maxFileSizeInMB),
+      })
+      .array();
 
     if (min) {
       const message = fileToFew(displayName, min);
