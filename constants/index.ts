@@ -33,5 +33,4 @@ export const languageMeta: Record<
 };
 
 export * from "./app";
-export * from "./components";
 export * from "./file";
