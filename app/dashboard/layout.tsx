@@ -1,4 +1,7 @@
-import { SidebarApp } from "@/components/layouts/sidebar-app";
+import { Tagline } from "@/components/layouts/sections";
+import { SidebarMain } from "@/components/layouts/sidebar-main";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { LayoutProvider } from "@/providers/layout";
 import { getSession } from "@/server/action";
 import { getTitle } from "@/utils";
 import { Metadata } from "next";
@@ -14,7 +17,17 @@ export default async function DashboardLayout({
   if (!session) notFound();
   return (
     <SWRConfig value={{ fallback: { session } }}>
-      <SidebarApp data={session.user}>{children}</SidebarApp>
+      <SidebarProvider>
+        <SidebarMain data={session.user} />
+
+        <SidebarInset>
+          <LayoutProvider>{children}</LayoutProvider>
+
+          <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
+            <Tagline className="container" />
+          </footer>
+        </SidebarInset>
+      </SidebarProvider>
     </SWRConfig>
   );
 }

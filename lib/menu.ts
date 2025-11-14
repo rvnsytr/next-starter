@@ -1,5 +1,4 @@
 import { IconOrText } from "@/components/ui/icons";
-import { SidebarMenuSubButtonProps } from "@/constants";
 import {
   CircleHelp,
   ExternalLink,
@@ -8,13 +7,19 @@ import {
   UsersRound,
 } from "lucide-react";
 import { Route } from "next";
+import { LinkProps } from "next/link";
 
 type MenuContent = {
   route: Route;
   icon?: IconOrText;
   disabled?: boolean;
+
   // if href is not defined, the Link href prop will be `/{route}/#${toKebabCase(label)}`
-  subMenu?: (Omit<SidebarMenuSubButtonProps, "asChild"> & { label: string })[];
+  subMenu?: {
+    label: string;
+    href?: LinkProps["href"];
+    variant?: "default" | "destructive";
+  }[];
 };
 
 export type Menu = { section: string; content: MenuContent[] };

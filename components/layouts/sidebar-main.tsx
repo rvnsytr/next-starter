@@ -1,10 +1,8 @@
 "use client";
 
-import { sidebarMenuButtonVariants } from "@/constants";
 import { dashboardfooterMenu } from "@/lib/menu";
 import { Role } from "@/lib/permission";
 import { routesMeta } from "@/lib/routes";
-import { LayoutProvider } from "@/providers/layout";
 import { cn, getActiveRoute, getMenuByRole, toKebabCase } from "@/utils";
 import { UserWithRole } from "better-auth/plugins";
 import { ChevronRight } from "lucide-react";
@@ -34,47 +32,20 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
+  sidebarMenuButtonVariants,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarProvider,
   SidebarRail,
   SidebarSeparator,
   useSidebar,
 } from "../ui/sidebar";
-import { Tagline } from "./sections";
 
-type SidebarData = {
-  data: Pick<
-    UserWithRole,
-    "name" | "email" | "image" | "role" | "emailVerified"
-  >;
-};
-
-export function SidebarApp({
-  data,
-  children,
-}: SidebarData & { children: React.ReactNode }) {
-  return (
-    <SidebarProvider>
-      <SidebarMain data={data} />
-
-      <SidebarInset>
-        <LayoutProvider>{children}</LayoutProvider>
-        <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
-          <Tagline className="container" />
-        </footer>
-      </SidebarInset>
-    </SidebarProvider>
-  );
-}
-
-function SidebarMain({ data }: SidebarData) {
+export function SidebarMain({ data }: { data: UserWithRole }) {
   const pathname = usePathname();
   const { isMobile, toggleSidebar } = useSidebar();
 
@@ -171,32 +142,27 @@ function SidebarMain({ data }: SidebarData) {
 
                           <CollapsibleContent animate>
                             <SidebarMenuSub>
-                              {subMenu.map(
-                                ({ label, href, className, ...props }, idx) => (
-                                  <SidebarMenuSubItem key={idx}>
-                                    <SidebarMenuSubButton
-                                      className={cn(
-                                        "flex justify-between",
-                                        className,
-                                      )}
-                                      asChild
-                                      {...props}
+                              {subMenu.map(({ label, href, variant }, idx) => (
+                                <SidebarMenuSubItem key={idx}>
+                                  <SidebarMenuSubButton
+                                    variant={variant}
+                                    className="flex justify-between"
+                                    asChild
+                                  >
+                                    <Link
+                                      href={
+                                        href ??
+                                        `${route}/#${toKebabCase(label)}`
+                                      }
                                     >
-                                      <Link
-                                        href={
-                                          href ??
-                                          `${route}/#${toKebabCase(label)}`
-                                        }
-                                      >
-                                        <span className="line-clamp-1">
-                                          {label}
-                                        </span>
-                                        <LinkSpinner />
-                                      </Link>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                ),
-                              )}
+                                      <span className="line-clamp-1">
+                                        {label}
+                                      </span>
+                                      <LinkSpinner />
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
                             </SidebarMenuSub>
                           </CollapsibleContent>
                         </>
