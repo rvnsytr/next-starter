@@ -1,6 +1,6 @@
 "use client";
 
-import { actions } from "@/lib/content";
+import { actions } from "@/constants";
 import { useLayout } from "@/providers/layout";
 import { cn, delay } from "@/utils";
 import {

@@ -1,7 +1,7 @@
 "use client";
 
+import { actions, messages } from "@/constants";
 import { useIsMobile } from "@/hooks";
-import { actions, messages } from "@/lib/content";
 import { cn, formatNumber } from "@/utils";
 import {
   ColumnDef,

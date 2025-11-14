@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { id } from "zod/locales";
-import { allGenders, fileMeta, FileType } from "../constants";
+import { allGenders, fileMeta, FileType, messages } from "../constants";
 import { toMegabytes } from "../utils";
-import { messages } from "./content";
 import { allRoles } from "./permission";
 
 z.config(id());

@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { actions, messages } from "@/constants";
 import { useIsMobile } from "@/hooks";
-import { actions, messages } from "@/lib/content";
 import {
   ColumnDataType,
   ColumnOption,
