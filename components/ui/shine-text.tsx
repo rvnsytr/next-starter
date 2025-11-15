@@ -29,6 +29,8 @@ export type ShineTextProps = {
   color?: string;
   /** Shimmer gradient color */
   shineColor?: string;
+
+  children?: React.ReactNode;
 };
 
 export function ShineText({
@@ -44,6 +46,7 @@ export function ShineText({
   spread = 2,
   color,
   shineColor,
+  children,
 }: ShineTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once, margin: inViewMargin });
@@ -87,7 +90,7 @@ export function ShineText({
         opacity: { duration: 0.3, delay },
       }}
     >
-      {text}
+      {children ?? text}
     </motion.span>
   );
 }

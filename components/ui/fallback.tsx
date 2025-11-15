@@ -1,18 +1,5 @@
 import { cn } from "@/utils";
 import { LoaderIcon, PackageX } from "lucide-react";
-import Link from "next/link";
-
-export function Tagline({ className }: { className?: string }) {
-  return (
-    <small className={cn("text-muted-foreground", className)}>
-      {"Built by "}
-      <Link href="https://github.com/RvnSytR" className="link-underline">
-        RvnS
-      </Link>
-      {" under heavy caffeine influence."}
-    </small>
-  );
-}
 
 export function LoadingFallback({ className }: { className?: string }) {
   return (

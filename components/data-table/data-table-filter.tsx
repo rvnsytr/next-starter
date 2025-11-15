@@ -20,17 +20,19 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { actions, messages } from "@/constants";
+import { messages } from "@/constants";
 import { useIsMobile } from "@/hooks";
 import {
   ColumnDataType,
   ColumnOption,
   ElementType,
   FilterModel,
+  cn,
   createNumberRange,
   dateFilterDetails,
   determineNewOperator,
   filterTypeOperatorDetails,
+  formatDate,
   getColumn,
   getColumnMeta,
   isColumnOptionArray,
@@ -38,9 +40,10 @@ import {
   multiOptionFilterDetails,
   numberFilterDetails,
   optionFilterDetails,
+  take,
   textFilterDetails,
-} from "@/lib/filters";
-import { cn, formatDate, take, uniq } from "@/utils";
+  uniq,
+} from "@/utils";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
 import { ArrowRight, Ellipsis, ListFilter, X } from "lucide-react";
@@ -175,7 +178,7 @@ export function FilterActions<TData>({
         table.setGlobalFilter("");
       }}
     >
-      <X /> {actions.clear}
+      <X /> {messages.actions.clear}
     </Button>
   );
 }

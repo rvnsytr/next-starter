@@ -1,4 +1,4 @@
-import { Tagline } from "@/components/layouts/sections";
+import { FooterNote } from "@/components/layouts/footer";
 import { SidebarMain } from "@/components/layouts/sidebar-main";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { LayoutProvider } from "@/providers/layout";
@@ -24,7 +24,7 @@ export default async function DashboardLayout({
           <LayoutProvider>{children}</LayoutProvider>
 
           <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
-            <Tagline className="container" />
+            <FooterNote className="container" />
           </footer>
         </SidebarInset>
       </SidebarProvider>

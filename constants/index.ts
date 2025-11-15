@@ -1,13 +1,5 @@
 import { LucideIcon, Mars, Venus } from "lucide-react";
 
-export type DataType =
-  | "string"
-  | "boolean"
-  | "number"
-  | "date"
-  | "array"
-  | "object";
-
 export const allGenders = ["m", "f"] as const;
 export type Gender = (typeof allGenders)[number];
 export const genderMeta: Record<
@@ -34,4 +26,5 @@ export const languageMeta: Record<
 
 export * from "./app";
 export * from "./file";
+export * from "./menu";
 export * from "./messages";

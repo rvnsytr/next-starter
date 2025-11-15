@@ -1,6 +1,6 @@
 "use client";
 
-import { actions } from "@/constants";
+import { messages } from "@/constants";
 import { useLayout } from "@/providers/layout";
 import { cn, delay } from "@/utils";
 import {
@@ -186,7 +186,7 @@ export function CopyButton({
 }
 
 export function RefreshButton({
-  text = actions.refresh,
+  text = messages.actions.refresh,
   disabled,
   onClick,
   ...props

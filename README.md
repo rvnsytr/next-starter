@@ -83,8 +83,8 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
 
 ## TODO
 
-- Tabulator Column
 - Server Side Data Table
 - Dashboard Menu Search (ctrl + k), pinning, and last used
 - More Input Number Fields
 - Event Calendar
+- safeMutate ?

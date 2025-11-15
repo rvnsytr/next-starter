@@ -1,4 +1,4 @@
-import { actions } from "@/constants";
+import { messages } from "@/constants";
 import { cn } from "@/utils";
 import { RotateCcw } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export function ResetButton({
 }: ButtonPropsWithoutChildren) {
   return (
     <Button type={type} size={size} variant={variant} {...props}>
-      <RotateCcw /> {actions.reset}
+      <RotateCcw /> {messages.actions.reset}
     </Button>
   );
 }

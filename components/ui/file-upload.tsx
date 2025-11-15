@@ -1,4 +1,4 @@
-import { actions, fileMeta, FileType } from "@/constants";
+import { fileMeta, FileType, messages } from "@/constants";
 import { zodSchemas } from "@/lib/zod";
 import { cn, toMegabytes } from "@/utils";
 import { ArrowUpRight, Dot, X } from "lucide-react";
@@ -181,7 +181,7 @@ export function FileUpload({
             variant="outline_destructive"
             onClick={resetFiles}
           >
-            <X /> {actions.clear}
+            <X /> {messages.actions.clear}
           </Button>
         </div>
       )}

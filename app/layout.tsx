@@ -1,7 +1,7 @@
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { Toaster } from "@/components/ui/sonner";
 import { appMeta } from "@/constants";
-import "@/styles/global.css";
+import "@/styles/globals.css";
 import { cn } from "@/utils";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";

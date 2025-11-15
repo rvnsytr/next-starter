@@ -1,6 +1,6 @@
 "use client";
 
-import { dashboardfooterMenu } from "@/lib/menu";
+import { dashboardfooterMenu } from "@/constants";
 import { Role } from "@/lib/permission";
 import { routesMeta } from "@/lib/routes";
 import { cn, getActiveRoute, getMenuByRole, toKebabCase } from "@/utils";

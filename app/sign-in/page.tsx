@@ -1,4 +1,4 @@
-import { Tagline } from "@/components/layouts/sections";
+import { FooterNote } from "@/components/layouts/footer";
 import {
   SignInForm,
   SignOnGithubButton,
@@ -62,7 +62,7 @@ export default function Page() {
         </CardContent>
 
         <CardFooter className="justify-center text-center">
-          <Tagline />
+          <FooterNote />
         </CardFooter>
       </Card>
     </main>

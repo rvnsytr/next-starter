@@ -1,6 +1,6 @@
 "use client";
 
-import { actions, messages } from "@/constants";
+import { messages } from "@/constants";
 import { useIsMobile } from "@/hooks";
 import { cn, formatNumber } from "@/utils";
 import {
@@ -370,7 +370,7 @@ function View<TData>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline">
-          <Columns3 /> {actions.view}
+          <Columns3 /> {messages.actions.view}
         </Button>
       </PopoverTrigger>
 
@@ -443,7 +443,7 @@ function Reset<TData>({
         table.resetSorting();
       }}
     >
-      <RotateCcw /> {actions.reset}
+      <RotateCcw /> {messages.actions.reset}
     </Button>
   );
 }

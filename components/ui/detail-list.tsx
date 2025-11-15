@@ -10,7 +10,7 @@ export type DetailListProps = {
   }[];
 };
 
-export function DetailListProps({ data }: DetailListProps) {
+export function DetailList({ data }: DetailListProps) {
   return data.map(({ label, content, className, classNames }, index) => (
     <div key={index} className={cn("space-y-1", className)}>
       <Label className={classNames?.label}>{label}</Label>

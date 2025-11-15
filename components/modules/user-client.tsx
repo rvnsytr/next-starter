@@ -1,8 +1,7 @@
 "use client";
 
-import { actions, appMeta, fileMeta, messages } from "@/constants";
+import { appMeta, fileMeta, messages } from "@/constants";
 import { authClient } from "@/lib/auth-client";
-import { filterFn } from "@/lib/filters";
 import { allRoles, Role, rolesMeta } from "@/lib/permission";
 import { zodSchemas, zodUser } from "@/lib/zod";
 import {
@@ -12,7 +11,7 @@ import {
   revokeUserSessions,
 } from "@/server/action";
 import { getFilePublicUrl, uploadFiles } from "@/server/s3";
-import { formatDate } from "@/utils";
+import { filterFn, formatDate } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Session } from "better-auth";
@@ -73,7 +72,7 @@ import { Button, buttonVariants } from "../ui/button";
 import { ResetButton } from "../ui/buttons";
 import { CardContent, CardFooter } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { DetailListProps } from "../ui/detail-list";
+import { DetailList, DetailListProps } from "../ui/detail-list";
 import {
   Dialog,
   DialogClose,
@@ -264,7 +263,7 @@ export function UserDataTable({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <Settings2 /> {actions.action}
+                <Settings2 /> {messages.actions.action}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="[&_button]:justify-start">
@@ -344,7 +343,7 @@ export function UserDetailSheet({
             {data.emailVerified && <UserVerifiedBadge />}
           </div>
 
-          <DetailListProps data={details} />
+          <DetailList data={details} />
 
           {!isCurrentUser && (
             <>
@@ -833,7 +832,8 @@ export function ProfilePicture({
             disabled={isChange || isRemoved}
             onClick={() => inputAvatarRef.current?.click()}
           >
-            <LoadingSpinner loading={isChange} /> {actions.upload} foto profil
+            <LoadingSpinner loading={isChange} /> {messages.actions.upload} foto
+            profil
           </Button>
 
           <AlertDialog>
@@ -844,7 +844,7 @@ export function ProfilePicture({
                 variant="outline_destructive"
                 disabled={!image || isChange || isRemoved}
               >
-                <LoadingSpinner loading={isRemoved} /> {actions.remove}
+                <LoadingSpinner loading={isRemoved} /> {messages.actions.remove}
               </Button>
             </AlertDialogTrigger>
 
@@ -858,12 +858,12 @@ export function ProfilePicture({
               </AlertDialogHeader>
 
               <AlertDialogFooter>
-                <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+                <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
                 <AlertDialogAction
                   className={buttonVariants({ variant: "destructive" })}
                   onClick={() => deleteHandler()}
                 >
-                  {actions.confirm}
+                  {messages.actions.confirm}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -969,7 +969,7 @@ export function PersonalInformation({ ...props }: UserWithRole) {
       <CardFooter className="flex-col items-stretch border-t md:flex-row md:items-center">
         <Button type="submit" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
-          {actions.update}
+          {messages.actions.update}
         </Button>
 
         <ResetButton onClick={() => form.reset()} />
@@ -1125,7 +1125,7 @@ export function ChangePasswordForm() {
       <CardFooter className="flex-col items-stretch border-t md:flex-row md:items-center">
         <Button type="submit" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
-          {actions.update}
+          {messages.actions.update}
         </Button>
 
         <ResetButton onClick={() => form.reset()} />
@@ -1221,9 +1221,9 @@ export function RevokeSessionButton({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+              <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
               <AlertDialogAction onClick={clickHandler}>
-                {actions.confirm}
+                {messages.actions.confirm}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1273,9 +1273,9 @@ export function RevokeOtherSessionsButton() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
           <AlertDialogAction onClick={clickHandler}>
-            {actions.confirm}
+            {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1332,12 +1332,12 @@ export function DeleteMyAccountButton({ image }: Pick<UserWithRole, "image">) {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive" })}
             onClick={clickHandler}
           >
-            {actions.confirm}
+            {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1572,13 +1572,13 @@ export function AdminCreateUserDialog() {
           <Separator />
 
           <DialogFooter>
-            <DialogClose>{actions.cancel}</DialogClose>
+            <DialogClose>{messages.actions.cancel}</DialogClose>
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner
                 loading={isLoading}
                 icon={{ base: <UserRoundPlus /> }}
               />
-              {actions.add}
+              {messages.actions.add}
             </Button>
           </DialogFooter>
         </form>
@@ -1692,7 +1692,7 @@ function AdminChangeUserRoleForm({
 
       <Button type="submit" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
-        {actions.update}
+        {messages.actions.update}
       </Button>
     </form>
   );
@@ -1742,13 +1742,13 @@ function AdminRevokeUserSessionsDialog({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
 
           <AlertDialogAction
             className={buttonVariants({ variant: "warning" })}
             onClick={clickHandler}
           >
-            {actions.confirm}
+            {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1807,7 +1807,7 @@ function AdminRemoveUserDialog({
       <DialogTrigger asChild>
         <Button variant="outline_destructive" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-          {`${actions.remove} ${data.name}`}
+          {`${messages.actions.remove} ${data.name}`}
         </Button>
       </DialogTrigger>
 
@@ -1851,14 +1851,14 @@ function AdminRemoveUserDialog({
           />
 
           <DialogFooter>
-            <DialogClose>{actions.cancel}</DialogClose>
+            <DialogClose>{messages.actions.cancel}</DialogClose>
             <Button
               type="submit"
               variant="destructive"
               disabled={input !== data.name || isLoading}
             >
               <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-              {actions.confirm}
+              {messages.actions.confirm}
             </Button>
           </DialogFooter>
         </form>
@@ -1914,12 +1914,12 @@ function AdminActionRevokeUserSessionsDialog({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>{actions.cancel}</AlertDialogCancel>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive" })}
             onClick={clickHandler}
           >
-            {actions.confirm}
+            {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1979,7 +1979,7 @@ function AdminActionRemoveUsersDialog({
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-          {actions.remove}
+          {messages.actions.remove}
         </Button>
       </DialogTrigger>
 
@@ -2023,14 +2023,14 @@ function AdminActionRemoveUsersDialog({
           />
 
           <DialogFooter>
-            <DialogClose>{actions.cancel}</DialogClose>
+            <DialogClose>{messages.actions.cancel}</DialogClose>
             <Button
               type="submit"
               variant="destructive"
               disabled={input !== inputValue || isLoading}
             >
               <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-              {actions.confirm}
+              {messages.actions.confirm}
             </Button>
           </DialogFooter>
         </form>

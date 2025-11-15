@@ -1,6 +1,5 @@
 import { Route } from "next";
-import { appMeta } from "../constants";
-import { dashboardMenu, Menu } from "../lib/menu";
+import { appMeta, dashboardMenu, Menu } from "../constants";
 import { Role } from "../lib/permission";
 import { RouteRole, routesMeta } from "../lib/routes";
 

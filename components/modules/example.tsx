@@ -1,6 +1,6 @@
 "use client";
 
-import { actions, FileType } from "@/constants";
+import { FileType, messages } from "@/constants";
 import { zodSchemas } from "@/lib/zod";
 import { formatDate, formatNumber, formatPhone, sanitizeNumber } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -525,7 +525,7 @@ export function ExampleForm() {
       <div className="flex gap-2">
         <Button type="submit">
           {/* <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} /> */}
-          <Save /> {actions.save}
+          <Save /> {messages.actions.save}
         </Button>
         <ResetButton onClick={() => form.reset()} />
       </div>

@@ -1,29 +1,27 @@
-import { DataType } from "../constants";
 import { capitalize, formatDate, formatDateDistanceToNow } from "../utils";
 
-export const actions = {
-  // created: "dibuat",
-  // removed: "dihapus",
-  // updated: "diperbarui",
-  // uploaded: "diunggah",
-
-  action: "Tindakan",
-  add: "Tambah",
-  back: "Kembali",
-  cancel: "Batal",
-  clear: "Bersihkan",
-  confirm: "Konfirmasi",
-  filter: "Filter",
-  refresh: "Muat Ulang",
-  remove: "Hapus",
-  reset: "Atur Ulang",
-  save: "Simpan",
-  update: "Simpan Perubahan",
-  upload: "Unggah",
-  view: "Lihat",
-};
-
 export const messages = {
+  actions: {
+    // created: "dibuat",
+    // removed: "dihapus",
+    // updated: "diperbarui",
+    // uploaded: "diunggah",
+
+    action: "Tindakan",
+    add: "Tambah",
+    back: "Kembali",
+    cancel: "Batal",
+    clear: "Bersihkan",
+    confirm: "Konfirmasi",
+    refresh: "Muat Ulang",
+    remove: "Hapus",
+    reset: "Atur Ulang",
+    save: "Simpan",
+    update: "Simpan Perubahan",
+    upload: "Unggah",
+    view: "Lihat",
+  },
+
   empty: "Tidak ada hasil yang ditemukan.",
   loading: "Mohon tunggu sebentar...",
 
@@ -44,11 +42,11 @@ export const messages = {
 
   // -- Validation
   invalid: (field: string) => `Masukkan ${field.toLowerCase()} yang valid.`,
-  invalidType: (field: string, fieldType: DataType) =>
+  invalidType: (field: string, fieldType: string) =>
     `${capitalize(field, "first")} harus berupa ${fieldType} yang valid.`,
 
   required: (field: string) => `${capitalize(field, "first")} wajib diisi.`,
-  requiredInvalidType: (field: string, fieldType: DataType) =>
+  requiredInvalidType: (field: string, fieldType: string) =>
     `${capitalize(field, "first")} wajib diisi dan harus berupa ${fieldType} yang valid.`,
 
   stringLength: (field: string, min: number) =>
