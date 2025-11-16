@@ -73,9 +73,11 @@ export function SidebarMain({ data }: { data: UserWithRole }) {
                   }}
                 />
 
-                <div className="grid break-all **:line-clamp-1">
+                <div className="grid break-all">
                   <div className="flex items-center gap-x-2">
-                    <span className="text-sm font-semibold">{data.name}</span>
+                    <span className="line-clamp-1 text-sm font-semibold">
+                      {data.name}
+                    </span>
                     {data.emailVerified && (
                       <UserVerifiedBadge
                         classNames={{ icon: "size-3.5" }}
@@ -84,7 +86,7 @@ export function SidebarMain({ data }: { data: UserWithRole }) {
                     )}
                   </div>
 
-                  <span className="text-xs">{data.email}</span>
+                  <span className="line-clamp-1 text-xs">{data.email}</span>
                 </div>
               </Link>
             </SidebarMenuButton>
