@@ -76,16 +76,10 @@ import {
 import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
-import { allRoles, Role, rolesMeta } from "@/core/permission";
+import { allRoles, defaultRole, Role, rolesMeta } from "@/core/permission";
 import { getFilePublicUrl, uploadFiles } from "@/core/s3";
 import { filterFn, formatDate } from "@/core/utils";
-import { zodSchemas, zodUser } from "@/core/zod";
-import {
-  deleteProfilePicture,
-  deleteUsers,
-  getUserList,
-  revokeUserSessions,
-} from "@/modules/auth";
+import { zodSchemas } from "@/core/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Session } from "better-auth";
@@ -125,7 +119,14 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { UAParser } from "ua-parser-js";
 import { z } from "zod";
+import {
+  deleteProfilePicture,
+  deleteUsers,
+  getUserList,
+  revokeUserSessions,
+} from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./component";
+import { userSchema } from "./zod.schemas";
 
 const signInRoute = "/sign-in";
 const dashboardRoute = "/dashboard";
@@ -217,11 +218,9 @@ export function SignInForm() {
   const wasLastUsed = authClient.isLastUsedLoginMethod("email");
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser.pick({
-    email: true,
-    password: true,
-    rememberMe: true,
-  });
+  const formSchema = userSchema
+    .pick({ email: true, password: true })
+    .extend({ rememberMe: z.boolean() });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -332,13 +331,13 @@ export function SignUpForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser
-    .pick({
-      name: true,
-      email: true,
-      newPassword: true,
-      confirmPassword: true,
-      agreement: true,
+  const formSchema = userSchema
+    .pick({ name: true, email: true, newPassword: true, confirmPassword: true })
+    .extend({
+      agreement: z.boolean().refine((v) => v, {
+        error:
+          "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
+      }),
     })
     .refine((sc) => sc.newPassword === sc.confirmPassword, {
       message: sharedText.passwordNotMatch,
@@ -352,7 +351,6 @@ export function SignUpForm() {
       email: "",
       newPassword: "",
       confirmPassword: "",
-      agreement: false,
     },
   });
 
@@ -903,7 +901,7 @@ export function PersonalInformation({ ...props }: UserWithRole) {
   const { name, email } = props;
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser.pick({ name: true, email: true });
+  const formSchema = userSchema.pick({ name: true, email: true });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -1005,13 +1003,14 @@ export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser
+  const formSchema = userSchema
     .pick({
       currentPassword: true,
       newPassword: true,
       confirmPassword: true,
       revokeOtherSessions: true,
     })
+    .extend({ revokeOtherSessions: z.boolean() })
     .refine((sc) => sc.newPassword === sc.confirmPassword, {
       message: sharedText.passwordNotMatch,
       path: ["confirmPassword"],
@@ -1375,7 +1374,7 @@ export function AdminCreateUserDialog() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser
+  const formSchema = userSchema
     .pick({
       name: true,
       email: true,
@@ -1399,10 +1398,12 @@ export function AdminCreateUserDialog() {
     },
   });
 
-  const formHandler = ({ newPassword, ...rest }: FormSchema) => {
+  const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
     setIsLoading(true);
+
+    const role = newRole ?? defaultRole;
     authClient.admin.createUser(
-      { password: newPassword, ...rest },
+      { password: newPassword, role, ...rest },
       {
         onSuccess: () => {
           setIsLoading(false);
@@ -1619,15 +1620,15 @@ function AdminChangeUserRoleForm({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = zodUser.pick({ role: true });
+  const formSchema = userSchema.pick({ role: true });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { role: data.role === "user" ? "admin" : "user" },
   });
 
-  const formHandler = (formData: FormSchema) => {
-    const { role } = formData;
+  const formHandler = ({ role: newRole }: FormSchema) => {
+    const role = newRole ?? defaultRole;
     if (role === data.role)
       return toast.info(messages.noChanges(`role ${data.name}`));
 

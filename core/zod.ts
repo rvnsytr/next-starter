@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { id } from "zod/locales";
 import { allGenders, fileMeta, FileType, messages } from "./constants";
-import { allRoles } from "./permission";
 import { toMegabytes } from "./utils";
 
 z.config(id());
@@ -159,21 +158,3 @@ export const zodSchemas = {
   updatedAt: z.coerce.date({ error: "Field 'updatedAt' tidak valid." }),
   createdAt: z.coerce.date({ error: "Field 'createdAt' tidak valid." }),
 };
-
-export const zodUser = z.object({
-  role: z.enum(allRoles),
-  email: zodSchemas.email,
-  name: zodSchemas.string("Nama", { min: 1 }),
-
-  password: zodSchemas.string("Kata sandi", { min: 1 }),
-  newPassword: zodSchemas.password,
-  confirmPassword: zodSchemas.string("Konfirmasi kata sandi", { min: 1 }),
-  currentPassword: zodSchemas.string("Kata sandi saat ini", { min: 1 }),
-
-  rememberMe: z.boolean(),
-  revokeOtherSessions: z.boolean(),
-  agreement: z.boolean().refine((v) => v, {
-    error:
-      "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
-  }),
-});

@@ -94,8 +94,8 @@ next-starter/
       constants.ts            -- Module-specific constants
       components.tsx          -- Server components
       components.client.tsx   -- Client components
-      db.schema.ts            -- Drizzle schema for this module
-      zod.schema.ts           -- Zod validation for this module
+      db.schemas.ts            -- Drizzle schema for this module
+      zod.schemas.ts           -- Zod validation for this module
       index.ts                -- Re-export everything from this module. So it can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
 
   core/                       -- Shared, stable, "do-not-edit" code
@@ -105,7 +105,7 @@ next-starter/
     constants/
     db/
       index.ts
-      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schema.ts`.
+      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schemas.ts`.
     hooks/
     providers/
     utils/
@@ -139,6 +139,8 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
 
 ## TODO
 
+- Date Picker Input
+- Drizzle Studio
 - Server Side Data Table
 - Dashboard Menu Search (ctrl + k) and Pinning
 - More Input Number Fields
