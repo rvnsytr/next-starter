@@ -1,8 +1,8 @@
 import { Language } from ".";
 
 export const appMeta = {
-  name: "Nama Proyek",
-  description: "Deskripsi Proyek",
+  name: "Next Starter",
+  description: "App description...",
   keywords: ["next starter"],
 
   // logo: {

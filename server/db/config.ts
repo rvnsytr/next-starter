@@ -1,4 +1,9 @@
-import * as schema from "@/server/db/schema";
 import { drizzle } from "drizzle-orm/node-postgres";
 
-export const db = drizzle(process.env.DATABASE_URL!, { schema });
+import * as auth from "@/server/db/schema";
+
+export const db = drizzle(process.env.DATABASE_URL!, {
+  schema: {
+    ...auth,
+  },
+});

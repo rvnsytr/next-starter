@@ -162,8 +162,8 @@ export const zodSchemas = {
 
 export const zodApiResponse = z.object({
   code: z.number(),
-  message: z.string(),
   success: z.boolean(),
+  message: z.string(),
 });
 
 export const zodUser = z.object({
