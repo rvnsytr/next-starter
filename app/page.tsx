@@ -1,12 +1,22 @@
-import { ExampleForm, ExampleTypography } from "@/components/modules/example";
-import { Button } from "@/components/ui/button";
-import { LinkSpinner, ThemeButton } from "@/components/ui/buttons-client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, BarChart, PieChart } from "@/components/ui/charts";
-import { R } from "@/components/ui/motion";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/utils";
+import { Button } from "@/core/components/ui/button";
+import { LinkSpinner, ThemeButton } from "@/core/components/ui/buttons.client";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/core/components/ui/card";
+import { AreaChart, BarChart, PieChart } from "@/core/components/ui/charts";
+import { R } from "@/core/components/ui/motion";
+import { ScrollArea, ScrollBar } from "@/core/components/ui/scroll-area";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/core/components/ui/tabs";
+import { cn } from "@/core/utils";
+import { ExampleForm, ExampleTypography } from "@/modules/docs";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";

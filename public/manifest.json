@@ -18,7 +18,7 @@
   "orientation": "any",
   "display": "standalone",
   "dir": "auto",
-  "lang": "en-US",
+  "lang": "id-ID",
   "start_url": "http://localhost:3000",
   "scope": "http://localhost:3000",
   "name": "Starter - RvnS",

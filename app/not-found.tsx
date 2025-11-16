@@ -4,7 +4,7 @@ import {
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
-} from "@/components/ui/empty";
+} from "@/core/components/ui/empty";
 import Link from "next/link";
 
 export default function NotFound() {

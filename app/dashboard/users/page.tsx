@@ -1,17 +1,18 @@
-import { DashboardMain } from "@/components/layouts/dashboard";
-import {
-  AdminCreateUserDialog,
-  UserDataTable,
-} from "@/components/modules/user-client";
+import { DashboardMain } from "@/core/components/layouts/dashboard";
 import {
   CardAction,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { getUserList, requireAuth } from "@/server/action";
-import { getTitle } from "@/utils";
+} from "@/core/components/ui/card";
+import { Separator } from "@/core/components/ui/separator";
+import { getTitle } from "@/core/utils";
+import {
+  AdminCreateUserDialog,
+  getUserList,
+  requireAuth,
+  UserDataTable,
+} from "@/modules/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = { title: getTitle("/dashboard/users") };

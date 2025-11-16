@@ -1,6 +1,6 @@
-import { DashboardMain } from "@/components/layouts/dashboard";
-import { R } from "@/components/ui/motion";
-import { requireAuth } from "@/server/action";
+import { DashboardMain } from "@/core/components/layouts/dashboard";
+import { R } from "@/core/components/ui/motion";
+import { requireAuth } from "@/modules/auth";
 
 export default async function Page() {
   const { session, meta } = await requireAuth("/dashboard");

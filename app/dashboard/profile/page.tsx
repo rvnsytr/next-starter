@@ -1,12 +1,4 @@
-import { DashboardMain } from "@/components/layouts/dashboard";
-import { UserRoleBadge, UserVerifiedBadge } from "@/components/modules/user";
-import {
-  ChangePasswordForm,
-  DeleteMyAccountButton,
-  PersonalInformation,
-  RevokeOtherSessionsButton,
-  RevokeSessionButton,
-} from "@/components/modules/user-client";
+import { DashboardMain } from "@/core/components/layouts/dashboard";
 import {
   Card,
   CardAction,
@@ -15,18 +7,28 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { appMeta } from "@/constants";
-import { Role } from "@/lib/permission";
-import { getListSession, requireAuth } from "@/server/action";
-import { getTitle } from "@/utils";
+} from "@/core/components/ui/card";
+import { appMeta } from "@/core/constants";
+import { Role } from "@/core/permission";
+import { getTitle } from "@/core/utils";
+import {
+  ChangePasswordForm,
+  DeleteMyAccountButton,
+  getSessionList,
+  PersonalInformation,
+  requireAuth,
+  RevokeOtherSessionsButton,
+  RevokeSessionButton,
+  UserRoleBadge,
+  UserVerifiedBadge,
+} from "@/modules/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = { title: getTitle("/dashboard/profile") };
 
 export default async function Page() {
   const { session, meta } = await requireAuth("/dashboard/profile");
-  const sessionList = await getListSession();
+  const sessionList = await getSessionList();
 
   return (
     <DashboardMain currentPage={meta.displayName} className="items-center">

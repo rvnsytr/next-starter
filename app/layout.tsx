@@ -1,8 +1,8 @@
-import { GridPattern } from "@/components/ui/grid-pattern";
-import { Toaster } from "@/components/ui/sonner";
-import { appMeta } from "@/constants";
+import { GridPattern } from "@/core/components/ui/grid-pattern";
+import { Toaster } from "@/core/components/ui/sonner";
+import { appMeta } from "@/core/constants";
+import { cn } from "@/core/utils";
 import "@/styles/globals.css";
-import { cn } from "@/utils";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";

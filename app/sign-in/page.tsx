@@ -1,9 +1,4 @@
-import { FooterNote } from "@/components/layouts/footer";
-import {
-  SignInForm,
-  SignOnGithubButton,
-  SignUpForm,
-} from "@/components/modules/user-client";
+import { FooterNote } from "@/core/components/layouts/footer";
 import {
   Card,
   CardContent,
@@ -11,10 +6,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { appMeta } from "@/constants";
-import { getTitle } from "@/utils";
+} from "@/core/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/core/components/ui/tabs";
+import { appMeta } from "@/core/constants";
+import { getTitle } from "@/core/utils";
+import { SignInForm, SignOnGithubButton, SignUpForm } from "@/modules/auth";
 import { Metadata } from "next";
 import Link from "next/link";
 

@@ -1,20 +1,21 @@
 # Next.js Starter Template
 
-A lightweight, opinionated starter template for **Next.js 16 (App Router)** with just the tools and configurations I use in most projects. Designed to speed up the setup process so I can get straight to building features—rather than configuring the basics.
+A lightweight, opinionated starter template for **Next.js 16 (App Router)** with just the tools and configurations I use in most projects. Designed to speed up the setup process so I can get straight to building features rather than configuring the basics.
 
 ## Features
 
 - Authentication with user dashboard and RBAC
-- Database and S3 integration
-- Ready-to-use components, and styling
-- Centralized project structure
+- Clean, modular project structure
+- Database and S3 integration (Drizzle + AWS SDK)
 - Handy utility functions, actions and S3 helpers
+- Ready-to-use components, and styling
+- Feature-based “modules” system for scaling apps
 
 ## Tech Stack
 
 - Framework and Language
   - [Next.js 16](https://nextjs.org)
-  - [React 19](https://react.dev)
+  - [React 19.2](https://react.dev)
   - [TypeScript](https://www.typescriptlang.org)
 
 - Styling
@@ -23,7 +24,7 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
 
 - Database and ORM
   - [PostgreSQL](https://www.postgresql.org)
-  - [Drizzle ORM](https://orm.drizzle.team)
+  - [Drizzle ORM](https://orm.drizzle.team) with [drizzle-zod](https://orm.drizzle.team/docs/zod)
 
 - Authentication
   - [Better Auth](https://better-auth.com)
@@ -68,6 +69,61 @@ Start the Next.js development server:
 bun run dev
 ```
 
+## File Structure
+
+The project uses a **module-based** architecture:
+
+- Each feature lives inside `modules/...`
+- Modules contain only what they need
+- Modules must export everything through `index.ts`
+- `core/` contains shared logic and should not be edited
+
+```pgsql
+next-starter/
+  app/
+    api/
+    dashboard/
+    sign-in/
+    layout.tsx
+    not-found.tsx
+    page.tsx
+
+  modules/
+    auth/                     -- Example "auth" feature module
+      actions.ts              -- Server actions
+      constants.ts            -- Module-specific constants
+      components.tsx          -- Server components
+      components.client.tsx   -- Client components
+      db.schema.ts            -- Drizzle schema for this module
+      zod.schema.ts           -- Zod validation for this module
+      index.ts                -- Re-export everything from this module. So it can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
+
+  core/                       -- Shared, stable, "do-not-edit" code
+    components/
+      layout/
+      ui/
+    constants/
+    db/
+      index.ts
+      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schema.ts`.
+    hooks/
+    providers/
+    utils/
+
+    api.ts
+    auth.client.ts
+    auth.ts
+    menu.ts
+    permissions.ts
+    s3.ts
+    zod.ts
+
+  public/
+
+  styles/
+    globals.css
+```
+
 ## Tips
 
 To avoid default imports for `next/router` and `radix-ui` components, you can adjust your TypeScript settings by adding the following configuration to your `.vscode/settings.json` file:
@@ -84,7 +140,7 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
 ## TODO
 
 - Server Side Data Table
-- Dashboard Menu Search (ctrl + k), pinning, and last used
+- Dashboard Menu Search (ctrl + k) and Pinning
 - More Input Number Fields
 - Event Calendar
-- safeMutate ?
+- ? safeMutate(key) for SWR
