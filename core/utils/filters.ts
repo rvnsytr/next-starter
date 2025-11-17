@@ -69,7 +69,7 @@ export const defineMeta = <
   // : never,
   TType extends ColumnDataType,
 >(
-  accessor: TAccessor,
+  _accessor: TAccessor,
   meta: Omit<ColumnMeta<TData, TVal>, "type"> & {
     type: TType;
   },

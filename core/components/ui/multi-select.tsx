@@ -149,7 +149,7 @@ function getValue(
   return Array.from(value)
     .map(
       (v) =>
-        defaultValue.find((i) => i.value === v) ||
+        defaultValue.find((i) => i.value === v) ??
         (creatable ? { value: v, label: v } : null),
     )
     .filter(Boolean) as MultiSelectConfig[];
@@ -185,7 +185,7 @@ export function MultiSelect({
   const dropdownRef = useRef<HTMLDivElement>(null); // Added this
 
   const [selected, setSelected] = useState<MultiSelectConfig[]>(
-    getValue(value || [], defaultValue, creatable),
+    getValue(value ?? [], defaultValue, creatable),
   );
   const [options, setOptions] = useState<GroupOption>(
     transToGroupOption(defaultValue),
@@ -275,7 +275,7 @@ export function MultiSelect({
 
     const doSearchSync = () => {
       const res = onSearchSync?.(debouncedSearchTerm);
-      setOptions(transToGroupOption(res || []));
+      setOptions(transToGroupOption(res ?? []));
     };
 
     const exec = async () => {
@@ -294,7 +294,7 @@ export function MultiSelect({
     const doSearch = async () => {
       setIsLoading(true);
       const res = await onSearch?.(debouncedSearchTerm);
-      setOptions(transToGroupOption(res || []));
+      setOptions(transToGroupOption(res ?? []));
       setIsLoading(false);
     };
 
@@ -418,10 +418,10 @@ export function MultiSelect({
               key={item.value}
               variant="default"
               data-fixed={item.fixed}
-              data-disabled={disabled || undefined}
+              data-disabled={disabled ?? undefined}
               style={
                 {
-                  "--badge-color": item.color || "var(--foreground)",
+                  "--badge-color": item.color ?? "var(--foreground)",
                 } as React.CSSProperties
               }
               className={cn(
@@ -431,7 +431,7 @@ export function MultiSelect({
               )}
             >
               {Icon && <Icon />}
-              {item.label || item.value}
+              {item.label ?? item.value}
               {!item.fixed && (
                 <button
                   className="absolute -inset-y-px end-0 flex items-center justify-center rounded-e-md border border-transparent px-1 text-(--badge-color)/40 outline-hidden transition-[color,box-shadow] outline-none hover:text-(--badge-color) focus-visible:border-(--badge-color)/40 focus-visible:ring-[3px] focus-visible:ring-(--badge-color)/50"
@@ -490,8 +490,7 @@ export function MultiSelect({
           }}
           className={cn(
             "text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute end-0 top-0 flex h-full w-9 items-center justify-center rounded-r-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:ring-[3px]",
-            (hideClearAllButton ||
-              disabled ||
+            ((hideClearAllButton || disabled) ??
               selected.filter((s) => s.fixed).length === selected.length) &&
               "hidden",
           )}
@@ -567,12 +566,12 @@ export function MultiSelect({
                             }}
                             style={
                               {
-                                "--item-color": item.color || "transparent",
+                                "--item-color": item.color ?? "transparent",
                               } as React.CSSProperties
                             }
                             className={cn(
                               "cursor-pointer",
-                              (item.disabled || (isSelected && item.fixed)) &&
+                              (item.disabled ?? (isSelected && item.fixed)) &&
                                 "pointer-events-none cursor-not-allowed opacity-50",
                             )}
                           >
@@ -586,7 +585,7 @@ export function MultiSelect({
 
                             {Icon &&
                               (typeof Icon === "string" ? Icon : <Icon />)}
-                            {item.label || item.value}
+                            {item.label ?? item.value}
 
                             <div className="ml-auto size-2 rounded-full bg-(--item-color)" />
                           </CommandItem>

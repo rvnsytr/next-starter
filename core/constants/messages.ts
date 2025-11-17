@@ -73,11 +73,6 @@ export const messages = {
   fileTooLarge: (field: string, sizeInMb: string | number) =>
     `${capitalize(field, "first")} melebihi batas ukuran maksimum ${sizeInMb} MB.`,
 
-  outOfRange: (
-    field: string,
-    min: number,
-    max: number,
-    thing: string = "karakter",
-  ) =>
+  outOfRange: (field: string, min: number, max: number, thing = "karakter") =>
     `${capitalize(field, "first")} harus antara ${min} hingga ${max} ${thing}.`.trim(),
 };

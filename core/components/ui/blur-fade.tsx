@@ -53,7 +53,7 @@ export function BlurFade({
     },
   };
 
-  const combinedVariants = variant || defaultVariants;
+  const combinedVariants = variant ?? defaultVariants;
 
   return (
     <AnimatePresence>

@@ -29,7 +29,7 @@ export function ErrorFallback({
       <div className="flex items-center gap-x-2">
         <PackageX className="size-4 shrink-0" /> {error?.code}
       </div>
-      {!hideText && <p>{error?.message || "Tidak ada data"}</p>}
+      {!hideText && <p>{error?.message ?? "Tidak ada data"}</p>}
     </div>
   );
 }

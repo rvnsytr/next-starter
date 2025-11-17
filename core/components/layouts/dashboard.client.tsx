@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayout } from "@/core/providers/layout";
+import { useLayout } from "@/core/providers";
 import { cn } from "@/core/utils";
 import { Spinner } from "../ui/spinner";
 

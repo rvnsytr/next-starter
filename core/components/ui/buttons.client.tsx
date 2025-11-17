@@ -1,7 +1,7 @@
 "use client";
 
 import { messages } from "@/core/constants";
-import { useLayout } from "@/core/providers/layout";
+import { useLayout } from "@/core/providers";
 import { cn, delay } from "@/core/utils";
 import {
   ArrowUp,
@@ -131,7 +131,7 @@ export function LayoutButton({
             toggleLayout();
           }}
           className={cn("hidden md:inline-flex", className)}
-          disabled={disabled || !layout}
+          disabled={disabled ?? !layout}
           {...props}
         >
           <LayoutIcon />

@@ -94,8 +94,8 @@ next-starter/
       constants.ts            -- Module-specific constants
       components.tsx          -- Server components
       components.client.tsx   -- Client components
-      db.schemas.ts            -- Drizzle schema for this module
-      zod.schemas.ts           -- Zod validation for this module
+      db.schemas.ts           -- Drizzle schema for this module
+      zod.schemas.ts          -- Zod validation for this module
       index.ts                -- Re-export everything from this module. So it can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
 
   core/                       -- Shared, stable, "do-not-edit" code
@@ -105,18 +105,18 @@ next-starter/
     constants/
     db/
       index.ts
-      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schemas.ts`.
+      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schemas.ts`
     hooks/
     providers/
     utils/
 
+    actions.ts
     api.ts
     auth.client.ts
     auth.ts
-    menu.ts
     permissions.ts
     s3.ts
-    schemas.ts
+    schemas.ts                -- Shared base Zod schemas.
 
   public/
 

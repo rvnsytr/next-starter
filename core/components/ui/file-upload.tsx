@@ -63,7 +63,7 @@ export function FileUpload({
     : size;
 
   const changeHandler = (fileList: FileList | null) => {
-    if (!fileList || !fileList.length) return;
+    if (!fileList?.length) return;
     const fileArray = Array.from(fileList);
     if (isFiles && multiple) onChange([...value, ...fileArray]);
     else onChange(fileArray);

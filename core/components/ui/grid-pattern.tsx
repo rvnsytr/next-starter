@@ -6,7 +6,7 @@ type GridPatternProps = React.SVGProps<SVGSVGElement> & {
   height?: number;
   x?: number;
   y?: number;
-  squares?: Array<[x: number, y: number]>;
+  squares?: [x: number, y: number][];
   strokeDasharray?: string;
   className?: string;
   [key: string]: unknown;

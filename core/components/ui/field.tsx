@@ -58,14 +58,14 @@ const fieldVariants = cva(
   {
     variants: {
       orientation: {
-        vertical: ["flex-col [&>*]:w-full [&>.sr-only]:w-auto"],
+        vertical: ["flex-col *:w-full [&>.sr-only]:w-auto"],
         horizontal: [
           "flex-row items-center",
           "[&>[data-slot=field-label]]:flex-auto",
           "has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio],[role=switch]]:mt-px",
         ],
         responsive: [
-          "flex-col [&>*]:w-full [&>.sr-only]:w-auto @md/field-group:flex-row @md/field-group:items-center @md/field-group:[&>*]:w-auto",
+          "flex-col *:w-full [&>.sr-only]:w-auto @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto",
           "@md/field-group:[&>[data-slot=field-label]]:flex-auto",
           "@md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
         ],
@@ -113,7 +113,7 @@ function FieldLabel({
       data-slot="field-label"
       style={
         {
-          "--field-color": color || "var(--primary)",
+          "--field-color": color ?? "var(--primary)",
         } as React.CSSProperties
       }
       className={cn(
@@ -188,7 +188,7 @@ function FieldSeparator({
 
 type FieldErrorContent = { message?: string } | undefined;
 type FieldErrorProps = React.ComponentProps<"div"> & {
-  errors?: FieldErrorContent | Array<FieldErrorContent>;
+  errors?: FieldErrorContent | FieldErrorContent[];
 };
 
 function FieldError({

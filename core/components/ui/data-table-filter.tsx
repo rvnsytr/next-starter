@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { messages } from "@/core/constants";
@@ -55,11 +54,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Slider } from "./slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
-export function DataTableFilter<TData, TValue>({
-  table,
-}: {
-  table: Table<TData>;
-}) {
+export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -663,10 +658,12 @@ function FilterOperatorNumberController<TData>({
   column,
   closeController,
 }: FilterOperatorControllerProps<TData>) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filter = column.getFilterValue() as FilterModel<"number", TData>;
 
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const relatedFilterOperators = relatedFilters.map((r) => r.value);
 
   const changeOperator = (value: (typeof relatedFilterOperators)[number]) => {
@@ -1428,7 +1425,6 @@ export function FilterValueMultiOptionController<
 
 export function FilterValueDateController<TData, TValue>({
   column,
-  columnMeta,
 }: ProperFilterValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterModel<"date", TData>)
@@ -1442,7 +1438,7 @@ export function FilterValueDateController<TData, TValue>({
   function changeDateRange(value: DateRange | undefined) {
     const start = value?.from;
     const end =
-      start && value && value.to && !isEqual(start, value.to)
+      start && value?.to && !isEqual(start, value.to)
         ? endOfDay(value.to)
         : undefined;
 
@@ -1530,7 +1526,6 @@ export function FilterValueTextController<TData, TValue>({
 }
 
 export function FilterValueNumberController<TData, TValue>({
-  table,
   column,
   columnMeta,
 }: ProperFilterValueMenuProps<TData, TValue>) {

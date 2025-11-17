@@ -1,7 +1,7 @@
 import { FooterNote } from "@/core/components/layouts/footer";
 import { SidebarMain } from "@/core/components/layouts/sidebar-main";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
-import { LayoutProvider } from "@/core/providers/layout";
+import { LayoutProvider } from "@/core/providers";
 import { getTitle } from "@/core/utils";
 import { getSession } from "@/modules/auth";
 import { Metadata } from "next";

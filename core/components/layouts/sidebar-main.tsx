@@ -59,7 +59,7 @@ export function SidebarMain({ data }: { data: UserWithRole }) {
               className="group/head-button h-13 group-data-[collapsible=icon]:my-2.5 group-data-[collapsible=icon]:p-0"
               asChild
             >
-              <Link href={"/dashboard/profile"}>
+              <Link href="/dashboard/profile">
                 <UserAvatar
                   name={data.name}
                   image={data.image}

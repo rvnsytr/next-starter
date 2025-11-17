@@ -46,7 +46,7 @@ export function R({
   );
 }
 
-export function ShowOnView({
+export function AnimateOnView({
   as = "div",
   initial,
   delay = 0.25,
