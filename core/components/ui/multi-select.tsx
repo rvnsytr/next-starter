@@ -391,11 +391,7 @@ export function MultiSelect({
         "h-auto overflow-visible bg-transparent",
         props?.command?.className,
       )}
-      shouldFilter={
-        props?.command?.shouldFilter !== undefined
-          ? props?.command.shouldFilter
-          : !onSearch
-      } // When onSearch is provided, we don&lsquo;t want to filter the options. You can still override it.
+      shouldFilter={props?.command?.shouldFilter ?? !onSearch} // When onSearch is provided, we don&lsquo;t want to filter the options. You can still override it.
       filter={commandFilter()}
     >
       <div

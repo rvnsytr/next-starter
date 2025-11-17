@@ -124,9 +124,9 @@ import {
   getUserList,
   revokeUserSessions,
 } from "./actions";
-import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./component";
+import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
 import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
-import { userSchema } from "./zod.schemas";
+import { userSchema } from "./schemas.zod";
 
 const signInRoute = "/sign-in";
 const dashboardRoute = "/dashboard";

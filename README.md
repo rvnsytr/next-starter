@@ -94,9 +94,11 @@ next-starter/
       constants.ts            -- Module-specific constants
       components.tsx          -- Server components
       components.client.tsx   -- Client components
-      db.schemas.ts           -- Drizzle schema for this module
-      zod.schemas.ts          -- Zod validation for this module
-      index.ts                -- Re-export everything from this module. So it can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
+      schemas.db.ts           -- Drizzle schemas for this module
+      schemas.zod.ts          -- Zod validation schemas for this module
+      provider.x.tsx          -- just example: Context provider x
+      provider.y.tsx          -- just example: Context provider y
+      index.ts                -- Re-export entry point. So this module can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
 
   core/                       -- Shared, stable, "do-not-edit" code
     components/
@@ -139,6 +141,8 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
 
 ## TODO
 
+- Client Breadcrumb
+- Global Theme Shortcut
 - Date Picker Input
 - Drizzle Studio
 - Server Side Data Table
