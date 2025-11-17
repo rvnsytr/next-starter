@@ -116,7 +116,7 @@ next-starter/
     menu.ts
     permissions.ts
     s3.ts
-    zod.ts
+    schemas.ts
 
   public/
 

@@ -34,13 +34,13 @@ import {
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { FileType, messages } from "@/core/constants";
+import { sharedSchemas } from "@/core/schemas";
 import {
   formatDate,
   formatNumber,
   formatPhone,
   sanitizeNumber,
 } from "@/core/utils";
-import { sharedSchemas } from "@/core/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { Club, Diamond, Heart, Save, Spade, TextIcon } from "lucide-react";

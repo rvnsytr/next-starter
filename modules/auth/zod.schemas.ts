@@ -1,5 +1,5 @@
 import { allRoles } from "@/core/permission";
-import { sharedSchemas } from "@/core/zod";
+import { sharedSchemas } from "@/core/schemas";
 import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
 import { user } from "./db.schemas";
