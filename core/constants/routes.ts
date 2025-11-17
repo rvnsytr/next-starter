@@ -1,5 +1,5 @@
+import { Role } from "@/modules/auth";
 import { Route } from "next";
-import { Role } from "../permission";
 
 export type RouteRole = "all" | Role[];
 

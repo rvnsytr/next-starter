@@ -9,10 +9,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { Role, rolesMeta } from "@/core/permission";
 import { cn } from "@/core/utils";
 import { UserWithRole } from "better-auth/plugins";
 import { BadgeCheck } from "lucide-react";
+import { Role, rolesMeta } from "./constants";
 
 export function UserRoleBadge({
   value,

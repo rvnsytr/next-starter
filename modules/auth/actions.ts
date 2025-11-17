@@ -2,12 +2,12 @@
 
 import { auth } from "@/core/auth";
 import { routesMeta } from "@/core/constants";
-import { Role } from "@/core/permission";
 import { deleteFiles, extractKeyFromPublicUrl } from "@/core/s3";
 import { UserWithRole } from "better-auth/plugins";
 import { Route } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { Role } from "./constants";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await headers() });

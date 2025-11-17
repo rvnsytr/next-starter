@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { appMeta } from "@/core/constants";
-import { Role } from "@/core/permission";
 import { getTitle } from "@/core/utils";
 import {
   ChangePasswordForm,
@@ -19,6 +18,7 @@ import {
   requireAuth,
   RevokeOtherSessionsButton,
   RevokeSessionButton,
+  Role,
   UserRoleBadge,
   UserVerifiedBadge,
 } from "@/modules/auth";

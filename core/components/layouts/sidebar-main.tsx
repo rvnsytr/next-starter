@@ -1,9 +1,13 @@
 "use client";
 
 import { dashboardfooterMenu, routesMeta } from "@/core/constants";
-import { Role } from "@/core/permission";
 import { cn, getActiveRoute, getMenuByRole, toKebabCase } from "@/core/utils";
-import { SignOutButton, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
+import {
+  Role,
+  SignOutButton,
+  UserAvatar,
+  UserVerifiedBadge,
+} from "@/modules/auth";
 import { UserWithRole } from "better-auth/plugins";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";

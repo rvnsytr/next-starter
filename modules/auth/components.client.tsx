@@ -76,7 +76,6 @@ import {
 import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
-import { allRoles, defaultRole, Role, rolesMeta } from "@/core/permission";
 import { getFilePublicUrl, uploadFiles } from "@/core/s3";
 import { sharedSchemas } from "@/core/schemas";
 import { filterFn, formatDate } from "@/core/utils";
@@ -126,6 +125,7 @@ import {
   revokeUserSessions,
 } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./component";
+import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
 import { userSchema } from "./zod.schemas";
 
 const signInRoute = "/sign-in";

@@ -4,11 +4,6 @@ import { RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { Button, ButtonProps, ButtonPropsWithoutChildren } from "./button";
 
-type PulsatingButtonProps = ButtonProps & {
-  pulseColor?: string;
-  duration?: string;
-};
-
 export function ResetButton({
   type = "reset",
   size = "default",
@@ -29,10 +24,14 @@ export function PulsatingButton({
   pulseColor = "var(--primary-pulse)",
   duration = "1.5s",
   ...props
-}: Omit<PulsatingButtonProps, "asChild"> & { href: string }) {
+}: Omit<ButtonProps, "asChild"> & {
+  href: string;
+  pulseColor?: string;
+  duration?: string;
+}) {
   return (
     <Button
-      className={cn("relative", className)}
+      className={cn("relative rounded-full", className)}
       style={
         {
           "--pulse-color": pulseColor,

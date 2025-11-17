@@ -1,10 +1,11 @@
+import { adminRoles, defaultRole } from "@/modules/auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugins, lastLoginMethod } from "better-auth/plugins";
 import { appMeta } from "./constants";
 import { db } from "./db";
-import { adminRoles, defaultRole, roles } from "./permission";
+import { roles } from "./permission";
 
 export const auth = betterAuth({
   appName: appMeta.name,

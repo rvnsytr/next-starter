@@ -1,3 +1,4 @@
+import { Role } from "@/modules/auth";
 import { Route } from "next";
 import {
   appMeta,
@@ -6,7 +7,6 @@ import {
   RouteRole,
   routesMeta,
 } from "../constants";
-import { Role } from "../permission";
 
 export function getTitle(route: Route) {
   return `${routesMeta[route].displayName} | ${appMeta.name}`;

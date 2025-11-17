@@ -1,7 +1,7 @@
-import { allRoles } from "@/core/permission";
 import { sharedSchemas } from "@/core/schemas";
 import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
+import { allRoles } from "./constants";
 import { user } from "./db.schemas";
 
 export const userSchema = createSelectSchema(user, {
