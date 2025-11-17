@@ -1,6 +1,6 @@
 import { fileMeta, FileType, messages } from "@/core/constants";
 import { cn, toMegabytes } from "@/core/utils";
-import { zodSchemas } from "@/core/zod";
+import { sharedSchemas } from "@/core/zod";
 import { ArrowUpRight, Dot, X } from "lucide-react";
 import { Route } from "next";
 import Image from "next/image";
@@ -192,7 +192,7 @@ export function FileUpload({
             const fileURL = URL.createObjectURL(file);
             const isImage = file.type.startsWith("image/");
 
-            const schema = zodSchemas.file(accept, {
+            const schema = sharedSchemas.file(accept, {
               maxFileSize: fileSize.bytes,
             });
 

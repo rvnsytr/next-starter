@@ -40,7 +40,7 @@ import {
   formatPhone,
   sanitizeNumber,
 } from "@/core/utils";
-import { zodSchemas } from "@/core/zod";
+import { sharedSchemas } from "@/core/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { Club, Diamond, Heart, Save, Spade, TextIcon } from "lucide-react";
@@ -94,15 +94,15 @@ export function ExampleForm() {
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z.object({
-    text: zodSchemas.string("Text", { min: 1 }),
-    textarea: zodSchemas.string("Text Area", { min: 1, max: 255 }),
+    text: sharedSchemas.string("Text", { min: 1 }),
+    textarea: sharedSchemas.string("Text Area", { min: 1, max: 255 }),
 
-    number: zodSchemas.number("number", { min: 1 }),
-    phone: zodSchemas.number("Phone", { min: 1 }),
+    number: sharedSchemas.number("number", { min: 1 }),
+    phone: sharedSchemas.number("Phone", { min: 1 }),
 
-    date: zodSchemas.date(),
-    dateMultiple: zodSchemas.dateMultiple({ min: 1 }),
-    dateRange: zodSchemas.dateRange,
+    date: sharedSchemas.date(),
+    dateMultiple: sharedSchemas.dateMultiple({ min: 1 }),
+    dateRange: sharedSchemas.dateRange,
 
     select: z.enum(card),
     multiSelect: z.array(z.enum(card)).min(1),
@@ -113,7 +113,7 @@ export function ExampleForm() {
       error: "At least one checkbox must be selected",
     }),
 
-    files: zodSchemas.file(fileType, {
+    files: sharedSchemas.file(fileType, {
       // min: 1,
       // max: 5,
       // maxFileSize: toBytes(1),

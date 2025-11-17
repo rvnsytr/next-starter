@@ -5,7 +5,7 @@ import { toMegabytes } from "./utils";
 
 z.config(id());
 
-export const zodSchemas = {
+export const sharedSchemas = {
   string: (field: string, options?: { min?: number; max?: number }) => {
     const { invalidType, required, stringTooShort, stringTooLong } = messages;
 

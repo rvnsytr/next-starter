@@ -79,7 +79,7 @@ import { appMeta, fileMeta, messages } from "@/core/constants";
 import { allRoles, defaultRole, Role, rolesMeta } from "@/core/permission";
 import { getFilePublicUrl, uploadFiles } from "@/core/s3";
 import { filterFn, formatDate } from "@/core/utils";
-import { zodSchemas } from "@/core/zod";
+import { sharedSchemas } from "@/core/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Session } from "better-auth";
@@ -775,7 +775,7 @@ export function ProfilePicture({
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
 
   const contentType = "image";
-  const formSchema = zodSchemas.file(contentType);
+  const formSchema = sharedSchemas.file(contentType);
 
   const changeHandler = async (fileList: FileList) => {
     setIsChange(true);
@@ -1792,7 +1792,7 @@ function AdminRemoveUserDialog({
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z
-    .object({ input: zodSchemas.string("Nama") })
+    .object({ input: sharedSchemas.string("Nama") })
     .refine((sc) => sc.input === data.name, {
       message: messages.thingNotMatch("Nama"),
       path: ["input"],
@@ -1965,7 +1965,7 @@ function AdminActionRemoveUsersDialog({
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z
-    .object({ input: zodSchemas.string("Total pengguna yang dihapus") })
+    .object({ input: sharedSchemas.string("Total pengguna yang dihapus") })
     .refine((sc) => sc.input === inputValue, {
       message: messages.thingNotMatch("Total pengguna yang dihapus"),
       path: ["input"],
