@@ -1,15 +1,4 @@
-import { LucideIcon, LucideProps, SVGAttributes } from "lucide-react";
-import { ReactNode } from "react";
-
-export type IconOrText = string | LucideIcon;
-
-export function getIconOrText(
-  Icon?: IconOrText,
-  iconProps?: LucideProps,
-): ReactNode {
-  if (!Icon) return null;
-  return typeof Icon === "string" ? Icon : <Icon {...iconProps} />;
-}
+import { SVGAttributes } from "lucide-react";
 
 export function GithubIcon({ ...props }: SVGAttributes) {
   return (

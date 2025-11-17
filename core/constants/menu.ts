@@ -1,8 +1,8 @@
-import { IconOrText } from "@/core/components/ui/icons";
 import {
   CircleHelp,
   ExternalLink,
   LayoutDashboard,
+  LucideIcon,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -11,7 +11,7 @@ import { LinkProps } from "next/link";
 
 type MenuContent = {
   route: Route;
-  icon?: IconOrText;
+  icon?: LucideIcon;
   disabled?: boolean;
 
   // if href is not defined, the Link href prop will be `/{route}/#${toKebabCase(label)}`

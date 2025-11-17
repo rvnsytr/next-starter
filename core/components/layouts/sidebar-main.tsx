@@ -22,7 +22,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import { getIconOrText } from "../ui/icons";
 import {
   Sidebar,
   SidebarContent,
@@ -100,11 +99,11 @@ export function SidebarMain({ data }: { data: UserWithRole }) {
             <SidebarGroupLabel>{section}</SidebarGroupLabel>
 
             <SidebarMenu>
-              {content.map(({ route, icon, disabled, subMenu }) => {
+              {content.map(({ route, icon: Icon, disabled, subMenu }) => {
                 const { displayName } = routesMeta[route];
-                const iconElement = getIconOrText(icon);
 
                 const isActive = route === getActiveRoute(pathname);
+                const iconElement = Icon && <Icon />;
 
                 if (disabled) {
                   return (
@@ -192,25 +191,27 @@ export function SidebarMain({ data }: { data: UserWithRole }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          {dashboardfooterMenu.map(({ url, displayName, icon, disabled }) => {
-            const iconElement = getIconOrText(icon);
-            return (
-              <SidebarMenuItem key={url}>
-                {disabled ? (
-                  <SidebarMenuButton size="sm" disabled>
-                    {iconElement} {displayName}
-                  </SidebarMenuButton>
-                ) : (
-                  <SidebarMenuButton size="sm" tooltip={displayName} asChild>
-                    <Link href={url}>
-                      <LinkSpinner icon={{ base: iconElement }} />
-                      {displayName}
-                    </Link>
-                  </SidebarMenuButton>
-                )}
-              </SidebarMenuItem>
-            );
-          })}
+          {dashboardfooterMenu.map(
+            ({ url, displayName, icon: Icon, disabled }) => {
+              const iconElement = Icon && <Icon />;
+              return (
+                <SidebarMenuItem key={url}>
+                  {disabled ? (
+                    <SidebarMenuButton size="sm" disabled>
+                      {iconElement} {displayName}
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton size="sm" tooltip={displayName} asChild>
+                      <Link href={url}>
+                        <LinkSpinner icon={{ base: iconElement }} />
+                        {displayName}
+                      </Link>
+                    </SidebarMenuButton>
+                  )}
+                </SidebarMenuItem>
+              );
+            },
+          )}
 
           <SidebarSeparator />
 

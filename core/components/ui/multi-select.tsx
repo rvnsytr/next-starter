@@ -4,7 +4,7 @@ import { messages } from "@/core/constants";
 import { useDebounce } from "@/core/hooks";
 import { cn } from "@/core/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { Check, XIcon } from "lucide-react";
+import { Check, LucideIcon, XIcon } from "lucide-react";
 import {
   ComponentPropsWithoutRef,
   KeyboardEvent,
@@ -22,13 +22,12 @@ import {
   CommandItem,
   CommandList,
 } from "./command";
-import { getIconOrText, IconOrText } from "./icons";
 
 export type MultiSelectConfig = {
   value: string;
   label?: string;
   disabled?: boolean;
-  icon?: IconOrText;
+  icon?: LucideIcon;
   color?: string;
   /** fixed option that can't be removed. */
   fixed?: boolean;
@@ -413,7 +412,7 @@ export function MultiSelect({
         }}
       >
         {selected.map((item) => {
-          const icon = getItemMeta(item.value)?.icon;
+          const Icon = getItemMeta(item.value)?.icon;
           return (
             <Badge
               key={item.value}
@@ -431,7 +430,7 @@ export function MultiSelect({
                 badgeClassName,
               )}
             >
-              {getIconOrText(icon, { className: "size-3.5" })}
+              {Icon && <Icon />}
               {item.label || item.value}
               {!item.fixed && (
                 <button
