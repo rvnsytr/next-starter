@@ -1,6 +1,7 @@
 import { GridPattern } from "@/core/components/ui/grid-pattern";
 import { Toaster } from "@/core/components/ui/sonner";
 import { appMeta } from "@/core/constants";
+import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <GridPattern className="stroke-muted dark:stroke-muted/60 -z-1 min-h-dvh" />
           {children}
           <Toaster position="top-center" closeButton richColors />
+          <GlobalShortcuts />
         </ThemeProvider>
       </body>
     </html>

@@ -141,8 +141,6 @@ To avoid default imports for `next/router` and `radix-ui` components, you can ad
 
 ## TODO
 
-- Client Breadcrumb
-- Global Theme Shortcut
 - Date Picker Input
 - Drizzle Studio
 - Server Side Data Table

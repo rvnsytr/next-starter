@@ -166,7 +166,7 @@ export type FilterTypes = {
  */
 export type FilterModel<T extends ColumnDataType, TData> = {
   operator: FilterOperators[T];
-  values: Array<FilterTypes[T]>;
+  values: FilterTypes[T][];
   columnMeta: Column<TData>["columnDef"]["meta"];
 };
 
@@ -189,7 +189,7 @@ type FilterOperatorDetailsBase<OperatorValue, T extends ColumnDataType> = {
   /* The singular form of the operator, if applicable. */
   pluralOf?: FilterOperators[T];
   /* All related operators. Normally, all the operators which share the same target. */
-  relativeOf: FilterOperators[T] | Array<FilterOperators[T]>;
+  relativeOf: FilterOperators[T] | FilterOperators[T][];
   /* Whether the operator is negated. */
   isNegated: boolean;
   /* If the operator is not negated, this provides the negated equivalent. */
@@ -560,8 +560,8 @@ export const filterTypeOperatorDetails: FilterTypeOperatorDetails = {
  */
 export function determineNewOperator<T extends ColumnDataType>(
   type: T,
-  oldVals: Array<FilterTypes[T]>,
-  nextVals: Array<FilterTypes[T]>,
+  oldVals: FilterTypes[T][],
+  nextVals: FilterTypes[T][],
   currentOperator: FilterOperators[T],
 ): FilterOperators[T] {
   const a =
@@ -778,11 +778,11 @@ export function __dateFilterFn<TData>(
     case "is before":
       return isBefore(value, startOfDay(d1));
     case "is on or after":
-      return isSameDay(value, d1) || isAfter(value, startOfDay(d1));
+      return isSameDay(value, d1) ?? isAfter(value, startOfDay(d1));
     case "is after":
       return isAfter(value, startOfDay(d1));
     case "is on or before":
-      return isSameDay(value, d1) || isBefore(value, startOfDay(d1));
+      return isSameDay(value, d1) ?? isBefore(value, startOfDay(d1));
     case "is between":
       return isWithinInterval(value, {
         start: startOfDay(d1),
@@ -838,8 +838,7 @@ export function __numberFilterFn<TData>(
   inputData: number,
   filterValue: FilterModel<"number", TData>,
 ) {
-  if (!filterValue || !filterValue.values || filterValue.values.length === 0)
-    return true;
+  if (!filterValue?.values || filterValue.values.length === 0) return true;
 
   const value = inputData;
   const filterVal = filterValue.values[0];
@@ -938,6 +937,5 @@ export function isFilterableColumn<TData>(column: Column<TData>) {
 }
 
 function warn(...messages: string[]) {
-  if (process.env.NODE_ENV !== "production")
-    console.warn("[◐] [filters]", ...messages);
+  console.warn("[◐] [filters]", ...messages);
 }
