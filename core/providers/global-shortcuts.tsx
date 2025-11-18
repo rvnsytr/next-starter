@@ -12,6 +12,7 @@ export function GlobalShortcuts() {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      // Theme
       if (e.altKey && e.key === "t") {
         e.preventDefault();
         onTheme();

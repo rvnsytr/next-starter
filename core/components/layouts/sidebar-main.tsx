@@ -20,7 +20,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { LinkSpinner, RefreshButton } from "../ui/buttons.client";
+import { RefreshButton } from "../ui/buttons.client";
 import {
   Collapsible,
   CollapsibleContent,
@@ -45,6 +45,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "../ui/sidebar";
+import { LinkSpinner } from "../ui/spinner";
 
 export function SidebarMain({ data }: { data: UserWithRole }) {
   const pathname = usePathname();

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/core/utils";
 import {
   FrameIcon,
@@ -6,6 +8,7 @@ import {
   LucideProps,
   RefreshCcw,
 } from "lucide-react";
+import { useLinkStatus } from "next/link";
 
 export type SpinnerProps = LucideProps & {
   variant?: "default" | "loader" | "refresh" | "frame";
@@ -46,4 +49,11 @@ export function LoadingSpinner({
   return loading
     ? (icon?.spinner ?? <Spinner {...props} />)
     : (icon?.base ?? null);
+}
+
+export function LinkSpinner({
+  ...props
+}: Omit<LoadingSpinnerProps, "loading">) {
+  const { pending } = useLinkStatus();
+  return <LoadingSpinner loading={pending} {...props} />;
 }

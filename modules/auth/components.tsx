@@ -90,7 +90,7 @@ export function UserAvatar({
   return (
     <Avatar className={cn("rounded-lg", className)}>
       <AvatarImage
-        src={image || undefined}
+        src={image ?? undefined}
         className={cn("rounded-lg", classNames?.image)}
       />
       <AvatarFallback className={cn("rounded-lg", classNames?.fallback)}>

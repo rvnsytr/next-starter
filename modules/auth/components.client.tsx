@@ -26,7 +26,7 @@ import {
   DataTable,
   OtherDataTableProps,
 } from "@/core/components/ui/data-table";
-import { DetailList, DetailListProps } from "@/core/components/ui/detail-list";
+import { DetailList, DetailListData } from "@/core/components/ui/detail-list";
 import {
   Dialog,
   DialogClose,
@@ -128,9 +128,6 @@ import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
 import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
 import { userSchema } from "./schemas.zod";
 
-const signInRoute = "/sign-in";
-const dashboardRoute = "/dashboard";
-
 const sharedText = {
   signIn: "Berhasil masuk - Selamat datang!",
   signOn: (social: string) => `Lanjutkan dengan ${social}`,
@@ -155,7 +152,7 @@ export function SignOutButton() {
           fetchOptions: {
             onSuccess: () => {
               toast.success("Berhasil keluar - Sampai jumpa!");
-              router.push(signInRoute);
+              router.push("/sign-in");
             },
             onError: ({ error }) => {
               setIsLoading(false);
@@ -184,8 +181,8 @@ export function SignOnGithubButton() {
         authClient.signIn.social(
           {
             provider: "github",
-            callbackURL: dashboardRoute,
-            errorCallbackURL: signInRoute,
+            callbackURL: "/dashboard",
+            errorCallbackURL: "/sign-in",
           },
           {
             onSuccess: () => {
@@ -230,7 +227,7 @@ export function SignInForm() {
   const formHandler = (formData: FormSchema) => {
     setIsLoading(true);
     authClient.signIn.email(
-      { ...formData, callbackURL: dashboardRoute },
+      { ...formData, callbackURL: "/dashboard" },
       {
         onSuccess: () => {
           toast.success(sharedText.signIn);
@@ -697,7 +694,7 @@ export function UserDetailSheet({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const details: DetailListProps["data"] = [
+  const details: DetailListData = [
     { label: "Alamat email", content: data.email },
     { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
     { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
@@ -1313,10 +1310,10 @@ export function DeleteMyAccountButton({ image }: Pick<UserWithRole, "image">) {
     if (image) await deleteProfilePicture(image);
 
     authClient.deleteUser(
-      { callbackURL: signInRoute },
+      { callbackURL: "/sign-in" },
       {
         onSuccess: () => {
-          router.push(signInRoute);
+          router.push("/sign-in");
           toast.success("Akun Anda berhasil dihapus.");
         },
         onError: ({ error }) => {

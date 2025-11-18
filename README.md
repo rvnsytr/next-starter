@@ -100,6 +100,11 @@ next-starter/
       provider.y.tsx          -- just example: Context provider y
       index.ts                -- Re-export entry point. So this module can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
 
+    parent-module/
+      sub-module/
+        index.ts
+      index.ts
+
   core/                       -- Shared, stable, "do-not-edit" code
     components/
       layout/

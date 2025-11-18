@@ -1,5 +1,5 @@
 import { Button } from "@/core/components/ui/button";
-import { LinkSpinner, ThemeButton } from "@/core/components/ui/buttons.client";
+import { ThemeButton } from "@/core/components/ui/buttons.client";
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
 import { AreaChart, BarChart, PieChart } from "@/core/components/ui/charts";
 import { R } from "@/core/components/ui/motion";
 import { ScrollArea, ScrollBar } from "@/core/components/ui/scroll-area";
+import { LinkSpinner } from "@/core/components/ui/spinner";
 import {
   Tabs,
   TabsContent,

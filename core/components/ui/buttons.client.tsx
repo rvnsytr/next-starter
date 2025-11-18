@@ -15,23 +15,15 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useLinkStatus } from "next/link";
 import { useRouter } from "next/navigation";
 import { ComponentProps, useEffect, useEffectEvent, useState } from "react";
 import { Button, ButtonProps } from "./button";
 import { Kbd } from "./kbd";
-import { LoadingSpinner, LoadingSpinnerProps } from "./spinner";
+import { LoadingSpinner } from "./spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 type ButtonPropsWithoutChildren = Omit<ButtonProps, "children">;
 type ButtonIconSize = "icon-xs" | "icon-sm" | "icon" | "icon-lg";
-
-export function LinkSpinner({
-  ...props
-}: Omit<LoadingSpinnerProps, "loading">) {
-  const { pending } = useLinkStatus();
-  return <LoadingSpinner loading={pending} {...props} />;
-}
 
 export function ThemeButton({
   align,
