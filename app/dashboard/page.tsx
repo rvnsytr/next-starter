@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layouts/dashboard";
+import { DashboardMain } from "@/core/components/layouts";
 import { R } from "@/core/components/ui/motion";
 import { requireAuth } from "@/modules/auth";
 

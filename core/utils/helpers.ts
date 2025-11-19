@@ -1,15 +1,23 @@
 import { Role } from "@/modules/auth";
+import clsx, { ClassValue } from "clsx";
 import { Route } from "next";
-import {
-  appMeta,
-  dashboardMenu,
-  Menu,
-  RouteRole,
-  routesMeta,
-} from "../constants";
+import { twMerge } from "tailwind-merge";
+import { appMeta, dashboardMenu, Menu, routesMeta } from "../constants";
 
-export function getTitle(route: Route) {
-  return `${routesMeta[route].displayName} | ${appMeta.name}`;
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function delay(seconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+export function setRouteTitle(title: string) {
+  return `${title} | ${appMeta.name}`;
+}
+
+export function getRouteTitle(route: Route) {
+  return setRouteTitle(routesMeta[route].displayName);
 }
 
 export function getRandomString(length: number) {
@@ -39,8 +47,8 @@ export function getMenuByRole(
       const meta = routesMeta[route];
       if (!("role" in meta)) return true;
 
-      const currentRole = meta.role as RouteRole;
-      return currentRole === "all" || currentRole.includes(role);
+      const currentRole = meta.role;
+      return currentRole === "all" || currentRole?.includes(role);
     });
 
     if (filteredContent.length <= 0) return null;
@@ -63,6 +71,8 @@ export function getActiveRoute(pathname: string) {
 
   paths.push("/");
 
-  for (const p of paths)
+  for (const path of paths) {
+    const p = path as Route;
     if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
+  }
 }

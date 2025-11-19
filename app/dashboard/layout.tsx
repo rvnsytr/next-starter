@@ -1,14 +1,13 @@
-import { FooterNote } from "@/core/components/layouts/footer";
-import { SidebarMain } from "@/core/components/layouts/sidebar-main";
+import { FooterNote, SidebarMain } from "@/core/components/layouts";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { LayoutProvider } from "@/core/providers";
-import { getTitle } from "@/core/utils";
+import { getRouteTitle } from "@/core/utils";
 import { getSession } from "@/modules/auth";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SWRConfig } from "swr";
 
-export const metadata: Metadata = { title: getTitle("/dashboard") };
+export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
 
 export default async function DashboardLayout({
   children,

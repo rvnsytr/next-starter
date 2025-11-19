@@ -1,4 +1,4 @@
-import { FooterNote } from "@/core/components/layouts/footer";
+import { FooterNote } from "@/core/components/layouts";
 import {
   Card,
   CardContent,
@@ -14,12 +14,12 @@ import {
   TabsTrigger,
 } from "@/core/components/ui/tabs";
 import { appMeta } from "@/core/constants";
-import { getTitle } from "@/core/utils";
+import { getRouteTitle } from "@/core/utils";
 import { SignInForm, SignOnGithubButton, SignUpForm } from "@/modules/auth";
 import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: getTitle("/sign-in") };
+export const metadata: Metadata = { title: getRouteTitle("/sign-in") };
 
 export default function Page() {
   return (

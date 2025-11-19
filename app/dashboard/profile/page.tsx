@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layouts/dashboard";
+import { DashboardMain } from "@/core/components/layouts";
 import {
   Card,
   CardAction,
@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { appMeta } from "@/core/constants";
-import { getTitle } from "@/core/utils";
+import { getRouteTitle } from "@/core/utils";
 import {
   ChangePasswordForm,
   DeleteMyAccountButton,
@@ -24,7 +24,9 @@ import {
 } from "@/modules/auth";
 import { Metadata } from "next";
 
-export const metadata: Metadata = { title: getTitle("/dashboard/profile") };
+export const metadata: Metadata = {
+  title: getRouteTitle("/dashboard/profile"),
+};
 
 export default async function Page() {
   const { session, meta } = await requireAuth("/dashboard/profile");

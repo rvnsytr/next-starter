@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layouts/dashboard";
+import { DashboardMain } from "@/core/components/layouts";
 import {
   CardAction,
   CardDescription,
@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { Separator } from "@/core/components/ui/separator";
-import { getTitle } from "@/core/utils";
+import { getRouteTitle } from "@/core/utils";
 import {
   AdminCreateUserDialog,
   getUserList,
@@ -15,7 +15,7 @@ import {
 } from "@/modules/auth";
 import { Metadata } from "next";
 
-export const metadata: Metadata = { title: getTitle("/dashboard/users") };
+export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };
 
 export default async function Page() {
   const { session, meta } = await requireAuth("/dashboard/users");
