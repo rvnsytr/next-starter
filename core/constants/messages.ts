@@ -1,4 +1,4 @@
-import { capitalize, formatDate, formatDateDistanceToNow } from "@/core/utils";
+import { capitalize, formatDate, formatDateDistanceToNow } from "../utils";
 
 export const messages = {
   actions: {

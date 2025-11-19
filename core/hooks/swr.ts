@@ -1,6 +1,6 @@
-import { fetcher, FetcherConfig } from "@/core/api";
 import useSWR, { SWRConfiguration, SWRResponse } from "swr";
 import { ZodType } from "zod";
+import { fetcher, FetcherConfig } from "../api";
 
 export type UseValidatedSWRConfig = {
   swr?: SWRConfiguration;

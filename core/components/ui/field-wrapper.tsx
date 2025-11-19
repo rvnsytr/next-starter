@@ -16,7 +16,7 @@ import { LabelProps } from "./label";
  * to maintain consistent spacing, accessibility, and error handling across the app.
  *
  * If you want to use field set with legend and description or customizing your fields structure —
- * refer to the full example implementation [here](../modules/example.tsx).
+ * refer to the full example implementation [here](@//modules/docs/components.client.tsx).
  *
  * Or check the official shadcn documentation on
  * [building forms](https://ui.shadcn.com/docs/forms/react-hook-form) for additional guidance.

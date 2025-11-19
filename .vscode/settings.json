@@ -1,0 +1,22 @@
+{
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true,
+    "**/core/**": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true,
+    "**/core/**": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true,
+    "**/core/**": true
+  },
+
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "next/router",
+    "radix-ui"
+  ],
+
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "javascript.preferences.importModuleSpecifier": "shortest"
+}
