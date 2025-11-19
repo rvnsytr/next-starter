@@ -21,16 +21,16 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-type DynamicBreadcrumbMeta = { href: Route; displayName: string };
-type DynamicBreadcrumbData = Route | DynamicBreadcrumbMeta;
+type DynamicBreadcrumbContent = { href: Route; label: string };
+type DynamicBreadcrumbData = Route | DynamicBreadcrumbContent;
 export type DynamicBreadcrumbProps = {
   breadcrumb?: DynamicBreadcrumbData[];
   currentPage: string;
 };
 
-function getProps(data: DynamicBreadcrumbData): DynamicBreadcrumbMeta {
+function getProps(data: DynamicBreadcrumbData): DynamicBreadcrumbContent {
   return typeof data === "string"
-    ? { href: data, displayName: routesMeta[data].displayName }
+    ? { href: data, label: routesMeta[data].displayName }
     : data;
 }
 
@@ -44,7 +44,7 @@ export function DynamicBreadcrumb({
     <Breadcrumb className={className}>
       <BreadcrumbList>
         {breadcrumb?.map((item, index) => {
-          const { href, displayName } = getProps(item);
+          const { href, label } = getProps(item);
           if (isMobile && index !== 0) return;
 
           return (
@@ -52,7 +52,7 @@ export function DynamicBreadcrumb({
               <BreadcrumbItem className="shrink-0">
                 <BreadcrumbLink asChild>
                   <Link href={href} className="link">
-                    {displayName}
+                    {label}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -70,12 +70,12 @@ export function DynamicBreadcrumb({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {breadcrumb?.map((item, index) => {
-                    const { href, displayName } = getProps(item);
+                    const { href, label } = getProps(item);
                     if (isMobile && index === 0) return;
 
                     return (
                       <DropdownMenuItem key={href} asChild>
-                        <Link href={href}>{displayName}</Link>
+                        <Link href={href}>{label}</Link>
                       </DropdownMenuItem>
                     );
                   })}

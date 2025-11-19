@@ -1,5 +1,7 @@
 import { cn } from "@/core/utils";
 import { LoaderIcon, PackageX } from "lucide-react";
+import { motion } from "motion/react";
+import { Spinner } from "./spinner";
 
 export function LoadingFallback({ className }: { className?: string }) {
   return (
@@ -30,6 +32,28 @@ export function ErrorFallback({
         <PackageX className="size-4 shrink-0" /> {error?.code}
       </div>
       {!hideText && <p>{error?.message ?? "Tidak ada data"}</p>}
+    </div>
+  );
+}
+
+export function AppLoadingFallback() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0 }}
+      className="flex min-h-dvh flex-col items-center justify-center gap-y-8"
+    >
+      <Spinner variant="frame" className="size-5" />
+    </motion.div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function AppErrorFallback({ error }: { error?: any }) {
+  return (
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-y-8">
+      <ErrorFallback error={error} />
     </div>
   );
 }
