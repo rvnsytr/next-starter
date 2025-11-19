@@ -91,11 +91,12 @@ next-starter/
   modules/
     auth/                     -- Example "auth" feature module
       actions.ts              -- Server actions
-      constants.ts            -- Module-specific constants
       components.tsx          -- Server components
       components.client.tsx   -- Client components
-      schemas.db.ts           -- Drizzle schemas for this module
-      schemas.zod.ts          -- Zod validation schemas for this module
+      constants.ts            -- Module-specific constants
+      hooks.ts                -- Module-specific Hooks
+      schemas.db.ts           -- Module-specific Drizzle schemas
+      schemas.zod.ts          -- Module-specific Zod validation schemas
       provider.x.tsx          -- just example: Context provider x
       provider.y.tsx          -- just example: Context provider y
       index.ts                -- Re-export entry point. So this module can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
