@@ -1,13 +1,9 @@
 "use server";
 
 import { auth } from "@/core/auth";
-import { routesMeta } from "@/core/constants";
 import { deleteFiles, extractKeyFromPublicUrl } from "@/core/s3";
 import { UserWithRole } from "better-auth/plugins";
-import { Route } from "next";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { Role } from "./constants";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await headers() });
@@ -22,22 +18,6 @@ export async function getUserList() {
 
 export async function getSessionList() {
   return await auth.api.listSessions({ headers: await headers() });
-}
-
-export async function requireAuth(route: Route) {
-  const meta = routesMeta[route];
-  if (!meta.role) notFound();
-
-  const session = await getSession();
-  if (!session) notFound();
-
-  const isAuthorized =
-    meta.role &&
-    (meta.role === "all" || meta.role.includes(session.user.role as Role));
-
-  if (!isAuthorized) notFound();
-
-  return { session, meta };
 }
 
 export async function revokeUserSessions(ids: string[]) {

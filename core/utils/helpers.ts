@@ -4,6 +4,13 @@ import { Route } from "next";
 import { twMerge } from "tailwind-merge";
 import { appMeta, dashboardMenu, Menu, routesMeta } from "../constants";
 
+export function authorized(route: Route | null, role?: string) {
+  if (!route || !role) return false;
+  const meta = routesMeta[route];
+  if (!meta.role) return false;
+  return meta.role && (meta.role === "all" || meta.role.includes(role as Role));
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

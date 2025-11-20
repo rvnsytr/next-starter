@@ -102,7 +102,7 @@ function SidebarProvider({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-        (event.ctrlKey || event.metaKey || event.altKey)
+        (event.ctrlKey || event.altKey)
       ) {
         event.preventDefault();
         toggleSidebar();
@@ -289,8 +289,6 @@ function SidebarTrigger({
         <span>Toggle Sidebar</span>
         <div className="flex items-center gap-x-2">
           (<Kbd>Ctrl</Kbd>
-          <span>/</span>
-          <Kbd>⌘</Kbd>
           <span>/</span>
           <Kbd>Alt</Kbd>)<span>+</span>
           <Kbd>B</Kbd>

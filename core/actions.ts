@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 
-export async function getUrlMeta() {
+export async function getRequestMeta() {
   const req = await headers();
   const url = req.get("x-url");
   const origin = req.get("x-origin");

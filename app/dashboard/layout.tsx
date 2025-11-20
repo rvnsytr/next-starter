@@ -1,11 +1,11 @@
+import { getRequestMeta } from "@/core/actions";
 import { FooterNote, SidebarMain } from "@/core/components/layouts";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { LayoutProvider } from "@/core/providers";
-import { getRouteTitle } from "@/core/utils";
-import { getSession } from "@/modules/auth";
+import { authorized, getRouteTitle } from "@/core/utils";
+import { AuthProvider, getSession } from "@/modules/auth";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SWRConfig } from "swr";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
 
@@ -13,20 +13,22 @@ export default async function DashboardLayout({
   children,
 }: LayoutProps<"/dashboard">) {
   const session = await getSession();
-  if (!session) notFound();
+  const { pathname } = await getRequestMeta();
+
+  if (!session || !authorized(pathname, session.user.role)) return notFound();
+
   return (
-    <SWRConfig value={{ fallback: { session } }}>
+    <AuthProvider session={session}>
       <SidebarProvider>
-        <SidebarMain data={session.user} />
+        <SidebarMain />
 
         <SidebarInset>
           <LayoutProvider>{children}</LayoutProvider>
-
           <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
             <FooterNote className="container" />
           </footer>
         </SidebarInset>
       </SidebarProvider>
-    </SWRConfig>
+    </AuthProvider>
   );
 }

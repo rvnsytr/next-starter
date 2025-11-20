@@ -41,10 +41,10 @@ export function AppLoadingFallback() {
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0 }}
-      className="flex min-h-dvh flex-col items-center justify-center gap-y-8"
+      exit={{ opacity: 0, scale: 2 }}
+      className="flex min-h-svh flex-col items-center justify-center gap-y-8"
     >
-      <Spinner variant="frame" className="size-5" />
+      <Spinner variant="orbit" className="size-8" />
     </motion.div>
   );
 }

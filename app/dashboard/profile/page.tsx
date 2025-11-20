@@ -13,14 +13,10 @@ import { getRouteTitle } from "@/core/utils";
 import {
   ChangePasswordForm,
   DeleteMyAccountButton,
-  getSessionList,
   PersonalInformation,
-  requireAuth,
+  ProfileBadges,
   RevokeOtherSessionsButton,
-  RevokeSessionButton,
-  Role,
-  UserRoleBadge,
-  UserVerifiedBadge,
+  RevokeSessionList,
 } from "@/modules/auth";
 import { Metadata } from "next";
 
@@ -28,12 +24,9 @@ export const metadata: Metadata = {
   title: getRouteTitle("/dashboard/profile"),
 };
 
-export default async function Page() {
-  const { session, meta } = await requireAuth("/dashboard/profile");
-  const sessionList = await getSessionList();
-
+export default function Page() {
   return (
-    <DashboardMain currentPage={meta.displayName} className="items-center">
+    <DashboardMain className="items-center">
       <Card id="informasi-pribadi" className="w-full scroll-m-20 lg:max-w-xl">
         <CardHeader className="border-b">
           <CardTitle>Informasi Pribadi</CardTitle>
@@ -41,12 +34,11 @@ export default async function Page() {
             Perbarui dan kelola informasi profil {appMeta.name} Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
-            <UserRoleBadge value={session.user.role as Role} />
-            {session.user.emailVerified && <UserVerifiedBadge />}
+            <ProfileBadges />
           </CardAction>
         </CardHeader>
 
-        <PersonalInformation {...session.user} />
+        <PersonalInformation />
       </Card>
 
       <Card id="ubah-kata-sandi" className="w-full scroll-m-20 lg:max-w-xl">
@@ -69,13 +61,7 @@ export default async function Page() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-y-2">
-          {sessionList.map((item) => (
-            <RevokeSessionButton
-              key={item.id}
-              currentSessionId={session.session.id}
-              {...item}
-            />
-          ))}
+          <RevokeSessionList />
         </CardContent>
 
         <CardFooter className="flex-col items-stretch border-t md:flex-row md:items-center">
@@ -93,7 +79,7 @@ export default async function Page() {
         </CardHeader>
 
         <CardContent>
-          <DeleteMyAccountButton {...session.user} />
+          <DeleteMyAccountButton />
         </CardContent>
       </Card>
     </DashboardMain>

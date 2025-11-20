@@ -12,7 +12,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/core/components/ui/alert-dialog";
-import { Badge } from "@/core/components/ui/badge";
 import { Button, buttonVariants } from "@/core/components/ui/button";
 import { ResetButton } from "@/core/components/ui/buttons";
 import { CardContent, CardFooter } from "@/core/components/ui/card";
@@ -45,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/core/components/ui/dropdown-menu";
+import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
 import {
   Field,
   FieldContent,
@@ -121,11 +121,13 @@ import { z } from "zod";
 import {
   deleteProfilePicture,
   deleteUsers,
+  getSessionList,
   getUserList,
   revokeUserSessions,
 } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
 import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
+import { useAuth } from "./provider.auth";
 import { userSchema } from "./schemas.zod";
 
 const sharedText = {
@@ -169,7 +171,7 @@ export function SignOutButton() {
 
 export function SignOnGithubButton() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const wasLastUsed = authClient.isLastUsedLoginMethod("github");
+  // const wasLastUsed = authClient.isLastUsedLoginMethod("github");
 
   return (
     <Button
@@ -198,21 +200,21 @@ export function SignOnGithubButton() {
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
       {sharedText.signOn("Github")}
-      {wasLastUsed && (
+      {/* {wasLastUsed && (
         <Badge
           variant="outline"
           className="bg-card absolute -top-3 right-1 shadow"
         >
           {sharedText.lastUsed}
         </Badge>
-      )}
+      )} */}
     </Button>
   );
 }
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const wasLastUsed = authClient.isLastUsedLoginMethod("email");
+  // const wasLastUsed = authClient.isLastUsedLoginMethod("email");
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema
@@ -314,11 +316,11 @@ export function SignInForm() {
       <Button type="submit" className="relative" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <LogIn /> }} />
         Masuk ke Dashboard
-        {wasLastUsed && (
-          <Badge className="border-card absolute -top-3 right-1 border shadow">
+        {/* {wasLastUsed && (
+          <Badge className="bg-primary absolute -top-3 right-1 border border-transparent shadow">
             {sharedText.lastUsed}
           </Badge>
-        )}
+        )} */}
       </Button>
     </form>
   );
@@ -495,7 +497,7 @@ export function SignUpForm() {
               </FieldLabel>
               <FieldDescription>
                 Saya menyetujui{" "}
-                <span className="text-foreground link-underline">
+                <span className="text-foreground">
                   ketentuan layanan dan kebijakan privasi
                 </span>{" "}
                 {appMeta.name}.
@@ -517,9 +519,7 @@ export function SignUpForm() {
   );
 }
 
-/*
- * --- USER ---
- */
+// #region USER
 
 const createUserColumn = createColumnHelper<UserWithRole>();
 const getUserColumn = (currentUserId: string) => [
@@ -622,23 +622,25 @@ const getUserColumn = (currentUserId: string) => [
 ];
 
 export function UserDataTable({
-  data: fallbackData,
-  currentUserId,
   searchPlaceholder = "Cari Pengguna...",
   ...props
-}: OtherDataTableProps<UserWithRole> & {
-  data: UserWithRole[];
-  currentUserId: string;
-}) {
+}: OtherDataTableProps<UserWithRole>) {
+  const { session } = useAuth();
+
   const fetcher = async () => (await getUserList()).users;
-  const { data } = useSWR("users", fetcher, { fallbackData });
-  const columns = getUserColumn(currentUserId);
+  const { data, error, isLoading } = useSWR("users", fetcher);
+
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+
+  const columns = getUserColumn(session.user.id);
+
   return (
     <DataTable
-      data={data}
+      data={data ?? []}
       columns={columns}
       searchPlaceholder={searchPlaceholder}
-      enableRowSelection={({ original }) => original.id !== currentUserId}
+      enableRowSelection={({ original }) => original.id !== session.user.id}
       rowSelectionFn={(data, table) => {
         const filteredData = data.map(({ original }) => original);
         const clearRowSelection = () => table.resetRowSelection();
@@ -761,12 +763,23 @@ export function UserDetailSheet({
   );
 }
 
+export function ProfileBadges() {
+  const { session } = useAuth();
+  return (
+    <>
+      <UserRoleBadge value={session.user.role as Role} />
+      {session.user.emailVerified && <UserVerifiedBadge />}
+    </>
+  );
+}
+
 export function ProfilePicture({
-  id,
-  name,
-  image,
-}: Pick<UserWithRole, "id" | "name" | "image">) {
-  const router = useRouter();
+  data,
+}: {
+  data: Pick<UserWithRole, "id" | "name" | "image">;
+}) {
+  const { id, name, image } = data;
+
   const inputAvatarRef = useRef<HTMLInputElement>(null);
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
@@ -792,13 +805,13 @@ export function ProfilePicture({
       { image: url },
       {
         onSuccess: () => {
-          setIsChange(false);
-          router.refresh();
           toast.success("Foto profil Anda berhasil diperbarui.");
+          setIsChange(false);
+          mutate("session");
         },
         onError: ({ error }) => {
-          setIsChange(false);
           toast.error(error.message);
+          setIsChange(false);
         },
       },
     );
@@ -814,7 +827,7 @@ export function ProfilePicture({
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil dihapus.");
           setIsRemoved(false);
-          router.refresh();
+          mutate("session");
         },
         onError: ({ error }) => {
           toast.error(error.message);
@@ -891,11 +904,12 @@ export function ProfilePicture({
   );
 }
 
-export function PersonalInformation({ ...props }: UserWithRole) {
+export function PersonalInformation() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { name, email } = props;
+  const { session } = useAuth();
+  const { name, email } = session.user;
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema.pick({ name: true, email: true });
@@ -928,7 +942,7 @@ export function PersonalInformation({ ...props }: UserWithRole) {
   return (
     <form onSubmit={form.handleSubmit(formHandler)} noValidate>
       <CardContent className="flex flex-col gap-y-4">
-        <ProfilePicture {...props} />
+        <ProfilePicture data={session.user} />
 
         <Controller
           name="email"
@@ -1152,17 +1166,26 @@ export function ChangePasswordForm() {
   );
 }
 
-export function RevokeSessionButton({
-  currentSessionId,
-  id,
-  updatedAt,
-  userAgent,
-  token,
-}: Session & { currentSessionId: string }) {
+export function RevokeSessionList() {
+  const { data, error, isLoading } = useSWR("sessionList", getSessionList);
+
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+
+  return (data ?? []).map((item) => (
+    <RevokeSessionButton key={item.id} data={item} />
+  ));
+}
+
+function RevokeSessionButton({ data }: { data: Session }) {
+  const { id, updatedAt, userAgent, token } = data;
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const isCurrentSession = currentSessionId === id;
+  const { session } = useAuth();
+
+  const isCurrentSession = session.session.id === id;
   const { browser, os, device } = new UAParser(userAgent!).getResult();
 
   const DeviceIcons = {
@@ -1301,12 +1324,16 @@ export function RevokeOtherSessionsButton() {
   );
 }
 
-export function DeleteMyAccountButton({ image }: Pick<UserWithRole, "image">) {
+export function DeleteMyAccountButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const { session } = useAuth();
+
   const clickHandler = async () => {
     setIsLoading(true);
+
+    const { image } = session.user;
     if (image) await deleteProfilePicture(image);
 
     authClient.deleteUser(
@@ -1363,9 +1390,9 @@ export function DeleteMyAccountButton({ image }: Pick<UserWithRole, "image">) {
   );
 }
 
-/*
- * --- ADMIN ---
- */
+// #endregion
+
+// #region ADMIN
 
 export function AdminCreateUserDialog() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -1699,7 +1726,6 @@ function AdminChangeUserRoleForm({
                         id={value}
                         classNames={{ circle: "fill-[var(--field-color)]" }}
                         aria-invalid={!!fieldState.error}
-                        disabled={data.role === value}
                       />
                     </Field>
                   </FieldLabel>
@@ -2058,3 +2084,5 @@ function AdminActionRemoveUsersDialog({
     </Dialog>
   );
 }
+
+// #endregion

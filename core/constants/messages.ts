@@ -20,6 +20,9 @@ export const messages = {
     update: "Simpan Perubahan",
     upload: "Unggah",
     view: "Lihat",
+
+    prev: "Sebelumnya",
+    next: "Selanjutnya",
   },
 
   empty: "Tidak ada hasil yang ditemukan.",

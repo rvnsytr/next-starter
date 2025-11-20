@@ -7,24 +7,16 @@ import {
 } from "@/core/components/ui/card";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/utils";
-import {
-  AdminCreateUserDialog,
-  getUserList,
-  requireAuth,
-  UserDataTable,
-} from "@/modules/auth";
+import { AdminCreateUserDialog, UserDataTable } from "@/modules/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };
 
-export default async function Page() {
-  const { session, meta } = await requireAuth("/dashboard/users");
-  const data = await getUserList();
-
+export default function Page() {
   return (
-    <DashboardMain currentPage={meta.displayName} className="pt-6">
+    <DashboardMain className="pt-6">
       <CardHeader asPageHeader>
-        <CardTitle>Manajemen {meta.displayName}</CardTitle>
+        <CardTitle>Manajemen Pengguna</CardTitle>
         <CardDescription>
           Kelola dan lihat detail semua pengguna yang telah terdaftar.
         </CardDescription>
@@ -35,7 +27,7 @@ export default async function Page() {
 
       <Separator />
 
-      <UserDataTable data={data.users} currentUserId={session.user.id} />
+      <UserDataTable />
     </DashboardMain>
   );
 }

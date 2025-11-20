@@ -5,10 +5,10 @@ import { cn, getActiveRoute, getMenuByRole, toKebabCase } from "@/core/utils";
 import {
   Role,
   SignOutButton,
+  useAuth,
   UserAvatar,
   UserVerifiedBadge,
 } from "@/modules/auth";
-import { UserWithRole } from "better-auth/plugins";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,7 +47,10 @@ import {
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
 
-export function SidebarMain({ data }: { data: UserWithRole }) {
+export function SidebarMain() {
+  const { session } = useAuth();
+  const data = session.user;
+
   const pathname = usePathname();
   const { isMobile, toggleSidebar } = useSidebar();
 

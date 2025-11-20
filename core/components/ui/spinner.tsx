@@ -2,17 +2,18 @@
 
 import { cn } from "@/core/utils";
 import {
-  FrameIcon,
+  Frame,
   Loader2Icon,
   LoaderIcon,
+  LucideIcon,
   LucideProps,
+  Orbit,
   RefreshCcw,
 } from "lucide-react";
 import { useLinkStatus } from "next/link";
 
-export type SpinnerProps = LucideProps & {
-  variant?: "default" | "loader" | "refresh" | "frame";
-};
+type SpinnerVariant = "default" | "loader" | "refresh" | "frame" | "orbit";
+export type SpinnerProps = LucideProps & { variant?: SpinnerVariant };
 
 export type LoadingSpinnerProps = SpinnerProps & {
   loading?: boolean;
@@ -24,18 +25,26 @@ export function Spinner({
   className,
   ...props
 }: SpinnerProps) {
-  const Icon = {
+  const allIcon: Record<SpinnerVariant, LucideIcon> = {
     default: Loader2Icon,
     loader: LoaderIcon,
     refresh: RefreshCcw,
-    frame: FrameIcon,
-  }[variant];
+    frame: Frame,
+    orbit: Orbit,
+  };
+
+  const reverseArr: SpinnerVariant[] = ["orbit"];
+  const Icon = allIcon[variant];
 
   return (
     <Icon
       role="status"
       aria-label="Loading"
-      className={cn("size-4 animate-spin", className)}
+      className={cn(
+        "size-4 animate-spin",
+        reverseArr.includes(variant) && "animate-reverse",
+        className,
+      )}
       {...props}
     />
   );

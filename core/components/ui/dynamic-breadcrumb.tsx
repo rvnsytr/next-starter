@@ -4,6 +4,7 @@ import { routesMeta } from "@/core/constants";
 import { useIsMobile } from "@/core/hooks";
 import { Route } from "next";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import {
   Breadcrumb,
@@ -25,7 +26,7 @@ type DynamicBreadcrumbContent = { href: Route; label: string };
 type DynamicBreadcrumbData = Route | DynamicBreadcrumbContent;
 export type DynamicBreadcrumbProps = {
   breadcrumb?: DynamicBreadcrumbData[];
-  currentPage: string;
+  currentPage?: string;
 };
 
 function getProps(data: DynamicBreadcrumbData): DynamicBreadcrumbContent {
@@ -39,7 +40,9 @@ export function DynamicBreadcrumb({
   currentPage,
   className,
 }: DynamicBreadcrumbProps & { className?: string }) {
+  const pathname = usePathname();
   const isMobile = useIsMobile();
+
   return (
     <Breadcrumb className={className}>
       <BreadcrumbList>
@@ -89,7 +92,7 @@ export function DynamicBreadcrumb({
 
         <BreadcrumbItem>
           <BreadcrumbPage className="line-clamp-1 cursor-default text-ellipsis">
-            {currentPage}
+            {currentPage ?? routesMeta[pathname].displayName}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
