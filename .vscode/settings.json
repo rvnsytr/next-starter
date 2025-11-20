@@ -1,5 +1,11 @@
 {
-  "files.readonlyInclude": { "**/core/**": true },
+  "files.readonlyInclude": {
+    "**/core/**": true
+  },
+  "files.readonlyExclude": {
+    "**/core/db/schemas.ts": true
+  },
+
   "files.watcherExclude": { "**/core/**": true },
 
   "typescript.preferences.autoImportFileExcludePatterns": [
