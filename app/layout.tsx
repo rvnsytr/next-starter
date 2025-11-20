@@ -1,7 +1,7 @@
 import { GridPattern } from "@/core/components/ui/grid-pattern";
 import { Toaster } from "@/core/components/ui/sonner";
 import { appMeta } from "@/core/constants";
-import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
+import { GlobalShortcuts } from "@/core/providers";
 import { cn } from "@/core/utils";
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";

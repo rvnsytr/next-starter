@@ -31,7 +31,7 @@ export function ErrorFallback({
       <div className="flex items-center gap-x-2">
         <TriangleAlert className="size-4 shrink-0" /> {error?.code}
       </div>
-      {!hideText && <p>{error?.message ?? "Tidak ada data"}</p>}
+      {!hideText && <pre>{error?.message ?? "Tidak ada data"}</pre>}
     </div>
   );
 }

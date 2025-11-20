@@ -272,6 +272,10 @@
     @apply mt-6 border-l-2 pl-6 italic;
   }
 
+  pre {
+    @apply font-mono;
+  }
+
   code {
     @apply bg-muted relative rounded px-1.5 py-0.5 font-mono text-sm font-medium;
   }

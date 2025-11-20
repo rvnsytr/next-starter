@@ -9,7 +9,7 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
 - Database and S3 integration (Drizzle + AWS SDK)
 - Handy utility functions, actions and S3 helpers
 - Ready-to-use components, and styling
-- Feature-based “modules” system for scaling apps
+- Scalable feature-based modules architecture
 
 ## Tech Stack
 
@@ -30,26 +30,19 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
   - [Better Auth](https://better-auth.com)
 
 - Other
-  - [AWS SDK for S3](https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-s3)
+  - [Prettier](https://prettier.io)
   - [Zod v4](https://zod.dev)
   - [SWR](https://swr.vercel.app/)
   - [Motion](https://motion.dev)
-  - [Prettier](https://prettier.io)
+  - [AWS SDK for S3](https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-s3)
 
 ## Getting Started
 
 ### Installation
 
-Create a new repository using this template or clone the repository directly:
-
 ```sh
 git clone https://github.com/RvnSytR/next-starter
 cd next-starter
-```
-
-Install the dependencies:
-
-```sh
 bun install
 ```
 
@@ -63,20 +56,22 @@ bunx drizzle-kit push
 
 ### Development Server
 
-Start the Next.js development server:
-
 ```sh
 bun run dev
 ```
 
 ## File Structure
 
-The project uses a **module-based** architecture:
+This project follows a module-based architecture, where each feature is isolated and self-contained.
 
-- Each feature lives inside `modules/...`
-- Modules contain only what they need
-- Modules must export everything through `index.ts`
-- `core/` contains shared logic and should not be edited
+### Principles
+
+- Each feature lives in `modules/<feature>/`
+- A Module contain **only what the module needs**
+- Export only **high-level** module APIs via `index.ts`
+- Do **not** re-export low-level files such as `schemas.zod.ts` or `schemas.db.ts`
+- `core/` **should not be edited**, except `core/db/schemas.ts` when adding new module DB schemas
+- Prefer the **shortest possible import path**
 
 ```pgsql
 next-starter/
@@ -89,31 +84,31 @@ next-starter/
     page.tsx
 
   modules/
-    auth/                     -- Example "auth" feature module
-      actions.ts              -- Server actions
-      components.tsx          -- Server components
-      components.client.tsx   -- Client components
-      constants.ts            -- Module-specific constants
-      hooks.ts                -- Module-specific Hooks
-      schemas.db.ts           -- Module-specific Drizzle schemas
-      schemas.zod.ts          -- Module-specific Zod validation schemas
-      provider.x.tsx          -- just example: Context provider x
-      provider.y.tsx          -- just example: Context provider y
-      index.ts                -- Re-export entry point. So this module can be imported cleanly, like: import { SignInForm } form "@/modules/auth"
+    auth/
+      actions.ts
+      components.tsx
+      components.client.tsx
+      constants.ts
+      hooks.ts
+      schemas.db.ts
+      schemas.zod.ts
+      provider.auth.tsx       -- format: provider.<name>.tsx
+      index.ts                -- high-level exports
 
     parent-module/
       sub-module/
         index.ts
       index.ts
 
-  core/                       -- Shared, stable, "do-not-edit" code
+  core/                       -- Shared, stable, low-change code
     components/
       layout/
       ui/
     constants/
+      routes.ts               -- Contains all route metadata. Modify when adding or updating modules or routes.
     db/
       index.ts
-      schemas.ts              -- Master Drizzle schema that unifies all module db schemas. Allowed to edit if new module includes a `db.schemas.ts`
+      schemas.ts              -- Aggregate Drizzle schemas. Allowed to edit if new module includes a `db.schemas.ts`
     hooks/
     providers/
     utils/
@@ -132,25 +127,49 @@ next-starter/
     globals.css
 ```
 
-## Tips
+### Example
 
-To avoid default imports for `next/router` and `radix-ui` components, you can adjust your TypeScript settings by adding the following configuration to your `.vscode/settings.json` file:
+#### - Module Entry Point ( `@/modules/<thing>/index.ts` )
 
-```json
-{
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "next/router",
-    "radix-ui"
-  ]
-}
+```typescript
+export * from "./actions";
+export * from "./components";
+export * from "./components.client";
+export * from "./constants";
+export * from "./provider.auth";
+```
+
+#### - Importing Module Schemas
+
+```typescript
+// ❌ Wrong (do not re-export schemas in index.ts)
+// @/modules/auth/index.ts
+export * from "./schemas.zod";
+
+// @/modules/post/components.tsx
+import { userSchema } from "@/modules/auth";
+
+// ✅ Correct (import schema directly)
+// @/modules/post/components.tsx
+import { userSchema } from "@/modules/auth/schemas.zod";
+```
+
+#### - Prefer Shortest Import
+
+```typescript
+import ... from "./auth";      // ✅ OK
+import ... from "../auth";     // ✅ OK
+import ... from "@/core/auth"; // ✅ OK
+
+import ... from "../../auth";  // ❌ Avoid deep relative imports
 ```
 
 ## TODO
 
 - Date Picker Input
-- Drizzle Studio
-- Server Side Data Table
-- Dashboard Menu Search (ctrl + k) and Pinning
-- More Input Number Fields
+- Drizzle Studio Integration
+- Server-Side Data Table
+- Dashboard Menu Search (Ctrl + K) + Pinning
+- More Numeric Form Inputs
 - Event Calendar
-- ? safeMutate(key) for SWR
+- safeMutate(key) helper for SWR

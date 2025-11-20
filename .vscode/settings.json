@@ -1,8 +1,8 @@
 {
-  "files.readonlyInclude": {
-    "**/core/**": true
-  },
+  "files.readonlyInclude": { "**/core/**": true },
+
   "files.readonlyExclude": {
+    "**/core/constants/routes.ts": true,
     "**/core/db/schemas.ts": true
   },
 
