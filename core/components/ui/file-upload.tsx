@@ -31,7 +31,7 @@ export type FileUploadProps = Pick<
   onChange: (files: File[]) => void;
   accept?: FileType;
   maxSize?: number;
-  classNames?: { container?: string; dropzone?: string };
+  classNames?: { container?: string; dropzone?: string; files?: string };
 };
 
 export function FileUpload({
@@ -213,15 +213,18 @@ export function FileUpload({
                 <Link
                   href={fileURL as Route}
                   target="_blank"
-                  className="group flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-md"
+                  className={cn(
+                    "group flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-md",
+                    classNames?.files,
+                  )}
                 >
                   {isImage ? (
                     <Image
                       src={fileURL}
                       alt={file.name}
-                      className="size-full object-cover object-center transition-transform group-hover:scale-105"
                       width={100}
                       height={100}
+                      className="size-full object-cover object-center transition-transform group-hover:scale-105"
                     />
                   ) : (
                     <div
