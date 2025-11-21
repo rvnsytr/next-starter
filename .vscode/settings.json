@@ -2,11 +2,10 @@
   "files.readonlyInclude": { "**/core/**": true },
 
   "files.readonlyExclude": {
+    "**/core/constants/menu.ts": true,
     "**/core/constants/routes.ts": true,
     "**/core/db/schemas.ts": true
   },
-
-  "files.watcherExclude": { "**/core/**": true },
 
   "typescript.preferences.autoImportFileExcludePatterns": [
     "next/router",
