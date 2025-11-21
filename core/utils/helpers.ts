@@ -19,6 +19,11 @@ export function delay(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
+export function normalizeRoute(route?: string | null): Route {
+  if (!route) return "/";
+  return (route.replace(/\/+$/, "") as Route) || "/";
+}
+
 export function setRouteTitle(title: string) {
   return `${title} | ${appMeta.name}`;
 }
