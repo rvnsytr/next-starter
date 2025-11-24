@@ -139,6 +139,8 @@ const sharedText = {
   revokeSession: "Cabut Sesi",
 };
 
+// #region SIGN
+
 export function SignOutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -518,6 +520,8 @@ export function SignUpForm() {
     </form>
   );
 }
+
+// #endregion
 
 // #region USER
 
