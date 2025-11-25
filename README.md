@@ -72,6 +72,7 @@ This project follows a module-based architecture, where each feature is isolated
 - Do **not** re-export low-level files such as `schemas.zod.ts` or `schemas.db.ts`
 - `core/` **should not be edited**, except `core/db/schemas.ts` when adding new module DB schemas
 - Prefer the **shortest possible import path**
+- Components can be structured either as single files (`module/<feature>/component.tsx`, `module/<feature>/component.client.tsx`) or grouped inside a folder (`module/<feature>/components/*`) — as long as the public components are exported through the module’s `index.ts`
 
 ```pgsql
 next-starter/
@@ -89,7 +90,7 @@ next-starter/
       components.tsx
       components.client.tsx
       constants.ts
-      hooks.ts
+      hooks.ts                -- Module-specific hooks and SWR helpers (useSWR and its mutator).
       schemas.db.ts
       schemas.zod.ts
       provider.auth.tsx       -- format: provider.<name>.tsx

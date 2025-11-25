@@ -115,18 +115,22 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import useSWR, { mutate } from "swr";
 import { UAParser } from "ua-parser-js";
 import { z } from "zod";
 import {
   deleteProfilePicture,
   deleteUsers,
-  getSessionList,
-  getUserList,
   revokeUserSessions,
 } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
 import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
+import {
+  mutateSession,
+  mutateSessionList,
+  mutateUsers,
+  useSessionList,
+  useUsers,
+} from "./hooks";
 import { useAuth } from "./provider.auth";
 import { userSchema } from "./schemas.zod";
 
@@ -631,8 +635,7 @@ export function UserDataTable({
 }: OtherDataTableProps<UserWithRole>) {
   const { session } = useAuth();
 
-  const fetcher = async () => (await getUserList()).users;
-  const { data, error, isLoading } = useSWR("users", fetcher);
+  const { data, error, isLoading } = useUsers();
 
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
@@ -811,7 +814,8 @@ export function ProfilePicture({
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil diperbarui.");
           setIsChange(false);
-          mutate("session");
+          // mutate("session");
+          mutateSession();
         },
         onError: ({ error }) => {
           toast.error(error.message);
@@ -831,7 +835,8 @@ export function ProfilePicture({
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil dihapus.");
           setIsRemoved(false);
-          mutate("session");
+          // mutate("session");
+          mutateSession();
         },
         onError: ({ error }) => {
           toast.error(error.message);
@@ -1171,7 +1176,7 @@ export function ChangePasswordForm() {
 }
 
 export function RevokeSessionList() {
-  const { data, error, isLoading } = useSWR("sessionList", getSessionList);
+  const { data, error, isLoading } = useSessionList();
 
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
@@ -1184,7 +1189,6 @@ export function RevokeSessionList() {
 function RevokeSessionButton({ data }: { data: Session }) {
   const { id, updatedAt, userAgent, token } = data;
 
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { session } = useAuth();
@@ -1211,7 +1215,7 @@ function RevokeSessionButton({ data }: { data: Session }) {
       {
         onSuccess: () => {
           setIsLoading(false);
-          router.refresh();
+          mutateSessionList();
           toast.success("Sesi berhasil dicabut.");
         },
         onError: ({ error }) => {
@@ -1435,7 +1439,7 @@ export function AdminCreateUserDialog() {
       {
         onSuccess: () => {
           setIsLoading(false);
-          mutate("users");
+          mutateUsers();
           form.reset();
           toast.success(`Akun atas nama ${rest.name} berhasil dibuat.`);
         },
@@ -1667,7 +1671,7 @@ function AdminChangeUserRoleForm({
         onSuccess: () => {
           setIsLoading(false);
           setIsOpen(false);
-          mutate("users");
+          mutateUsers();
           toast.success(
             `Role ${data.name} berhasil diperbarui menjadi ${role}.`,
           );
@@ -1841,7 +1845,7 @@ function AdminRemoveUserDialog({
           setIsLoading(false);
           setIsOpen(false);
           setSheetOpen(false);
-          mutate("users");
+          mutateUsers();
           toast.success(`Akun atas nama ${data.name} berhasil dihapus.`);
         },
         onError: ({ error }) => {
@@ -2012,7 +2016,7 @@ function AdminActionRemoveUsersDialog({
         setIsOpen(false);
 
         onSuccess();
-        mutate("users");
+        mutateUsers();
 
         const successLength = res.filter(({ success }) => success).length;
         return `${successLength} dari ${data.length} akun pengguna berhasil dihapus.`;

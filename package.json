@@ -8,8 +8,8 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.937.0",
-    "@aws-sdk/s3-request-presigner": "^3.937.0",
+    "@aws-sdk/client-s3": "^3.939.0",
+    "@aws-sdk/s3-request-presigner": "^3.939.0",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.4.1",
@@ -21,7 +21,7 @@
     "drizzle-zod": "^0.8.3",
     "lucide-react": "^0.542.0",
     "motion": "^12.23.24",
-    "next": "^16.0.3",
+    "next": "^16.0.4",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",
     "radix-ui": "^1.4.3",
@@ -40,7 +40,7 @@
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/ua-parser-js": "^0.7.39",
     "drizzle-kit": "^0.31.7",

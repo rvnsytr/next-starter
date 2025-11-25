@@ -4,8 +4,7 @@ import { auth } from "@/core/auth";
 import { authorized } from "@/core/utils";
 import { notFound, usePathname } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect } from "react";
-import useSWR from "swr";
-import { getSession } from "./actions";
+import { useSession } from "./hooks";
 
 type SessionData = typeof auth.$Infer.Session;
 
@@ -21,7 +20,7 @@ export function AuthProvider({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const { data: session } = useSWR("session", getSession, { fallbackData });
+  const { data: session } = useSession({ fallbackData });
 
   useEffect(() => {
     if (!authorized(pathname, session?.user.role)) return notFound();

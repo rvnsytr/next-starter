@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useEffectEvent, useState } from "react";
 
 const MOBILE_BREAKPOINT = 768;
