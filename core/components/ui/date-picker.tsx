@@ -1,84 +1,197 @@
-import { cn, formatDate } from "@/core/utils";
-import { isSameDay } from "date-fns";
 import {
-  CalendarDays,
-  Calendar as CalendarIcon,
-  CalendarRange,
-} from "lucide-react";
+  cn,
+  formatDate,
+  formatDDMMYY,
+  parseDDMMYYYY,
+  sanitizeDate,
+} from "@/core/utils";
+import { isSameDay } from "date-fns";
+import { CalendarDays, Calendar as CalendarIcon } from "lucide-react";
+import { useEffect, useEffectEvent, useState } from "react";
+import { DateRange, PropsBase } from "react-day-picker";
 import { Button } from "./button";
-import { Calendar, CalendarProps } from "./calendar";
+import { Calendar } from "./calendar";
+import { Input } from "./input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "./input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
-const defaultPlaceholder = "Pilih Tanggal";
+export type DatePickerBaseProps = Omit<PropsBase, "mode"> & {
+  invalid?: boolean;
+  required?: boolean;
+};
+
+export type DatePickerProps = DatePickerBaseProps & {
+  selected?: Date;
+  onSelect: (value?: Date) => void;
+};
+
+export type DateMultiProps = DatePickerBaseProps & {
+  selected?: Date[];
+  onSelect: (value?: Date[]) => void;
+};
+
+export type DateRangeProps = DatePickerBaseProps & {
+  selected?: DateRange;
+  onSelect: (value?: DateRange) => void;
+};
+
+function RequiredBridge({ required }: { required?: boolean }) {
+  // ? Hidden input used only to trigger the label’s `required` state
+  return <Input className="hidden" disabled required={required} />;
+}
 
 export function DatePicker({
-  placeholder = defaultPlaceholder,
-  numberOfMonths,
-  invalid,
+  invalid = false,
+  selected,
+  onSelect,
   ...props
-}: CalendarProps & { placeholder?: string; invalid?: boolean }) {
-  let isSelected = false;
-  let Icon = CalendarIcon;
+}: DatePickerProps) {
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [strValue, setStrValue] = useState<string>("");
 
-  if (props.mode) {
-    const { mode, selected } = props;
+  const onDateSelected = useEffectEvent(() => {
+    if (!selected) return;
+    const formatted = formatDate(selected, "ddMMyyyy");
+    if (formatted !== strValue) setStrValue(formatted);
+  });
 
-    if (mode === "single") {
-      isSelected = !!selected;
-      placeholder = selected
-        ? formatDate(selected, "PPPP")
-        : defaultPlaceholder;
-    }
+  useEffect(() => onDateSelected(), [selected]);
 
-    if (mode === "multiple") {
-      Icon = CalendarDays;
-      placeholder = defaultPlaceholder;
+  return (
+    <InputGroup>
+      <InputGroupInput
+        type="text"
+        id={props.id}
+        aria-invalid={invalid}
+        required={props.required}
+        placeholder="DD/MM/YYYY"
+        inputMode="numeric"
+        value={formatDDMMYY(strValue)}
+        disabled={isPopoverOpen}
+        onChange={(e) => {
+          const raw = e.target.value;
+          const sanitized = sanitizeDate(raw);
 
-      if (selected && selected.length > 0) {
-        isSelected = true;
-        const max = 1;
-        const { length } = selected;
-        const dates = selected.map((date) => formatDate(date, "PPP"));
+          setStrValue(sanitized);
+          const parsed = parseDDMMYYYY(sanitized);
 
-        placeholder = dates.slice(0, max).join(", ");
-        if (length > max) placeholder += `, dan ${length - max} lainnya`;
-      }
-    }
+          if (parsed && (!selected || parsed.getTime() !== selected.getTime()))
+            onSelect(parsed);
+        }}
+      />
 
-    if (mode === "range") {
-      Icon = CalendarRange;
-      placeholder = "Pilih Rentang Tanggal";
-      numberOfMonths = numberOfMonths ?? 2;
+      <InputGroupAddon align="inline-end">
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <PopoverTrigger asChild>
+            <InputGroupButton
+              size="icon-xs"
+              variant={invalid ? "outline_destructive" : "outline"}
+              disabled={props.disabled === true}
+              className={cn(
+                !selected && "text-muted-foreground",
+                invalid && "border-destructive text-destructive",
+              )}
+            >
+              <CalendarIcon />
+            </InputGroupButton>
+          </PopoverTrigger>
 
-      if (selected?.from) {
-        isSelected = true;
-        const { from, to } = selected;
+          <PopoverContent align="end" sideOffset={12} className="size-fit p-0">
+            <Calendar
+              mode="single"
+              selected={selected}
+              onSelect={onSelect}
+              defaultMonth={selected}
+              {...props}
+            />
+          </PopoverContent>
+        </Popover>
+      </InputGroupAddon>
+    </InputGroup>
+  );
+}
 
-        placeholder =
-          to && !isSameDay(from, to)
-            ? `${formatDate(from, "PPP")} - ${formatDate(to, "PPP")}`
-            : formatDate(from, "PPP");
-      }
-    }
+export function DateMultiPicker({
+  invalid,
+  selected,
+  ...props
+}: DateMultiProps) {
+  let value = null;
+
+  if (selected && selected.length > 0) {
+    const max = 1;
+    const { length } = selected;
+    const dates = selected.map((date) => formatDate(date, "PPP"));
+
+    value = dates.slice(0, max).join(", ");
+    if (length > max) value += `, dan ${length - max} lainnya`;
   }
 
   return (
     <Popover>
+      <RequiredBridge required={props.required} />
       <PopoverTrigger asChild>
         <Button
           variant={invalid ? "outline_destructive" : "outline"}
+          disabled={props.disabled === true}
           className={cn(
             "justify-between",
-            !isSelected && "text-muted-foreground",
+            !selected?.length && "text-muted-foreground",
             invalid && "border-destructive text-destructive",
           )}
-          disabled={props.disabled === true}
         >
-          {placeholder} <Icon />
+          {value ?? "Pilih tanggal"} <CalendarDays />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="size-fit p-0">
-        <Calendar numberOfMonths={numberOfMonths} {...props} />
+        <Calendar mode="multiple" selected={selected} {...props} />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export function DateRangePicker({
+  invalid,
+  selected,
+  ...props
+}: DateRangeProps) {
+  let value = null;
+
+  if (selected?.from) {
+    const { from, to } = selected;
+    value =
+      to && !isSameDay(from, to)
+        ? `${formatDate(from, "PPP")} - ${formatDate(to, "PPP")}`
+        : formatDate(from, "PPP");
+  }
+  return (
+    <Popover>
+      <RequiredBridge required={props.required} />
+      <PopoverTrigger asChild>
+        <Button
+          variant={invalid ? "outline_destructive" : "outline"}
+          disabled={props.disabled === true}
+          className={cn(
+            "justify-between",
+            !selected?.from && "text-muted-foreground",
+            invalid && "border-destructive text-destructive",
+          )}
+        >
+          {value ?? "Pilih rentang tanggal"} <CalendarDays />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="size-fit p-0">
+        <Calendar
+          mode="range"
+          numberOfMonths={2}
+          selected={selected}
+          {...props}
+        />
       </PopoverContent>
     </Popover>
   );

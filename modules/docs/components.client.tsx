@@ -3,7 +3,11 @@
 import { Button } from "@/core/components/ui/button";
 import { ResetButton } from "@/core/components/ui/buttons";
 import { Checkbox } from "@/core/components/ui/checkbox";
-import { DatePicker } from "@/core/components/ui/date-picker";
+import {
+  DateMultiPicker,
+  DatePicker,
+  DateRangePicker,
+} from "@/core/components/ui/date-picker";
 import {
   Field,
   FieldContent,
@@ -130,7 +134,7 @@ export function ExampleForm() {
       phone: 81234567890,
 
       date: now,
-      dateMultiple: [now],
+      // dateMultiple: [now],
       dateRange: { from: now, to: addDays(now, 6) },
 
       select: "spade",
@@ -221,7 +225,7 @@ export function ExampleForm() {
                   type="text"
                   id={field.name}
                   aria-invalid={!!fieldState.error}
-                  inputMode="numeric"
+                  inputMode="tel"
                   value={formatPhone(value)}
                   onChange={(e) => onChange(sanitizeNumber(e.target.value))}
                   placeholder="Masukkan nomor HP"
@@ -310,7 +314,6 @@ export function ExampleForm() {
               <DatePicker
                 id={field.name}
                 invalid={!!fieldState.error}
-                mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
                 required
@@ -328,10 +331,9 @@ export function ExampleForm() {
               htmlFor={field.name}
               errors={fieldState.error}
             >
-              <DatePicker
+              <DateMultiPicker
                 id={field.name}
                 invalid={!!fieldState.error}
-                mode="multiple"
                 selected={field.value}
                 onSelect={field.onChange}
                 required
@@ -349,10 +351,9 @@ export function ExampleForm() {
               htmlFor={field.name}
               errors={fieldState.error}
             >
-              <DatePicker
+              <DateRangePicker
                 id={field.name}
                 invalid={!!fieldState.error}
-                mode="range"
                 selected={field.value}
                 onSelect={field.onChange}
                 required
@@ -377,6 +378,7 @@ export function ExampleForm() {
                   key={value}
                   orientation="horizontal"
                   data-invalid={!!fieldState.error}
+                  className="w-fit"
                 >
                   <Checkbox
                     id={`cb-${value}`}
