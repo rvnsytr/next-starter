@@ -44,7 +44,7 @@ export const messages = {
     `${formatDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} yang lalu.`,
 
   // -- Validation
-  invalid: (field: string) => `${capitalize(field, "first")} yang valid.`,
+  invalid: (field: string) => `${capitalize(field, "first")} tidak valid.`,
 
   required: (field: string) => `${capitalize(field, "first")} wajib diisi.`,
   requiredInvalidType: (field: string, fieldType: string) =>
