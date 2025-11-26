@@ -1,3 +1,5 @@
+"use client";
+
 import {
   cn,
   formatDate,
@@ -72,7 +74,7 @@ export function DatePicker({
         placeholder="DD/MM/YYYY"
         inputMode="numeric"
         value={formatDDMMYY(strValue)}
-        disabled={isPopoverOpen}
+        disabled={props.disabled === true || isPopoverOpen}
         onChange={(e) => {
           const raw = e.target.value;
           const sanitized = sanitizeDate(raw);
