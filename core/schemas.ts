@@ -88,7 +88,10 @@ export const sharedSchemas = {
     return schema;
   },
 
-  date: (field: string, options?: { min?: Date; max?: Date }) => {
+  date: (
+    field: string,
+    options?: { min?: Date | "now"; max?: Date | "now" },
+  ) => {
     const { invalid, dateToEarly, dateTooLate } = messages;
 
     const min = options?.min;
@@ -97,13 +100,15 @@ export const sharedSchemas = {
     let schema = z.coerce.date({ error: invalid(field) });
 
     if (min) {
-      const message = dateToEarly(field, min);
-      schema = schema.min(min, { error: message });
+      const value = min === "now" ? new Date() : min;
+      const message = dateToEarly(field, value);
+      schema = schema.min(value, { error: message });
     }
 
     if (max) {
-      const message = dateTooLate(field, max);
-      schema = schema.max(max, { error: message });
+      const value = max === "now" ? new Date() : max;
+      const message = dateTooLate(field, value);
+      schema = schema.max(value, { error: message });
     }
 
     return schema;
@@ -114,8 +119,8 @@ export const sharedSchemas = {
     options?: {
       min?: number;
       max?: number;
-      minDate?: Date;
-      maxDate?: Date;
+      minDate?: Date | "now";
+      maxDate?: Date | "now";
     },
   ) => {
     const {
@@ -135,13 +140,15 @@ export const sharedSchemas = {
     let dateSchema = z.date({ error: invalid(field) });
 
     if (minDate) {
-      const message = dateToEarly(field, minDate);
-      dateSchema = dateSchema.min(minDate, { error: message });
+      const value = minDate === "now" ? new Date() : minDate;
+      const message = dateToEarly(field, value);
+      dateSchema = dateSchema.min(value, { error: message });
     }
 
     if (maxDate) {
-      const message = dateTooLate(field, maxDate);
-      dateSchema = dateSchema.max(maxDate, { error: message });
+      const value = maxDate === "now" ? new Date() : maxDate;
+      const message = dateTooLate(field, value);
+      dateSchema = dateSchema.max(value, { error: message });
     }
 
     let schema = z.array(dateSchema, {
@@ -196,6 +203,15 @@ export const sharedSchemas = {
 
   gender: z.enum(allGenders),
 
-  updatedAt: z.coerce.date({ error: "Field 'updatedAt' tidak valid." }),
-  createdAt: z.coerce.date({ error: "Field 'createdAt' tidak valid." }),
+  updatedAt: z.coerce
+    .date({ error: "Field 'updated_at' tidak valid." })
+    .nullable()
+    .default(null),
+  updatedBy: z
+    .string({ error: "Field 'updated_by' tidak valid." })
+    .nullable()
+    .default(null),
+
+  createdAt: z.coerce.date({ error: "Field 'created_at' tidak valid." }),
+  createdBy: z.string({ error: "Field 'created_by' tidak valid." }).nullable(),
 };
