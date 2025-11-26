@@ -98,14 +98,14 @@ export function ExampleForm() {
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z.object({
-    text: sharedSchemas.string("Text", { min: 1 }),
+    text: sharedSchemas.string("Text field", { min: 1 }),
     textarea: sharedSchemas.string("Text Area", { min: 1, max: 255 }),
 
-    number: sharedSchemas.number("number", { min: 1 }),
-    phone: sharedSchemas.number("Phone", { min: 1 }),
+    number: sharedSchemas.number("Number field", { min: 1 }),
+    phone: sharedSchemas.number("Phone field", { min: 1 }),
 
-    date: sharedSchemas.date(),
-    dateMultiple: sharedSchemas.dateMultiple({ min: 1 }),
+    date: sharedSchemas.date("Date field"),
+    dateMultiple: sharedSchemas.dateMultiple("Multi date field", { min: 1 }),
     dateRange: sharedSchemas.dateRange,
 
     select: z.enum(card),
@@ -134,7 +134,7 @@ export function ExampleForm() {
       phone: 81234567890,
 
       date: now,
-      // dateMultiple: [now],
+      dateMultiple: [now],
       dateRange: { from: now, to: addDays(now, 6) },
 
       select: "spade",
@@ -162,7 +162,7 @@ export function ExampleForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <FieldWrapper
-              label="Text field"
+              label="Text"
               htmlFor={field.name}
               errors={fieldState.error}
               description="Text field description example"
@@ -189,7 +189,7 @@ export function ExampleForm() {
           control={form.control}
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FieldWrapper
-              label="Number field"
+              label="Number"
               htmlFor={field.name}
               errors={fieldState.error}
             >
@@ -216,7 +216,7 @@ export function ExampleForm() {
           control={form.control}
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FieldWrapper
-              label="Phone field"
+              label="Phone"
               htmlFor={field.name}
               errors={fieldState.error}
             >
@@ -278,7 +278,7 @@ export function ExampleForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <FieldWrapper
-              label="Multi Select"
+              label="Multi Select Field"
               htmlFor={field.name}
               errors={fieldState.error}
             >
@@ -327,7 +327,7 @@ export function ExampleForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <FieldWrapper
-              label="Multiple Date Picker"
+              label="Multi Date Picker"
               htmlFor={field.name}
               errors={fieldState.error}
             >

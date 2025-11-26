@@ -44,16 +44,12 @@ export const messages = {
     `${formatDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} yang lalu.`,
 
   // -- Validation
-  invalid: (field: string) => `Masukkan ${field.toLowerCase()} yang valid.`,
-  invalidType: (field: string, fieldType: string) =>
-    `${capitalize(field, "first")} harus berupa ${fieldType} yang valid.`,
+  invalid: (field: string) => `${capitalize(field, "first")} yang valid.`,
 
   required: (field: string) => `${capitalize(field, "first")} wajib diisi.`,
   requiredInvalidType: (field: string, fieldType: string) =>
     `${capitalize(field, "first")} wajib diisi dan harus berupa ${fieldType} yang valid.`,
 
-  stringLength: (field: string, min: number) =>
-    `${capitalize(field, "first")} harus terdiri dari ${min} karakter.`,
   stringTooShort: (field: string, min: number) =>
     `${capitalize(field, "first")} harus terdiri dari minimal ${min} karakter.`,
   stringTooLong: (field: string, max: number) =>
@@ -64,6 +60,10 @@ export const messages = {
   numberTooLarge: (field: string, max: number) =>
     `${capitalize(field, "first")} tidak boleh lebih dari ${max}.`,
 
+  dateToEarly: (field: string, min: Date) =>
+    `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatDate(min, "PPP")}.`,
+  dateTooLate: (field: string, max: Date) =>
+    `${capitalize(field, "first")} tidak boleh lebih lambat dari ${formatDate(max, "PPP")}.`,
   dateToFew: (field: string, min: number) =>
     `${capitalize(field, "first")} harus terdiri dari minimal ${min} tanggal.`,
   dateTooMany: (field: string, max: number) =>

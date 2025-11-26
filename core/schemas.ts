@@ -7,12 +7,12 @@ z.config(id());
 
 export const sharedSchemas = {
   string: (field: string, options?: { min?: number; max?: number }) => {
-    const { invalidType, required, stringTooShort, stringTooLong } = messages;
+    const { invalid, required, stringTooShort, stringTooLong } = messages;
 
     const min = options?.min;
     const max = options?.max;
 
-    let schema = z.string({ error: invalidType(field, "string") }).trim();
+    let schema = z.string({ error: invalid(field) }).trim();
 
     if (min) {
       const message = min <= 1 ? required : stringTooShort;
@@ -28,12 +28,12 @@ export const sharedSchemas = {
   },
 
   number: (field: string, options?: { min?: number; max?: number }) => {
-    const { invalidType, required, numberTooSmall, numberTooLarge } = messages;
+    const { invalid, required, numberTooSmall, numberTooLarge } = messages;
 
     const min = options?.min;
     const max = options?.max;
 
-    let schema = z.coerce.number({ error: invalidType(field, "number") });
+    let schema = z.coerce.number({ error: invalid(field) });
 
     if (min) {
       const message = min <= 1 ? required : numberTooSmall;
@@ -88,23 +88,64 @@ export const sharedSchemas = {
     return schema;
   },
 
-  date: (field?: string, asField: boolean = false) =>
-    z.coerce.date({
-      error: messages[asField ? "required" : "invalidType"](
-        `tanggal${field ? ` ${field.toLowerCase()}` : ""}`,
-        "date",
-      ),
-    }),
+  date: (field: string, options?: { min?: Date; max?: Date }) => {
+    const { invalid, dateToEarly, dateTooLate } = messages;
 
-  dateMultiple: (options?: { field?: string; min?: number; max?: number }) => {
-    const { invalidType, required, dateToFew, dateTooMany } = messages;
-
-    const field = `tanggal${options?.field ? ` ${options.field.toLowerCase()}` : ""}`;
     const min = options?.min;
     const max = options?.max;
 
-    let schema = z.array(z.date({ error: invalidType(field, "date") }), {
-      error: "Beberapa tanggal yang dimasukkan tidak valid.",
+    let schema = z.coerce.date({ error: invalid(field) });
+
+    if (min) {
+      const message = dateToEarly(field, min);
+      schema = schema.min(min, { error: message });
+    }
+
+    if (max) {
+      const message = dateTooLate(field, max);
+      schema = schema.max(max, { error: message });
+    }
+
+    return schema;
+  },
+
+  dateMultiple: (
+    field: string,
+    options?: {
+      min?: number;
+      max?: number;
+      minDate?: Date;
+      maxDate?: Date;
+    },
+  ) => {
+    const {
+      invalid,
+      required,
+      dateToEarly,
+      dateTooLate,
+      dateToFew,
+      dateTooMany,
+    } = messages;
+
+    const min = options?.min;
+    const max = options?.max;
+    const minDate = options?.minDate;
+    const maxDate = options?.maxDate;
+
+    let dateSchema = z.date({ error: invalid(field) });
+
+    if (minDate) {
+      const message = dateToEarly(field, minDate);
+      dateSchema = dateSchema.min(minDate, { error: message });
+    }
+
+    if (maxDate) {
+      const message = dateTooLate(field, maxDate);
+      dateSchema = dateSchema.max(maxDate, { error: message });
+    }
+
+    let schema = z.array(dateSchema, {
+      error: "Beberapa tanggal yang dipilih tidak valid.",
     });
 
     if (min) {
