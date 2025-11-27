@@ -813,7 +813,6 @@ export function ProfilePicture({
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil diperbarui.");
           setIsChange(false);
-          // mutate("session");
           mutateSession();
         },
         onError: ({ error }) => {
@@ -834,7 +833,6 @@ export function ProfilePicture({
         onSuccess: () => {
           toast.success("Foto profil Anda berhasil dihapus.");
           setIsRemoved(false);
-          // mutate("session");
           mutateSession();
         },
         onError: ({ error }) => {
@@ -913,7 +911,6 @@ export function ProfilePicture({
 }
 
 export function PersonalInformation() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { session } = useAuth();
@@ -936,7 +933,7 @@ export function PersonalInformation() {
       {
         onSuccess: () => {
           setIsLoading(false);
-          router.refresh();
+          mutateSession();
           toast.success("Profil Anda berhasil diperbarui.");
         },
         onError: ({ error }) => {
@@ -1011,7 +1008,7 @@ export function PersonalInformation() {
           {messages.actions.update}
         </Button>
 
-        <ResetButton onClick={() => form.reset()} />
+        <ResetButton onClick={() => form.reset({ name, email })} />
       </CardFooter>
     </form>
   );
@@ -1232,9 +1229,9 @@ function RevokeSessionButton({ data }: { data: Session }) {
           <DeviceIcons className="shrink-0" />
         </div>
 
-        <div className="grid gap-y-1">
-          <small className="font-medium">
-            {`${browser.name || "Browser tidak diketahui"} di ${os.name || "sistem operasi yang tidak diketahui"}`}
+        <div className="grid gap-y-1 font-medium">
+          <small>
+            {`${browser.name ?? "Browser tidak diketahui"} di ${os.name ?? "sistem operasi yang tidak diketahui"}`}
           </small>
 
           {isCurrentSession ? (
