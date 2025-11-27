@@ -77,7 +77,7 @@ import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { getFilePublicUrl, uploadFiles } from "@/core/s3";
-import { sharedSchemas } from "@/core/schemas";
+import { sharedSchemas, userSchema } from "@/core/schemas.zod";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -132,7 +132,6 @@ import {
   useUsers,
 } from "./hooks";
 import { useAuth } from "./provider.auth";
-import { userSchema } from "./schemas.zod";
 
 const sharedText = {
   signIn: "Berhasil masuk - Selamat datang!",

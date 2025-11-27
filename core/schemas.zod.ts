@@ -1,6 +1,9 @@
-import { z } from "zod";
+import { allRoles } from "@/modules/auth";
+import { createSelectSchema } from "drizzle-zod";
+import z from "zod";
 import { id } from "zod/locales";
 import { allGenders, fileMeta, FileType, messages } from "./constants";
+import { user } from "./schemas.db";
 import { toMegabytes } from "./utils";
 
 z.config(id());
@@ -215,3 +218,14 @@ export const sharedSchemas = {
   createdAt: z.coerce.date({ error: "Field 'created_at' tidak valid." }),
   createdBy: z.string({ error: "Field 'created_by' tidak valid." }).nullable(),
 };
+
+export const userSchema = createSelectSchema(user, {
+  name: () => sharedSchemas.string("Nama", { min: 1 }),
+  email: () => sharedSchemas.email,
+  role: () => z.enum(allRoles),
+}).extend({
+  password: sharedSchemas.string("Kata sandi", { min: 1 }),
+  newPassword: sharedSchemas.password,
+  confirmPassword: sharedSchemas.string("Konfirmasi kata sandi", { min: 1 }),
+  currentPassword: sharedSchemas.string("Kata sandi saat ini", { min: 1 }),
+});

@@ -4,7 +4,8 @@
   "files.readonlyExclude": {
     "**/core/constants/menu.ts": true,
     "**/core/constants/routes.ts": true,
-    "**/core/db/schemas.ts": true
+    "**/core/schemas.db.ts": true,
+    "**/core/schemas.zod.ts": true
   },
 
   "typescript.preferences.autoImportFileExcludePatterns": [

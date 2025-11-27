@@ -1,6 +1,6 @@
 # Next.js Starter Template
 
-A lightweight, opinionated starter template for **Next.js 16 (App Router)** with just the tools and configurations I use in most projects. Designed to speed up the setup process so I can get straight to building features rather than configuring the basics.
+A lightweight, opinionated starter template for **Next.js 16 (App Router)** with just the tools and configurations I use in most projects. Built to minimize the setup process so I can get straight to building features rather than configuring the basics.
 
 ## Features
 
@@ -62,17 +62,23 @@ bun run dev
 
 ## File Structure
 
-This project follows a module-based architecture, where each feature is isolated and self-contained.
+This project uses a **feature-based module architecture**, where each feature is isolated, self-contained, and exports only its public API, where shared, stable, low-change code lives in `core/`.
 
 ### Principles
 
 - Each feature lives in `modules/<feature>/`
 - A Module contain **only what the module needs**
 - Export only **high-level** module APIs via `index.ts`
-- Do **not** re-export low-level files such as `schemas.zod.ts` or `schemas.db.ts`
-- `core/` **should not be edited**, except `core/db/schemas.ts` when adding new module DB schemas
 - Prefer the **shortest possible import path**
-- Components can be structured either as single files (`module/<feature>/component.tsx`, `module/<feature>/component.client.tsx`) or grouped inside a folder (`module/<feature>/components/*`) — as long as the public components are exported through the module’s `index.ts`
+- Components can be structured either as:
+  - a single file (`component.tsx`, `component.client.tsx`), or
+  - grouped (`components/*`) — as long as public components are exported from the module’s index.ts
+- `core/` contains shared, stable, low-change code and **should not be edited**
+- Only edit the following files when extending domain logic:
+  - `core/constants/menu.ts` — Menus metadata
+  - `core/constants/routes.ts` — Routes metadata
+  - `core/schemas.db.ts` — Drizzle DB schemas
+  - `core/schemas.zod.ts` — Zod schemas
 
 ```pgsql
 next-starter/
@@ -91,8 +97,6 @@ next-starter/
       components.client.tsx
       constants.ts
       hooks.ts                -- Module-specific hooks and SWR helpers (useSWR and its mutator).
-      schemas.db.ts
-      schemas.zod.ts
       provider.auth.tsx       -- format: provider.<name>.tsx
       index.ts                -- high-level exports
 
@@ -101,15 +105,13 @@ next-starter/
         index.ts
       index.ts
 
-  core/                       -- Shared, stable, low-change code
+  core/
     components/
       layout/
       ui/
     constants/
-      routes.ts               -- Contains all route metadata. Modify when adding or updating modules or routes.
-    db/
-      index.ts
-      schemas.ts              -- Aggregate Drizzle schemas. Allowed to edit if new module includes a `db.schemas.ts`
+      menu.ts                 -- Modifiable.
+      routes.ts               -- Modifiable.
     hooks/
     providers/
     utils/
@@ -118,9 +120,11 @@ next-starter/
     api.ts
     auth.client.ts
     auth.ts
+    db.ts
     permissions.ts
     s3.ts
-    schemas.ts                -- Shared base Zod schemas.
+    schemas.db.ts             -- Modifiable.
+    schemas.zod.ts            -- Modifiable.
 
   public/
 
@@ -137,22 +141,8 @@ export * from "./actions";
 export * from "./components";
 export * from "./components.client";
 export * from "./constants";
+export * from "./hooks";
 export * from "./provider.auth";
-```
-
-#### - Importing Module Schemas
-
-```typescript
-// ❌ Wrong (do not re-export schemas in index.ts)
-// @/modules/auth/index.ts
-export * from "./schemas.zod";
-
-// @/modules/post/components.tsx
-import { userSchema } from "@/modules/auth";
-
-// ✅ Correct (import schema directly)
-// @/modules/post/components.tsx
-import { userSchema } from "@/modules/auth/schemas.zod";
 ```
 
 #### - Prefer Shortest Import
@@ -167,10 +157,9 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
-- Date Picker Input
 - Drizzle Studio Integration
 - Server-Side Data Table
 - Dashboard Menu Search (Ctrl + K) + Pinning
 - More Numeric Form Inputs
 - Event Calendar
-- safeMutate(key) helper for SWR
+- Rich Text Editor
