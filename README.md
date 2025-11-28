@@ -132,9 +132,9 @@ next-starter/
     globals.css
 ```
 
-### Example
+### Examples
 
-#### - Module Entry Point ( `@/modules/<thing>/index.ts` )
+#### - Module Entry Point ( `@/modules/<features>/index.ts` )
 
 ```typescript
 export * from "./actions";
