@@ -918,10 +918,11 @@ export function PersonalInformation() {
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema.pick({ name: true, email: true });
+  const defaultValues = { name, email };
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name, email },
+    defaultValues,
   });
 
   const formHandler = ({ name: newName }: FormSchema) => {
@@ -1008,7 +1009,7 @@ export function PersonalInformation() {
           {messages.actions.update}
         </Button>
 
-        <ResetButton onClick={() => form.reset({ name, email })} />
+        <ResetButton onClick={() => form.reset(defaultValues)} />
       </CardFooter>
     </form>
   );

@@ -27,7 +27,7 @@ function AvatarImage({
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square size-full object-cover transition-transform hover:scale-125",
+        "aspect-square size-full object-cover transition-transform hover:scale-105",
         className,
       )}
       {...props}
@@ -43,7 +43,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full transition-transform hover:scale-125",
+        "bg-muted flex size-full items-center justify-center rounded-full transition-transform hover:scale-105",
         className,
       )}
       {...props}

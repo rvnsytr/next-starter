@@ -73,8 +73,8 @@ export function SidebarMain() {
                   image={data.image}
                   className="rounded-md"
                   classNames={{
-                    image: "rounded-md group-hover/head-button:scale-125",
-                    fallback: "rounded-md group-hover/head-button:scale-125",
+                    image: "rounded-md group-hover/head-button:scale-105",
+                    fallback: "rounded-md group-hover/head-button:scale-105",
                   }}
                 />
 
