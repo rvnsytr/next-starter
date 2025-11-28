@@ -710,11 +710,9 @@ export function UserDetailSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger className="group hover:cursor-pointer" asChild>
-        <div className="flex w-fit gap-x-1">
-          <span className="link-group">{data.name}</span>
-          <ArrowUpRight className="group-hover:text-primary size-3.5" />
-        </div>
+      <SheetTrigger className="group flex w-fit gap-x-1 hover:cursor-pointer">
+        <span className="link-group">{data.name}</span>
+        <ArrowUpRight className="group-hover:text-primary size-3.5" />
       </SheetTrigger>
 
       <SheetContent>

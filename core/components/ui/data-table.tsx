@@ -399,7 +399,10 @@ function View<TData>({
                   {Icon && (
                     <Icon className="text-muted-foreground group-hover:text-primary transition-colors" />
                   )}
-                  <small className="font-medium">{column.id}</small>
+
+                  <small className="font-medium">
+                    {column.columnDef.meta?.displayName ?? column.id}
+                  </small>
                 </div>
               </Label>
             );
