@@ -32,10 +32,17 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Button, buttonVariants } from "./button";
+import { Button } from "./button";
 import { ButtonGroup } from "./button-group";
 import { RefreshButton } from "./buttons.client";
 import { Checkbox } from "./checkbox";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./command";
 import {
   ActiveFilters,
   ActiveFiltersMobileContainer,
@@ -372,41 +379,44 @@ function View<TData>({
 
       <PopoverContent
         align={isMobile && !withRefresh ? "end" : "center"}
-        className="flex flex-col gap-y-1 p-1"
+        className="flex flex-col gap-y-1 p-0"
       >
-        {table
-          .getAllColumns()
-          .filter((column) => column.getCanHide())
-          .map((column) => {
-            const cbId = `cb-${column.id}`;
-            const Icon = column.columnDef.meta?.icon;
-            return (
-              <Label
-                key={cbId}
-                htmlFor={cbId}
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "sm" }),
-                  "group justify-start gap-x-3 p-2 capitalize",
-                )}
-              >
-                <Checkbox
-                  id={cbId}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                />
+        <Command>
+          <CommandInput placeholder="Cari Kolom..." />
+          <CommandList className="p-1">
+            <CommandEmpty>{messages.empty}</CommandEmpty>
 
-                <div className="flex items-center gap-x-2">
-                  {Icon && (
-                    <Icon className="text-muted-foreground group-hover:text-primary transition-colors" />
-                  )}
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                const cbId = `cb-${column.id}`;
+                const isVisible = column.getIsVisible();
+                const Icon = column.columnDef.meta?.icon;
+                return (
+                  <CommandItem key={cbId} className="justify-between" asChild>
+                    <Label htmlFor={cbId}>
+                      <div className="flex items-center gap-x-2">
+                        {Icon && (
+                          <Icon className="text-muted-foreground group-hover:text-primary transition-colors" />
+                        )}
 
-                  <small className="font-medium">
-                    {column.columnDef.meta?.displayName ?? column.id}
-                  </small>
-                </div>
-              </Label>
-            );
-          })}
+                        <small className="font-medium">
+                          {column.columnDef.meta?.displayName ?? column.id}
+                        </small>
+                      </div>
+
+                      <Checkbox
+                        id={cbId}
+                        checked={isVisible}
+                        onCheckedChange={(v) => column.toggleVisibility(!!v)}
+                      />
+                    </Label>
+                  </CommandItem>
+                );
+              })}
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );
