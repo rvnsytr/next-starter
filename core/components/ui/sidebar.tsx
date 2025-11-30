@@ -16,7 +16,7 @@ import {
 } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
-import { Kbd } from "./kbd";
+import { Kbd, KbdGroup } from "./kbd";
 import { Separator } from "./separator";
 import {
   Sheet,
@@ -287,12 +287,12 @@ function SidebarTrigger({
         className="flex flex-col items-center gap-2"
       >
         <span>Toggle Sidebar</span>
-        <div className="flex items-center gap-x-2">
+        <KbdGroup>
           (<Kbd>Ctrl</Kbd>
           <span>/</span>
           <Kbd>Alt</Kbd>)<span>+</span>
           <Kbd>B</Kbd>
-        </div>
+        </KbdGroup>
       </TooltipContent>
     </Tooltip>
   );

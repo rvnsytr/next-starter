@@ -6,12 +6,19 @@ import { Role, useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import {
+  ComponentProps,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useState,
+} from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
+import { CommandPalette } from "../ui/command-palette";
 import {
   SidebarContent,
   SidebarGroup,
@@ -67,6 +74,12 @@ export function SidebarAppHeader() {
   );
 }
 
+export function SidebarCommandPallete() {
+  const { user } = useAuth();
+  const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
+  return <CommandPalette data={menu} placeholder="Cari halaman..." />;
+}
+
 export function SidebarAppContent() {
   const { user } = useAuth();
 
@@ -100,7 +113,11 @@ export function SidebarAppContent() {
               }
 
               return (
-                <Collapsible key={route} asChild>
+                <SidebarAppContentCollapsible
+                  key={route}
+                  isActive={isActive}
+                  asChild
+                >
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       onClick={() => isMobile && toggleSidebar()}
@@ -124,20 +141,21 @@ export function SidebarAppContent() {
 
                         <CollapsibleContent>
                           <SidebarMenuSub>
-                            {subMenu.map(({ label, href, variant }, idx) => (
+                            {subMenu.map((itm, idx) => (
                               <SidebarMenuSubItem key={idx}>
                                 <SidebarMenuSubButton
-                                  variant={variant}
+                                  variant={itm.variant}
                                   className="flex justify-between"
                                   asChild
                                 >
                                   <Link
                                     href={
-                                      href ?? `${route}/#${toKebabCase(label)}`
+                                      itm.href ??
+                                      `${route}/#${toKebabCase(itm.displayName)}`
                                     }
                                   >
                                     <span className="line-clamp-1">
-                                      {label}
+                                      {itm.displayName}
                                     </span>
                                     <LinkSpinner />
                                   </Link>
@@ -149,7 +167,7 @@ export function SidebarAppContent() {
                       </>
                     )}
                   </SidebarMenuItem>
-                </Collapsible>
+                </SidebarAppContentCollapsible>
               );
             })}
           </SidebarMenu>
@@ -157,4 +175,19 @@ export function SidebarAppContent() {
       ))}
     </SidebarContent>
   );
+}
+
+function SidebarAppContentCollapsible({
+  isActive,
+  ...props
+}: ComponentProps<typeof Collapsible> & { isActive: boolean }) {
+  const [isOpen, setIsOpen] = useState(isActive);
+
+  const onActiveRoute = useEffectEvent(() => {
+    if (isActive && !isOpen) setIsOpen(true);
+  });
+
+  useEffect(() => onActiveRoute, [isActive]);
+
+  return <Collapsible open={isOpen} onOpenChange={setIsOpen} {...props} />;
 }

@@ -14,9 +14,9 @@ type MenuContent = {
   icon?: LucideIcon;
   disabled?: boolean;
 
-  // if href is not defined, the Link href prop will be `/{route}/#${toKebabCase(label)}`
+  // if href is not defined, the Link href prop will be `/{route}/#${toKebabCase(displayName)}`
   subMenu?: {
-    label: string;
+    displayName: string;
     href?: LinkProps["href"];
     variant?: "default" | "destructive";
   }[];
@@ -39,10 +39,10 @@ export const dashboardMenu: Menu[] = [
         route: "/dashboard/profile",
         icon: UserRound,
         subMenu: [
-          { label: "Informasi Pribadi" },
-          { label: "Ubah Kata Sandi" },
-          { label: "Sesi Aktif" },
-          { label: "Hapus Akun", variant: "destructive" },
+          { displayName: "Informasi Pribadi" },
+          { displayName: "Ubah Kata Sandi" },
+          { displayName: "Sesi Aktif" },
+          { displayName: "Hapus Akun", variant: "destructive" },
         ],
       },
     ],

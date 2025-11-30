@@ -1955,8 +1955,8 @@ function AdminActionRevokeUserSessionsDialog({
           </AlertDialogTitle>
           <AlertDialogDescription>
             Ini akan menghentikan semua sesi aktif dari{" "}
-            <span className="text-foreground">{ids.length} pengguna</span>
-            yang dipilih. Yakin ingin melanjutkan?
+            <span className="text-foreground">{ids.length} pengguna</span> yang
+            dipilih. Yakin ingin melanjutkan?
           </AlertDialogDescription>
         </AlertDialogHeader>
 

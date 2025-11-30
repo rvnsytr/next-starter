@@ -13,7 +13,11 @@ import {
   SidebarSeparator,
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
-import { SidebarAppContent, SidebarAppHeader } from "./sidebar-main.client";
+import {
+  SidebarAppContent,
+  SidebarAppHeader,
+  SidebarCommandPallete,
+} from "./sidebar-main.client";
 
 export function SidebarMain() {
   return (
@@ -25,7 +29,10 @@ export function SidebarMain() {
             <SidebarAppHeader />
           </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarSeparator />
+
+        <SidebarSeparator className="mb-2" />
+
+        <SidebarCommandPallete />
       </SidebarHeader>
 
       {/* Content */}

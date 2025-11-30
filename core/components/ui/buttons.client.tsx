@@ -18,7 +18,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { ComponentProps, useEffect, useEffectEvent, useState } from "react";
 import { Button, ButtonProps } from "./button";
-import { Kbd } from "./kbd";
+import { Kbd, KbdGroup } from "./kbd";
 import { LoadingSpinner } from "./spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
@@ -56,11 +56,11 @@ export function ThemeButton({
         className="flex flex-col items-center gap-2"
       >
         <span>Toggle Theme</span>
-        <div className="flex items-center gap-x-2">
+        <KbdGroup>
           <Kbd>Alt</Kbd>
           <span>+</span>
           <Kbd>T</Kbd>
-        </div>
+        </KbdGroup>
       </TooltipContent>
     </Tooltip>
   );
@@ -118,11 +118,11 @@ export function LayoutButton({
         className="flex flex-col items-center gap-2"
       >
         <span>Toggle Layout</span>
-        <div className="flex items-center gap-x-2">
+        <KbdGroup>
           <Kbd>Alt</Kbd>
           <span>+</span>
           <Kbd>L</Kbd>
-        </div>
+        </KbdGroup>
       </TooltipContent>
     </Tooltip>
   );
