@@ -43,8 +43,8 @@ export const buttonVariants = cva(
           "text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
       },
       size: {
-        xs: "h-6 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3.5",
+        xs: "h-7 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 size:size-3.5",
+        "icon-xs": "size-6 rounded-md size:size-3.5",
 
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         icon: "size-9",

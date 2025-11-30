@@ -632,21 +632,20 @@ export function UserDataTable({
   searchPlaceholder = "Cari Pengguna...",
   ...props
 }: OtherDataTableProps<UserWithRole>) {
-  const { session } = useAuth();
-
+  const { user } = useAuth();
   const { data, error, isLoading } = useUsers();
 
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
 
-  const columns = getUserColumn(session.user.id);
+  const columns = getUserColumn(user.id);
 
   return (
     <DataTable
       data={data ?? []}
       columns={columns}
       searchPlaceholder={searchPlaceholder}
-      enableRowSelection={({ original }) => original.id !== session.user.id}
+      enableRowSelection={({ original }) => original.id !== user.id}
       rowSelectionFn={(data, table) => {
         const filteredData = data.map(({ original }) => original);
         const clearRowSelection = () => table.resetRowSelection();
@@ -768,11 +767,11 @@ export function UserDetailSheet({
 }
 
 export function ProfileBadges() {
-  const { session } = useAuth();
+  const { user } = useAuth();
   return (
     <>
-      <UserRoleBadge value={session.user.role as Role} />
-      {session.user.emailVerified && <UserVerifiedBadge />}
+      <UserRoleBadge value={user.role as Role} />
+      {user.emailVerified && <UserVerifiedBadge />}
     </>
   );
 }
@@ -911,12 +910,11 @@ export function ProfilePicture({
 export function PersonalInformation() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { session } = useAuth();
-  const { name, email } = session.user;
+  const { user } = useAuth();
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema.pick({ name: true, email: true });
-  const defaultValues = { name, email };
+  const defaultValues = user;
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -924,7 +922,8 @@ export function PersonalInformation() {
   });
 
   const formHandler = ({ name: newName }: FormSchema) => {
-    if (newName === name) return toast.info(messages.noChanges("profil Anda"));
+    if (newName === user.name)
+      return toast.info(messages.noChanges("profil Anda"));
 
     setIsLoading(true);
     authClient.updateUser(
@@ -946,7 +945,7 @@ export function PersonalInformation() {
   return (
     <form onSubmit={form.handleSubmit(formHandler)} noValidate>
       <CardContent className="flex flex-col gap-y-4">
-        <ProfilePicture data={session.user} />
+        <ProfilePicture data={user} />
 
         <Controller
           name="email"
@@ -1188,7 +1187,7 @@ function RevokeSessionButton({ data }: { data: Session }) {
 
   const { session } = useAuth();
 
-  const isCurrentSession = session.session.id === id;
+  const isCurrentSession = session.id === id;
   const { browser, os, device } = new UAParser(userAgent!).getResult();
 
   const DeviceIcons = {
@@ -1331,13 +1330,12 @@ export function DeleteMyAccountButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { session } = useAuth();
+  const { user } = useAuth();
 
   const clickHandler = async () => {
     setIsLoading(true);
 
-    const { image } = session.user;
-    if (image) await deleteProfilePicture(image);
+    if (user.image) await deleteProfilePicture(user.image);
 
     authClient.deleteUser(
       { callbackURL: "/sign-in" },

@@ -8,9 +8,7 @@ import { useSession } from "./hooks";
 
 type SessionData = typeof auth.$Infer.Session;
 
-type AuthContextType = { session: SessionData };
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<SessionData | undefined>(undefined);
 
 export function AuthProvider({
   session: fallbackData,
@@ -28,7 +26,7 @@ export function AuthProvider({
 
   return (
     session && (
-      <AuthContext.Provider value={{ session }}>
+      <AuthContext.Provider value={{ ...session }}>
         {children}
       </AuthContext.Provider>
     )
