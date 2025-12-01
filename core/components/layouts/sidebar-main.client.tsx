@@ -34,7 +34,13 @@ import {
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
 
-export function SidebarAppHeader() {
+export function SidebarCommandPallete() {
+  const { user } = useAuth();
+  const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
+  return <CommandPalette data={menu} placeholder="Cari halaman..." />;
+}
+
+export function SidebarMainHeader() {
   const { user } = useAuth();
 
   return (
@@ -74,13 +80,7 @@ export function SidebarAppHeader() {
   );
 }
 
-export function SidebarCommandPallete() {
-  const { user } = useAuth();
-  const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
-  return <CommandPalette data={menu} placeholder="Cari halaman..." />;
-}
-
-export function SidebarAppContent() {
+export function SidebarMainContent() {
   const { user } = useAuth();
 
   const pathname = usePathname();
@@ -113,7 +113,7 @@ export function SidebarAppContent() {
               }
 
               return (
-                <SidebarAppContentCollapsible
+                <SidebarMainContentCollapsible
                   key={route}
                   isActive={isActive}
                   asChild
@@ -167,7 +167,7 @@ export function SidebarAppContent() {
                       </>
                     )}
                   </SidebarMenuItem>
-                </SidebarAppContentCollapsible>
+                </SidebarMainContentCollapsible>
               );
             })}
           </SidebarMenu>
@@ -177,7 +177,7 @@ export function SidebarAppContent() {
   );
 }
 
-function SidebarAppContentCollapsible({
+function SidebarMainContentCollapsible({
   isActive,
   ...props
 }: ComponentProps<typeof Collapsible> & { isActive: boolean }) {

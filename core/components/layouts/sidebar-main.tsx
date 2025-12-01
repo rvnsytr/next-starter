@@ -14,9 +14,9 @@ import {
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
 import {
-  SidebarAppContent,
-  SidebarAppHeader,
   SidebarCommandPallete,
+  SidebarMainContent,
+  SidebarMainHeader,
 } from "./sidebar-main.client";
 
 export function SidebarMain() {
@@ -26,7 +26,7 @@ export function SidebarMain() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarAppHeader />
+            <SidebarMainHeader />
           </SidebarMenuItem>
         </SidebarMenu>
 
@@ -36,7 +36,7 @@ export function SidebarMain() {
       </SidebarHeader>
 
       {/* Content */}
-      <SidebarAppContent />
+      <SidebarMainContent />
 
       {/* Footer */}
       <SidebarFooter>
