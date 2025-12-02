@@ -157,7 +157,6 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
-- Drizzle Studio Integration
 - Server-Side Data Table
 - Dashboard Menu Search (Ctrl + K) + Pinning
 - More Numeric Form Inputs
