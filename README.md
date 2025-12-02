@@ -158,7 +158,6 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 ## TODO
 
 - Server-Side Data Table
-- Dashboard Menu Search (Ctrl + K) + Pinning
 - More Numeric Form Inputs
 - Event Calendar
 - Rich Text Editor

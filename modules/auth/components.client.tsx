@@ -138,7 +138,7 @@ const sharedText = {
   signOn: (social: string) => `Lanjutkan dengan ${social}`,
   lastUsed: "Terakhir digunakan",
 
-  passwordNotMatch: messages.thingNotMatch("Kata sandi"),
+  passwordNotMatch: messages.thingNotMatch("Kata sandi Anda"),
   revokeSession: "Cabut Sesi",
 };
 
@@ -1013,7 +1013,6 @@ export function PersonalInformation() {
 }
 
 export function ChangePasswordForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
@@ -1046,7 +1045,6 @@ export function ChangePasswordForm() {
       onSuccess: () => {
         setIsLoading(false);
         form.reset();
-        router.refresh();
         toast.success("Kata sandi Anda berhasil diperbarui.");
       },
       onError: ({ error }) => {
