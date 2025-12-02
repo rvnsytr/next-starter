@@ -219,6 +219,12 @@ export const sharedSchemas = {
   createdBy: z.string({ error: "Field 'created_by' tidak valid." }).nullable(),
 };
 
+export const apiResponseSchema = z.object({
+  code: z.number(),
+  success: z.boolean(),
+  message: z.string(),
+});
+
 export const userSchema = createSelectSchema(user, {
   name: () => sharedSchemas.string("Nama", { min: 1 }),
   email: () => sharedSchemas.email,

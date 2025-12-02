@@ -1,16 +1,11 @@
 import z, { ZodType } from "zod";
 import { appMeta } from "./constants";
+import { apiResponseSchema } from "./schemas.zod";
 
 export type FetcherConfig = RequestInit & { safeFetch?: boolean };
 
 export type ApiResponse<T> = z.infer<typeof apiResponseSchema> & { data: T };
 export type ApiFetcherConfig = Omit<FetcherConfig, "credentials">;
-
-export const apiResponseSchema = z.object({
-  code: z.number(),
-  success: z.boolean(),
-  message: z.string(),
-});
 
 export async function fetcher<T>(
   url: string,
