@@ -92,7 +92,7 @@ export function DynamicBreadcrumb({
 
         <BreadcrumbItem>
           <BreadcrumbPage className="line-clamp-1 cursor-default text-ellipsis">
-            {currentPage ?? routesMeta[pathname].displayName}
+            {currentPage ?? routesMeta[pathname]?.displayName}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>

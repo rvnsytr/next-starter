@@ -10,18 +10,19 @@ import { roles } from "./permission";
 export const auth = betterAuth({
   appName: appMeta.name,
   database: drizzleAdapter(db, { provider: "pg" }),
-  emailAndPassword: { enabled: true, autoSignIn: false },
   plugins: [nextCookies(), adminPlugins({ roles, adminRoles })],
+
+  emailAndPassword: { enabled: true, autoSignIn: false },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
   user: {
     deleteUser: { enabled: true },
     additionalFields: {
       role: { type: "string", input: false, defaultValue: defaultRole },
-    },
-  },
-  socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
 });
