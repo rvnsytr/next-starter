@@ -9,13 +9,20 @@ import { toMegabytes } from "./utils";
 z.config(id());
 
 export const sharedSchemas = {
-  string: (field: string, options?: { min?: number; max?: number }) => {
+  string: (
+    field: string,
+    options?: { min?: number; max?: number; sanitize?: boolean },
+  ) => {
     const { invalid, required, stringTooShort, stringTooLong } = messages;
 
     const min = options?.min;
     const max = options?.max;
+    const sanitize = options?.sanitize ?? true;
 
     let schema = z.string({ error: invalid(field) }).trim();
+
+    if (sanitize)
+      schema = schema.regex(/[A-Za-z0-9]/, { message: required(field) });
 
     if (min) {
       const message = min <= 1 ? required : stringTooShort;
@@ -206,17 +213,26 @@ export const sharedSchemas = {
 
   gender: z.enum(allGenders),
 
-  updatedAt: z.coerce
-    .date({ error: "Field 'updated_at' tidak valid." })
+  deletedAt: z.coerce
+    .date({ error: "Field 'deletedAt' tidak valid." })
     .nullable()
     .default(null),
-  updatedBy: z
-    .string({ error: "Field 'updated_by' tidak valid." })
+  deletedBy: z
+    .string({ error: "Field 'deletedBy' tidak valid." })
     .nullable()
     .default(null),
 
-  createdAt: z.coerce.date({ error: "Field 'created_at' tidak valid." }),
-  createdBy: z.string({ error: "Field 'created_by' tidak valid." }).nullable(),
+  updatedAt: z.coerce
+    .date({ error: "Field 'updatedAt' tidak valid." })
+    .nullable()
+    .default(null),
+  updatedBy: z
+    .string({ error: "Field 'updatedBy' tidak valid." })
+    .nullable()
+    .default(null),
+
+  createdAt: z.coerce.date({ error: "Field 'createdAt' tidak valid." }),
+  createdBy: z.string({ error: "Field 'createdBy' tidak valid." }).nullable(),
 };
 
 export const apiResponseSchema = z.object({
