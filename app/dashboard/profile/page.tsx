@@ -12,9 +12,8 @@ import { appMeta } from "@/core/constants";
 import { getRouteTitle } from "@/core/utils";
 import {
   ChangePasswordForm,
-  DeleteMyAccountButton,
-  PersonalInformation,
   ProfileBadges,
+  ProfileForm,
   RevokeOtherSessionsButton,
   RevokeSessionList,
 } from "@/modules/auth";
@@ -38,7 +37,7 @@ export default function Page() {
           </CardAction>
         </CardHeader>
 
-        <PersonalInformation />
+        <ProfileForm />
       </Card>
 
       <Card id="ubah-kata-sandi" className="w-full scroll-m-20 lg:max-w-xl">
@@ -67,20 +66,6 @@ export default function Page() {
         <CardFooter className="flex-col items-stretch border-t md:flex-row md:items-center">
           <RevokeOtherSessionsButton />
         </CardFooter>
-      </Card>
-
-      <Card id="hapus-akun" className="w-full scroll-m-20 lg:max-w-xl">
-        <CardHeader className="border-b">
-          <CardTitle className="text-destructive">Hapus Akun</CardTitle>
-          <CardDescription>
-            Peringatan: Tindakan ini bersifat permanen dan tidak dapat
-            dibatalkan.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <DeleteMyAccountButton />
-        </CardContent>
       </Card>
     </DashboardMain>
   );

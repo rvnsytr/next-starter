@@ -52,17 +52,17 @@ export function SidebarMain() {
           </SidebarMenuItem>
 
           {dashboardfooterMenu.map(
-            ({ url, displayName, icon: Icon, disabled }) => {
+            ({ route, displayName, icon: Icon, disabled }) => {
               const iconElement = Icon && <Icon />;
               return (
-                <SidebarMenuItem key={url}>
+                <SidebarMenuItem key={route}>
                   {disabled ? (
                     <SidebarMenuButton size="sm" disabled>
                       {iconElement} {displayName}
                     </SidebarMenuButton>
                   ) : (
                     <SidebarMenuButton size="sm" tooltip={displayName} asChild>
-                      <Link href={url}>
+                      <Link href={route}>
                         <LinkSpinner icon={{ base: iconElement }} />
                         {displayName}
                       </Link>

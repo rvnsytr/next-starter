@@ -907,7 +907,7 @@ export function ProfilePicture({
   );
 }
 
-export function PersonalInformation() {
+export function ProfileForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { user } = useAuth();
@@ -1316,71 +1316,6 @@ export function RevokeOtherSessionsButton() {
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
           <AlertDialogAction onClick={clickHandler}>
-            {messages.actions.confirm}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-export function DeleteMyAccountButton() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const { user } = useAuth();
-
-  const clickHandler = async () => {
-    setIsLoading(true);
-
-    if (user.image) await deleteProfilePicture(user.image);
-
-    authClient.deleteUser(
-      { callbackURL: "/sign-in" },
-      {
-        onSuccess: () => {
-          router.push("/sign-in");
-          toast.success("Akun Anda berhasil dihapus.");
-        },
-        onError: ({ error }) => {
-          setIsLoading(false);
-          toast.error(error.message);
-        },
-      },
-    );
-  };
-
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline_destructive"
-          className="w-full md:w-fit"
-          disabled={isLoading}
-        >
-          <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-          Hapus Akun
-        </Button>
-      </AlertDialogTrigger>
-
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-destructive flex items-center gap-x-2">
-            <TriangleAlert /> Hapus Akun Anda
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            PERINGATAN : Tindakan ini akan secara permanen menghapus semua data
-            akun Anda. Harap berhati-hati karena aksi ini tidak dapat
-            dibatalkan.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction
-            className={buttonVariants({ variant: "destructive" })}
-            onClick={clickHandler}
-          >
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>

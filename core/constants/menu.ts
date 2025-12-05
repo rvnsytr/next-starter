@@ -42,17 +42,13 @@ export const dashboardMenu: Menu[] = [
           { displayName: "Informasi Pribadi" },
           { displayName: "Ubah Kata Sandi" },
           { displayName: "Sesi Aktif" },
-          { displayName: "Hapus Akun", variant: "destructive" },
         ],
       },
     ],
   },
 ];
 
-export const dashboardfooterMenu: (Omit<MenuContent, "route" | "subMenu"> & {
-  url: Route;
-  displayName: string;
-})[] = [
-  { url: "/", displayName: "Beranda", icon: ExternalLink },
-  { url: "/help", displayName: "Bantuan", icon: CircleHelp, disabled: true },
+export const dashboardfooterMenu: (MenuContent & { displayName: string })[] = [
+  { route: "/", displayName: "Beranda", icon: ExternalLink },
+  { route: "/help", displayName: "Bantuan", icon: CircleHelp, disabled: true },
 ];
