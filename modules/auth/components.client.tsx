@@ -81,8 +81,6 @@ import { sharedSchemas, userSchema } from "@/core/schemas.zod";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Session } from "better-auth";
-import { UserWithRole } from "better-auth/plugins";
 import {
   ArrowUpRight,
   Ban,
@@ -123,7 +121,13 @@ import {
   revokeUserSessions,
 } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
-import { allRoles, defaultRole, Role, rolesMeta } from "./constants";
+import {
+  allRoles,
+  AuthSession,
+  defaultRole,
+  Role,
+  rolesMeta,
+} from "./constants";
 import {
   mutateSession,
   mutateSessionList,
@@ -528,7 +532,7 @@ export function SignUpForm() {
 
 // #region USER
 
-const createUserColumn = createColumnHelper<UserWithRole>();
+const createUserColumn = createColumnHelper<AuthSession["user"]>();
 const getUserColumn = (currentUserId: string) => [
   createUserColumn.display({
     id: "select",
@@ -628,10 +632,10 @@ const getUserColumn = (currentUserId: string) => [
   }),
 ];
 
-export function UserDataTable({
+export function UserDatwaTable({
   searchPlaceholder = "Cari Pengguna...",
   ...props
-}: OtherDataTableProps<UserWithRole>) {
+}: OtherDataTableProps<AuthSession["user"]>) {
   const { user } = useAuth();
   const { data, error, isLoading } = useUsers();
 
@@ -696,7 +700,7 @@ export function UserDetailSheet({
   data,
   isCurrentUser,
 }: {
-  data: UserWithRole;
+  data: AuthSession["user"];
   isCurrentUser: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -779,7 +783,7 @@ export function ProfileBadges() {
 export function ProfilePicture({
   data,
 }: {
-  data: Pick<UserWithRole, "id" | "name" | "image">;
+  data: Pick<AuthSession["user"], "id" | "name" | "image">;
 }) {
   const { id, name, image } = data;
 
@@ -1178,7 +1182,7 @@ export function RevokeSessionList() {
   ));
 }
 
-function RevokeSessionButton({ data }: { data: Session }) {
+function RevokeSessionButton({ data }: { data: AuthSession["session"] }) {
   const { id, updatedAt, userAgent, token } = data;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -1572,7 +1576,7 @@ function AdminChangeUserRoleForm({
   data,
   setIsOpen,
 }: {
-  data: UserWithRole;
+  data: AuthSession["user"];
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -1681,7 +1685,7 @@ function AdminChangeUserRoleForm({
 function AdminRevokeUserSessionsDialog({
   id,
   name,
-}: Pick<UserWithRole, "id" | "name">) {
+}: Pick<AuthSession["user"], "id" | "name">) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickHandler = () => {
@@ -1740,7 +1744,7 @@ function AdminRemoveUserDialog({
   data,
   setIsOpen: setSheetOpen,
 }: {
-  data: Pick<UserWithRole, "id" | "name" | "image">;
+  data: Pick<AuthSession["user"], "id" | "name" | "image">;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [input, setInput] = useState<string>("");
@@ -1911,7 +1915,7 @@ function AdminActionRemoveUsersDialog({
   data,
   onSuccess,
 }: {
-  data: Pick<UserWithRole, "id" | "name" | "image">[];
+  data: Pick<AuthSession["user"], "id" | "name" | "image">[];
   onSuccess: () => void;
 }) {
   const [input, setInput] = useState<string>("");

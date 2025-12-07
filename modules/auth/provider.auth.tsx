@@ -1,19 +1,18 @@
 "use client";
 
-import { auth } from "@/core/auth";
 import { authorized } from "@/core/utils";
 import { notFound, usePathname } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect } from "react";
+import { AuthSession } from "./constants";
 import { useSession } from "./hooks";
 
-type AuthContextType = typeof auth.$Infer.Session;
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthSession | undefined>(undefined);
 
 export function AuthProvider({
   session: fallbackData,
   children,
 }: {
-  session: AuthContextType;
+  session: AuthSession;
   children: ReactNode;
 }) {
   const pathname = usePathname();

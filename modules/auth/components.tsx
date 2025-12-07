@@ -10,9 +10,8 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { cn } from "@/core/utils";
-import { UserWithRole } from "better-auth/plugins";
 import { BadgeCheck } from "lucide-react";
-import { Role, rolesMeta } from "./constants";
+import { AuthSession, Role, rolesMeta } from "./constants";
 
 export function UserRoleBadge({
   value,
@@ -83,7 +82,7 @@ export function UserAvatar({
   name,
   className,
   classNames,
-}: Pick<UserWithRole, "image" | "name"> & {
+}: Pick<AuthSession["user"], "image" | "name"> & {
   className?: string;
   classNames?: { image?: string; fallback?: string };
 }) {
