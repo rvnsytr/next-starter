@@ -1,11 +1,23 @@
 import z, { ZodType } from "zod";
-import { appMeta } from "./constants";
 import { apiResponseSchema } from "./schemas.zod";
 
 export type FetcherConfig = RequestInit & { safeFetch?: boolean };
 
 export type ApiResponse<T> = z.infer<typeof apiResponseSchema> & { data: T };
 export type ApiFetcherConfig = Omit<FetcherConfig, "credentials">;
+
+export const apiConfig = {
+  host: "http://localhost:8000",
+  basePath: "/api",
+
+  get baseUrl() {
+    return `${this.host}${this.basePath}`;
+  },
+
+  get authBaseUrl() {
+    return `${this.baseUrl}/auth`;
+  },
+};
 
 export async function fetcher<T>(
   url: string,
@@ -30,7 +42,7 @@ export async function apiFetcher<T>(
   config?: ApiFetcherConfig,
 ): Promise<ApiResponse<T>> {
   return await fetcher(
-    `${appMeta.apiHost}${url}`,
+    `${apiConfig.baseUrl}${url}`,
     apiResponseSchema.extend({ data: schema }),
     { credentials: "include", ...config },
   );
