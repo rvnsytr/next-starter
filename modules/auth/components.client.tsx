@@ -62,6 +62,7 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Label } from "@/core/components/ui/label";
+import { PasswordInput } from "@/core/components/ui/password-input";
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { Separator } from "@/core/components/ui/separator";
 import {
@@ -91,7 +92,6 @@ import {
   Info,
   Layers2,
   LockKeyhole,
-  LockKeyholeOpen,
   LogIn,
   LogOut,
   Mail,
@@ -445,19 +445,13 @@ export function SignUpForm() {
             htmlFor={field.name}
             errors={fieldState.error}
           >
-            <InputGroup>
-              <InputGroupInput
-                type="password"
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Masukan kata sandi anda"
-                required
-                {...field}
-              />
-              <InputGroupAddon>
-                <LockKeyhole />
-              </InputGroupAddon>
-            </InputGroup>
+            <PasswordInput
+              id={field.name}
+              aria-invalid={!!fieldState.error}
+              placeholder="Masukan kata sandi anda"
+              required
+              {...field}
+            />
           </FieldWrapper>
         )}
       />
@@ -632,7 +626,7 @@ const getUserColumn = (currentUserId: string) => [
   }),
 ];
 
-export function UserDatwaTable({
+export function UserDataTable({
   searchPlaceholder = "Cari Pengguna...",
   ...props
 }: OtherDataTableProps<AuthSession["user"]>) {
@@ -1096,19 +1090,13 @@ export function ChangePasswordForm() {
               htmlFor={field.name}
               errors={fieldState.error}
             >
-              <InputGroup>
-                <InputGroupInput
-                  type="password"
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Masukan kata sandi anda"
-                  required
-                  {...field}
-                />
-                <InputGroupAddon>
-                  <LockKeyholeOpen />
-                </InputGroupAddon>
-              </InputGroup>
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Masukan kata sandi anda"
+                required
+                {...field}
+              />
             </FieldWrapper>
           )}
         />
@@ -1459,19 +1447,13 @@ export function AdminCreateUserDialog() {
                 htmlFor={field.name}
                 errors={fieldState.error}
               >
-                <InputGroup>
-                  <InputGroupInput
-                    type="password"
-                    id={field.name}
-                    aria-invalid={!!fieldState.error}
-                    placeholder="Masukan kata sandi anda"
-                    required
-                    {...field}
-                  />
-                  <InputGroupAddon>
-                    <LockKeyhole />
-                  </InputGroupAddon>
-                </InputGroup>
+                <PasswordInput
+                  id={field.name}
+                  aria-invalid={!!fieldState.error}
+                  placeholder="Masukan kata sandi anda"
+                  required
+                  {...field}
+                />
               </FieldWrapper>
             )}
           />

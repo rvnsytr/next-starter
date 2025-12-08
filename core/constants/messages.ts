@@ -50,32 +50,47 @@ export const messages = {
   requiredInvalidType: (field: string, fieldType: string) =>
     `${capitalize(field, "first")} wajib diisi dan harus berupa ${fieldType} yang valid.`,
 
-  stringTooShort: (field: string, min: number) =>
-    `${capitalize(field, "first")} harus terdiri dari minimal ${min} karakter.`,
-  stringTooLong: (field: string, max: number) =>
-    `${capitalize(field, "first")} tidak boleh melebihi ${max} karakter.`,
-
-  numberTooSmall: (field: string, min: number) =>
-    `${capitalize(field, "first")} tidak boleh kurang dari ${min}.`,
-  numberTooLarge: (field: string, max: number) =>
-    `${capitalize(field, "first")} tidak boleh lebih dari ${max}.`,
-
-  dateToEarly: (field: string, min: Date) =>
-    `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatDate(min, "PPP")}.`,
-  dateTooLate: (field: string, max: Date) =>
-    `${capitalize(field, "first")} tidak boleh lebih lambat dari ${formatDate(max, "PPP")}.`,
-  dateToFew: (field: string, min: number) =>
-    `${capitalize(field, "first")} harus terdiri dari minimal ${min} tanggal.`,
-  dateTooMany: (field: string, max: number) =>
-    `${capitalize(field, "first")} tidak boleh melebihi ${max} tanggal.`,
-
-  fileToFew: (field: string, min: number) =>
-    `Silakan unggah minimal ${min} ${field}.`,
-  fileTooMany: (field: string, max: number) =>
-    `Anda hanya dapat mengunggah hingga ${max} ${field}.`,
-  fileTooLarge: (field: string, sizeInMb: string | number) =>
-    `${capitalize(field, "first")} melebihi batas ukuran maksimum ${sizeInMb} MB.`,
-
   outOfRange: (field: string, min: number, max: number, thing = "karakter") =>
     `${capitalize(field, "first")} harus antara ${min} hingga ${max} ${thing}.`.trim(),
+
+  string: {
+    tooShort: (field: string, min: number) =>
+      `${capitalize(field, "first")} harus terdiri dari minimal ${min} karakter.`,
+    tooLong: (field: string, max: number) =>
+      `${capitalize(field, "first")} tidak boleh melebihi ${max} karakter.`,
+  },
+
+  number: {
+    tooSmall: (field: string, min: number) =>
+      `${capitalize(field, "first")} tidak boleh kurang dari ${min}.`,
+    tooLarge: (field: string, max: number) =>
+      `${capitalize(field, "first")} tidak boleh lebih dari ${max}.`,
+  },
+
+  date: {
+    tooEarly: (field: string, min: Date) =>
+      `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatDate(min, "PPP")}.`,
+    tooLate: (field: string, max: Date) =>
+      `${capitalize(field, "first")} tidak boleh lebih lambat dari ${formatDate(max, "PPP")}.`,
+    tooFew: (field: string, min: number) =>
+      `${capitalize(field, "first")} harus terdiri dari minimal ${min} tanggal.`,
+    tooMany: (field: string, max: number) =>
+      `${capitalize(field, "first")} tidak boleh melebihi ${max} tanggal.`,
+  },
+
+  file: {
+    tooFew: (field: string, min: number) =>
+      `Silakan unggah minimal ${min} ${field}.`,
+    tooMany: (field: string, max: number) =>
+      `Anda hanya dapat mengunggah hingga ${max} ${field}.`,
+    tooLarge: (field: string, sizeInMb: string | number) =>
+      `${capitalize(field, "first")} melebihi batas ukuran maksimum ${sizeInMb} MB.`,
+  },
+
+  password: {
+    lowercase: "Kata sandi harus mengandung huruf kapital. (A-Z).",
+    uppercase: "Kata sandi harus mengandung huruf kecil. (a-z).",
+    number: "Kata sandi harus mengandung angka. (0-9).",
+    character: "Kata sandi harus mengandung karakter khusus.",
+  },
 };
