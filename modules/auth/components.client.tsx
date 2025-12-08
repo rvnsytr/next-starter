@@ -91,7 +91,7 @@ import {
   Gamepad2,
   Info,
   Layers2,
-  LockKeyhole,
+  LockKeyholeOpen,
   LogIn,
   LogOut,
   Mail,
@@ -288,19 +288,13 @@ export function SignInForm() {
             htmlFor={field.name}
             errors={fieldState.error}
           >
-            <InputGroup>
-              <InputGroupInput
-                type="password"
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Masukan kata sandi anda"
-                required
-                {...field}
-              />
-              <InputGroupAddon>
-                <LockKeyhole />
-              </InputGroupAddon>
-            </InputGroup>
+            <PasswordInput
+              id={field.name}
+              aria-invalid={!!fieldState.error}
+              placeholder="Masukan kata sandi anda"
+              required
+              {...field}
+            />
           </FieldWrapper>
         )}
       />
@@ -450,6 +444,7 @@ export function SignUpForm() {
               aria-invalid={!!fieldState.error}
               placeholder="Masukan kata sandi anda"
               required
+              withList
               {...field}
             />
           </FieldWrapper>
@@ -465,19 +460,13 @@ export function SignUpForm() {
             htmlFor={field.name}
             errors={fieldState.error}
           >
-            <InputGroup>
-              <InputGroupInput
-                type="password"
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Konfirmasi kata sandi anda"
-                required
-                {...field}
-              />
-              <InputGroupAddon>
-                <LockKeyhole />
-              </InputGroupAddon>
-            </InputGroup>
+            <PasswordInput
+              id={field.name}
+              aria-invalid={!!fieldState.error}
+              placeholder="Konfirmasi kata sandi anda"
+              required
+              {...field}
+            />
           </FieldWrapper>
         )}
       />
@@ -1064,19 +1053,14 @@ export function ChangePasswordForm() {
               htmlFor={field.name}
               errors={fieldState.error}
             >
-              <InputGroup>
-                <InputGroupInput
-                  type="password"
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Masukan kata sandi saat ini"
-                  required
-                  {...field}
-                />
-                <InputGroupAddon>
-                  <LockKeyhole />
-                </InputGroupAddon>
-              </InputGroup>
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Masukan kata sandi saat ini"
+                icon={<LockKeyholeOpen />}
+                required
+                {...field}
+              />
             </FieldWrapper>
           )}
         />
@@ -1095,6 +1079,7 @@ export function ChangePasswordForm() {
                 aria-invalid={!!fieldState.error}
                 placeholder="Masukan kata sandi anda"
                 required
+                withList
                 {...field}
               />
             </FieldWrapper>
@@ -1110,19 +1095,13 @@ export function ChangePasswordForm() {
               htmlFor={field.name}
               errors={fieldState.error}
             >
-              <InputGroup>
-                <InputGroupInput
-                  type="password"
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Konfirmasi kata sandi anda"
-                  required
-                  {...field}
-                />
-                <InputGroupAddon>
-                  <LockKeyhole />
-                </InputGroupAddon>
-              </InputGroup>
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Konfirmasi kata sandi anda"
+                required
+                {...field}
+              />
             </FieldWrapper>
           )}
         />
@@ -1159,22 +1138,21 @@ export function ChangePasswordForm() {
   );
 }
 
-export function RevokeSessionList() {
+export function SessionList() {
   const { data, error, isLoading } = useSessionList();
 
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
 
   return (data ?? []).map((item) => (
-    <RevokeSessionButton key={item.id} data={item} />
+    <SessionListButton key={item.id} data={item} />
   ));
 }
 
-function RevokeSessionButton({ data }: { data: AuthSession["session"] }) {
+function SessionListButton({ data }: { data: AuthSession["session"] }) {
   const { id, updatedAt, userAgent, token } = data;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const { session } = useAuth();
 
   const isCurrentSession = session.id === id;
@@ -1267,7 +1245,6 @@ function RevokeSessionButton({ data }: { data: AuthSession["session"] }) {
 }
 
 export function RevokeOtherSessionsButton() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickHandler = () => {
@@ -1276,7 +1253,7 @@ export function RevokeOtherSessionsButton() {
       fetchOptions: {
         onSuccess: () => {
           setIsLoading(false);
-          router.refresh();
+          mutateSessionList();
           toast.success("Semua sesi aktif lainnya berhasil dicabut.");
         },
         onError: ({ error }) => {
@@ -1452,6 +1429,7 @@ export function AdminCreateUserDialog() {
                   aria-invalid={!!fieldState.error}
                   placeholder="Masukan kata sandi anda"
                   required
+                  withList
                   {...field}
                 />
               </FieldWrapper>
@@ -1467,19 +1445,13 @@ export function AdminCreateUserDialog() {
                 htmlFor={field.name}
                 errors={fieldState.error}
               >
-                <InputGroup>
-                  <InputGroupInput
-                    type="password"
-                    id={field.name}
-                    aria-invalid={!!fieldState.error}
-                    placeholder="Konfirmasi kata sandi anda"
-                    required
-                    {...field}
-                  />
-                  <InputGroupAddon>
-                    <LockKeyhole />
-                  </InputGroupAddon>
-                </InputGroup>
+                <PasswordInput
+                  id={field.name}
+                  aria-invalid={!!fieldState.error}
+                  placeholder="Konfirmasi kata sandi anda"
+                  required
+                  {...field}
+                />
               </FieldWrapper>
             )}
           />

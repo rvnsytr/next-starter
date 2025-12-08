@@ -15,7 +15,7 @@ import {
   ProfileBadges,
   ProfileForm,
   RevokeOtherSessionsButton,
-  RevokeSessionList,
+  SessionList,
 } from "@/modules/auth";
 import { Metadata } from "next";
 
@@ -60,7 +60,7 @@ export default function Page() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-y-2">
-          <RevokeSessionList />
+          <SessionList />
         </CardContent>
 
         <CardFooter className="flex-col items-stretch border-t md:flex-row md:items-center">
