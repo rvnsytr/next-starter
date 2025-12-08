@@ -88,9 +88,9 @@ export const messages = {
   },
 
   password: {
-    lowercase: "Kata sandi harus mengandung huruf kapital. (A-Z).",
-    uppercase: "Kata sandi harus mengandung huruf kecil. (a-z).",
-    number: "Kata sandi harus mengandung angka. (0-9).",
+    lowercase: "Kata sandi harus mengandung huruf kapital (A-Z).",
+    uppercase: "Kata sandi harus mengandung huruf kecil (a-z).",
+    number: "Kata sandi harus mengandung angka (0-9).",
     character: "Kata sandi harus mengandung karakter khusus.",
   },
 };
