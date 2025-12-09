@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/core/auth";
-import { deleteFiles, extractKeyFromPublicUrl } from "@/core/s3";
+import { deleteFiles, extractKeyFromPublicUrl } from "@/core/storage";
 import { headers } from "next/headers";
 import { AuthSession } from "./constants";
 

@@ -11,23 +11,22 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const Bucket = process.env.S3_BUCKET_NAME!;
 const endpoint = process.env.S3_ENDPOINT!;
-const region = { singapore: "ap-southeast-1", jakarta: "ap-southeast-3" };
+const Bucket = process.env.S3_BUCKET_NAME!;
 
 const s3 = new S3Client({
   endpoint,
-  region: region.jakarta,
-  forcePathStyle: true,
+  region: process.env.S3_REGION!,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY!,
     secretAccessKey: process.env.S3_SECRET_KEY!,
   },
+  forcePathStyle: true,
 });
 
 export async function uploadFiles({
   files,
-  ...props
+  ...options
 }: Omit<PutObjectCommandInput, "Key" | "Bucket" | "Body" | "ContentType"> & {
   files: File[] | { key: string; file: File }[];
 }): Promise<{ key: string; res: PutObjectCommandOutput }[]> {
@@ -49,7 +48,7 @@ export async function uploadFiles({
         Bucket,
         Body: Buffer.from(await file.arrayBuffer()),
         ContentType: file.type,
-        ...props,
+        ...options,
       });
 
       return { key, res: await s3.send(command) };

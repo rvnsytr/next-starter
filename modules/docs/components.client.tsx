@@ -51,7 +51,7 @@ import { Club, Diamond, Heart, Save, Spade, TextIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-// import { uploadFiles } from "@/core/s3";
+// import { uploadFiles } from "@/core/storage";
 
 const card = ["spade", "heart", "diamond", "club"] as const;
 const selectAndRadioData = [

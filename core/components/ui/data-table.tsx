@@ -96,7 +96,7 @@ export type OtherDataTableProps<TData> = ToolBoxProps & {
   };
 
   initialState?: InitialTableState;
-  rowSelectionFn?: (
+  renderRowSelection?: (
     data: Row<TData>[],
     table: DataTableType<TData>,
   ) => ReactNode;
@@ -113,7 +113,7 @@ export function DataTable<TData>({
   className,
   classNames,
   initialState,
-  rowSelectionFn,
+  renderRowSelection,
   enableRowSelection,
   ...props
 }: DataTableProps<TData> &
@@ -181,9 +181,10 @@ export function DataTable<TData>({
     table.getPageCount() > 0 ? table.getState().pagination.pageIndex + 1 : 1;
 
   useEffect(() => {
-    if (rowSelectionFn) setRowSelector(rowSelectionFn(selectedRows, table));
+    if (renderRowSelection)
+      setRowSelector(renderRowSelection(selectedRows, table));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowSelectionFn, selectedRows]);
+  }, [renderRowSelection, selectedRows]);
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>

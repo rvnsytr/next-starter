@@ -77,8 +77,8 @@ import {
 import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
-import { getFilePublicUrl, uploadFiles } from "@/core/s3";
 import { sharedSchemas, userSchema } from "@/core/schemas.zod";
+import { getFilePublicUrl, uploadFiles } from "@/core/storage";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -147,79 +147,6 @@ const sharedText = {
 };
 
 // #region SIGN
-
-export function SignOutButton() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  return (
-    <SidebarMenuButton
-      tooltip="Keluar"
-      variant="outline_destructive"
-      className="text-destructive hover:text-destructive"
-      disabled={isLoading}
-      onClick={() => {
-        setIsLoading(true);
-        authClient.signOut({
-          fetchOptions: {
-            onSuccess: () => {
-              toast.success("Berhasil keluar - Sampai jumpa!");
-              router.push("/sign-in");
-            },
-            onError: ({ error }) => {
-              setIsLoading(false);
-              toast.error(error.message);
-            },
-          },
-        });
-      }}
-    >
-      <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} /> Keluar
-    </SidebarMenuButton>
-  );
-}
-
-export function SignOnGithubButton() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const wasLastUsed = authClient.isLastUsedLoginMethod("github");
-
-  return (
-    <Button
-      variant="outline"
-      disabled={isLoading}
-      className="relative"
-      onClick={() => {
-        setIsLoading(true);
-        authClient.signIn.social(
-          {
-            provider: "github",
-            callbackURL: "/dashboard",
-            errorCallbackURL: "/sign-in",
-          },
-          {
-            onSuccess: () => {
-              toast.success(sharedText.signIn);
-            },
-            onError: ({ error }) => {
-              setIsLoading(false);
-              toast.error(error.message);
-            },
-          },
-        );
-      }}
-    >
-      <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
-      {sharedText.signOn("Github")}
-      {/* {wasLastUsed && (
-        <Badge
-          variant="outline"
-          className="bg-card absolute -top-3 right-1 shadow"
-        >
-          {sharedText.lastUsed}
-        </Badge>
-      )} */}
-    </Button>
-  );
-}
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -511,6 +438,79 @@ export function SignUpForm() {
   );
 }
 
+export function SignOnGithubButton() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const wasLastUsed = authClient.isLastUsedLoginMethod("github");
+
+  return (
+    <Button
+      variant="outline"
+      disabled={isLoading}
+      className="relative"
+      onClick={() => {
+        setIsLoading(true);
+        authClient.signIn.social(
+          {
+            provider: "github",
+            callbackURL: "/dashboard",
+            errorCallbackURL: "/sign-in",
+          },
+          {
+            onSuccess: () => {
+              toast.success(sharedText.signIn);
+            },
+            onError: ({ error }) => {
+              setIsLoading(false);
+              toast.error(error.message);
+            },
+          },
+        );
+      }}
+    >
+      <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
+      {sharedText.signOn("Github")}
+      {/* {wasLastUsed && (
+        <Badge
+          variant="outline"
+          className="bg-card absolute -top-3 right-1 shadow"
+        >
+          {sharedText.lastUsed}
+        </Badge>
+      )} */}
+    </Button>
+  );
+}
+
+export function SignOutButton() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  return (
+    <SidebarMenuButton
+      tooltip="Keluar"
+      variant="outline_destructive"
+      className="text-destructive hover:text-destructive"
+      disabled={isLoading}
+      onClick={() => {
+        setIsLoading(true);
+        authClient.signOut({
+          fetchOptions: {
+            onSuccess: () => {
+              toast.success("Berhasil keluar - Sampai jumpa!");
+              router.push("/sign-in");
+            },
+            onError: ({ error }) => {
+              setIsLoading(false);
+              toast.error(error.message);
+            },
+          },
+        });
+      }}
+    >
+      <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} /> Keluar
+    </SidebarMenuButton>
+  );
+}
+
 // #endregion
 
 // #region USER
@@ -633,9 +633,8 @@ export function UserDataTable({
       columns={columns}
       searchPlaceholder={searchPlaceholder}
       enableRowSelection={({ original }) => original.id !== user.id}
-      rowSelectionFn={(data, table) => {
+      renderRowSelection={(data, table) => {
         const filteredData = data.map(({ original }) => original);
-        const clearRowSelection = () => table.resetRowSelection();
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -653,7 +652,7 @@ export function UserDataTable({
               <DropdownMenuItem asChild>
                 <AdminActionRevokeUserSessionsDialog
                   ids={filteredData.map(({ id }) => id)}
-                  onSuccess={clearRowSelection}
+                  onSuccess={() => table.resetRowSelection()}
                 />
               </DropdownMenuItem>
 
@@ -667,7 +666,7 @@ export function UserDataTable({
               <DropdownMenuItem asChild>
                 <AdminActionRemoveUsersDialog
                   data={filteredData}
-                  onSuccess={clearRowSelection}
+                  onSuccess={() => table.resetRowSelection()}
                 />
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -1144,8 +1143,8 @@ export function SessionList() {
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
 
-  return (data ?? []).map((item) => (
-    <SessionListButton key={item.id} data={item} />
+  return (data ?? []).map((session) => (
+    <SessionListButton key={session.id} data={session} />
   ));
 }
 
@@ -1168,7 +1167,7 @@ function SessionListButton({ data }: { data: AuthSession["session"] }) {
     xr: MonitorSmartphone,
     embedded: MonitorSmartphone,
     other: MonitorSmartphone,
-  }[device.type || "other"];
+  }[device.type ?? "other"];
 
   const clickHandler = () => {
     setIsLoading(true);
