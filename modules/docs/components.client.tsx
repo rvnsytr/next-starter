@@ -117,7 +117,7 @@ export function ExampleForm() {
       error: "At least one checkbox must be selected",
     }),
 
-    files: sharedSchemas.file(fileType, {
+    files: sharedSchemas.files(fileType, {
       // min: 1,
       // max: 5,
       // maxFileSize: toBytes(1),

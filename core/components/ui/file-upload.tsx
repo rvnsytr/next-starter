@@ -192,11 +192,9 @@ export function FileUpload({
             const fileURL = URL.createObjectURL(file);
             const isImage = file.type.startsWith("image/");
 
-            const schema = sharedSchemas.file(accept, {
-              maxFileSize: fileSize.bytes,
-            });
-
-            const res = schema.safeParse([file]);
+            const res = sharedSchemas
+              .files(accept, { maxFileSize: fileSize.bytes })
+              .safeParse([file]);
 
             return (
               <div key={fileURL} className="relative rounded-md border">

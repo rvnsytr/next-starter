@@ -78,7 +78,8 @@ export const messages = {
       `${capitalize(field, "first")} tidak boleh melebihi ${max} tanggal.`,
   },
 
-  file: {
+  files: {
+    mimeInvalid: (field: string) => `Tipe ${field} tidak valid.`,
     tooFew: (field: string, min: number) =>
       `Silakan unggah minimal ${min} ${field}.`,
     tooMany: (field: string, max: number) =>

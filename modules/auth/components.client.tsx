@@ -774,7 +774,7 @@ export function ProfilePicture({
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
 
   const contentType = "image";
-  const formSchema = sharedSchemas.file(contentType);
+  const formSchema = sharedSchemas.files(contentType);
 
   const changeHandler = async (fileList: FileList) => {
     setIsChange(true);
@@ -1196,7 +1196,7 @@ function SessionListButton({ data }: { data: AuthSession["session"] }) {
 
         <div className="grid gap-y-1 font-medium">
           <small>
-            {`${browser.name ?? "Browser tidak diketahui"} di ${os.name ?? "sistem operasi yang tidak diketahui"}`}
+            {`${browser.name ?? "Browser tidak dikenal"} - ${os.name ?? "OS tidak dikenal"}`}
           </small>
 
           {isCurrentSession ? (
