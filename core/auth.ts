@@ -5,13 +5,13 @@ import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin } from "better-auth/plugins";
 import { appMeta } from "./constants";
 import { db } from "./db";
-import { roles } from "./permission";
+import { ac, roles } from "./permission";
 
 export const auth = betterAuth({
   appName: appMeta.name,
 
   database: drizzleAdapter(db, { provider: "pg" }),
-  plugins: [nextCookies(), adminPlugin({ roles, defaultRole })],
+  plugins: [nextCookies(), adminPlugin({ ac, roles, defaultRole })],
 
   emailAndPassword: { enabled: true, autoSignIn: false },
   socialProviders: {
