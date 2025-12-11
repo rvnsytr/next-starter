@@ -121,13 +121,7 @@ import {
   revokeUserSessions,
 } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
-import {
-  allRoles,
-  AuthSession,
-  defaultRole,
-  Role,
-  rolesMeta,
-} from "./constants";
+import { allRoles, AuthSession, Role, rolesMeta } from "./constants";
 import {
   mutateSession,
   mutateSessionList,
@@ -1327,7 +1321,7 @@ export function AdminCreateUserDialog() {
   const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
     setIsLoading(true);
 
-    const role = newRole ?? defaultRole;
+    const role = newRole ?? "user";
     authClient.admin.createUser(
       { password: newPassword, role, ...rest },
       {
@@ -1543,7 +1537,7 @@ function AdminChangeUserRoleForm({
   });
 
   const formHandler = ({ role: newRole }: FormSchema) => {
-    const role = newRole ?? defaultRole;
+    const role = newRole ?? "user";
     if (role === data.role)
       return toast.info(messages.noChanges(`role ${data.name}`));
 

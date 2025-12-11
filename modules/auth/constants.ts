@@ -4,8 +4,6 @@ import { LucideIcon, ShieldUser, UserRound } from "lucide-react";
 
 export type AuthSession = typeof auth.$Infer.Session;
 export type Role = keyof typeof roles;
-
-export const defaultRole: Role = "user";
 export const allRoles = Object.keys(roles) as Role[];
 
 export const rolesMeta: Record<
