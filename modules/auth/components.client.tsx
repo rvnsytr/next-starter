@@ -767,8 +767,7 @@ export function ProfilePicture({
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
 
-  const contentType = "image";
-  const formSchema = sharedSchemas.files(contentType);
+  const formSchema = sharedSchemas.files("image");
 
   const changeHandler = async (fileList: FileList) => {
     setIsChange(true);
@@ -827,7 +826,7 @@ export function ProfilePicture({
       <input
         type="file"
         ref={inputAvatarRef}
-        accept={fileMeta[contentType].mimeTypes.join(", ")}
+        accept={fileMeta.image.mimeTypes.join(", ")}
         className="hidden"
         onChange={(e) => {
           const fileList = e.currentTarget.files;

@@ -10,7 +10,7 @@ import {
   CommandSeparator,
 } from "@/core/components/ui/command";
 import { Menu, messages, routesMeta } from "@/core/constants";
-import { cn, toKebabCase } from "@/core/utils";
+import { cn, toKebab } from "@/core/utils";
 import { Dot, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -126,7 +126,7 @@ export function CommandPalette({
 
                           {subMenu?.map((itm) => {
                             const isDestructive = itm.variant === "destructive";
-                            const href = `${route}/#${toKebabCase(itm.displayName)}`;
+                            const href = `${route}/#${toKebab(itm.displayName)}`;
                             return (
                               <CommandItem
                                 key={href}

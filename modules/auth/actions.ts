@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/core/auth";
-import { deleteFiles, extractKeyFromPublicUrl } from "@/core/storage";
+import { extractKeyFromPublicUrl, removeFiles } from "@/core/storage";
 import { headers } from "next/headers";
 import { AuthSession } from "./constants";
 
@@ -33,7 +33,7 @@ export async function revokeUserSessions(ids: string[]) {
 }
 
 export async function deleteProfilePicture(image: string) {
-  await deleteFiles([await extractKeyFromPublicUrl(image)]);
+  await removeFiles([await extractKeyFromPublicUrl(image)]);
 }
 
 export async function deleteUsers(

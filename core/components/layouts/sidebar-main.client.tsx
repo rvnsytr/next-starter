@@ -1,7 +1,7 @@
 "use client";
 
 import { routesMeta } from "@/core/constants";
-import { getActiveRoute, getMenuByRole, toKebabCase } from "@/core/utils";
+import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
 import { Role, useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -151,7 +151,7 @@ export function SidebarMainContent() {
                                   <Link
                                     href={
                                       itm.href ??
-                                      `${route}/#${toKebabCase(itm.displayName)}`
+                                      `${route}/#${toKebab(itm.displayName)}`
                                     }
                                   >
                                     <span className="line-clamp-1">

@@ -61,7 +61,7 @@ export async function getAllFiles(MaxKeys = 1000, ContinuationToken?: string) {
   return await s3.send(new ListObjectsV2Command(param));
 }
 
-export async function getFileSignedUrl(Key: string) {
+export async function getFilePresignedUrl(Key: string) {
   return await getSignedUrl(s3, new GetObjectCommand({ Bucket, Key }));
 }
 
@@ -76,7 +76,7 @@ export async function extractKeyFromPublicUrl(url: string) {
   return key;
 }
 
-export async function deleteFiles(key: string[]) {
+export async function removeFiles(key: string[]) {
   return Promise.all(
     key.map((item) => s3.send(new DeleteObjectCommand({ Bucket, Key: item }))),
   );
