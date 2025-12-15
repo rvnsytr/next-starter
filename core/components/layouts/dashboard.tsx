@@ -1,3 +1,4 @@
+import { cn } from "@/core/utils";
 import { ReactNode } from "react";
 import { LayoutButton, ThemeButton } from "../ui/buttons.client";
 import {
@@ -6,7 +7,6 @@ import {
 } from "../ui/dynamic-breadcrumb";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
-import { DashboardMainContent } from "./dashboard.client";
 
 export function DashboardMain({
   className,
@@ -28,9 +28,15 @@ export function DashboardMain({
         </div>
       </nav>
 
-      <DashboardMainContent className={className}>
+      <div
+        className={cn(
+          "relative z-10 flex flex-1 flex-col gap-4 py-4",
+          "group-data-[layout-mode=centered]/layout-mode:container group-data-[layout-mode=fullwidth]/layout-mode:px-4",
+          className,
+        )}
+      >
         {children}
-      </DashboardMainContent>
+      </div>
     </>
   );
 }

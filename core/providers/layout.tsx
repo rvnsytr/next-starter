@@ -12,10 +12,10 @@ import {
 } from "react";
 import z from "zod";
 
-const allLayoutMode = ["fullwidth", "centered"] as const;
-type LayoutMode = (typeof allLayoutMode)[number];
+export const allLayoutMode = ["fullwidth", "centered"] as const;
+export type LayoutMode = (typeof allLayoutMode)[number];
 
-const defaultLayout: LayoutMode = "centered";
+export const defaultLayout: LayoutMode = "centered";
 
 type LayoutContextType = {
   layout: LayoutMode | null;
@@ -45,7 +45,12 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
 
   return (
     <LayoutContext.Provider value={{ layout, setLayout }}>
-      {children}
+      <div
+        data-layout-mode={layout}
+        className="group/layout-mode flex flex-1 flex-col"
+      >
+        {children}
+      </div>
     </LayoutContext.Provider>
   );
 }

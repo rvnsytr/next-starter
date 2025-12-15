@@ -124,28 +124,30 @@ export function CommandPalette({
                             {Icon && <Icon />} {meta.displayName}
                           </CommandItem>
 
-                          {subMenu?.map((itm) => {
-                            const isDestructive = itm.variant === "destructive";
-                            const href = `${route}/#${toKebab(itm.displayName)}`;
-                            return (
-                              <CommandItem
-                                key={href}
-                                disabled={disabled}
-                                onSelect={() => onSelectHandler(href)}
-                                className={cn(
-                                  isDestructive &&
-                                    "text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:text-destructive",
-                                )}
-                              >
-                                <Dot
+                          {!disabled &&
+                            subMenu?.map((itm) => {
+                              const isDestructive =
+                                itm.variant === "destructive";
+                              const href = `${route}/#${toKebab(itm.displayName)}`;
+                              return (
+                                <CommandItem
+                                  key={href}
+                                  disabled={itm.disabled}
+                                  onSelect={() => onSelectHandler(href)}
                                   className={cn(
-                                    isDestructive && "text-destructive",
+                                    isDestructive &&
+                                      "text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:text-destructive",
                                   )}
-                                />
-                                {itm.displayName}
-                              </CommandItem>
-                            );
-                          })}
+                                >
+                                  <Dot
+                                    className={cn(
+                                      isDestructive && "text-destructive",
+                                    )}
+                                  />
+                                  {itm.displayName}
+                                </CommandItem>
+                              );
+                            })}
                         </Fragment>
                       );
                     },

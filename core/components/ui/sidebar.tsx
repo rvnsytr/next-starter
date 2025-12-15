@@ -658,7 +658,7 @@ function SidebarMenuSubItem({ className, ...props }: ComponentProps<"li">) {
   );
 }
 
-export type SidebarMenuSubButtonProps = React.ComponentProps<"a"> & {
+export type SidebarMenuSubButtonProps = React.ComponentProps<"button"> & {
   asChild?: boolean;
   variant?: "default" | "destructive";
   size?: "sm" | "md";
@@ -673,7 +673,7 @@ function SidebarMenuSubButton({
   className,
   ...props
 }: SidebarMenuSubButtonProps) {
-  const Comp = asChild ? SlotPrimitive.Slot : "a";
+  const Comp = asChild ? SlotPrimitive.Slot : "button";
 
   return (
     <Comp

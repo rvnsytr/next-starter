@@ -1,7 +1,7 @@
 "use client";
 
 import { messages } from "@/core/constants";
-import { useLayout } from "@/core/providers";
+import { defaultLayout, LayoutMode, useLayout } from "@/core/providers";
 import { cn, delay } from "@/core/utils";
 import {
   ArrowUp,
@@ -9,6 +9,7 @@ import {
   Copy,
   Frame,
   Minimize,
+  Monitor,
   Moon,
   RefreshCcw,
   Scan,
@@ -18,7 +19,9 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { ComponentProps, useEffect, useEffectEvent, useState } from "react";
 import { Button, ButtonProps } from "./button";
+import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd, KbdGroup } from "./kbd";
+import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { LoadingSpinner } from "./spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
@@ -63,6 +66,38 @@ export function ThemeButton({
         </KbdGroup>
       </TooltipContent>
     </Tooltip>
+  );
+}
+
+export function ThemeSettings() {
+  const { theme, setTheme } = useTheme();
+
+  const data = [
+    { name: "Light", value: "light", icon: Sun },
+    { name: "System", value: "system", icon: Monitor },
+    { name: "Dark", value: "dark", icon: Moon },
+  ];
+
+  return (
+    <RadioGroup
+      value={theme ?? "system"}
+      onValueChange={setTheme}
+      className="grid grid-cols-3"
+      required
+    >
+      {data.map(({ name, value, icon: Icon }) => (
+        <FieldLabel key={value} htmlFor={`rd-theme-${value}`}>
+          <Field>
+            <FieldContent className="items-center">
+              <FieldTitle className="flex-col md:flex-row">
+                <Icon /> {name}
+              </FieldTitle>
+            </FieldContent>
+            <RadioGroupItem id={`rd-theme-${value}`} value={value} hidden />
+          </Field>
+        </FieldLabel>
+      ))}
+    </RadioGroup>
   );
 }
 
@@ -125,6 +160,37 @@ export function LayoutButton({
         </KbdGroup>
       </TooltipContent>
     </Tooltip>
+  );
+}
+
+export function LayoutSettings() {
+  const { layout, setLayout } = useLayout();
+
+  const data = [
+    { name: "Fullwidth", value: "fullwidth", icon: Scan },
+    { name: "Centered", value: "centered", icon: Minimize },
+  ];
+
+  return (
+    <RadioGroup
+      value={layout ?? defaultLayout}
+      onValueChange={(v) => setLayout(v as LayoutMode)}
+      className="grid grid-cols-2"
+      required
+    >
+      {data.map(({ name, value, icon: Icon }) => (
+        <FieldLabel key={value} htmlFor={`rd-theme-${value}`}>
+          <Field>
+            <FieldContent className="items-center">
+              <FieldTitle className="flex-col md:flex-row">
+                <Icon /> {name}
+              </FieldTitle>
+            </FieldContent>
+            <RadioGroupItem id={`rd-theme-${value}`} value={value} hidden />
+          </Field>
+        </FieldLabel>
+      ))}
+    </RadioGroup>
   );
 }
 

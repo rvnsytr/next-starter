@@ -11,5 +11,6 @@ export const routesMeta: Record<
   "/sign-in": { displayName: "Masuk" },
   "/dashboard": { displayName: "Dashboard", role: "all" },
   "/dashboard/profile": { displayName: "Profil Saya", role: "all" },
+  "/dashboard/settings": { displayName: "Pengaturan", role: "all" },
   "/dashboard/users": { displayName: "Pengguna", role: ["admin"] },
 };

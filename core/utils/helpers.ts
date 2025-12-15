@@ -2,7 +2,13 @@ import { Role } from "@/modules/auth";
 import clsx, { ClassValue } from "clsx";
 import { Route } from "next";
 import { twMerge } from "tailwind-merge";
-import { appMeta, dashboardMenu, Menu, routesMeta } from "../constants";
+import {
+  appMeta,
+  dashboardMenu,
+  Menu,
+  RouteRole,
+  routesMeta,
+} from "../constants";
 
 export function authorized(route: Route | null, role?: string) {
   if (!route || !role) return false;
@@ -51,17 +57,27 @@ export function getRandomColor(withHash?: boolean) {
 }
 
 export function getMenuByRole(
-  role: Role,
+  currentRole: Role,
   menu: Menu[] = dashboardMenu,
 ): Menu[] {
-  const filteredMenu = menu.map(({ section, content }) => {
-    const filteredContent = content.filter(({ route }) => {
-      const meta = routesMeta[route];
-      if (!("role" in meta)) return true;
+  const checkRole = (role?: RouteRole) => {
+    if (!role) return true;
+    return role === "all" || role?.includes(currentRole);
+  };
 
-      const currentRole = meta.role;
-      return currentRole === "all" || currentRole?.includes(role);
-    });
+  const filteredMenu = menu.map(({ section, content }) => {
+    const filteredContent = content
+      .filter(({ route }) => {
+        const meta = routesMeta[route];
+        if (!("role" in meta)) return true;
+        return checkRole(meta.role);
+      })
+      .map((item) => {
+        if (!item.subMenu) return item;
+        const filteredSubMenu = item.subMenu.filter((sm) => checkRole(sm.role));
+        if (filteredSubMenu.length <= 0) return null;
+        else return { ...item, subMenu: filteredSubMenu };
+      });
 
     if (filteredContent.length <= 0) return null;
     else return { section, content: filteredContent } as Menu;
@@ -69,6 +85,7 @@ export function getMenuByRole(
 
   return filteredMenu.filter((item) => item !== null);
 }
+
 export function getActiveRoute(pathname: string) {
   const allRoutes = Object.keys(routesMeta) as Route[];
   const allMenuRoutes = dashboardMenu.flatMap((m) =>
