@@ -787,13 +787,13 @@ export function ProfilePicture({
       { image: url },
       {
         onSuccess: () => {
-          toast.success("Foto profil Anda berhasil diperbarui.");
           setIsChange(false);
           mutateSession();
+          toast.success("Foto profil Anda berhasil diperbarui.");
         },
         onError: ({ error }) => {
-          toast.error(error.message);
           setIsChange(false);
+          toast.error(error.message);
         },
       },
     );
@@ -807,13 +807,13 @@ export function ProfilePicture({
       { image: null },
       {
         onSuccess: () => {
-          toast.success("Foto profil Anda berhasil dihapus.");
           setIsRemoved(false);
           mutateSession();
+          toast.success("Foto profil Anda berhasil dihapus.");
         },
         onError: ({ error }) => {
-          toast.error(error.message);
           setIsRemoved(false);
+          toast.error(error.message);
         },
       },
     );
@@ -1331,8 +1331,8 @@ export function AdminCreateUserDialog() {
           toast.success(`Akun atas nama ${rest.name} berhasil dibuat.`);
         },
         onError: ({ error }) => {
-          toast.error(error.message);
           setIsLoading(false);
+          toast.error(error.message);
         },
       },
     );
