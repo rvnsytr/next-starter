@@ -1136,15 +1136,13 @@ export function SessionList() {
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
 
-  return (data ?? []).map((session) => (
-    <SessionListButton key={session.id} data={session} />
-  ));
+  return (data ?? [])
+    ?.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .map((session) => <SessionListButton key={session.id} data={session} />);
 }
 
 function SessionListButton({ data }: { data: AuthSession["session"] }) {
-  const { id, updatedAt, userAgent, token } = data;
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { id, updatedAt, userAgent } = data;
   const { session } = useAuth();
 
   const isCurrentSession = session.id === id;
@@ -1162,76 +1160,25 @@ function SessionListButton({ data }: { data: AuthSession["session"] }) {
     other: MonitorSmartphone,
   }[device.type ?? "other"];
 
-  const clickHandler = () => {
-    setIsLoading(true);
-    authClient.revokeSession(
-      { token },
-      {
-        onSuccess: () => {
-          setIsLoading(false);
-          mutateSessionList();
-          toast.success("Sesi berhasil dicabut.");
-        },
-        onError: ({ error }) => {
-          setIsLoading(false);
-          toast.error(error.message);
-        },
-      },
-    );
-  };
-
   return (
-    <div className="bg-card flex items-center gap-x-4 rounded-lg border p-2 shadow-xs">
-      <div className="flex grow items-center gap-x-2">
-        <div className="bg-muted aspect-square size-fit rounded-md p-2">
-          <DeviceIcons className="shrink-0" />
-        </div>
-
-        <div className="grid gap-y-1 font-medium">
-          <small>
-            {`${browser.name ?? "Browser tidak dikenal"} - ${os.name ?? "OS tidak dikenal"}`}
-          </small>
-
-          {isCurrentSession ? (
-            <small className="text-success">Sesi saat ini</small>
-          ) : (
-            <small className="text-muted-foreground">
-              {messages.thingAgo("Terakhir terlihat", updatedAt)}
-            </small>
-          )}
-        </div>
+    <div className="bg-card flex items-center gap-x-2 rounded-lg border p-2 shadow-xs">
+      <div className="bg-muted aspect-square size-fit rounded-md p-2">
+        <DeviceIcons className="shrink-0" />
       </div>
 
-      {!isCurrentSession && (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              size="icon-sm"
-              variant="outline_destructive"
-              disabled={isLoading}
-            >
-              <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center gap-x-2">
-                <DeviceIcons /> {sharedText.revokeSession}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Sesi ini akan segera dihentikan dari perangkat yang dipilih.
-                Yakin ingin melanjutkan?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-              <AlertDialogAction onClick={clickHandler}>
-                {messages.actions.confirm}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+      <div className="grid gap-y-1 font-medium">
+        <small>
+          {`${browser.name ?? "Browser tidak dikenal"} - ${os.name ?? "OS tidak dikenal"}`}
+        </small>
+
+        {isCurrentSession ? (
+          <small className="text-success">Sesi saat ini</small>
+        ) : (
+          <small className="text-muted-foreground">
+            {messages.thingAgo("Terakhir terlihat", updatedAt)}
+          </small>
+        )}
+      </div>
     </div>
   );
 }
