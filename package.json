@@ -8,8 +8,8 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.948.0",
-    "@aws-sdk/s3-request-presigner": "^3.948.0",
+    "@aws-sdk/client-s3": "^3.952.0",
+    "@aws-sdk/s3-request-presigner": "^3.952.0",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.4.7",
@@ -31,10 +31,10 @@
     "react-hook-form": "7.39.1",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
-    "swr": "^2.3.7",
+    "swr": "^2.3.8",
     "tailwind-merge": "^3.4.0",
     "ua-parser-js": "^2.0.7",
-    "zod": "^4.1.13"
+    "zod": "^4.2.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
