@@ -1,8 +1,9 @@
 "use client";
 
+import { Role } from "@/core/auth";
 import { routesMeta } from "@/core/constants";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
-import { Role, useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
+import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -51,8 +52,7 @@ export function SidebarMainHeader() {
     >
       <Link href="/dashboard/profile">
         <UserAvatar
-          name={user.name}
-          image={user.image}
+          data={user}
           className="rounded-md"
           classNames={{
             image: "rounded-md group-hover/head-button:scale-105",

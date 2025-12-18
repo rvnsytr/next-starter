@@ -1,4 +1,4 @@
-import { allRoles } from "@/modules/auth";
+import { allRoles } from "@/core/auth";
 import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
 import { id } from "zod/locales";

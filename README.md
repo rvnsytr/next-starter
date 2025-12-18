@@ -157,6 +157,7 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
+- Prive Profile Picture
 - Radix to Base UI Migration
 - Server-Side Data Table
 - More Numeric Form Inputs

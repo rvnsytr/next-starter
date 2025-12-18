@@ -1,12 +1,20 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin as adminPlugin } from "better-auth/plugins";
+import {
+  admin as adminPlugin,
+  createAuthMiddleware,
+} from "better-auth/plugins";
 import { appMeta } from "./constants";
 import { db } from "./db";
 import { ac, roles } from "./permission";
+import { removeFiles } from "./storage";
 
-const defaultRole = "user";
+export type AuthSession = typeof auth.$Infer.Session;
+export type Role = keyof typeof roles;
+
+export const allRoles = Object.keys(roles) as Role[];
+export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
   appName: appMeta.name,
@@ -24,7 +32,25 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      role: { type: "string", input: false, defaultValue: defaultRole },
+      role: {
+        type: allRoles,
+        defaultValue: defaultRole,
+        input: false,
+      },
     },
+  },
+
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      const { session, newSession } = ctx.context;
+
+      if (ctx.path === "/update-user") {
+        const oldImageId = session?.user.image;
+        const newImageId = newSession?.user.image;
+
+        if (oldImageId && oldImageId !== newImageId)
+          removeFiles([oldImageId], { isPublicUrl: true });
+      }
+    }),
   },
 });

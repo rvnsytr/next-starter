@@ -1,3 +1,4 @@
+import { AuthSession, Role } from "@/core/auth";
 import {
   Avatar,
   AvatarFallback,
@@ -11,7 +12,7 @@ import {
 } from "@/core/components/ui/tooltip";
 import { cn } from "@/core/utils";
 import { BadgeCheck } from "lucide-react";
-import { AuthSession, Role, rolesMeta } from "./constants";
+import { rolesMeta } from "./constants";
 
 export function UserRoleBadge({
   value,
@@ -78,22 +79,22 @@ export function UserVerifiedBadge({
 }
 
 export function UserAvatar({
-  image,
-  name,
+  data,
   className,
   classNames,
-}: Pick<AuthSession["user"], "image" | "name"> & {
+}: {
+  data: Pick<AuthSession["user"], "image" | "name">;
   className?: string;
   classNames?: { image?: string; fallback?: string };
 }) {
   return (
     <Avatar className={cn("rounded-lg", className)}>
       <AvatarImage
-        src={image ?? undefined}
+        src={data.image ?? undefined}
         className={cn("rounded-lg", classNames?.image)}
       />
       <AvatarFallback className={cn("rounded-lg", classNames?.fallback)}>
-        {name.slice(0, 2)}
+        {data.name.slice(0, 2)}
       </AvatarFallback>
     </Avatar>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { allRoles, AuthSession, defaultRole, Role } from "@/core/auth";
 import { authClient } from "@/core/auth.client";
 import {
   AlertDialog,
@@ -78,7 +79,7 @@ import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { sharedSchemas, userSchema } from "@/core/schemas.zod";
-import { getFilePublicUrl, uploadFiles } from "@/core/storage";
+import { getFilePublicUrl, removeFiles, uploadFiles } from "@/core/storage";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -115,13 +116,9 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
 import { z } from "zod";
-import {
-  deleteProfilePicture,
-  deleteUsers,
-  revokeUserSessions,
-} from "./actions";
+import { deleteUsers, revokeUserSessions } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
-import { allRoles, AuthSession, Role, rolesMeta } from "./constants";
+import { rolesMeta } from "./constants";
 import {
   mutateSession,
   mutateSessionList,
@@ -132,7 +129,7 @@ import {
 import { useAuth } from "./provider.auth";
 
 const sharedText = {
-  signIn: "Berhasil masuk - Selamat datang!",
+  signIn: (name?: string) => `Berhasil masuk - Selamat datang ${name}!`,
   signOn: (social: string) => `Lanjutkan dengan ${social}`,
   lastUsed: "Terakhir digunakan",
 
@@ -157,16 +154,19 @@ export function SignInForm() {
   });
 
   const formHandler = (formData: FormSchema) => {
-    setIsLoading(true);
-    authClient.signIn.email(
-      { ...formData, callbackURL: "/dashboard" },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.signIn.email({
+          ...formData,
+          callbackURL: "/dashboard",
+        });
+      },
       {
-        onSuccess: () => {
-          toast.success(sharedText.signIn);
-        },
-        onError: ({ error }) => {
+        success: (res) => sharedText.signIn(res.data?.user.name),
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -278,20 +278,20 @@ export function SignUpForm() {
   });
 
   const formHandler = ({ newPassword: password, ...rest }: FormSchema) => {
-    setIsLoading(true);
-    authClient.signUp.email(
-      { password, ...rest },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.signUp.email({ password, ...rest });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
           form.reset();
-          toast.success(
-            "Akun berhasil dibuat. Silakan masuk untuk melanjutkan.",
-          );
+          return "Akun berhasil dibuat. Silakan masuk untuk melanjutkan.";
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -442,20 +442,25 @@ export function SignOnGithubButton() {
       disabled={isLoading}
       className="relative"
       onClick={() => {
-        setIsLoading(true);
-        authClient.signIn.social(
-          {
-            provider: "github",
-            callbackURL: "/dashboard",
-            errorCallbackURL: "/sign-in",
+        toast.promise(
+          async () => {
+            setIsLoading(true);
+            return await authClient.signIn.social({
+              provider: "github",
+              callbackURL: "/dashboard",
+              errorCallbackURL: "/sign-in",
+            });
           },
           {
-            onSuccess: () => {
-              toast.success(sharedText.signIn);
+            success: (res) => {
+              const { data } = res;
+              if (!data) return sharedText.signIn();
+              const name = "user" in data ? data.user?.name : undefined;
+              return sharedText.signIn(name);
             },
-            onError: ({ error }) => {
+            error: (e) => {
               setIsLoading(false);
-              toast.error(error.message);
+              return e.message;
             },
           },
         );
@@ -485,19 +490,22 @@ export function SignOutButton() {
       className="text-destructive hover:text-destructive"
       disabled={isLoading}
       onClick={() => {
-        setIsLoading(true);
-        authClient.signOut({
-          fetchOptions: {
-            onSuccess: () => {
-              toast.success("Berhasil keluar - Sampai jumpa!");
+        toast.promise(
+          async () => {
+            setIsLoading(true);
+            return await authClient.signOut();
+          },
+          {
+            success: () => {
               router.push("/sign-in");
+              return "Berhasil keluar - Sampai jumpa!";
             },
-            onError: ({ error }) => {
+            error: (e) => {
               setIsLoading(false);
-              toast.error(error.message);
+              return e.message;
             },
           },
-        });
+        );
       }}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} /> Keluar
@@ -533,7 +541,7 @@ const getUserColumn = (currentUserId: string) => [
     ),
     cell: ({ row }) => (
       <div className="flex justify-center">
-        <UserAvatar {...row.original} className="size-20" />
+        <UserAvatar data={row.original} className="size-20" />
       </div>
     ),
     meta: { displayName: "Foto Profil", type: "text", icon: UserSquare2 },
@@ -696,7 +704,7 @@ export function UserDetailSheet({
 
       <SheetContent>
         <SheetHeader className="flex-row items-center">
-          <UserAvatar {...data} className="size-10" />
+          <UserAvatar data={data} className="size-10" />
           <div className="grid">
             <SheetTitle className="text-base">{data.name}</SheetTitle>
             <SheetDescription># {data.id.slice(0, 17)}</SheetDescription>
@@ -761,59 +769,57 @@ export function ProfilePicture({
 }: {
   data: Pick<AuthSession["user"], "id" | "name" | "image">;
 }) {
-  const { id, name, image } = data;
-
   const inputAvatarRef = useRef<HTMLInputElement>(null);
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
 
   const formSchema = sharedSchemas.files("image");
 
-  const changeHandler = async (fileList: FileList) => {
-    setIsChange(true);
-    const files = Array.from(fileList).map((f) => f);
+  const changeHandler = (fileList: FileList) => {
+    toast.promise(
+      async () => {
+        setIsChange(true);
+        const files = Array.from(fileList).map((f) => f);
 
-    const parseRes = formSchema.safeParse(files);
-    if (!parseRes.success) return toast.error(parseRes.error.message);
+        const parseRes = formSchema.safeParse(files);
+        if (!parseRes.success) return toast.error(parseRes.error.message);
 
-    const file = files[0];
-    const key = `${id}_${file.name}`;
-    const url = await getFilePublicUrl(key);
+        const file = files[0];
+        const key = `${data.id}_${file.name}`;
+        const url = await getFilePublicUrl(key);
 
-    if (image && url !== image) await deleteProfilePicture(image);
-    await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
-
-    authClient.updateUser(
-      { image: url },
+        await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
+        return await authClient.updateUser({ image: url });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsChange(false);
           mutateSession();
-          toast.success("Foto profil Anda berhasil diperbarui.");
+          return "Foto profil Anda berhasil diperbarui.";
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsChange(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
   };
 
-  const deleteHandler = async () => {
-    setIsRemoved(true);
-    if (image) await deleteProfilePicture(image);
-
-    await authClient.updateUser(
-      { image: null },
+  const deleteHandler = () => {
+    toast.promise(
+      async () => {
+        setIsRemoved(true);
+        return await authClient.updateUser({ image: null });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsRemoved(false);
           mutateSession();
-          toast.success("Foto profil Anda berhasil dihapus.");
+          return "Foto profil Anda berhasil dihapus.";
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsRemoved(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -821,7 +827,7 @@ export function ProfilePicture({
 
   return (
     <div className="flex items-center gap-x-4">
-      <UserAvatar name={name} image={image} className="size-24" />
+      <UserAvatar data={data} className="size-24" />
 
       <input
         type="file"
@@ -854,7 +860,7 @@ export function ProfilePicture({
                 type="button"
                 size="sm"
                 variant="outline_destructive"
-                disabled={!image || isChange || isRemoved}
+                disabled={!data.image || isChange || isRemoved}
               >
                 <LoadingSpinner loading={isRemoved} /> {messages.actions.remove}
               </Button>
@@ -904,18 +910,20 @@ export function ProfileForm() {
     if (newName === user.name)
       return toast.info(messages.noChanges("profil Anda"));
 
-    setIsLoading(true);
-    authClient.updateUser(
-      { name: newName },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.updateUser({ name: newName });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
           mutateSession();
-          toast.success("Profil Anda berhasil diperbarui.");
+          return "Profil Anda berhasil diperbarui.";
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -1019,18 +1027,23 @@ export function ChangePasswordForm() {
   });
 
   const formHandler = (formData: FormSchema) => {
-    setIsLoading(true);
-    authClient.changePassword(formData, {
-      onSuccess: () => {
-        setIsLoading(false);
-        form.reset();
-        toast.success("Kata sandi Anda berhasil diperbarui.");
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.changePassword(formData);
       },
-      onError: ({ error }) => {
-        setIsLoading(false);
-        toast.error(error.message);
+      {
+        success: () => {
+          setIsLoading(false);
+          form.reset();
+          return "Kata sandi Anda berhasil diperbarui.";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
       },
-    });
+    );
   };
 
   return (
@@ -1138,10 +1151,10 @@ export function SessionList() {
 
   return (data ?? [])
     ?.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .map((session) => <SessionListButton key={session.id} data={session} />);
+    .map((session) => <SessionListItem key={session.id} data={session} />);
 }
 
-function SessionListButton({ data }: { data: AuthSession["session"] }) {
+function SessionListItem({ data }: { data: AuthSession["session"] }) {
   const { id, updatedAt, userAgent } = data;
   const { session } = useAuth();
 
@@ -1187,20 +1200,23 @@ export function RevokeOtherSessionsButton() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickHandler = () => {
-    setIsLoading(true);
-    authClient.revokeOtherSessions({
-      fetchOptions: {
-        onSuccess: () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.revokeOtherSessions();
+      },
+      {
+        success: () => {
           setIsLoading(false);
           mutateSessionList();
-          toast.success("Semua sesi aktif lainnya berhasil dicabut.");
+          return "Semua sesi aktif lainnya berhasil dicabut.";
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
-    });
+    );
   };
 
   return (
@@ -1260,26 +1276,30 @@ export function AdminCreateUserDialog() {
       email: "",
       newPassword: "",
       confirmPassword: "",
-      role: "user",
+      role: defaultRole,
     },
   });
 
   const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
-    setIsLoading(true);
-
-    const role = newRole ?? "user";
-    authClient.admin.createUser(
-      { password: newPassword, role, ...rest },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        return await authClient.admin.createUser({
+          password: newPassword,
+          role: newRole ?? defaultRole,
+          ...rest,
+        });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
           mutateUsers();
           form.reset();
-          toast.success(`Akun atas nama ${rest.name} berhasil dibuat.`);
+          return `Akun atas nama ${rest.name} berhasil dibuat.`;
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -1483,25 +1503,25 @@ function AdminChangeUserRoleForm({
   });
 
   const formHandler = ({ role: newRole }: FormSchema) => {
-    const role = newRole ?? "user";
+    const role = newRole ?? defaultRole;
     if (role === data.role)
       return toast.info(messages.noChanges(`role ${data.name}`));
 
-    setIsLoading(true);
-    authClient.admin.setRole(
-      { userId: data.id, role },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        authClient.admin.setRole({ userId: data.id, role });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
           setIsOpen(false);
           mutateUsers();
-          toast.success(
-            `Role ${data.name} berhasil diperbarui menjadi ${role}.`,
-          );
+          return `Role ${data.name} berhasil diperbarui menjadi ${role}.`;
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -1582,17 +1602,19 @@ function AdminRevokeUserSessionsDialog({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickHandler = () => {
-    setIsLoading(true);
-    authClient.admin.revokeUserSessions(
-      { userId: id },
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        authClient.admin.revokeUserSessions({ userId: id });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
-          toast.success(`Semua sesi aktif milik ${name} berhasil dicabut.`);
+          return `Semua sesi aktif milik ${name} berhasil dicabut.`;
         },
-        onError: ({ error }) => {
+        error: ({ error }) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return error.message;
         },
       },
     );
@@ -1657,23 +1679,24 @@ function AdminRemoveUserDialog({
     defaultValues: { input: "" },
   });
 
-  const formHandler = async () => {
-    setIsLoading(true);
-    if (data.image) await deleteProfilePicture(data.image);
-
-    authClient.admin.removeUser(
-      { userId: data.id },
+  const formHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        if (data.image) removeFiles([data.image], { isPublicUrl: true });
+        return await authClient.admin.removeUser({ userId: data.id });
+      },
       {
-        onSuccess: () => {
+        success: () => {
           setIsLoading(false);
           setIsOpen(false);
           setSheetOpen(false);
           mutateUsers();
-          toast.success(`Akun atas nama ${data.name} berhasil dihapus.`);
+          return `Akun atas nama ${data.name} berhasil dihapus.`;
         },
-        onError: ({ error }) => {
+        error: (e) => {
           setIsLoading(false);
-          toast.error(error.message);
+          return e.message;
         },
       },
     );
@@ -1753,7 +1776,7 @@ function AdminActionRevokeUserSessionsDialog({
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const clickHandler = async () => {
+  const clickHandler = () => {
     setIsLoading(true);
     toast.promise(revokeUserSessions(ids), {
       loading: messages.loading,

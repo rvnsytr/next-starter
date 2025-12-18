@@ -6,7 +6,7 @@ import {
   Headphones,
   Image,
   LucideIcon,
-  Presentation,
+  TableIcon,
   Upload,
   Video,
 } from "lucide-react";
@@ -82,7 +82,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     ],
     extensions: [".ppt", ".pptx"],
     size: { mb: 10, bytes: toBytes(10) },
-    icon: Presentation,
+    icon: TableIcon,
   },
 
   archive: {

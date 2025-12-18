@@ -1,9 +1,8 @@
 "use server";
 
-import { auth } from "@/core/auth";
-import { extractKeyFromPublicUrl, removeFiles } from "@/core/storage";
+import { auth, AuthSession } from "@/core/auth";
+import { removeFiles } from "@/core/storage";
 import { headers } from "next/headers";
-import { AuthSession } from "./constants";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await headers() });
@@ -32,16 +31,12 @@ export async function revokeUserSessions(ids: string[]) {
   );
 }
 
-export async function deleteProfilePicture(image: string) {
-  await removeFiles([await extractKeyFromPublicUrl(image)]);
-}
-
 export async function deleteUsers(
   data: Pick<AuthSession["user"], "id" | "image">[],
 ) {
   return Promise.all(
     data.map(async ({ id, image }) => {
-      if (image) await deleteProfilePicture(image);
+      if (image) await removeFiles([image], { isPublicUrl: true });
       return await auth.api.removeUser({
         body: { userId: id },
         headers: await headers(),

@@ -66,18 +66,24 @@ export async function getFilePresignedUrl(Key: string) {
 }
 
 export async function getFilePublicUrl(key: string) {
-  return `${endpoint}/${Bucket}/${key}`;
+  return `${endpoint}/${Bucket}/${encodeURIComponent(key)}`;
 }
 
-export async function extractKeyFromPublicUrl(url: string) {
-  const parsed = new URL(url);
-  const parts = parsed.pathname.split("/");
-  const key = parts.slice(2).join("/");
-  return key;
+export async function getKeyFromPublicUrl(url: string) {
+  const { pathname } = new URL(url);
+  const [, bucket, ...keyParts] = pathname.split("/");
+  if (bucket !== Bucket) throw new Error("URL does not belong to this bucket");
+  return decodeURIComponent(keyParts.join("/"));
 }
 
-export async function removeFiles(key: string[]) {
+export async function removeFiles(
+  keys: string[],
+  options?: { isPublicUrl?: boolean },
+) {
   return Promise.all(
-    key.map((item) => s3.send(new DeleteObjectCommand({ Bucket, Key: item }))),
+    keys.map(async (item) => {
+      const Key = options?.isPublicUrl ? await getKeyFromPublicUrl(item) : item;
+      await s3.send(new DeleteObjectCommand({ Bucket, Key }));
+    }),
   );
 }
