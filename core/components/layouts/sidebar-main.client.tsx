@@ -37,7 +37,7 @@ import { LinkSpinner } from "../ui/spinner";
 export function SidebarCommandPallete() {
   const { user } = useAuth();
   const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
-  return <CommandPalette data={menu} placeholder="Cari halaman..." />;
+  return <CommandPalette data={menu} />;
 }
 
 export function SidebarMainHeader() {

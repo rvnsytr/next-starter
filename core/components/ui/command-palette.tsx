@@ -47,7 +47,7 @@ export function CommandPalette({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
 
-  const placeholder = plch ?? "Cari...";
+  const placeholder = plch ?? "Pencarian cepat...";
   const onShortcut = useEffectEvent(() => setIsOpen((prev) => !prev));
 
   useEffect(() => {

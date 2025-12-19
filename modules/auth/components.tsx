@@ -12,7 +12,39 @@ import {
 import { cn } from "@/core/utils";
 import { AuthSession, Role } from "@/modules/auth";
 import { BadgeCheck } from "lucide-react";
-import { rolesMeta } from "./constants";
+import { rolesMeta, UserStatus, userStatusMeta } from "./constants";
+
+export function UserStatusBadge({
+  value,
+  className,
+}: {
+  value: UserStatus;
+  className?: string;
+}) {
+  const { displayName, desc, icon: Icon, color } = userStatusMeta[value];
+  return (
+    <Tooltip>
+      <TooltipTrigger className={className} asChild>
+        <Badge
+          variant="outline"
+          style={{ "--badge-color": color } as React.CSSProperties}
+          className={cn(
+            "border-(--badge-color) text-(--badge-color) capitalize",
+          )}
+        >
+          <Icon /> {displayName}
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent
+        style={{ "--tooltip-color": color } as React.CSSProperties}
+        className="bg-(--tooltip-color)"
+        arrowClassName="bg-(--tooltip-color) fill-(--tooltip-color)"
+      >
+        {desc}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function UserRoleBadge({
   value,

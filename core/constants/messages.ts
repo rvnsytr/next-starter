@@ -10,6 +10,7 @@ export const messages = {
     action: "Tindakan",
     add: "Tambah",
     back: "Kembali",
+    ban: "Blokir",
     cancel: "Batal",
     clear: "Bersihkan",
     confirm: "Konfirmasi",
