@@ -1,3 +1,4 @@
+import { allRoles, defaultRole } from "@/modules/auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -9,12 +10,6 @@ import { appMeta } from "./constants";
 import { db } from "./db";
 import { ac, roles } from "./permission";
 import { removeFiles } from "./storage";
-
-export type AuthSession = typeof auth.$Infer.Session;
-export type Role = keyof typeof roles;
-
-export const allRoles = Object.keys(roles) as Role[];
-export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
   appName: appMeta.name,

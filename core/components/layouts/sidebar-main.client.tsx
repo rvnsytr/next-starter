@@ -1,9 +1,8 @@
 "use client";
 
-import { Role } from "@/core/auth";
 import { routesMeta } from "@/core/constants";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
-import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
+import { Role, useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

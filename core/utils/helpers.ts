@@ -1,7 +1,7 @@
+import { Role } from "@/modules/auth";
 import clsx, { ClassValue } from "clsx";
 import { Route } from "next";
 import { twMerge } from "tailwind-merge";
-import { Role } from "../auth";
 import {
   appMeta,
   dashboardMenu,

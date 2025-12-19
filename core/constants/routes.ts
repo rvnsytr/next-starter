@@ -1,4 +1,4 @@
-import { Role } from "@/core/auth";
+import { Role } from "@/modules/auth";
 import { Route } from "next";
 
 export type RouteRole = "all" | Role[];

@@ -1,4 +1,3 @@
-import { AuthSession, Role } from "@/core/auth";
 import {
   Avatar,
   AvatarFallback,
@@ -11,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { cn } from "@/core/utils";
+import { AuthSession, Role } from "@/modules/auth";
 import { BadgeCheck } from "lucide-react";
 import { rolesMeta } from "./constants";
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { allRoles, AuthSession, defaultRole, Role } from "@/core/auth";
 import { authClient } from "@/core/auth.client";
 import {
   AlertDialog,
@@ -79,7 +78,7 @@ import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { sharedSchemas, userSchema } from "@/core/schemas.zod";
-import { getFilePublicUrl, removeFiles, uploadFiles } from "@/core/storage";
+import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -118,7 +117,13 @@ import { UAParser } from "ua-parser-js";
 import { z } from "zod";
 import { deleteUsers, revokeUserSessions } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
-import { rolesMeta } from "./constants";
+import {
+  allRoles,
+  AuthSession,
+  defaultRole,
+  Role,
+  rolesMeta,
+} from "./constants";
 import {
   mutateSession,
   mutateSessionList,
@@ -157,10 +162,13 @@ export function SignInForm() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.signIn.email({
+        const res = await authClient.signIn.email({
           ...formData,
           callbackURL: "/dashboard",
         });
+
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: (res) => sharedText.signIn(res.data?.user.name),
@@ -281,7 +289,9 @@ export function SignUpForm() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.signUp.email({ password, ...rest });
+        const res = await authClient.signUp.email({ password, ...rest });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -445,11 +455,14 @@ export function SignOnGithubButton() {
         toast.promise(
           async () => {
             setIsLoading(true);
-            return await authClient.signIn.social({
+            const res = await authClient.signIn.social({
               provider: "github",
               callbackURL: "/dashboard",
               errorCallbackURL: "/sign-in",
             });
+
+            if (res.error) throw new Error(res.error.message);
+            return res;
           },
           {
             success: (res) => {
@@ -493,7 +506,9 @@ export function SignOutButton() {
         toast.promise(
           async () => {
             setIsLoading(true);
-            return await authClient.signOut();
+            const res = await authClient.signOut();
+            if (res.error) throw new Error(res.error.message);
+            return res;
           },
           {
             success: () => {
@@ -788,8 +803,11 @@ export function ProfilePicture({
         const key = `${data.id}_${file.name}`;
         const url = await getFilePublicUrl(key);
 
-        await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
-        return await authClient.updateUser({ image: url });
+        // await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
+        const res = await authClient.updateUser({ image: url });
+
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -809,7 +827,9 @@ export function ProfilePicture({
     toast.promise(
       async () => {
         setIsRemoved(true);
-        return await authClient.updateUser({ image: null });
+        const res = await authClient.updateUser({ image: null });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -913,7 +933,9 @@ export function ProfileForm() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.updateUser({ name: newName });
+        const res = await authClient.updateUser({ name: newName });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1030,7 +1052,9 @@ export function ChangePasswordForm() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.changePassword(formData);
+        const res = await authClient.changePassword(formData);
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1203,7 +1227,9 @@ export function RevokeOtherSessionsButton() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.revokeOtherSessions();
+        const res = await authClient.revokeOtherSessions();
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1284,11 +1310,14 @@ export function AdminCreateUserDialog() {
     toast.promise(
       async () => {
         setIsLoading(true);
-        return await authClient.admin.createUser({
+        const res = await authClient.admin.createUser({
           password: newPassword,
           role: newRole ?? defaultRole,
           ...rest,
         });
+
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1510,7 +1539,9 @@ function AdminChangeUserRoleForm({
     toast.promise(
       async () => {
         setIsLoading(true);
-        authClient.admin.setRole({ userId: data.id, role });
+        const res = await authClient.admin.setRole({ userId: data.id, role });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1605,7 +1636,9 @@ function AdminRevokeUserSessionsDialog({
     toast.promise(
       async () => {
         setIsLoading(true);
-        authClient.admin.revokeUserSessions({ userId: id });
+        const res = await authClient.admin.revokeUserSessions({ userId: id });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1684,7 +1717,9 @@ function AdminRemoveUserDialog({
       async () => {
         setIsLoading(true);
         if (data.image) removeFiles([data.image], { isPublicUrl: true });
-        return await authClient.admin.removeUser({ userId: data.id });
+        const res = await authClient.admin.removeUser({ userId: data.id });
+        if (res.error) throw new Error(res.error.message);
+        return res;
       },
       {
         success: () => {
@@ -1787,7 +1822,7 @@ function AdminActionRevokeUserSessionsDialog({
       },
       error: (e) => {
         setIsLoading(false);
-        return e;
+        return e.message;
       },
     });
   };
@@ -1869,7 +1904,7 @@ function AdminActionRemoveUsersDialog({
       },
       error: (e) => {
         setIsLoading(false);
-        return e;
+        return e.message;
       },
     });
   };

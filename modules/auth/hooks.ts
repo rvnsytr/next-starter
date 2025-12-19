@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { AuthSession } from "@/modules/auth";
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import { getSession, getSessionList, getUserList } from "./actions";
 
