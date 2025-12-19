@@ -32,7 +32,7 @@ export async function revokeUserSessions(ids: string[]) {
   );
 }
 
-export async function deleteUsers(
+export async function removeUsers(
   data: Pick<AuthSession["user"], "id" | "image">[],
 ) {
   return Promise.all(

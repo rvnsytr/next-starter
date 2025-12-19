@@ -115,7 +115,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
 import { z } from "zod";
-import { deleteUsers, revokeUserSessions } from "./actions";
+import { removeUsers, revokeUserSessions } from "./actions";
 import { UserAvatar, UserRoleBadge, UserVerifiedBadge } from "./components";
 import {
   allRoles,
@@ -586,7 +586,7 @@ const getUserColumn = (currentUserId: string) => [
       return (
         <div className="flex items-center gap-x-2">
           <span>{cell.getValue()}</span>
-          {!row.original.emailVerified && <UserVerifiedBadge withoutText />}
+          {row.original.emailVerified && <UserVerifiedBadge withoutText />}
         </div>
       );
     },
@@ -1890,7 +1890,7 @@ function AdminActionRemoveUsersDialog({
 
   const formHandler = () => {
     setIsLoading(true);
-    toast.promise(deleteUsers(data), {
+    toast.promise(removeUsers(data), {
       loading: messages.loading,
       success: (res) => {
         setIsLoading(false);
