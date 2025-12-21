@@ -30,7 +30,7 @@ export default function Page() {
   return (
     <DashboardMain className="items-center">
       <Card id="tema" className="w-full scroll-m-20 lg:max-w-xl">
-        <CardHeader className="border-b">
+        <CardHeader>
           <CardTitle>Tema</CardTitle>
           <CardDescription>
             Sesuaikan tampilan dan nuansa{" "}
@@ -53,7 +53,7 @@ export default function Page() {
       </Card>
 
       <Card id="layout" className="w-full scroll-m-20 lg:max-w-xl">
-        <CardHeader className="border-b">
+        <CardHeader>
           <CardTitle>Layout</CardTitle>
           <CardDescription>
             Atur tata letak antarmuka{" "}
@@ -75,24 +75,24 @@ export default function Page() {
       </Card>
 
       <Card id="sesi-aktif" className="w-full scroll-m-20 lg:max-w-xl">
-        <CardHeader className="border-b">
+        <CardHeader>
           <CardTitle>Sesi Aktif</CardTitle>
           <CardDescription>
             Tinjau dan kelola sesi yang saat ini sedang masuk ke akun Anda.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="flex flex-col gap-y-2">
+        <CardContent>
           <SessionList />
         </CardContent>
 
-        <CardFooter className="border-t *:w-full *:lg:w-fit">
+        <CardFooter className="*:w-full *:lg:w-fit">
           <RevokeOtherSessionsButton />
         </CardFooter>
       </Card>
 
       <Card id="ubah-kata-sandi" className="w-full scroll-m-20 lg:max-w-xl">
-        <CardHeader className="border-b">
+        <CardHeader>
           <CardTitle>Ubah Kata Sandi</CardTitle>
           <CardDescription>
             Gunakan kata sandi yang kuat untuk menjaga keamanan akun Anda.

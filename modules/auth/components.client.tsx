@@ -2,6 +2,12 @@
 
 import { authClient } from "@/core/auth.client";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/core/components/ui/accordion";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -116,7 +122,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { UAParser } from "ua-parser-js";
+import { UAParser, UAParserProps } from "ua-parser-js";
 import { z } from "zod";
 import { removeUsers, revokeUserSessions } from "./actions";
 import {
@@ -144,7 +150,8 @@ import {
 import { useAuth } from "./provider.auth";
 
 const sharedText = {
-  signIn: (name?: string) => `Berhasil masuk - Selamat datang ${name}!`,
+  signIn: (name?: string) =>
+    `Berhasil masuk - Selamat datang${name ? ` ${name}` : ""}!`,
   signOn: (social: string) => `Lanjutkan dengan ${social}`,
   lastUsed: "Terakhir digunakan",
 
@@ -1186,7 +1193,7 @@ export function ChangePasswordForm() {
         />
       </CardContent>
 
-      <CardFooter className="flex-col items-stretch border-t md:flex-row">
+      <CardFooter className="flex-col items-stretch md:flex-row">
         <Button type="submit" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
           {messages.actions.update}
@@ -1199,24 +1206,13 @@ export function ChangePasswordForm() {
 }
 
 export function SessionList() {
+  const { session } = useAuth();
   const { data, error, isLoading } = useSessionList();
 
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
 
-  return (data ?? [])
-    ?.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .map((session) => <SessionListItem key={session.id} data={session} />);
-}
-
-function SessionListItem({ data }: { data: AuthSession["session"] }) {
-  const { id, updatedAt, userAgent } = data;
-  const { session } = useAuth();
-
-  const isCurrentSession = session.id === id;
-  const { browser, os, device } = new UAParser(userAgent!).getResult();
-
-  const DeviceIcons = {
+  const deviceIcons = {
     desktop: Monitor,
     mobile: Smartphone,
     tablet: Tablet,
@@ -1226,28 +1222,83 @@ function SessionListItem({ data }: { data: AuthSession["session"] }) {
     xr: MonitorSmartphone,
     embedded: MonitorSmartphone,
     other: MonitorSmartphone,
-  }[device.type ?? "other"];
+  };
+
+  const sections: { label: string; key: UAParserProps }[] = [
+    { label: "Browser", key: "browser" },
+    { label: "CPU", key: "cpu" },
+    { label: "Device", key: "device" },
+    { label: "Engine", key: "engine" },
+    { label: "Operating System", key: "os" },
+  ];
 
   return (
-    <div className="bg-card flex items-center gap-x-2 rounded-lg border p-2 shadow-xs">
-      <div className="bg-muted aspect-square size-fit rounded-md p-2">
-        <DeviceIcons className="shrink-0" />
-      </div>
+    <Accordion type="single" className="space-y-2" collapsible>
+      {(data ?? [])
+        ?.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+        .map((s) => {
+          const isCurrentSession = session.id === s.id;
 
-      <div className="grid gap-y-1 font-medium">
-        <small>
-          {`${browser.name ?? "Browser tidak dikenal"} - ${os.name ?? "OS tidak dikenal"}`}
-        </small>
+          const userAgent = s.userAgent
+            ? new UAParser(s.userAgent).getResult()
+            : null;
 
-        {isCurrentSession ? (
-          <small className="text-success">Sesi saat ini</small>
-        ) : (
-          <small className="text-muted-foreground">
-            {messages.thingAgo("Terakhir terlihat", updatedAt)}
-          </small>
-        )}
-      </div>
-    </div>
+          const browserName =
+            userAgent?.browser.name ?? "Browser tidak dikenal";
+          const browserVersion = userAgent?.browser.version ?? "";
+          const osName = userAgent?.os.name ?? "OS tidak dikenal";
+          const Icon = deviceIcons[userAgent?.device.type ?? "other"];
+
+          const infoList: DetailListData = [
+            { label: "Alamat IP", content: s.ipAddress },
+            { label: "User Agent", content: userAgent?.ua },
+          ];
+
+          const detailList: DetailListData = sections.map(({ label, key }) => ({
+            label,
+            content: userAgent?.[key]
+              ? Object.entries(userAgent[key]).map(
+                  ([subLabel, subContent]) => ({ subLabel, subContent }),
+                )
+              : undefined,
+          }));
+
+          return (
+            <AccordionItem
+              key={s.id}
+              value={s.id}
+              className="has-focus-visible:border-ring has-focus-visible:ring-ring/50 rounded-md border px-2 outline-none last:border-b has-focus-visible:ring-[3px]"
+            >
+              <AccordionTrigger className="items-center py-2 hover:no-underline">
+                <div className="flex items-center gap-x-3">
+                  <div className="size-fit rounded-full border p-3">
+                    <Icon className="size-5 shrink-0" />
+                  </div>
+
+                  <div className="grid gap-y-1 font-medium">
+                    <small>{`${osName} - ${browserName} ${browserVersion}`}</small>
+
+                    {isCurrentSession ? (
+                      <small className="text-success">Sesi saat ini</small>
+                    ) : (
+                      <small className="text-muted-foreground">
+                        {messages.thingAgo("Terakhir terlihat", s.updatedAt)}
+                      </small>
+                    )}
+                  </div>
+                </div>
+              </AccordionTrigger>
+
+              <AccordionContent className="grid gap-y-2 pt-2">
+                <Separator className="mb-2" />
+                <DetailList data={infoList} />
+                <Separator className="my-2" />
+                <DetailList data={detailList} />
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+    </Accordion>
   );
 }
 

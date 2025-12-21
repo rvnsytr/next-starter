@@ -157,7 +157,7 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
-- Prive Profile Picture
+- TODO TODAY: Profile Picture, User Detail Interface
 - Radix to Base UI Migration
 - Server-Side Data Table
 - More Numeric Form Inputs

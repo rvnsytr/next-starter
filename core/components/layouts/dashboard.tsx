@@ -31,7 +31,7 @@ export function DashboardMain({
       <div
         className={cn(
           "relative z-10 flex flex-1 flex-col gap-4 py-4",
-          "group-data-[layout-mode=centered]/layout-mode:container group-data-[layout-mode=fullwidth]/layout-mode:px-4",
+          "px-4 group-data-[layout-mode=centered]/layout-mode:container group-data-[layout-mode=fullwidth]/layout-mode:px-4",
           className,
         )}
       >
