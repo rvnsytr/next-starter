@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/core/utils";
+import { VariantProps } from "class-variance-authority";
 import { XIcon } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { buttonVariants } from "./button";
@@ -24,13 +25,16 @@ function DialogPortal({
 }
 
 function DialogClose({
+  size,
+  variant = "outline",
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
+}: VariantProps<typeof buttonVariants> &
+  React.ComponentProps<typeof DialogPrimitive.Close>) {
   return (
     <DialogPrimitive.Close
       data-slot="dialog-close"
-      className={cn(buttonVariants({ variant: "outline" }), className)}
+      className={cn(buttonVariants({ size, variant }), className)}
       {...props}
     />
   );
