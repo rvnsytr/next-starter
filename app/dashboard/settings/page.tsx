@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <DashboardMain className="items-center">
-      <Card id="tema" className="w-full scroll-m-20 lg:max-w-xl">
+      <Card id="tema" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader>
           <CardTitle>Tema</CardTitle>
           <CardDescription>
@@ -52,7 +52,7 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Card id="layout" className="w-full scroll-m-20 lg:max-w-xl">
+      <Card id="layout" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader>
           <CardTitle>Layout</CardTitle>
           <CardDescription>
@@ -74,7 +74,7 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Card id="sesi-aktif" className="w-full scroll-m-20 lg:max-w-xl">
+      <Card id="sesi-aktif" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader>
           <CardTitle>Sesi Aktif</CardTitle>
           <CardDescription>
@@ -91,7 +91,7 @@ export default function Page() {
         </CardFooter>
       </Card>
 
-      <Card id="ubah-kata-sandi" className="w-full scroll-m-20 lg:max-w-xl">
+      <Card id="ubah-kata-sandi" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader>
           <CardTitle>Ubah Kata Sandi</CardTitle>
           <CardDescription>

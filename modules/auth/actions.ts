@@ -2,22 +2,28 @@
 
 import { auth } from "@/core/auth";
 import { removeFiles } from "@/core/storage";
-import { headers } from "next/headers";
+import { headers as nextHeaders } from "next/headers";
 import { AuthSession } from "./constants";
 
 export async function getSession() {
-  return await auth.api.getSession({ headers: await headers() });
-}
-
-export async function getSessionList() {
-  return await auth.api.listSessions({ headers: await headers() });
+  return await auth.api.getSession({ headers: await nextHeaders() });
 }
 
 export async function getUserList() {
   return await auth.api.listUsers({
-    headers: await headers(),
+    headers: await nextHeaders(),
     query: { sortBy: "createdAt", sortDirection: "desc" },
   });
+}
+
+export async function getSessionList() {
+  return await auth.api.listSessions({ headers: await nextHeaders() });
+}
+
+export async function getUserSessionList(userId: string) {
+  const headers = await nextHeaders();
+  const data = await auth.api.listUserSessions({ headers, body: { userId } });
+  return data.sessions;
 }
 
 export async function revokeUserSessions(ids: string[]) {
@@ -26,7 +32,7 @@ export async function revokeUserSessions(ids: string[]) {
       async (userId) =>
         await auth.api.revokeUserSessions({
           body: { userId },
-          headers: await headers(),
+          headers: await nextHeaders(),
         }),
     ),
   );
@@ -40,7 +46,7 @@ export async function removeUsers(
       if (image) await removeFiles([image], { isPublicUrl: true });
       return await auth.api.removeUser({
         body: { userId: id },
-        headers: await headers(),
+        headers: await nextHeaders(),
       });
     }),
   );

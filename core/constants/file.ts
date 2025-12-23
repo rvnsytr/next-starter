@@ -45,7 +45,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
   },
 
   pdf: {
-    displayName: "pdf",
+    displayName: "PDF",
     mimeTypes: ["application/pdf"],
     extensions: [".pdf"],
     size: { mb: 2, bytes: toBytes(2) },

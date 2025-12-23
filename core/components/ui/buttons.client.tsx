@@ -19,6 +19,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { ComponentProps, useEffect, useEffectEvent, useState } from "react";
 import { Button, ButtonProps } from "./button";
+import { LoadingFallback } from "./fallback";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd, KbdGroup } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
@@ -71,6 +72,7 @@ export function ThemeButton({
 
 export function ThemeSettings() {
   const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
 
   const data = [
     { name: "Light", value: "light", icon: Sun },
@@ -78,9 +80,15 @@ export function ThemeSettings() {
     { name: "Dark", value: "dark", icon: Moon },
   ];
 
+  const onMount = useEffectEvent(() => setIsMounted(true));
+  useEffect(() => onMount(), []);
+
+  if (!isMounted) return <LoadingFallback />;
+
   return (
     <RadioGroup
-      value={theme ?? "system"}
+      value={theme}
+      defaultValue="system"
       onValueChange={setTheme}
       className="grid grid-cols-3"
       required
@@ -165,15 +173,22 @@ export function LayoutButton({
 
 export function LayoutSettings() {
   const { layout, setLayout } = useLayout();
+  const [isMounted, setIsMounted] = useState(false);
 
   const data = [
     { name: "Fullwidth", value: "fullwidth", icon: Scan },
     { name: "Centered", value: "centered", icon: Minimize },
   ];
 
+  const onMount = useEffectEvent(() => setIsMounted(true));
+  useEffect(() => onMount(), []);
+
+  if (!isMounted) return <LoadingFallback />;
+
   return (
     <RadioGroup
-      value={layout ?? defaultLayout}
+      value={layout}
+      defaultValue={defaultLayout}
       onValueChange={(v) => setLayout(v as LayoutMode)}
       className="grid grid-cols-2"
       required

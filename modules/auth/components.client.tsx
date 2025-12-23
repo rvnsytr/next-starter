@@ -2,12 +2,6 @@
 
 import { authClient } from "@/core/auth.client";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/core/components/ui/accordion";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -23,6 +17,11 @@ import { Button, buttonVariants } from "@/core/components/ui/button";
 import { ResetButton } from "@/core/components/ui/buttons";
 import { CardContent, CardFooter } from "@/core/components/ui/card";
 import { Checkbox } from "@/core/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/core/components/ui/collapsible";
 import {
   ColumnCellCheckbox,
   ColumnHeader,
@@ -73,6 +72,12 @@ import { Separator } from "@/core/components/ui/separator";
 import { SheetDescription, SheetTitle } from "@/core/components/ui/sheet";
 import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/core/components/ui/tabs";
 import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { sharedSchemas, userSchema } from "@/core/schemas.zod";
@@ -86,7 +91,9 @@ import {
   Ban,
   CalendarCheck2,
   CalendarSync,
+  ChevronsUpDown,
   CircleDot,
+  Cookie,
   Ellipsis,
   Gamepad2,
   Info,
@@ -100,6 +107,7 @@ import {
   MonitorSmartphone,
   Save,
   Settings2,
+  ShieldBan,
   ShieldUser,
   Smartphone,
   Tablet,
@@ -108,7 +116,6 @@ import {
   TvMinimal,
   UserRound,
   UserRoundPlus,
-  XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -136,8 +143,10 @@ import {
   mutateSession,
   mutateSessionList,
   mutateUsers,
+  mutateUserSessions,
   useSessionList,
   useUsers,
+  useUserSessionList,
 } from "./hooks";
 import { useAuth } from "./provider.auth";
 
@@ -148,7 +157,7 @@ const sharedText = {
   lastUsed: "Terakhir digunakan",
 
   passwordNotMatch: messages.thingNotMatch("Kata sandi Anda"),
-  revokeSession: "Cabut Sesi",
+  revokeSession: "Akhiri Sesi",
 };
 
 // #region SIGN
@@ -713,7 +722,7 @@ export function UserDetailDialog({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const details: DetailListData = [
+  const profile: DetailListData = [
     { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
     { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
   ];
@@ -728,7 +737,7 @@ export function UserDetailDialog({
         </DialogTrigger>
       </div>
 
-      <DialogContent hideCloseButton>
+      <DialogContent className="sm:max-w-2xl" hideCloseButton>
         <DialogHeader className="flex-row justify-between gap-x-4">
           <div className="flex items-center gap-x-3">
             <UserAvatar data={data} className="size-12" />
@@ -738,60 +747,52 @@ export function UserDetailDialog({
             </div>
           </div>
 
-          <div className="flex gap-x-2">
-            {!isCurrentUser && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button size="icon-xs" variant="outline">
-                    <Ellipsis />
-                  </Button>
-                </PopoverTrigger>
+          {!isCurrentUser && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="icon-xs" variant="outline">
+                  <Ellipsis />
+                </Button>
+              </PopoverTrigger>
 
-                <PopoverContent
-                  className="grid gap-y-1 p-1 [&_button]:justify-start"
-                  align="end"
-                >
-                  <AdminRevokeUserSessionsDialog
+              <PopoverContent
+                className="grid gap-y-1 p-1 [&_button]:justify-start"
+                align="end"
+              >
+                <AdminRevokeUserSessionsDialog
+                  data={data}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+
+                {/* // TODO */}
+                <Button size="sm" variant="ghost" disabled>
+                  <Layers2 /> Tiru Sesi
+                </Button>
+
+                <Separator />
+
+                {data.banned ? (
+                  <AdminUnbanUserDialog
                     data={data}
                     setIsDialogOpen={setIsDialogOpen}
                   />
-
-                  {/* // TODO */}
-                  <Button size="sm" variant="ghost" disabled>
-                    <Layers2 /> Tiru Sesi
-                  </Button>
-
-                  <Separator />
-
-                  {data.banned ? (
-                    <AdminUnbanUserDialog
-                      data={data}
-                      setIsDialogOpen={setIsDialogOpen}
-                    />
-                  ) : (
-                    <AdminBanUserDialog
-                      data={data}
-                      setIsDialogOpen={setIsDialogOpen}
-                    />
-                  )}
-
-                  <AdminRemoveUserDialog
+                ) : (
+                  <AdminBanUserDialog
                     data={data}
                     setIsDialogOpen={setIsDialogOpen}
                   />
-                </PopoverContent>
-              </Popover>
-            )}
+                )}
 
-            <DialogClose size="icon-xs">
-              <XIcon />
-            </DialogClose>
-          </div>
+                <AdminRemoveUserDialog
+                  data={data}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
         </DialogHeader>
 
         <div className="flex flex-col gap-y-3 overflow-y-auto">
-          <Separator />
-
           <div className="flex items-center gap-2">
             {isCurrentUser && (
               <Badge variant="outline">Pengguna saat ini</Badge>
@@ -801,20 +802,33 @@ export function UserDetailDialog({
             {data.emailVerified && <UserVerifiedBadge />}
           </div>
 
-          <DetailList data={details} />
+          <Separator />
+
+          <Tabs defaultValue="profile">
+            <TabsList>
+              <TabsTrigger value="profile">
+                <UserRound /> Informasi Profil
+              </TabsTrigger>
+
+              <TabsTrigger value="sessions">
+                <Cookie /> Sesi Terdaftar
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <DetailList data={profile} />
+            </TabsContent>
+
+            <TabsContent value="sessions">
+              <UserSessionList data={data} />
+            </TabsContent>
+          </Tabs>
 
           <Separator />
 
-          {!isCurrentUser ? (
-            <AdminChangeUserRoleForm
-              data={data}
-              setIsDialogOpen={setIsDialogOpen}
-            />
-          ) : (
-            <DialogFooter>
-              <DialogClose>{messages.actions.back}</DialogClose>
-            </DialogFooter>
-          )}
+          <DialogFooter>
+            <DialogClose>{messages.actions.back}</DialogClose>
+          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>
@@ -942,8 +956,8 @@ export function ProfilePicture({
               <AlertDialogHeader>
                 <AlertDialogTitle>Hapus Foto Profil</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Aksi ini akan menghapus foto profil Anda saat ini. Yakin ingin
-                  melanjutkan?
+                  Apakah kamu yakin ingin menghapus foto profil ini? Tindakan
+                  ini dapat dibatalkan dengan mengunggah foto baru.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
@@ -1008,57 +1022,59 @@ export function ProfileForm() {
       <CardContent className="flex flex-col gap-y-4">
         <ProfilePicture data={user} />
 
-        <Controller
-          name="email"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <FieldWrapper
-              label="Alamat email"
-              htmlFor={field.name}
-              errors={fieldState.error}
-            >
-              <InputGroup>
-                <InputGroupInput
-                  type="email"
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Masukan email anda"
-                  required
-                  {...field}
-                />
-                <InputGroupAddon>
-                  <Mail />
-                </InputGroupAddon>
-              </InputGroup>
-            </FieldWrapper>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-x-2 gap-y-4">
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <FieldWrapper
+                label="Alamat email"
+                htmlFor={field.name}
+                errors={fieldState.error}
+              >
+                <InputGroup>
+                  <InputGroupInput
+                    type="email"
+                    id={field.name}
+                    aria-invalid={!!fieldState.error}
+                    placeholder="Masukan email anda"
+                    readOnly
+                    {...field}
+                  />
+                  <InputGroupAddon>
+                    <Mail />
+                  </InputGroupAddon>
+                </InputGroup>
+              </FieldWrapper>
+            )}
+          />
 
-        <Controller
-          name="name"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <FieldWrapper
-              label="Nama"
-              htmlFor={field.name}
-              errors={fieldState.error}
-            >
-              <InputGroup>
-                <InputGroupInput
-                  type="text"
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Masukan nama anda"
-                  required
-                  {...field}
-                />
-                <InputGroupAddon>
-                  <UserRound />
-                </InputGroupAddon>
-              </InputGroup>
-            </FieldWrapper>
-          )}
-        />
+          <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <FieldWrapper
+                label="Nama"
+                htmlFor={field.name}
+                errors={fieldState.error}
+              >
+                <InputGroup>
+                  <InputGroupInput
+                    type="text"
+                    id={field.name}
+                    aria-invalid={!!fieldState.error}
+                    placeholder="Masukan nama anda"
+                    required
+                    {...field}
+                  />
+                  <InputGroupAddon>
+                    <UserRound />
+                  </InputGroupAddon>
+                </InputGroup>
+              </FieldWrapper>
+            )}
+          />
+        </div>
       </CardContent>
 
       <CardFooter className="flex-col items-stretch border-t md:flex-row">
@@ -1220,11 +1236,40 @@ export function ChangePasswordForm() {
 }
 
 export function SessionList() {
-  const { session } = useAuth();
   const { data, error, isLoading } = useSessionList();
-
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
+  return <SessionListCollapsible data={data ?? []} />;
+}
+
+function UserSessionList({
+  data: userData,
+}: {
+  data: Pick<AuthSession["user"], "id" | "name">;
+}) {
+  const { data, error, isLoading } = useUserSessionList(userData.id);
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+  return <SessionListCollapsible name={userData.name} data={data ?? []} />;
+}
+
+function SessionListCollapsible({
+  name,
+  data,
+}: {
+  name?: string;
+  data: AuthSession["session"][];
+}) {
+  const { session } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  if (!data.length)
+    return (
+      <div className="flex flex-col items-center gap-2 py-4">
+        <ShieldBan className="size-4" />
+        <span>Tidak ada Sesi yang ditemukan.</span>
+      </div>
+    );
 
   const deviceIcons = {
     desktop: Monitor,
@@ -1246,10 +1291,29 @@ export function SessionList() {
     { label: "Operating System", key: "os" },
   ];
 
+  const clickHandler = (s: AuthSession["session"]) => {
+    setIsLoading(true);
+    authClient.revokeSession(
+      { token: s.token },
+      {
+        onSuccess: () => {
+          setIsLoading(false);
+          mutateSessionList();
+          mutateUserSessions(s.userId);
+          toast.success("Sesi berhasil diakhiri.");
+        },
+        onError: ({ error }) => {
+          setIsLoading(false);
+          toast.error(error.message);
+        },
+      },
+    );
+  };
+
   return (
-    <Accordion type="single" className="space-y-2" collapsible>
-      {(data ?? [])
-        ?.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    <Collapsible className="grid gap-y-2">
+      {data
+        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
         .map((s) => {
           const isCurrentSession = session.id === s.id;
 
@@ -1259,9 +1323,8 @@ export function SessionList() {
 
           const browserName =
             userAgent?.browser.name ?? "Browser tidak dikenal";
-          const browserVersion = userAgent?.browser.version ?? "";
           const osName = userAgent?.os.name ?? "OS tidak dikenal";
-          const Icon = deviceIcons[userAgent?.device.type ?? "other"];
+          const DeviceIcon = deviceIcons[userAgent?.device.type ?? "other"];
 
           const infoList: DetailListData = [
             { label: "Alamat IP", content: s.ipAddress },
@@ -1278,19 +1341,15 @@ export function SessionList() {
           }));
 
           return (
-            <AccordionItem
-              key={s.id}
-              value={s.id}
-              className="has-focus-visible:border-ring has-focus-visible:ring-ring/50 rounded-md border px-2 outline-none last:border-b has-focus-visible:ring-[3px]"
-            >
-              <AccordionTrigger className="items-center py-2 hover:no-underline">
+            <div key={s.id} className="rounded-lg border p-2 shadow-xs">
+              <div className="flex items-center justify-between gap-x-4">
                 <div className="flex items-center gap-x-3">
                   <div className="size-fit rounded-full border p-3">
-                    <Icon className="size-5 shrink-0" />
+                    <DeviceIcon className="size-5 shrink-0" />
                   </div>
 
                   <div className="grid gap-y-1 font-medium">
-                    <small>{`${osName} - ${browserName} ${browserVersion}`}</small>
+                    <small>{`${osName} - ${browserName}`}</small>
 
                     {isCurrentSession ? (
                       <small className="text-success">Sesi saat ini</small>
@@ -1301,18 +1360,70 @@ export function SessionList() {
                     )}
                   </div>
                 </div>
-              </AccordionTrigger>
 
-              <AccordionContent className="grid gap-y-2 pt-2">
-                <Separator className="mb-2" />
-                <DetailList data={infoList} />
-                <Separator className="my-2" />
-                <DetailList data={detailList} />
-              </AccordionContent>
-            </AccordionItem>
+                <div className="flex gap-x-2">
+                  {!isCurrentSession && s.token && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          disabled={isLoading}
+                        >
+                          <LoadingSpinner
+                            loading={isLoading}
+                            icon={{ base: <MonitorOff /> }}
+                          />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="flex items-center gap-x-2">
+                            <MonitorOff /> {sharedText.revokeSession} {name}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Sesi pada perangkat {name} akan diakhiri dan
+                            pengguna harus login kembali. Yakin ingin
+                            melanjutkan?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>
+                            {messages.actions.cancel}
+                          </AlertDialogCancel>
+                          <AlertDialogAction onClick={() => clickHandler(s)}>
+                            {messages.actions.confirm}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+
+                  <CollapsibleTrigger asChild>
+                    <Button size="icon-sm" variant="ghost">
+                      <ChevronsUpDown />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+              </div>
+
+              <CollapsibleContent className="grid gap-y-2 py-2">
+                <Separator />
+
+                <div className="grid gap-2 px-2">
+                  <DetailList data={infoList} />
+                </div>
+
+                <Separator />
+
+                <div className="grid gap-2 px-2 lg:grid-cols-2">
+                  <DetailList data={detailList} />
+                </div>
+              </CollapsibleContent>
+            </div>
           );
         })}
-    </Accordion>
+    </Collapsible>
   );
 }
 
@@ -1331,7 +1442,7 @@ export function RevokeOtherSessionsButton() {
         success: () => {
           setIsLoading(false);
           mutateSessionList();
-          return "Semua sesi aktif lainnya berhasil dicabut.";
+          return "Semua sesi aktif lainnya berhasil diakhiri.";
         },
         error: (e) => {
           setIsLoading(false);
@@ -1346,16 +1457,16 @@ export function RevokeOtherSessionsButton() {
       <AlertDialogTrigger asChild>
         <Button variant="outline" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
-          Cabut Semua Sesi Lain
+          Akhiri Semua Sesi di Perangkat Lain
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Cabut Semua Sesi Lain
+            <MonitorOff /> Akhiri Semua Sesi di Perangkat Lain
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Semua sesi aktif lainnya akan dihentikan, kecuali sesi saat ini.
+            Semua sesi aktif di perangkat lain akan diakhiri, kecuali sesi ini.
             Yakin ingin melanjutkan?
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -1669,7 +1780,6 @@ function AdminChangeUserRoleForm({
               name={field.name}
               value={field.value}
               onValueChange={field.onChange}
-              className="flex-col"
               required
             >
               {allRoles.map((value) => {
@@ -1714,13 +1824,10 @@ function AdminChangeUserRoleForm({
         )}
       />
 
-      <DialogFooter>
-        <DialogClose>{messages.actions.back}</DialogClose>
-        <Button type="submit" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
-          {messages.actions.update}
-        </Button>
-      </DialogFooter>
+      <Button type="submit" disabled={isLoading}>
+        <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
+        {messages.actions.update}
+      </Button>
     </form>
   );
 }
@@ -1747,7 +1854,7 @@ function AdminRevokeUserSessionsDialog({
         success: () => {
           setIsLoading(false);
           setIsDialogOpen(false);
-          return `Semua sesi aktif milik ${data.name} berhasil dicabut.`;
+          return `Semua sesi aktif milik ${data.name} berhasil diakhiri.`;
         },
         error: ({ error }) => {
           setIsLoading(false);
@@ -1769,11 +1876,11 @@ function AdminRevokeUserSessionsDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Cabut Semua Sesi Aktif untuk {data.name}
+            <MonitorOff /> Akhiri Semua Sesi {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Tindakan ini akan langsung menghentikan semua sesi aktif milik
-            {data.name}. Yakin ingin melanjutkan?
+            Semua sesi aktif milik {data.name} akan diakhiri, termasuk sesi saat
+            ini. Yakin ingin melanjutkan?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -1860,9 +1967,8 @@ function AdminBanUserDialog({
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan memblokir and menonaktifkan akun{" "}
-            <span className="text-foreground">{data.name}</span> beserta seluruh
-            datanya secara permanen. Harap berhati-hati karena aksi ini tidak
-            dapat dibatalkan.
+            <span className="text-foreground">{data.name}</span>. Harap
+            berhati-hati sebelum melanjutkan.
           </DialogDescription>
         </DialogHeader>
 
@@ -1972,8 +2078,9 @@ function AdminUnbanUserDialog({
             <Info /> Buka Blokir {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Tindakan ini akan membuka blokir akun milik
-            {data.name}. Yakin ingin melanjutkan?
+            PERINGATAN: Tindakan ini akan membuka blokir mengaktifkan kembali
+            akun milik <span className="text-foreground">{data.name}</span>.
+            Harap berhati-hati sebelum melanjutkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -2118,7 +2225,7 @@ function AdminActionRevokeUserSessionsDialog({
       success: (res) => {
         onSuccess();
         const successLength = res.filter(({ success }) => success).length;
-        return `${successLength} dari ${userIds.length} sesi pengguna berhasil dicabut.`;
+        return `${successLength} dari ${userIds.length} sesi pengguna berhasil diakhiri.`;
       },
       error: (e) => {
         setIsLoading(false);
@@ -2139,7 +2246,7 @@ function AdminActionRevokeUserSessionsDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Cabut Sesi untuk {userIds.length} Pengguna
+            <MonitorOff /> Akhiri Sesi untuk {userIds.length} Pengguna
           </AlertDialogTitle>
           <AlertDialogDescription>
             Ini akan menghentikan semua sesi aktif dari{" "}

@@ -39,7 +39,9 @@ export function SidebarMain() {
       </SidebarHeader>
 
       {/* Content */}
-      <SidebarMainContent />
+      <Suspense>
+        <SidebarMainContent />
+      </Suspense>
 
       {/* Footer */}
       <SidebarFooter>
