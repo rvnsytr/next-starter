@@ -38,7 +38,7 @@ import {
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { FileType, messages } from "@/core/constants";
-import { sharedSchemas } from "@/core/schemas.zod";
+import { sharedSchemas } from "@/core/schema.zod";
 import {
   formatDate,
   formatNumber,

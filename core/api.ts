@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod";
-import { apiResponseSchema } from "./schemas.zod";
+import { apiResponseSchema } from "./schema.zod";
 
 export type FetcherConfig = RequestInit & { safeFetch?: boolean };
 

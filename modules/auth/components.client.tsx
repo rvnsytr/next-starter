@@ -80,7 +80,7 @@ import {
 } from "@/core/components/ui/tabs";
 import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
-import { sharedSchemas, userSchema } from "@/core/schemas.zod";
+import { sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";

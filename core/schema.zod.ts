@@ -3,7 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
 import { id } from "zod/locales";
 import { allGenders, fileMeta, FileType, messages } from "./constants";
-import { user } from "./schemas.db";
+import { user } from "./schema.db";
 import { toMegabytes } from "./utils";
 
 z.config(id());

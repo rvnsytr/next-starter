@@ -77,8 +77,8 @@ This project uses a **feature-based module architecture**, where each feature is
 - Only edit the following files when extending domain logic:
   - `core/constants/menu.ts` — Menus metadata
   - `core/constants/routes.ts` — Routes metadata
-  - `core/schemas.db.ts` — Drizzle DB schemas
-  - `core/schemas.zod.ts` — Zod schemas
+  - `core/schema.db.ts` — Drizzle DB schemas
+  - `core/schema.zod.ts` — Zod schemas
 
 ```pgsql
 next-starter/
@@ -123,8 +123,8 @@ next-starter/
     db.ts
     permissions.ts
     s3.ts
-    schemas.db.ts             -- Modifiable.
-    schemas.zod.ts            -- Modifiable.
+    schema.db.ts             -- Modifiable.
+    schema.zod.ts            -- Modifiable.
 
   public/
 
