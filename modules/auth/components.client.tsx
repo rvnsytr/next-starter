@@ -62,6 +62,7 @@ import {
 } from "@/core/components/ui/input-group";
 import { Label } from "@/core/components/ui/label";
 import { PasswordInput } from "@/core/components/ui/password-input";
+import { Ping } from "@/core/components/ui/ping";
 import {
   Popover,
   PopoverContent,
@@ -72,7 +73,6 @@ import { Separator } from "@/core/components/ui/separator";
 import { SheetDescription, SheetTitle } from "@/core/components/ui/sheet";
 import {
   SidebarMenuButton,
-  SidebarMenuButtonProps,
   SidebarMenuItem,
 } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
@@ -158,10 +158,9 @@ const sharedText = {
   signIn: (name?: string) =>
     `Berhasil masuk - Selamat datang${name ? ` ${name}` : ""}!`,
   signOn: (social: string) => `Lanjutkan dengan ${social}`,
-  lastUsed: "Terakhir digunakan",
+  // lastUsed: "Terakhir digunakan",
 
   passwordNotMatch: messages.thingNotMatch("Kata sandi Anda"),
-  revokeSession: "Akhiri Sesi",
 };
 
 // #region SIGN
@@ -517,9 +516,7 @@ export function SignOnGithubButton() {
   );
 }
 
-export function SignOutButton({
-  variant = "outline_destructive",
-}: Pick<SidebarMenuButtonProps, "variant">) {
+export function SignOutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -547,7 +544,7 @@ export function SignOutButton({
   return (
     <SidebarMenuButton
       tooltip="Keluar"
-      variant={variant}
+      variant="outline_destructive"
       disabled={isLoading}
       onClick={clickHandler}
     >
@@ -1081,7 +1078,7 @@ export function UserDetailDialog({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="profile">
+            <TabsContent value="profile" className="grid gap-x-2 gap-y-4">
               <DetailList data={profile} />
             </TabsContent>
 
@@ -1630,7 +1627,7 @@ function SessionListCollapsible({
     return (
       <div className="flex flex-col items-center gap-2 py-4">
         <ShieldBan className="size-4" />
-        <span>Tidak ada Sesi yang ditemukan.</span>
+        <small className="font-medium">Tidak ada Sesi yang terdaftar.</small>
       </div>
     );
 
@@ -1748,7 +1745,7 @@ function SessionListCollapsible({
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle className="flex items-center gap-x-2">
-                            <MonitorOff /> {sharedText.revokeSession} {name}
+                            <MonitorOff /> Akhiri Sesi {name}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Sesi pada perangkat {name} akan diakhiri dan
@@ -1885,7 +1882,7 @@ function RevokeUserSessionsDialog({
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
-          {sharedText.revokeSession}
+          Akhiri Sesi
         </Button>
       </AlertDialogTrigger>
 
@@ -1942,7 +1939,7 @@ function ActionRevokeUserSessionsDialog({
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
-          {sharedText.revokeSession}
+          Akhiri Sesi
         </Button>
       </AlertDialogTrigger>
 
@@ -1984,9 +1981,13 @@ export function ImpersonateUserBadge({
   if (!isImpersonating) return;
 
   return (
-    <Badge variant="outline" className="relative">
-      <Layers2 /> <span className="hidden md:flex">Mode Impersonasi</span>
-    </Badge>
+    <div className="relative">
+      <Badge variant="outline" className="relative">
+        <Layers2 />
+        <span className="hidden md:flex">Mode Impersonasi</span>
+      </Badge>
+      <Ping />
+    </div>
   );
 }
 
@@ -2010,10 +2011,10 @@ function ImpersonateUserDialog({
         return res;
       },
       {
-        success: async () => {
+        success: () => {
           setIsLoading(false);
           setIsDialogOpen(false);
-          await mutateSession();
+          mutateSession();
           router.push("/dashboard");
           return `Anda sekarang masuk sebagai ${data.name}.`;
         },
@@ -2048,7 +2049,7 @@ function ImpersonateUserDialog({
 
             <AlertDialogDescription>
               Saat dalam{" "}
-              <span className="text-foreground">mode Impersonasi</span>, Anda
+              <span className="text-foreground">Mode Impersonasi</span>, Anda
               akan memiliki akses penuh ke akun pengguna yang dipilih{" "}
               <span className="text-foreground">( {data.name} )</span>. Yakin
               ingin melanjutkan?
@@ -2084,9 +2085,9 @@ export function StopImpersonateUserMenuItem() {
         return res;
       },
       {
-        success: async () => {
+        success: () => {
           setIsLoading(false);
-          await mutateSession();
+          mutateSession();
           router.push("/dashboard");
           return `Anda telah kembali ke sesi ${rolesMeta.admin.displayName} Anda.`;
         },
@@ -2101,14 +2102,13 @@ export function StopImpersonateUserMenuItem() {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        tooltip={`Keluar dari sesi ${name}`}
+        tooltip={`Keluar dari sesi ${user.name}`}
         variant="destructive"
-        className="text-destructive hover:text-destructive"
         disabled={isLoading}
         onClick={clickHandler}
       >
-        <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} />
-        Keluar dari sesi {user.name}
+        <LoadingSpinner loading={isLoading} icon={{ base: <Layers2 /> }} />
+        Kembali ke akun saya
       </SidebarMenuButton>
     </SidebarMenuItem>
   );

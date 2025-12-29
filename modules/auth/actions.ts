@@ -23,7 +23,7 @@ export async function getSessionList() {
 export async function getUserSessionList(userId: string) {
   const headers = await nextHeaders();
   const data = await auth.api.listUserSessions({ headers, body: { userId } });
-  return data.sessions;
+  return data.sessions as AuthSession["session"][];
 }
 
 export async function revokeUserSessions(ids: string[]) {

@@ -16,12 +16,12 @@ export function AuthProvider({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const { data: session } = useSession({ fallbackData });
+  const { data: session, isValidating } = useSession({ fallbackData });
 
   useEffect(() => {
     const isAuthorized = authorized(pathname, session?.user.role);
-    if (!isAuthorized) return notFound();
-  }, [pathname, session]);
+    if (!isAuthorized && !isValidating) return notFound();
+  }, [pathname, session, isValidating]);
 
   return (
     session && (
