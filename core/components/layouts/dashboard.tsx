@@ -1,4 +1,5 @@
 import { cn } from "@/core/utils";
+import { ImpersonateUserBadge } from "@/modules/auth";
 import { ReactNode } from "react";
 import { LayoutButton, ThemeButton } from "../ui/buttons.client";
 import {
@@ -23,6 +24,7 @@ export function DashboardMain({
         </div>
 
         <div className="flex items-center gap-x-2">
+          <ImpersonateUserBadge />
           <LayoutButton />
           <ThemeButton align="end" />
         </div>

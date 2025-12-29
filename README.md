@@ -157,8 +157,8 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
-- TODO TODAY: Profile Picture, User Detail Interface
-- Radix to Base UI Migration
+- User Change Role
+- Empty Date Picker State, Time Picker
 - Server-Side Data Table
 - More Numeric Form Inputs
 - Event Calendar

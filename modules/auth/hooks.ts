@@ -34,5 +34,5 @@ export function useUserSessionList(userId: string, config?: SWRConfiguration) {
 export const mutateSession = () => mutate("/auth/get-session");
 export const mutateUsers = () => mutate("/auth/users");
 export const mutateSessionList = () => mutate("/auth/list-sessions");
-export const mutateUserSessions = (userId: string) =>
+export const mutateUserSessionList = (userId: string) =>
   mutate(`/auth/list-user-sessions?id=${userId}`);

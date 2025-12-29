@@ -70,7 +70,11 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { Separator } from "@/core/components/ui/separator";
 import { SheetDescription, SheetTitle } from "@/core/components/ui/sheet";
-import { SidebarMenuButton } from "@/core/components/ui/sidebar";
+import {
+  SidebarMenuButton,
+  SidebarMenuButtonProps,
+  SidebarMenuItem,
+} from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import {
   Tabs,
@@ -143,7 +147,7 @@ import {
   mutateSession,
   mutateSessionList,
   mutateUsers,
-  mutateUserSessions,
+  mutateUserSessionList,
   useSessionList,
   useUsers,
   useUserSessionList,
@@ -464,38 +468,40 @@ export function SignOnGithubButton() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // const wasLastUsed = authClient.isLastUsedLoginMethod("github");
 
+  const clickHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        const res = await authClient.signIn.social({
+          provider: "github",
+          callbackURL: "/dashboard",
+          errorCallbackURL: "/sign-in",
+        });
+
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      },
+      {
+        success: (res) => {
+          const { data } = res;
+          if (!data) return sharedText.signIn();
+          const name = "user" in data ? data.user?.name : undefined;
+          return sharedText.signIn(name);
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
   return (
     <Button
       variant="outline"
       disabled={isLoading}
       className="relative"
-      onClick={() => {
-        toast.promise(
-          async () => {
-            setIsLoading(true);
-            const res = await authClient.signIn.social({
-              provider: "github",
-              callbackURL: "/dashboard",
-              errorCallbackURL: "/sign-in",
-            });
-
-            if (res.error) throw new Error(res.error.message);
-            return res;
-          },
-          {
-            success: (res) => {
-              const { data } = res;
-              if (!data) return sharedText.signIn();
-              const name = "user" in data ? data.user?.name : undefined;
-              return sharedText.signIn(name);
-            },
-            error: (e) => {
-              setIsLoading(false);
-              return e.message;
-            },
-          },
-        );
-      }}
+      onClick={clickHandler}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
       {sharedText.signOn("Github")}
@@ -511,36 +517,41 @@ export function SignOnGithubButton() {
   );
 }
 
-export function SignOutButton() {
+export function SignOutButton({
+  variant = "outline_destructive",
+}: Pick<SidebarMenuButtonProps, "variant">) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const clickHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        const res = await authClient.signOut();
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      },
+      {
+        success: () => {
+          router.push("/sign-in");
+          return "Berhasil keluar - Sampai jumpa!";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
   return (
     <SidebarMenuButton
       tooltip="Keluar"
-      variant="outline_destructive"
-      className="text-destructive hover:text-destructive"
+      variant={variant}
       disabled={isLoading}
-      onClick={() => {
-        toast.promise(
-          async () => {
-            setIsLoading(true);
-            const res = await authClient.signOut();
-            if (res.error) throw new Error(res.error.message);
-            return res;
-          },
-          {
-            success: () => {
-              router.push("/sign-in");
-              return "Berhasil keluar - Sampai jumpa!";
-            },
-            error: (e) => {
-              setIsLoading(false);
-              return e.message;
-            },
-          },
-        );
-      }}
+      onClick={clickHandler}
     >
+      {/* {variant} */}
       <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} /> Keluar
     </SidebarMenuButton>
   );
@@ -548,292 +559,7 @@ export function SignOutButton() {
 
 // #endregion
 
-// #region USER
-
-const createUserColumn = createColumnHelper<AuthSession["user"]>();
-const getUserColumn = (currentUserId: string) => [
-  createUserColumn.display({
-    id: "select",
-    header: ({ table }) => <ColumnHeaderCheckbox table={table} />,
-    cell: ({ row }) => <ColumnCellCheckbox row={row} />,
-    enableHiding: false,
-    enableSorting: false,
-  }),
-  createUserColumn.display({
-    id: "no",
-    header: "No",
-    cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
-    enableHiding: false,
-  }),
-  createUserColumn.accessor(({ name }) => name, {
-    id: "name",
-    header: ({ column }) => <ColumnHeader column={column}>Nama</ColumnHeader>,
-    cell: ({ row }) => (
-      <UserDetailDialog
-        data={row.original}
-        isCurrentUser={row.original.id === currentUserId}
-      />
-    ),
-    filterFn: filterFn("text"),
-    meta: { displayName: "Nama", type: "text", icon: UserRound },
-  }),
-  createUserColumn.accessor(({ email }) => email, {
-    id: "email",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Alamat Email</ColumnHeader>
-    ),
-    cell: ({ row, cell }) => {
-      return (
-        <div className="flex items-center gap-x-2">
-          <span>{cell.getValue()}</span>
-          {row.original.emailVerified && <UserVerifiedBadge withoutText />}
-        </div>
-      );
-    },
-    filterFn: filterFn("text"),
-    meta: { displayName: "Alamat Email", type: "text", icon: Mail },
-  }),
-  createUserColumn.accessor(
-    ({ banned }) => (banned ? "banned" : "active") satisfies UserStatus,
-    {
-      id: "status",
-      header: ({ column }) => (
-        <ColumnHeader column={column}>Status</ColumnHeader>
-      ),
-      cell: ({ cell }) => <UserStatusBadge value={cell.getValue()} />,
-      filterFn: filterFn("option"),
-      meta: {
-        displayName: "Status",
-        type: "option",
-        icon: CircleDot,
-        transformOptionFn: (value) => {
-          const { displayName, icon } = userStatusMeta[value];
-          return { value, label: displayName, icon };
-        },
-      },
-    },
-  ),
-  createUserColumn.accessor(({ role }) => role, {
-    id: "role",
-    header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
-    cell: ({ cell }) => <UserRoleBadge value={cell.getValue()} />,
-    filterFn: filterFn("option"),
-    meta: {
-      displayName: "Role",
-      type: "option",
-      icon: ShieldUser,
-      transformOptionFn: (value) => {
-        const { displayName, icon } = rolesMeta[value as Role];
-        return { value, label: displayName, icon };
-      },
-    },
-  }),
-  createUserColumn.accessor(({ updatedAt }) => updatedAt, {
-    id: "updatedAt",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Terakhir Diperbarui</ColumnHeader>
-    ),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: {
-      displayName: "Terakhir Diperbarui",
-      type: "date",
-      icon: CalendarSync,
-    },
-  }),
-  createUserColumn.accessor(({ createdAt }) => createdAt, {
-    id: "createdAt",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Waktu Dibuat</ColumnHeader>
-    ),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: { displayName: "Waktu Dibuat", type: "date", icon: CalendarCheck2 },
-  }),
-];
-
-export function UserDataTable({
-  searchPlaceholder = "Cari Pengguna...",
-  ...props
-}: OtherDataTableProps<AuthSession["user"]>) {
-  const { user } = useAuth();
-  const { data, error, isLoading } = useUsers();
-
-  if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
-
-  const columns = getUserColumn(user.id);
-
-  return (
-    <DataTable
-      data={data ?? []}
-      columns={columns}
-      searchPlaceholder={searchPlaceholder}
-      enableRowSelection={({ original }) => original.id !== user.id}
-      renderRowSelection={(data, table) => {
-        const filteredData = data.map(({ original }) => original);
-        return (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <Settings2 /> {messages.actions.action}
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="grid gap-y-1 p-1 [&_button]:justify-start">
-              <div className="flex justify-center py-1">
-                <small>
-                  Akun dipilih:{" "}
-                  <span className="font-medium">{filteredData.length}</span>
-                </small>
-              </div>
-
-              <Separator />
-
-              <AdminActionRevokeUserSessionsDialog
-                userIds={filteredData.map(({ id }) => id)}
-                onSuccess={() => table.resetRowSelection()}
-              />
-
-              {/* // TODO */}
-              <Button size="sm" variant="ghost_destructive" disabled>
-                <Ban /> Ban
-              </Button>
-
-              <AdminActionRemoveUsersDialog
-                data={filteredData}
-                onSuccess={() => table.resetRowSelection()}
-              />
-            </PopoverContent>
-          </Popover>
-        );
-      }}
-      {...props}
-    />
-  );
-}
-
-export function UserDetailDialog({
-  data,
-  isCurrentUser,
-}: {
-  data: AuthSession["user"];
-  isCurrentUser: boolean;
-}) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const profile: DetailListData = [
-    { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
-    { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
-  ];
-
-  return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <div className="flex items-center gap-x-3">
-        <UserAvatar data={data} className="rounded-full" />
-        <DialogTrigger className="group flex w-fit gap-x-1 hover:cursor-pointer">
-          <span className="link-group">{data.name}</span>
-          <ArrowUpRight className="group-hover:text-primary size-3.5" />
-        </DialogTrigger>
-      </div>
-
-      <DialogContent className="sm:max-w-2xl" hideCloseButton>
-        <DialogHeader className="flex-row justify-between gap-x-4">
-          <div className="flex items-center gap-x-3">
-            <UserAvatar data={data} className="size-12" />
-            <div className="grid">
-              <SheetTitle className="text-base">{data.name}</SheetTitle>
-              <SheetDescription>{data.email}</SheetDescription>
-            </div>
-          </div>
-
-          {!isCurrentUser && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button size="icon-xs" variant="outline">
-                  <Ellipsis />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent
-                className="grid gap-y-1 p-1 [&_button]:justify-start"
-                align="end"
-              >
-                <AdminRevokeUserSessionsDialog
-                  data={data}
-                  setIsDialogOpen={setIsDialogOpen}
-                />
-
-                {/* // TODO */}
-                <Button size="sm" variant="ghost" disabled>
-                  <Layers2 /> Tiru Sesi
-                </Button>
-
-                <Separator />
-
-                {data.banned ? (
-                  <AdminUnbanUserDialog
-                    data={data}
-                    setIsDialogOpen={setIsDialogOpen}
-                  />
-                ) : (
-                  <AdminBanUserDialog
-                    data={data}
-                    setIsDialogOpen={setIsDialogOpen}
-                  />
-                )}
-
-                <AdminRemoveUserDialog
-                  data={data}
-                  setIsDialogOpen={setIsDialogOpen}
-                />
-              </PopoverContent>
-            </Popover>
-          )}
-        </DialogHeader>
-
-        <div className="flex flex-col gap-y-3 overflow-y-auto">
-          <div className="flex items-center gap-2">
-            {isCurrentUser && (
-              <Badge variant="outline">Pengguna saat ini</Badge>
-            )}
-
-            <UserRoleBadge value={data.role as Role} />
-            {data.emailVerified && <UserVerifiedBadge />}
-          </div>
-
-          <Separator />
-
-          <Tabs defaultValue="profile">
-            <TabsList>
-              <TabsTrigger value="profile">
-                <UserRound /> Informasi Profil
-              </TabsTrigger>
-
-              <TabsTrigger value="sessions">
-                <Cookie /> Sesi Terdaftar
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="profile">
-              <DetailList data={profile} />
-            </TabsContent>
-
-            <TabsContent value="sessions">
-              <UserSessionList data={data} />
-            </TabsContent>
-          </Tabs>
-
-          <Separator />
-
-          <DialogFooter>
-            <DialogClose>{messages.actions.back}</DialogClose>
-          </DialogFooter>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+// #region PROFILE
 
 export function ProfileBadges() {
   const { user } = useAuth();
@@ -1022,7 +748,7 @@ export function ProfileForm() {
       <CardContent className="flex flex-col gap-y-4">
         <ProfilePicture data={user} />
 
-        <div className="grid grid-cols-2 gap-x-2 gap-y-4">
+        <div className="grid gap-x-2 gap-y-4 lg:grid-cols-2">
           <Controller
             name="email"
             control={form.control}
@@ -1086,6 +812,292 @@ export function ProfileForm() {
         <ResetButton onClick={() => form.reset(defaultValues)} />
       </CardFooter>
     </form>
+  );
+}
+
+// #endregion
+
+// #region USER
+
+const createUserColumn = createColumnHelper<AuthSession["user"]>();
+const getUserColumn = (currentUserId: string) => [
+  createUserColumn.display({
+    id: "select",
+    header: ({ table }) => <ColumnHeaderCheckbox table={table} />,
+    cell: ({ row }) => <ColumnCellCheckbox row={row} />,
+    enableHiding: false,
+    enableSorting: false,
+  }),
+  createUserColumn.display({
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+    enableHiding: false,
+  }),
+  createUserColumn.accessor(({ name }) => name, {
+    id: "name",
+    header: ({ column }) => <ColumnHeader column={column}>Nama</ColumnHeader>,
+    cell: ({ row }) => (
+      <UserDetailDialog
+        data={row.original}
+        isCurrentUser={row.original.id === currentUserId}
+      />
+    ),
+    filterFn: filterFn("text"),
+    meta: { displayName: "Nama", type: "text", icon: UserRound },
+  }),
+  createUserColumn.accessor(({ email }) => email, {
+    id: "email",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Alamat Email</ColumnHeader>
+    ),
+    cell: ({ row, cell }) => {
+      return (
+        <div className="flex items-center gap-x-2">
+          <span>{cell.getValue()}</span>
+          {row.original.emailVerified && <UserVerifiedBadge withoutText />}
+        </div>
+      );
+    },
+    filterFn: filterFn("text"),
+    meta: { displayName: "Alamat Email", type: "text", icon: Mail },
+  }),
+  createUserColumn.accessor(
+    ({ banned }) => (banned ? "banned" : "active") satisfies UserStatus,
+    {
+      id: "status",
+      header: ({ column }) => (
+        <ColumnHeader column={column}>Status</ColumnHeader>
+      ),
+      cell: ({ cell }) => <UserStatusBadge value={cell.getValue()} />,
+      filterFn: filterFn("option"),
+      meta: {
+        displayName: "Status",
+        type: "option",
+        icon: CircleDot,
+        transformOptionFn: (value) => {
+          const { displayName, icon } = userStatusMeta[value];
+          return { value, label: displayName, icon };
+        },
+      },
+    },
+  ),
+  createUserColumn.accessor(({ role }) => role, {
+    id: "role",
+    header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
+    cell: ({ cell }) => <UserRoleBadge value={cell.getValue()} />,
+    filterFn: filterFn("option"),
+    meta: {
+      displayName: "Role",
+      type: "option",
+      icon: ShieldUser,
+      transformOptionFn: (value) => {
+        const { displayName, icon } = rolesMeta[value as Role];
+        return { value, label: displayName, icon };
+      },
+    },
+  }),
+  createUserColumn.accessor(({ updatedAt }) => updatedAt, {
+    id: "updatedAt",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Terakhir Diperbarui</ColumnHeader>
+    ),
+    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    filterFn: filterFn("date"),
+    meta: {
+      displayName: "Terakhir Diperbarui",
+      type: "date",
+      icon: CalendarSync,
+    },
+  }),
+  createUserColumn.accessor(({ createdAt }) => createdAt, {
+    id: "createdAt",
+    header: ({ column }) => (
+      <ColumnHeader column={column}>Waktu Dibuat</ColumnHeader>
+    ),
+    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    filterFn: filterFn("date"),
+    meta: { displayName: "Waktu Dibuat", type: "date", icon: CalendarCheck2 },
+  }),
+];
+
+export function UserDataTable({
+  searchPlaceholder = "Cari Pengguna...",
+  ...props
+}: OtherDataTableProps<AuthSession["user"]>) {
+  const { user } = useAuth();
+  const { data, error, isLoading } = useUsers();
+
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+
+  const columns = getUserColumn(user.id);
+
+  return (
+    <DataTable
+      data={data ?? []}
+      columns={columns}
+      searchPlaceholder={searchPlaceholder}
+      enableRowSelection={({ original }) => original.id !== user.id}
+      renderRowSelection={(data, table) => {
+        const filteredData = data.map(({ original }) => original);
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline">
+                <Settings2 /> {messages.actions.action}
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent className="grid gap-y-1 p-1 [&_button]:justify-start">
+              <div className="flex justify-center py-1">
+                <small>
+                  Akun dipilih:{" "}
+                  <span className="font-medium">{filteredData.length}</span>
+                </small>
+              </div>
+
+              <Separator />
+
+              <ActionRevokeUserSessionsDialog
+                userIds={filteredData.map(({ id }) => id)}
+                onSuccess={() => table.resetRowSelection()}
+              />
+
+              {/* // TODO */}
+              <Button size="sm" variant="ghost_destructive" disabled>
+                <Ban /> Blokir
+              </Button>
+
+              <ActionRemoveUsersDialog
+                data={filteredData}
+                onSuccess={() => table.resetRowSelection()}
+              />
+            </PopoverContent>
+          </Popover>
+        );
+      }}
+      {...props}
+    />
+  );
+}
+
+export function UserDetailDialog({
+  data,
+  isCurrentUser,
+}: {
+  data: AuthSession["user"];
+  isCurrentUser: boolean;
+}) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const profile: DetailListData = [
+    { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
+    { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
+  ];
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <div className="flex items-center gap-x-3">
+        <UserAvatar data={data} className="rounded-full" />
+        <DialogTrigger className="group flex w-fit gap-x-1 hover:cursor-pointer">
+          <span className="link-group">{data.name}</span>
+          <ArrowUpRight className="group-hover:text-primary size-3.5" />
+        </DialogTrigger>
+      </div>
+
+      <DialogContent className="sm:max-w-2xl" hideCloseButton>
+        <DialogHeader className="flex-row justify-between gap-x-4">
+          <div className="flex items-center gap-x-3">
+            <UserAvatar data={data} className="size-12" />
+            <div className="grid">
+              <SheetTitle className="text-base">{data.name}</SheetTitle>
+              <SheetDescription>{data.email}</SheetDescription>
+            </div>
+          </div>
+
+          {!isCurrentUser && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="icon-sm" variant="outline">
+                  <Ellipsis />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent
+                className="grid gap-y-1 p-1 [&_button]:justify-start"
+                align="end"
+              >
+                <ImpersonateUserDialog
+                  data={data}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+
+                <RevokeUserSessionsDialog data={data} />
+
+                <Separator />
+
+                {data.banned ? (
+                  <UnbanUserDialog
+                    data={data}
+                    setIsDialogOpen={setIsDialogOpen}
+                  />
+                ) : (
+                  <BanUserDialog
+                    data={data}
+                    setIsDialogOpen={setIsDialogOpen}
+                  />
+                )}
+
+                <RemoveUserDialog
+                  data={data}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
+        </DialogHeader>
+
+        <div className="flex flex-col gap-y-3 overflow-y-auto">
+          <div className="flex items-center gap-2">
+            {isCurrentUser && (
+              <Badge variant="outline">Pengguna saat ini</Badge>
+            )}
+
+            <UserRoleBadge value={data.role as Role} />
+            {data.emailVerified && <UserVerifiedBadge />}
+          </div>
+
+          <Separator />
+
+          <Tabs defaultValue="profile">
+            <TabsList>
+              <TabsTrigger value="profile">
+                <UserRound /> Informasi Profil
+              </TabsTrigger>
+
+              <TabsTrigger value="sessions">
+                <Cookie /> Sesi Terdaftar
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <DetailList data={profile} />
+            </TabsContent>
+
+            <TabsContent value="sessions">
+              <UserSessionList data={data} />
+            </TabsContent>
+          </Tabs>
+
+          <Separator />
+
+          <DialogFooter>
+            <DialogClose>{messages.actions.back}</DialogClose>
+          </DialogFooter>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -1235,257 +1247,7 @@ export function ChangePasswordForm() {
   );
 }
 
-export function SessionList() {
-  const { data, error, isLoading } = useSessionList();
-  if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
-  return <SessionListCollapsible data={data ?? []} />;
-}
-
-function UserSessionList({
-  data: userData,
-}: {
-  data: Pick<AuthSession["user"], "id" | "name">;
-}) {
-  const { data, error, isLoading } = useUserSessionList(userData.id);
-  if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
-  return <SessionListCollapsible name={userData.name} data={data ?? []} />;
-}
-
-function SessionListCollapsible({
-  name,
-  data,
-}: {
-  name?: string;
-  data: AuthSession["session"][];
-}) {
-  const { session } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  if (!data.length)
-    return (
-      <div className="flex flex-col items-center gap-2 py-4">
-        <ShieldBan className="size-4" />
-        <span>Tidak ada Sesi yang ditemukan.</span>
-      </div>
-    );
-
-  const deviceIcons = {
-    desktop: Monitor,
-    mobile: Smartphone,
-    tablet: Tablet,
-    console: Gamepad2,
-    smarttv: TvMinimal,
-    wearable: MonitorSmartphone,
-    xr: MonitorSmartphone,
-    embedded: MonitorSmartphone,
-    other: MonitorSmartphone,
-  };
-
-  const sections: { label: string; key: UAParserProps }[] = [
-    { label: "Browser", key: "browser" },
-    { label: "CPU", key: "cpu" },
-    { label: "Device", key: "device" },
-    { label: "Engine", key: "engine" },
-    { label: "Operating System", key: "os" },
-  ];
-
-  const clickHandler = (s: AuthSession["session"]) => {
-    setIsLoading(true);
-    authClient.revokeSession(
-      { token: s.token },
-      {
-        onSuccess: () => {
-          setIsLoading(false);
-          mutateSessionList();
-          mutateUserSessions(s.userId);
-          toast.success("Sesi berhasil diakhiri.");
-        },
-        onError: ({ error }) => {
-          setIsLoading(false);
-          toast.error(error.message);
-        },
-      },
-    );
-  };
-
-  return (
-    <Collapsible className="grid gap-y-2">
-      {data
-        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-        .map((s) => {
-          const isCurrentSession = session.id === s.id;
-
-          const userAgent = s.userAgent
-            ? new UAParser(s.userAgent).getResult()
-            : null;
-
-          const browserName =
-            userAgent?.browser.name ?? "Browser tidak dikenal";
-          const osName = userAgent?.os.name ?? "OS tidak dikenal";
-          const DeviceIcon = deviceIcons[userAgent?.device.type ?? "other"];
-
-          const infoList: DetailListData = [
-            { label: "Alamat IP", content: s.ipAddress },
-            { label: "User Agent", content: userAgent?.ua },
-          ];
-
-          const detailList: DetailListData = sections.map(({ label, key }) => ({
-            label,
-            content: userAgent?.[key]
-              ? Object.entries(userAgent[key]).map(
-                  ([subLabel, subContent]) => ({ subLabel, subContent }),
-                )
-              : undefined,
-          }));
-
-          return (
-            <div key={s.id} className="rounded-lg border p-2 shadow-xs">
-              <div className="flex items-center justify-between gap-x-4">
-                <div className="flex items-center gap-x-3">
-                  <div className="size-fit rounded-full border p-3">
-                    <DeviceIcon className="size-5 shrink-0" />
-                  </div>
-
-                  <div className="grid gap-y-1 font-medium">
-                    <small>{`${osName} - ${browserName}`}</small>
-
-                    {isCurrentSession ? (
-                      <small className="text-success">Sesi saat ini</small>
-                    ) : (
-                      <small className="text-muted-foreground">
-                        {messages.thingAgo("Terakhir terlihat", s.updatedAt)}
-                      </small>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-x-2">
-                  {!isCurrentSession && s.token && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="icon-sm"
-                          variant="outline"
-                          disabled={isLoading}
-                        >
-                          <LoadingSpinner
-                            loading={isLoading}
-                            icon={{ base: <MonitorOff /> }}
-                          />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="flex items-center gap-x-2">
-                            <MonitorOff /> {sharedText.revokeSession} {name}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Sesi pada perangkat {name} akan diakhiri dan
-                            pengguna harus login kembali. Yakin ingin
-                            melanjutkan?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            {messages.actions.cancel}
-                          </AlertDialogCancel>
-                          <AlertDialogAction onClick={() => clickHandler(s)}>
-                            {messages.actions.confirm}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-
-                  <CollapsibleTrigger asChild>
-                    <Button size="icon-sm" variant="ghost">
-                      <ChevronsUpDown />
-                    </Button>
-                  </CollapsibleTrigger>
-                </div>
-              </div>
-
-              <CollapsibleContent className="grid gap-y-2 py-2">
-                <Separator />
-
-                <div className="grid gap-2 px-2">
-                  <DetailList data={infoList} />
-                </div>
-
-                <Separator />
-
-                <div className="grid gap-2 px-2 lg:grid-cols-2">
-                  <DetailList data={detailList} />
-                </div>
-              </CollapsibleContent>
-            </div>
-          );
-        })}
-    </Collapsible>
-  );
-}
-
-export function RevokeOtherSessionsButton() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const clickHandler = () => {
-    toast.promise(
-      async () => {
-        setIsLoading(true);
-        const res = await authClient.revokeOtherSessions();
-        if (res.error) throw new Error(res.error.message);
-        return res;
-      },
-      {
-        success: () => {
-          setIsLoading(false);
-          mutateSessionList();
-          return "Semua sesi aktif lainnya berhasil diakhiri.";
-        },
-        error: (e) => {
-          setIsLoading(false);
-          return e.message;
-        },
-      },
-    );
-  };
-
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
-          Akhiri Semua Sesi di Perangkat Lain
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Akhiri Semua Sesi di Perangkat Lain
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Semua sesi aktif di perangkat lain akan diakhiri, kecuali sesi ini.
-            Yakin ingin melanjutkan?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={clickHandler}>
-            {messages.actions.confirm}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-// #endregion
-
-// #region ADMIN
-
-export function AdminCreateUserDialog() {
+export function CreateUserDialog() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
@@ -1721,7 +1483,7 @@ export function AdminCreateUserDialog() {
   );
 }
 
-function AdminChangeUserRoleForm({
+function ChangeUserRoleForm({
   data,
   setIsDialogOpen,
 }: {
@@ -1832,12 +1594,266 @@ function AdminChangeUserRoleForm({
   );
 }
 
-function AdminRevokeUserSessionsDialog({
-  data,
-  setIsDialogOpen,
+// #endregion
+
+// #region SESSIONS
+
+export function SessionList() {
+  const { data, error, isLoading } = useSessionList();
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+  return <SessionListCollapsible data={data ?? []} />;
+}
+
+function UserSessionList({
+  data: userData,
 }: {
   data: Pick<AuthSession["user"], "id" | "name">;
-  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { data, error, isLoading } = useUserSessionList(userData.id);
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+  return <SessionListCollapsible name={userData.name} data={data ?? []} />;
+}
+
+function SessionListCollapsible({
+  name,
+  data,
+}: {
+  name?: string;
+  data: AuthSession["session"][];
+}) {
+  const { session } = useAuth();
+  const [revokingSession, setRevokingSession] = useState<string | null>();
+
+  if (!data.length)
+    return (
+      <div className="flex flex-col items-center gap-2 py-4">
+        <ShieldBan className="size-4" />
+        <span>Tidak ada Sesi yang ditemukan.</span>
+      </div>
+    );
+
+  const deviceIcons = {
+    desktop: Monitor,
+    mobile: Smartphone,
+    tablet: Tablet,
+    console: Gamepad2,
+    smarttv: TvMinimal,
+    wearable: MonitorSmartphone,
+    xr: MonitorSmartphone,
+    embedded: MonitorSmartphone,
+    other: MonitorSmartphone,
+  };
+
+  const sections: { label: string; key: UAParserProps }[] = [
+    { label: "Browser", key: "browser" },
+    { label: "CPU", key: "cpu" },
+    { label: "Device", key: "device" },
+    { label: "Engine", key: "engine" },
+    { label: "Operating System", key: "os" },
+  ];
+
+  const clickHandler = (s: AuthSession["session"]) => {
+    setRevokingSession(s.id);
+    authClient.revokeSession(
+      { token: s.token },
+      {
+        onSuccess: () => {
+          setRevokingSession(null);
+          mutateSessionList();
+          mutateUserSessionList(s.userId);
+          toast.success("Sesi berhasil diakhiri.");
+        },
+        onError: ({ error }) => {
+          setRevokingSession(null);
+          toast.error(error.message);
+        },
+      },
+    );
+  };
+
+  return (
+    <div className="grid gap-y-2">
+      {data
+        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+        .map((s) => {
+          const isCurrentSession = session.id === s.id;
+          const isLoading = revokingSession === s.id;
+
+          const userAgent = s.userAgent
+            ? new UAParser(s.userAgent).getResult()
+            : null;
+
+          const browserName =
+            userAgent?.browser.name ?? "Browser tidak dikenal";
+          const osName = userAgent?.os.name ?? "OS tidak dikenal";
+          const DeviceIcon = deviceIcons[userAgent?.device.type ?? "other"];
+
+          const infoList: DetailListData = [
+            { label: "Alamat IP", content: s.ipAddress },
+            { label: "User Agent", content: userAgent?.ua },
+          ];
+
+          const detailList: DetailListData = sections.map(({ label, key }) => ({
+            label,
+            content: userAgent?.[key]
+              ? Object.entries(userAgent[key]).map(
+                  ([subLabel, subContent]) => ({ subLabel, subContent }),
+                )
+              : undefined,
+          }));
+
+          return (
+            <Collapsible key={s.id} className="rounded-lg border p-2 shadow-xs">
+              <div className="flex items-center justify-between gap-x-4">
+                <div className="flex items-center gap-x-3">
+                  <div className="size-fit rounded-full border p-3">
+                    <DeviceIcon className="size-5 shrink-0" />
+                  </div>
+
+                  <div className="grid gap-y-1 font-medium">
+                    <div className="flex items-center gap-x-2">
+                      <small>{`${osName} - ${browserName}`}</small>
+                      <ImpersonateUserBadge
+                        impersonating={!!s.impersonatedBy}
+                      />
+                    </div>
+
+                    {isCurrentSession ? (
+                      <small className="text-success">Sesi saat ini</small>
+                    ) : (
+                      <small className="text-muted-foreground">
+                        {messages.thingAgo("Terakhir terlihat", s.updatedAt)}
+                      </small>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-x-2">
+                  {!isCurrentSession && s.token && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          disabled={isLoading}
+                        >
+                          <LoadingSpinner
+                            loading={isLoading}
+                            icon={{ base: <MonitorOff /> }}
+                          />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="flex items-center gap-x-2">
+                            <MonitorOff /> {sharedText.revokeSession} {name}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Sesi pada perangkat {name} akan diakhiri dan
+                            pengguna harus login kembali. Yakin ingin
+                            melanjutkan?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>
+                            {messages.actions.cancel}
+                          </AlertDialogCancel>
+                          <AlertDialogAction onClick={() => clickHandler(s)}>
+                            {messages.actions.confirm}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+
+                  <CollapsibleTrigger asChild>
+                    <Button size="icon-sm" variant="ghost">
+                      <ChevronsUpDown />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+              </div>
+
+              <CollapsibleContent className="grid gap-y-2 py-2">
+                <Separator />
+
+                <div className="grid gap-2 px-2">
+                  <DetailList data={infoList} />
+                </div>
+
+                <Separator />
+
+                <div className="grid gap-2 px-2 lg:grid-cols-2">
+                  <DetailList data={detailList} />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          );
+        })}
+    </div>
+  );
+}
+
+export function RevokeOtherSessionsButton() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const clickHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        const res = await authClient.revokeOtherSessions();
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      },
+      {
+        success: () => {
+          setIsLoading(false);
+          mutateSessionList();
+          return "Semua sesi aktif lainnya berhasil diakhiri.";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" disabled={isLoading}>
+          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
+          Akhiri Semua Sesi di Perangkat Lain
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-x-2">
+            <MonitorOff /> Akhiri Semua Sesi di Perangkat Lain
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Semua sesi aktif di perangkat lain akan diakhiri, kecuali sesi ini.
+            Yakin ingin melanjutkan?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
+          <AlertDialogAction onClick={clickHandler}>
+            {messages.actions.confirm}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function RevokeUserSessionsDialog({
+  data,
+}: {
+  data: Pick<AuthSession["user"], "id" | "name">;
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -1853,7 +1869,7 @@ function AdminRevokeUserSessionsDialog({
       {
         success: () => {
           setIsLoading(false);
-          setIsDialogOpen(false);
+          mutateUserSessionList(data.id);
           return `Semua sesi aktif milik ${data.name} berhasil diakhiri.`;
         },
         error: ({ error }) => {
@@ -1896,7 +1912,213 @@ function AdminRevokeUserSessionsDialog({
   );
 }
 
-function AdminBanUserDialog({
+function ActionRevokeUserSessionsDialog({
+  userIds,
+  onSuccess,
+}: {
+  userIds: string[];
+  onSuccess: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const clickHandler = () => {
+    setIsLoading(true);
+    toast.promise(revokeUserSessions(userIds), {
+      loading: messages.loading,
+      success: (res) => {
+        onSuccess();
+        const successLength = res.filter(({ success }) => success).length;
+        return `${successLength} dari ${userIds.length} sesi pengguna berhasil diakhiri.`;
+      },
+      error: (e) => {
+        setIsLoading(false);
+        return e.message;
+      },
+    });
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant="ghost" disabled={isLoading}>
+          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
+          {sharedText.revokeSession}
+        </Button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-x-2">
+            <MonitorOff /> Akhiri Sesi untuk {userIds.length} Pengguna
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Ini akan menghentikan semua sesi aktif dari{" "}
+            <span className="text-foreground">{userIds.length} pengguna</span>{" "}
+            yang dipilih. Yakin ingin melanjutkan?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
+          <AlertDialogAction onClick={clickHandler}>
+            {messages.actions.confirm}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+// #endregion
+
+// #region IMPERSONATION
+
+export function ImpersonateUserBadge({
+  impersonating,
+}: {
+  impersonating?: boolean;
+}) {
+  const { session } = useAuth();
+
+  const isImpersonating = impersonating ?? !!session.impersonatedBy;
+  if (!isImpersonating) return;
+
+  return (
+    <Badge variant="outline" className="relative">
+      <Layers2 /> <span className="hidden md:flex">Mode Impersonasi</span>
+    </Badge>
+  );
+}
+
+function ImpersonateUserDialog({
+  data,
+  setIsDialogOpen,
+}: {
+  data: Pick<AuthSession["user"], "id" | "name">;
+  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const clickHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        const userId = data.id;
+        const res = await authClient.admin.impersonateUser({ userId });
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      },
+      {
+        success: async () => {
+          setIsLoading(false);
+          setIsDialogOpen(false);
+          await mutateSession();
+          router.push("/dashboard");
+          return `Anda sekarang masuk sebagai ${data.name}.`;
+        },
+        error: ({ error }) => {
+          setIsLoading(false);
+          return error.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant="ghost" disabled={isLoading}>
+          <LoadingSpinner loading={isLoading} icon={{ base: <Layers2 /> }} />
+          Akses Akun
+        </Button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-x-2">
+            <Layers2 /> Impersonasi {data.name}
+          </AlertDialogTitle>
+          <div className="space-y-2">
+            <AlertDialogDescription>
+              <span className="text-foreground">Mode Impersonasi</span> adalah
+              fitur khusus admin yang memungkinkan Anda masuk ke akun pengguna
+              lain tanpa harus mengetahui kata sandi mereka.
+            </AlertDialogDescription>
+
+            <AlertDialogDescription>
+              Saat dalam{" "}
+              <span className="text-foreground">mode Impersonasi</span>, Anda
+              akan memiliki akses penuh ke akun pengguna yang dipilih{" "}
+              <span className="text-foreground">( {data.name} )</span>. Yakin
+              ingin melanjutkan?
+            </AlertDialogDescription>
+          </div>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
+
+          <AlertDialogAction onClick={clickHandler}>
+            {messages.actions.confirm}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function StopImpersonateUserMenuItem() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { session, user } = useAuth();
+  if (!session.impersonatedBy) return;
+
+  const clickHandler = () => {
+    toast.promise(
+      async () => {
+        setIsLoading(true);
+        const res = await authClient.admin.stopImpersonating();
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      },
+      {
+        success: async () => {
+          setIsLoading(false);
+          await mutateSession();
+          router.push("/dashboard");
+          return `Anda telah kembali ke sesi ${rolesMeta.admin.displayName} Anda.`;
+        },
+        error: ({ error }) => {
+          setIsLoading(false);
+          return error.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        tooltip={`Keluar dari sesi ${name}`}
+        variant="destructive"
+        className="text-destructive hover:text-destructive"
+        disabled={isLoading}
+        onClick={clickHandler}
+      >
+        <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} />
+        Keluar dari sesi {user.name}
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
+// #endregion
+
+// #region BAN & REMOVAL
+
+function BanUserDialog({
   data,
   setIsDialogOpen,
 }: {
@@ -2027,7 +2249,7 @@ function AdminBanUserDialog({
   );
 }
 
-function AdminUnbanUserDialog({
+function UnbanUserDialog({
   data,
   setIsDialogOpen,
 }: {
@@ -2095,7 +2317,7 @@ function AdminUnbanUserDialog({
   );
 }
 
-function AdminRemoveUserDialog({
+function RemoveUserDialog({
   data,
   setIsDialogOpen,
 }: {
@@ -2209,64 +2431,10 @@ function AdminRemoveUserDialog({
   );
 }
 
-function AdminActionRevokeUserSessionsDialog({
-  userIds,
-  onSuccess,
-}: {
-  userIds: string[];
-  onSuccess: () => void;
-}) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+// TODO: function ActionBanUserDialog() {}
+// TODO: function ActionUnbanUserDialog() {}
 
-  const clickHandler = () => {
-    setIsLoading(true);
-    toast.promise(revokeUserSessions(userIds), {
-      loading: messages.loading,
-      success: (res) => {
-        onSuccess();
-        const successLength = res.filter(({ success }) => success).length;
-        return `${successLength} dari ${userIds.length} sesi pengguna berhasil diakhiri.`;
-      },
-      error: (e) => {
-        setIsLoading(false);
-        return e.message;
-      },
-    });
-  };
-
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="ghost" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
-          {sharedText.revokeSession}
-        </Button>
-      </AlertDialogTrigger>
-
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Akhiri Sesi untuk {userIds.length} Pengguna
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Ini akan menghentikan semua sesi aktif dari{" "}
-            <span className="text-foreground">{userIds.length} pengguna</span>{" "}
-            yang dipilih. Yakin ingin melanjutkan?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={clickHandler}>
-            {messages.actions.confirm}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-function AdminActionRemoveUsersDialog({
+function ActionRemoveUsersDialog({
   data,
   onSuccess,
 }: {
@@ -2277,7 +2445,7 @@ function AdminActionRemoveUsersDialog({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const inputValue = `Hapus ${String(data.length)} pengguna`;
+  const inputValue = `Hapus ${String(data.length)} Pengguna`;
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z

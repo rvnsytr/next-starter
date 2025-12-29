@@ -80,6 +80,8 @@ export function SidebarMain() {
 
           <SidebarSeparator />
 
+          <StopImpersonateUserMenuItem />
+
           <SidebarMenuItem>
             <SignOutButton />
           </SidebarMenuItem>
