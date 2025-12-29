@@ -498,10 +498,12 @@ export const sidebarMenuButtonVariants = cva(
     variants: {
       variant: {
         default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        destructive:
+          "text-destructive hover:bg-destructive/5 hover:text-destructive dark:hover:bg-destructive/20 active:bg-destructive/5 active:text-destructive dark:hover:active:bg-destructive/20",
         outline:
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
         outline_destructive:
-          "text-destructive border border-destructive/30 bg-background shadow-xs hover:border-destructive dark:bg-destructive/5 dark:hover:bg-destructive/20 focus-visible:border-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "text-destructive border border-destructive/30 bg-background shadow-xs hover:bg-destructive/5 hover:text-destructive hover:border-destructive dark:bg-destructive/5 dark:hover:bg-destructive/20 focus-visible:border-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 active:bg-destructive/5 active:text-destructive dark:hover:active:bg-destructive/20",
       },
       size: {
         default: "h-8 text-sm",

@@ -1,7 +1,6 @@
 import { dashboardfooterMenu } from "@/core/constants";
-import { SignOutButton } from "@/modules/auth";
+import { SignOutButton, StopImpersonateUserMenuItem } from "@/modules/auth";
 import Link from "next/link";
-import { Suspense } from "react";
 import { RefreshButton } from "../ui/buttons.client";
 import {
   Sidebar,
@@ -33,15 +32,11 @@ export function SidebarMain() {
 
         <SidebarSeparator className="mb-2" />
 
-        <Suspense>
-          <SidebarCommandPallete />
-        </Suspense>
+        <SidebarCommandPallete />
       </SidebarHeader>
 
       {/* Content */}
-      <Suspense>
-        <SidebarMainContent />
-      </Suspense>
+      <SidebarMainContent />
 
       {/* Footer */}
       <SidebarFooter>
