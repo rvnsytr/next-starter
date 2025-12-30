@@ -569,7 +569,7 @@ export function ProfileBadges() {
   const { user } = useAuth();
   return (
     <>
-      <UserRoleBadge value={user.role as Role} />
+      <UserRoleBadge value={user.role} />
       {user.emailVerified && <UserVerifiedBadge />}
     </>
   );
@@ -896,7 +896,7 @@ const getUserColumn = (currentUserId: string) => [
       type: "option",
       icon: ShieldUser,
       transformOptionFn: (value) => {
-        const { displayName, icon } = rolesMeta[value as Role];
+        const { displayName, icon } = rolesMeta[value];
         return { value, label: displayName, icon };
       },
     },
@@ -939,7 +939,7 @@ export function UserDataTable({
 
   return (
     <DataTable
-      data={data ?? []}
+      data={data?.users ?? []}
       columns={columns}
       searchPlaceholder={searchPlaceholder}
       enableRowSelection={({ original }) => original.id !== user.id}
@@ -1068,7 +1068,7 @@ export function UserDetailDialog({
               <Badge variant="outline">Pengguna saat ini</Badge>
             )}
 
-            <UserRoleBadge value={data.role as Role} />
+            <UserRoleBadge value={data.role} />
             {data.emailVerified && <UserVerifiedBadge />}
           </div>
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { AuthSession } from "@/modules/auth";
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import {
   getSession,
@@ -14,15 +13,11 @@ export function useSession(config?: SWRConfiguration) {
 }
 
 export function useUsers(config?: SWRConfiguration) {
-  const fetcher = async () =>
-    (await getUserList()).users as never[] | AuthSession["user"][];
-  return useSWR("/auth/users", fetcher, config);
+  return useSWR("/auth/users", getUserList, config);
 }
 
 export function useSessionList(config?: SWRConfiguration) {
-  const key = `/auth/list-sessions`;
-  const fetcher = async () => await getSessionList();
-  return useSWR(key, fetcher, config);
+  return useSWR(`/auth/list-sessions`, getSessionList, config);
 }
 
 export function useUserSessionList(userId: string, config?: SWRConfiguration) {

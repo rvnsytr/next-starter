@@ -11,12 +11,8 @@ import {
 export type AuthSession = typeof auth.$Infer.Session;
 
 export type Role = keyof typeof roles;
-export type UserStatus = (typeof allUserStatus)[number];
-
 export const allRoles = Object.keys(roles) as Role[];
 export const defaultRole: Role = "user";
-
-export const allUserStatus = ["active", "banned"] as const;
 
 export const rolesMeta: Record<
   Role,
@@ -35,6 +31,9 @@ export const rolesMeta: Record<
     color: "var(--rvns)",
   },
 };
+
+export type UserStatus = (typeof allUserStatus)[number];
+export const allUserStatus = ["active", "banned"] as const;
 
 export const userStatusMeta: Record<
   UserStatus,

@@ -10,10 +10,17 @@ export async function getSession() {
 }
 
 export async function getUserList() {
-  return await auth.api.listUsers({
+  return (await auth.api.listUsers({
     headers: await nextHeaders(),
     query: { sortBy: "createdAt", sortDirection: "desc" },
-  });
+  })) as
+    | { users: never[]; total: number }
+    | {
+        users: AuthSession["user"][];
+        total: number;
+        limit: number | undefined;
+        offset: number | undefined;
+      };
 }
 
 export async function getSessionList() {
@@ -21,19 +28,20 @@ export async function getSessionList() {
 }
 
 export async function getUserSessionList(userId: string) {
-  const headers = await nextHeaders();
-  const data = await auth.api.listUserSessions({ headers, body: { userId } });
-  return data.sessions as AuthSession["session"][];
+  const { sessions } = await auth.api.listUserSessions({
+    headers: await nextHeaders(),
+    body: { userId },
+  });
+
+  return sessions as AuthSession["session"][];
 }
 
 export async function revokeUserSessions(ids: string[]) {
+  const headers = await nextHeaders();
   return Promise.all(
     ids.map(
       async (userId) =>
-        await auth.api.revokeUserSessions({
-          body: { userId },
-          headers: await nextHeaders(),
-        }),
+        await auth.api.revokeUserSessions({ body: { userId }, headers }),
     ),
   );
 }
@@ -41,13 +49,11 @@ export async function revokeUserSessions(ids: string[]) {
 export async function removeUsers(
   data: Pick<AuthSession["user"], "id" | "image">[],
 ) {
+  const headers = await nextHeaders();
   return Promise.all(
     data.map(async ({ id, image }) => {
       if (image) await removeFiles([image], { isPublicUrl: true });
-      return await auth.api.removeUser({
-        body: { userId: id },
-        headers: await nextHeaders(),
-      });
+      return await auth.api.removeUser({ body: { userId: id }, headers });
     }),
   );
 }

@@ -2,7 +2,7 @@
 
 import { routesMeta } from "@/core/constants";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
-import { Role, useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
+import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,7 +36,7 @@ import { LinkSpinner } from "../ui/spinner";
 
 export function SidebarCommandPallete() {
   const { user } = useAuth();
-  const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
+  const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
   return <CommandPalette data={menu} />;
 }
 
@@ -85,7 +85,7 @@ export function SidebarMainContent() {
   const pathname = usePathname();
   const { isMobile, toggleSidebar } = useSidebar();
 
-  const menu = useMemo(() => getMenuByRole(user.role as Role), [user.role]);
+  const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
 
   return (
     <SidebarContent>
