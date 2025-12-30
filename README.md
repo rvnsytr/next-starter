@@ -157,7 +157,7 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 
 ## TODO
 
-- User Change Role
+- Ban & Unban Table Action
 - Server-Side Data Table
 - More Numeric Form Inputs
 - Event Calendar

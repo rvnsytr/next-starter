@@ -43,6 +43,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/core/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/core/components/ui/dropdown-menu";
 import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
 import {
   Field,
@@ -86,7 +92,7 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
-import { filterFn, formatDate } from "@/core/utils";
+import { cn, filterFn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
@@ -95,6 +101,7 @@ import {
   Ban,
   CalendarCheck2,
   CalendarSync,
+  ChevronDown,
   ChevronsUpDown,
   CircleDot,
   Cookie,
@@ -882,7 +889,7 @@ const getUserColumn = (currentUserId: string) => [
   createUserColumn.accessor(({ role }) => role, {
     id: "role",
     header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
-    cell: ({ cell }) => <UserRoleBadge value={cell.getValue()} />,
+    cell: ({ row }) => <UserRoleDropdown data={row.original} />,
     filterFn: filterFn("option"),
     meta: {
       displayName: "Role",
@@ -1480,24 +1487,15 @@ export function CreateUserDialog() {
   );
 }
 
-function ChangeUserRoleForm({
+function UserRoleDropdown({
   data,
-  setIsDialogOpen,
 }: {
-  data: AuthSession["user"];
-  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  data: Pick<AuthSession["user"], "id" | "name" | "role">;
 }) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema.pick({ role: true });
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { role: data.role === "user" ? "admin" : "user" },
-  });
-
-  const formHandler = ({ role: newRole }: FormSchema) => {
+  const clickHandler = (newRole: Role) => {
     const role = newRole ?? defaultRole;
     if (role === data.role)
       return toast.info(messages.noChanges(`role ${data.name}`));
@@ -1512,7 +1510,8 @@ function ChangeUserRoleForm({
       {
         success: () => {
           setIsLoading(false);
-          setIsDialogOpen(false);
+          setIsOpen(false);
+
           mutateUsers();
           return `Role ${data.name} berhasil diperbarui menjadi ${role}.`;
         },
@@ -1525,69 +1524,40 @@ function ChangeUserRoleForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
-      <Controller
-        name="role"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <FieldWrapper
-            label="Ubah role"
-            htmlFor={field.name}
-            errors={fieldState.error}
-          >
-            <RadioGroup
-              name={field.name}
-              value={field.value}
-              onValueChange={field.onChange}
-              required
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <div className="flex items-center gap-x-2">
+        <DropdownMenuTrigger asChild>
+          <Button size="icon-xs" variant="ghost" disabled={isLoading}>
+            <LoadingSpinner
+              loading={isLoading}
+              icon={{ base: <ChevronDown /> }}
+            />
+          </Button>
+        </DropdownMenuTrigger>
+        <UserRoleBadge value={data.role} />
+      </div>
+
+      <DropdownMenuContent align="start">
+        {allRoles.map((item) => {
+          const { displayName, color, icon: Icon } = rolesMeta[item];
+          return (
+            <DropdownMenuItem
+              key={item}
+              onClick={() => clickHandler(item)}
+              disabled={isLoading}
+              style={{ "--item-color": color } as React.CSSProperties}
+              className={cn(
+                "justify-start text-(--item-color) focus:bg-(--item-color)/10 focus:text-(--item-color)",
+                item === data.role &&
+                  "bg-(--item-color)/10 text-(--item-color)",
+              )}
             >
-              {allRoles.map((value) => {
-                const {
-                  displayName,
-                  desc,
-                  color,
-                  icon: Icon,
-                } = rolesMeta[value];
-
-                return (
-                  <FieldLabel
-                    key={value}
-                    htmlFor={value}
-                    color={color}
-                    className="border-(--field-color)/40"
-                  >
-                    <Field
-                      orientation="horizontal"
-                      data-invalid={!!fieldState.error}
-                    >
-                      <FieldContent>
-                        <FieldTitle className="text-(--field-color)">
-                          <Icon /> {displayName}
-                        </FieldTitle>
-                        <FieldDescription className="text-(--field-color)/80">
-                          {desc}
-                        </FieldDescription>
-                      </FieldContent>
-                      <RadioGroupItem
-                        value={value}
-                        id={value}
-                        classNames={{ circle: "fill-[var(--field-color)]" }}
-                        aria-invalid={!!fieldState.error}
-                      />
-                    </Field>
-                  </FieldLabel>
-                );
-              })}
-            </RadioGroup>
-          </FieldWrapper>
-        )}
-      />
-
-      <Button type="submit" disabled={isLoading}>
-        <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
-        {messages.actions.update}
-      </Button>
-    </form>
+              {Icon && <Icon />} {displayName}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -2288,7 +2258,7 @@ function UnbanUserDialog({
             loading={isLoading}
             icon={{ base: <LockKeyholeOpen /> }}
           />
-          Buka Blokir {data.name}
+          Buka Blokir
         </Button>
       </AlertDialogTrigger>
 
