@@ -1748,9 +1748,9 @@ function SessionListCollapsible({
                             <MonitorOff /> Akhiri Sesi {name}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            Sesi pada perangkat {name} akan diakhiri dan
-                            pengguna harus login kembali. Yakin ingin
-                            melanjutkan?
+                            Sesi pada perangkat <span>{name}</span> akan
+                            diakhiri dan pengguna harus login kembali. Yakin
+                            ingin melanjutkan?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -1892,8 +1892,8 @@ function RevokeUserSessionsDialog({
             <MonitorOff /> Akhiri Semua Sesi {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Semua sesi aktif milik {data.name} akan diakhiri, termasuk sesi saat
-            ini. Yakin ingin melanjutkan?
+            Semua sesi aktif milik <span>{data.name}</span> akan diakhiri,
+            termasuk sesi saat ini. Yakin ingin melanjutkan?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -1950,8 +1950,8 @@ function ActionRevokeUserSessionsDialog({
           </AlertDialogTitle>
           <AlertDialogDescription>
             Ini akan menghentikan semua sesi aktif dari{" "}
-            <span className="text-foreground">{userIds.length} pengguna</span>{" "}
-            yang dipilih. Yakin ingin melanjutkan?
+            <span>{userIds.length} pengguna</span> yang dipilih. Yakin ingin
+            melanjutkan?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -2042,17 +2042,16 @@ function ImpersonateUserDialog({
           </AlertDialogTitle>
           <div className="space-y-2">
             <AlertDialogDescription>
-              <span className="text-foreground">Mode Impersonasi</span> adalah
-              fitur khusus admin yang memungkinkan Anda masuk ke akun pengguna
-              lain tanpa harus mengetahui kata sandi mereka.
+              <span>Mode Impersonasi</span> adalah fitur khusus{" "}
+              <span>{rolesMeta.admin.displayName}</span> yang memungkinkan Anda
+              masuk ke akun pengguna lain tanpa harus mengetahui kata sandi
+              mereka.
             </AlertDialogDescription>
 
             <AlertDialogDescription>
-              Saat dalam{" "}
-              <span className="text-foreground">Mode Impersonasi</span>, Anda
-              akan memiliki akses penuh ke akun pengguna yang dipilih{" "}
-              <span className="text-foreground">( {data.name} )</span>. Yakin
-              ingin melanjutkan?
+              Saat dalam <span>Mode Impersonasi</span>, Anda akan memiliki akses
+              penuh ke akun pengguna yang dipilih <span>( {data.name} )</span>.
+              Yakin ingin melanjutkan?
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>
@@ -2189,8 +2188,7 @@ function BanUserDialog({
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan memblokir and menonaktifkan akun{" "}
-            <span className="text-foreground">{data.name}</span>. Harap
-            berhati-hati sebelum melanjutkan.
+            <span>{data.name}</span>. Harap berhati-hati sebelum melanjutkan.
           </DialogDescription>
         </DialogHeader>
 
@@ -2301,8 +2299,8 @@ function UnbanUserDialog({
           </AlertDialogTitle>
           <AlertDialogDescription>
             PERINGATAN: Tindakan ini akan membuka blokir mengaktifkan kembali
-            akun milik <span className="text-foreground">{data.name}</span>.
-            Harap berhati-hati sebelum melanjutkan.
+            akun milik <span>{data.name}</span>. Harap berhati-hati sebelum
+            melanjutkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -2382,9 +2380,8 @@ function RemoveUserDialog({
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan menghapus akun{" "}
-            <span className="text-foreground">{data.name}</span> beserta seluruh
-            datanya secara permanen. Harap berhati-hati karena aksi ini tidak
-            dapat dibatalkan.
+            <span>{data.name}</span> beserta seluruh datanya secara permanen.
+            Harap berhati-hati karena aksi ini tidak dapat dibatalkan.
           </DialogDescription>
         </DialogHeader>
 
@@ -2497,9 +2494,9 @@ function ActionRemoveUsersDialog({
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan menghapus{" "}
-            <span className="text-foreground">{data.length} akun</span> yang
-            dipilih beserta seluruh datanya secara permanen. Harap berhati-hati
-            karena aksi ini tidak dapat dibatalkan.
+            <span>{data.length} akun</span> yang dipilih beserta seluruh datanya
+            secara permanen. Harap berhati-hati karena aksi ini tidak dapat
+            dibatalkan.
           </DialogDescription>
         </DialogHeader>
 
