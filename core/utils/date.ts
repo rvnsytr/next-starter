@@ -5,6 +5,7 @@ import {
   isBefore,
   isValid,
   parse,
+  set,
 } from "date-fns";
 import { id } from "date-fns/locale";
 
@@ -49,4 +50,13 @@ export function formatSecondsToDHMS(totalSeconds: number) {
 
 export function isDateInRange(from: Date, to: Date, date: Date) {
   return isBefore(from, date) && isAfter(to, date);
+}
+
+export function mergeDateAndTime(date: Date, time: Date) {
+  return set(date, {
+    hours: time.getHours(),
+    minutes: time.getMinutes(),
+    seconds: time.getSeconds(),
+    milliseconds: time.getMilliseconds(),
+  });
 }

@@ -61,7 +61,7 @@ export function DatePicker({
   const [strValue, setStrValue] = useState<string>("");
 
   const onDateSelected = useEffectEvent(() => {
-    if (!selected) return;
+    if (!selected) return setStrValue("");
     const formatted = formatDate(selected, "ddMMyyyy");
     if (formatted !== strValue) setStrValue(formatted);
   });
