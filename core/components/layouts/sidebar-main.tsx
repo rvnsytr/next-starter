@@ -5,7 +5,6 @@ import { RefreshButton } from "../ui/buttons.client";
 import {
   Sidebar,
   SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,27 +12,13 @@ import {
   SidebarSeparator,
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
-import {
-  SidebarCommandPallete,
-  SidebarMainContent,
-  SidebarMainHeader,
-} from "./sidebar-main.client";
+import { SidebarMainContent, SidebarMainHeader } from "./sidebar-main.client";
 
 export function SidebarMain() {
   return (
     <Sidebar collapsible="icon">
       {/* Header */}
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMainHeader />
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        <SidebarSeparator className="mb-2" />
-
-        <SidebarCommandPallete />
-      </SidebarHeader>
+      <SidebarMainHeader />
 
       {/* Content */}
       <SidebarMainContent />

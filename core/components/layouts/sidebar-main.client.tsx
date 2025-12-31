@@ -23,6 +23,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -30,52 +31,58 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarSeparator,
   useSidebar,
 } from "../ui/sidebar";
 import { LinkSpinner } from "../ui/spinner";
 
-export function SidebarCommandPallete() {
-  const { user } = useAuth();
-  const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
-  return <CommandPalette data={menu} />;
-}
-
 export function SidebarMainHeader() {
   const { user } = useAuth();
+  const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
 
   return (
-    <SidebarMenuButton
-      size="lg"
-      className="group/head-button h-13 group-data-[collapsible=icon]:my-2.5 group-data-[collapsible=icon]:p-0"
-      asChild
-    >
-      <Link href="/dashboard/profile">
-        <UserAvatar
-          data={user}
-          className="rounded-md"
-          classNames={{
-            image: "rounded-md group-hover/head-button:scale-105",
-            fallback: "rounded-md group-hover/head-button:scale-105",
-          }}
-        />
-
-        <div className="grid break-all">
-          <div className="flex items-center gap-x-2">
-            <span className="line-clamp-1 text-sm font-semibold">
-              {user.name}
-            </span>
-            {user.emailVerified && (
-              <UserVerifiedBadge
-                classNames={{ icon: "size-3.5" }}
-                withoutText
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className="group/head-button h-13 group-data-[collapsible=icon]:my-2.5 group-data-[collapsible=icon]:p-0"
+            asChild
+          >
+            <Link href="/dashboard/profile">
+              <UserAvatar
+                data={user}
+                className="rounded-md"
+                classNames={{
+                  image: "rounded-md group-hover/head-button:scale-105",
+                  fallback: "rounded-md group-hover/head-button:scale-105",
+                }}
               />
-            )}
-          </div>
 
-          <span className="line-clamp-1 text-xs">{user.email}</span>
-        </div>
-      </Link>
-    </SidebarMenuButton>
+              <div className="grid break-all">
+                <div className="flex items-center gap-x-2">
+                  <span className="line-clamp-1 text-sm font-semibold">
+                    {user.name}
+                  </span>
+                  {user.emailVerified && (
+                    <UserVerifiedBadge
+                      classNames={{ icon: "size-3.5" }}
+                      withoutText
+                    />
+                  )}
+                </div>
+
+                <span className="line-clamp-1 text-xs">{user.email}</span>
+              </div>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      <SidebarSeparator className="mb-2" />
+
+      <CommandPalette data={menu} />
+    </SidebarHeader>
   );
 }
 
