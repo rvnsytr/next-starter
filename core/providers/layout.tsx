@@ -31,7 +31,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   const onMount = useEffectEvent(() => {
     const stored = localStorage.getItem("layout-preference");
     const zodRes = z.enum(allLayoutMode).safeParse(stored);
-    if (zodRes.success) setLayout(zodRes.data);
+    if (zodRes.success && zodRes.data !== "unset") setLayout(zodRes.data);
     else {
       setLayout(defaultLayout);
       localStorage.setItem("layout-preference", defaultLayout);
@@ -41,7 +41,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   useEffect(() => onMount(), []);
 
   useEffect(() => {
-    if (layout) localStorage.setItem("layout-preference", layout);
+    if (layout !== "unset") localStorage.setItem("layout-preference", layout);
   }, [layout]);
 
   return (
