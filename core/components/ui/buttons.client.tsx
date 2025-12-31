@@ -1,6 +1,5 @@
 "use client";
 
-import { messages } from "@/core/constants";
 import { LayoutMode, layoutModeMeta, useLayout } from "@/core/providers";
 import { cn, delay } from "@/core/utils";
 import {
@@ -235,7 +234,7 @@ export function CopyButton({
 }
 
 export function RefreshButton({
-  text = messages.actions.refresh,
+  text = "Muat Ulang",
   disabled,
   onClick,
   ...props
