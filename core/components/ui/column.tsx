@@ -118,3 +118,13 @@ export function ColumnCellCheckbox<TData, TValue>({
     />
   );
 }
+
+export function ColumnCellNumber<TData, TValue>({
+  table,
+  row,
+}: Pick<CellContext<TData, TValue>, "table" | "row">) {
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageSize = table.getState().pagination.pageSize;
+  const rowNumber = pageIndex * pageSize + row.index + 1;
+  return <div className="text-center">{rowNumber}</div>;
+}
