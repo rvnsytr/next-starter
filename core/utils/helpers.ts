@@ -17,6 +17,10 @@ export function authorizedRoute(route: Route | null, role?: Role) {
   return meta.role && (meta.role === "all" || meta.role.includes(role));
 }
 
+export function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
