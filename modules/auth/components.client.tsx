@@ -941,6 +941,7 @@ export function UserDataTable() {
       }}
       columns={getUserColumn(user.id)}
       searchPlaceholder="Cari Pengguna..."
+      getRowId={(row) => row.id}
       enableRowSelection={(row) => row.original.id !== user.id}
       renderRowSelection={({ rows, table }) => {
         const filteredData = rows.map((row) => row.original);

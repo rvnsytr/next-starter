@@ -109,6 +109,7 @@ export function ColumnCellCheckbox<TData, TValue>({
   ...props
 }: Pick<CellContext<TData, TValue>, "row"> &
   Omit<CheckboxProps, "checked" | "onCheckedChange">) {
+  if (!row.getCanSelect()) return;
   return (
     <Checkbox
       aria-label="Select row"

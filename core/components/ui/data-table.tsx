@@ -135,12 +135,14 @@ export function DataTable<T>({
   classNames,
 
   initialState,
+
+  getRowId,
   enableRowSelection,
 
   ...props
 }: CoreDataTableProps<T> &
   DataTableProps<T> &
-  Pick<TableOptions<T>, "enableRowSelection">) {
+  Pick<TableOptions<T>, "getRowId" | "enableRowSelection">) {
   const isServer = mode === "server";
   const isMobile = useIsMobile();
 
@@ -191,29 +193,36 @@ export function DataTable<T>({
 
     getCoreRowModel: getCoreRowModel(),
 
+    // ? Column Faceting
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+
+    // ? Column Pinning
     onColumnPinningChange: setColumnPinning,
     onColumnVisibilityChange: setColumnVisibility,
 
-    // ? Pagination
+    // ? Row Selection
+    getRowId,
+    enableRowSelection,
+    onRowSelectionChange: setRowSelection,
+
+    // * Pagination
     rowCount: data?.total ?? 0,
     manualPagination: isServer,
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
-    globalFilterFn: "includesString",
-    onGlobalFilterChange: setGlobalFilter,
-
+    // TODO: Sorting
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
 
+    // TODO: Global Searching
+    globalFilterFn: "includesString",
+    onGlobalFilterChange: setGlobalFilter,
+
+    // TODO: Column Filtering
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-
-    enableRowSelection,
-    onRowSelectionChange: setRowSelection,
   });
 
   if (error) return <ErrorFallback error={error} />;
@@ -226,6 +235,8 @@ export function DataTable<T>({
         className={classNames?.toolbox}
         {...props}
       />
+
+      <pre>{JSON.stringify(sorting, null, 2)}</pre>
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
