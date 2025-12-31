@@ -29,7 +29,9 @@ export const messages = {
   loading: "Mohon tunggu sebentar...",
 
   error: "Terjadi kesalahan. Silakan coba lagi nanti.",
-  notAuthorized: "Anda tidak memiliki izin untuk melakukan tindakan ini.",
+
+  unauthorized: "Anda harus login untuk mengakses fitur ini.",
+  forbidden: "Anda tidak memiliki izin untuk melakukan tindakan ini.",
 
   removeLabel: (thing: string) =>
     `Untuk mengonfirmasi, ketik "${thing}" pada kolom di bawah ini.`,
