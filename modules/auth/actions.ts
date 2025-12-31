@@ -23,8 +23,7 @@ export async function listUsers(role: Role, state: DataTableState) {
   if (!hasPermission.success) throw new Error(messages.forbidden);
 
   let qb = db.select().from(userTable).$dynamic();
-
-  if (state?.pagination) qb = withPagination(qb, state.pagination);
+  qb = withPagination(qb, state.pagination);
 
   const total = await db.$count(userTable);
   const data = await qb.orderBy(desc(userTable.createdAt)).execute();

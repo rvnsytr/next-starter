@@ -13,6 +13,7 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   InitialTableState,
   PaginationState,
@@ -88,6 +89,7 @@ export type DataTableState = {
 };
 
 type CoreDataTableProps<T> = {
+  mode: "client" | "server";
   swr: {
     key: string;
     fetcher: (state: DataTableState) => Promise<DataTableValue<T>>;
@@ -123,6 +125,7 @@ export type DataTableProps<T> = ToolBoxProps<T> & {
 };
 
 export function DataTable<T>({
+  mode,
   swr,
   columns,
 
@@ -138,6 +141,7 @@ export function DataTable<T>({
 }: CoreDataTableProps<T> &
   DataTableProps<T> &
   Pick<TableOptions<T>, "enableRowSelection">) {
+  const isServer = mode === "server";
   const isMobile = useIsMobile();
 
   const [pagination, setPagination] = useQueryStates(
@@ -161,9 +165,10 @@ export function DataTable<T>({
 
   const allState = useMemo(() => ({ pagination }), [pagination]);
 
+  const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
-    { key: swr.key, ...allState },
-    async () => swr.fetcher(allState),
+    isServer ? { ...baseArgument, ...allState } : baseArgument,
+    async () => await swr.fetcher(allState),
     swr.config,
   );
 
@@ -191,9 +196,9 @@ export function DataTable<T>({
 
     // ? Pagination
     rowCount: data?.total ?? 0,
-    manualPagination: true,
+    manualPagination: isServer,
     onPaginationChange: setPagination,
-    // getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,

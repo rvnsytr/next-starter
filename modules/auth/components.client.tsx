@@ -931,6 +931,7 @@ export function UserDataTable() {
   const { user } = useAuth();
   return (
     <DataTable
+      mode="server"
       swr={{
         key: "/auth/list-users",
         fetcher: async (state) => {
