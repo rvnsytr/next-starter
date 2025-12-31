@@ -1,18 +1,15 @@
 "use client";
 
 import { messages } from "@/core/constants";
-import { defaultLayout, LayoutMode, useLayout } from "@/core/providers";
+import { LayoutMode, layoutModeMeta, useLayout } from "@/core/providers";
 import { cn, delay } from "@/core/utils";
 import {
   ArrowUp,
   Check,
   Copy,
-  Frame,
-  Minimize,
   Monitor,
   Moon,
   RefreshCcw,
-  Scan,
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -120,9 +117,7 @@ export function LayoutButton({
 }: ButtonPropsWithoutChildren &
   Pick<ComponentProps<typeof TooltipContent>, "align">) {
   const { layout, setLayout } = useLayout();
-  const LayoutIcon = !layout
-    ? Frame
-    : { fullwidth: Scan, centered: Minimize }[layout];
+  const { icon: Icon } = layoutModeMeta[layout];
 
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
@@ -153,7 +148,7 @@ export function LayoutButton({
           disabled={disabled ?? !layout}
           {...props}
         >
-          <LayoutIcon />
+          <Icon />
         </Button>
       </TooltipTrigger>
       <TooltipContent
@@ -175,11 +170,6 @@ export function LayoutSettings() {
   const { layout, setLayout } = useLayout();
   const [isMounted, setIsMounted] = useState(false);
 
-  const data = [
-    { name: "Fullwidth", value: "fullwidth", icon: Scan },
-    { name: "Centered", value: "centered", icon: Minimize },
-  ];
-
   const onMount = useEffectEvent(() => setIsMounted(true));
   useEffect(() => onMount(), []);
 
@@ -188,23 +178,25 @@ export function LayoutSettings() {
   return (
     <RadioGroup
       value={layout}
-      defaultValue={defaultLayout}
+      defaultValue="default"
       onValueChange={(v) => setLayout(v as LayoutMode)}
       className="grid grid-cols-2"
       required
     >
-      {data.map(({ name, value, icon: Icon }) => (
-        <FieldLabel key={value} htmlFor={`rd-theme-${value}`}>
-          <Field>
-            <FieldContent className="items-center">
-              <FieldTitle className="flex-col md:flex-row">
-                <Icon /> {name}
-              </FieldTitle>
-            </FieldContent>
-            <RadioGroupItem id={`rd-theme-${value}`} value={value} hidden />
-          </Field>
-        </FieldLabel>
-      ))}
+      {Object.entries(layoutModeMeta).map(
+        ([k, { displayName, icon: Icon }]) => (
+          <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
+            <Field>
+              <FieldContent className="items-center">
+                <FieldTitle className="flex-col md:flex-row">
+                  <Icon /> {displayName}
+                </FieldTitle>
+              </FieldContent>
+              <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
+            </Field>
+          </FieldLabel>
+        ),
+      )}
     </RadioGroup>
   );
 }

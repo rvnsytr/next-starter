@@ -1,5 +1,6 @@
 "use client";
 
+import { Frame, LucideIcon, Minimize, Scan } from "lucide-react";
 import {
   createContext,
   Dispatch,
@@ -12,20 +13,20 @@ import {
 } from "react";
 import z from "zod";
 
-export const allLayoutMode = ["fullwidth", "centered"] as const;
+export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
 export type LayoutMode = (typeof allLayoutMode)[number];
 
 export const defaultLayout: LayoutMode = "centered";
 
 type LayoutContextType = {
-  layout: LayoutMode | null;
-  setLayout: Dispatch<SetStateAction<LayoutMode | null>>;
+  layout: LayoutMode;
+  setLayout: Dispatch<SetStateAction<LayoutMode>>;
 };
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export function LayoutProvider({ children }: { children: ReactNode }) {
-  const [layout, setLayout] = useState<LayoutMode | null>(null);
+  const [layout, setLayout] = useState<LayoutMode>("unset");
 
   const onMount = useEffectEvent(() => {
     const stored = localStorage.getItem("layout-preference");
@@ -60,3 +61,12 @@ export function useLayout() {
   if (!ctx) throw new Error("useLayout must be used in LayoutProvider");
   return ctx;
 }
+
+export const layoutModeMeta: Record<
+  LayoutMode,
+  { displayName: string; icon: LucideIcon }
+> = {
+  fullwidth: { displayName: "Fullwidth", icon: Scan },
+  centered: { displayName: "Centered", icon: Minimize },
+  unset: { displayName: "Unset", icon: Frame },
+};

@@ -8,6 +8,7 @@ import {
 } from "../ui/dynamic-breadcrumb";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
+import { Spinner } from "../ui/spinner";
 
 export function DashboardMain({
   className,
@@ -30,10 +31,21 @@ export function DashboardMain({
         </div>
       </nav>
 
-      <div
+      <Spinner
+        data-slot="dashboard-main-loader"
+        variant="frame"
         className={cn(
-          "relative z-10 flex flex-1 flex-col gap-4 py-4",
-          "px-4 group-data-[layout-mode=centered]/layout-mode:container group-data-[layout-mode=fullwidth]/layout-mode:px-4",
+          "hidden group-data-[layout-mode=unset]/layout-mode:flex",
+          "m-auto size-5",
+        )}
+      />
+
+      <div
+        data-slot="dashboard-main"
+        className={cn(
+          "flex group-data-[layout-mode=unset]/layout-mode:hidden",
+          "relative z-10 flex-1 flex-col gap-4 py-4",
+          "px-4 group-data-[layout-mode=centered]/layout-mode:container",
           className,
         )}
       >
