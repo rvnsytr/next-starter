@@ -24,13 +24,11 @@ import {
 } from "@/core/components/ui/collapsible";
 import {
   ColumnCellCheckbox,
+  ColumnCellNumber,
   ColumnHeader,
   ColumnHeaderCheckbox,
 } from "@/core/components/ui/column";
-import {
-  DataTable,
-  OtherDataTableProps,
-} from "@/core/components/ui/data-table";
+import { DataTable, DataTableValue } from "@/core/components/ui/data-table";
 import { DatePicker } from "@/core/components/ui/date-picker";
 import { DetailList, DetailListData } from "@/core/components/ui/detail-list";
 import {
@@ -134,7 +132,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { UAParser, UAParserProps } from "ua-parser-js";
 import { z } from "zod";
-import { removeUsers, revokeUserSessions } from "./actions";
+import { listUsers, removeUsers, revokeUserSessions } from "./actions";
 import {
   UserAvatar,
   UserRoleBadge,
@@ -151,13 +149,12 @@ import {
   userStatusMeta,
 } from "./constants";
 import {
+  mutateListSessions,
+  mutateListUsers,
+  mutateListUserSessions,
   mutateSession,
-  mutateSessionList,
-  mutateUsers,
-  mutateUserSessionList,
-  useSessionList,
-  useUsers,
-  useUserSessionList,
+  useListSessions,
+  useListUserSessions,
 } from "./hooks";
 import { useAuth } from "./provider.auth";
 
@@ -835,7 +832,7 @@ const getUserColumn = (currentUserId: string) => [
   createUserColumn.display({
     id: "no",
     header: "No",
-    cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+    cell: ({ table, row }) => <ColumnCellNumber table={table} row={row} />,
     enableHiding: false,
   }),
   createUserColumn.accessor(({ name }) => name, {
@@ -889,7 +886,12 @@ const getUserColumn = (currentUserId: string) => [
   createUserColumn.accessor(({ role }) => role, {
     id: "role",
     header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
-    cell: ({ row }) => <UserRoleDropdown data={row.original} />,
+    cell: ({ row }) => (
+      <UserRoleDropdown
+        data={row.original}
+        isCurrentUser={row.original.id === currentUserId}
+      />
+    ),
     filterFn: filterFn("option"),
     meta: {
       displayName: "Role",
@@ -925,26 +927,22 @@ const getUserColumn = (currentUserId: string) => [
   }),
 ];
 
-export function UserDataTable({
-  searchPlaceholder = "Cari Pengguna...",
-  ...props
-}: OtherDataTableProps<AuthSession["user"]>) {
+export function UserDataTable() {
   const { user } = useAuth();
-  const { data, error, isLoading } = useUsers();
-
-  if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
-
-  const columns = getUserColumn(user.id);
-
   return (
     <DataTable
-      data={data?.users ?? []}
-      columns={columns}
-      searchPlaceholder={searchPlaceholder}
-      enableRowSelection={({ original }) => original.id !== user.id}
-      renderRowSelection={(data, table) => {
-        const filteredData = data.map(({ original }) => original);
+      swr={{
+        key: "/auth/list-users",
+        fetcher: async (state) => {
+          const data = await listUsers(user.role, state);
+          return data as DataTableValue<AuthSession["user"]>;
+        },
+      }}
+      columns={getUserColumn(user.id)}
+      searchPlaceholder="Cari Pengguna..."
+      enableRowSelection={(row) => row.original.id !== user.id}
+      renderRowSelection={({ rows, table }) => {
+        const filteredData = rows.map((row) => row.original);
         return (
           <Popover>
             <PopoverTrigger asChild>
@@ -981,7 +979,6 @@ export function UserDataTable({
           </Popover>
         );
       }}
-      {...props}
     />
   );
 }
@@ -1295,7 +1292,7 @@ export function CreateUserDialog() {
       {
         success: () => {
           setIsLoading(false);
-          mutateUsers();
+          mutateListUsers();
           form.reset();
           return `Akun atas nama ${rest.name} berhasil dibuat.`;
         },
@@ -1489,8 +1486,10 @@ export function CreateUserDialog() {
 
 function UserRoleDropdown({
   data,
+  isCurrentUser,
 }: {
   data: Pick<AuthSession["user"], "id" | "name" | "role">;
+  isCurrentUser: boolean;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -1512,7 +1511,7 @@ function UserRoleDropdown({
           setIsLoading(false);
           setIsOpen(false);
 
-          mutateUsers();
+          mutateListUsers();
           return `Role ${data.name} berhasil diperbarui menjadi ${role}.`;
         },
         error: (e) => {
@@ -1527,7 +1526,11 @@ function UserRoleDropdown({
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <div className="flex items-center gap-x-2">
         <DropdownMenuTrigger asChild>
-          <Button size="icon-xs" variant="ghost" disabled={isLoading}>
+          <Button
+            size="icon-xs"
+            variant="ghost"
+            disabled={isCurrentUser || isLoading}
+          >
             <LoadingSpinner
               loading={isLoading}
               icon={{ base: <ChevronDown /> }}
@@ -1543,14 +1546,14 @@ function UserRoleDropdown({
           return (
             <DropdownMenuItem
               key={item}
-              onClick={() => clickHandler(item)}
-              disabled={isLoading}
               style={{ "--item-color": color } as React.CSSProperties}
               className={cn(
                 "justify-start text-(--item-color) focus:bg-(--item-color)/10 focus:text-(--item-color)",
                 item === data.role &&
                   "bg-(--item-color)/10 text-(--item-color)",
               )}
+              onClick={() => clickHandler(item)}
+              disabled={isLoading}
             >
               {Icon && <Icon />} {displayName}
             </DropdownMenuItem>
@@ -1566,7 +1569,7 @@ function UserRoleDropdown({
 // #region SESSIONS
 
 export function SessionList() {
-  const { data, error, isLoading } = useSessionList();
+  const { data, error, isLoading } = useListSessions();
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
   return <SessionListCollapsible data={data ?? []} />;
@@ -1577,7 +1580,7 @@ function UserSessionList({
 }: {
   data: Pick<AuthSession["user"], "id" | "name">;
 }) {
-  const { data, error, isLoading } = useUserSessionList(userData.id);
+  const { data, error, isLoading } = useListUserSessions(userData.id);
   if (error) return <ErrorFallback error={error} />;
   if (!data && isLoading) return <LoadingFallback />;
   return <SessionListCollapsible name={userData.name} data={data ?? []} />;
@@ -1628,8 +1631,8 @@ function SessionListCollapsible({
       {
         onSuccess: () => {
           setRevokingSession(null);
-          mutateSessionList();
-          mutateUserSessionList(s.userId);
+          mutateListSessions();
+          mutateListUserSessions(s.userId);
           toast.success("Sesi berhasil diakhiri.");
         },
         onError: ({ error }) => {
@@ -1777,7 +1780,7 @@ export function RevokeOtherSessionsButton() {
       {
         success: () => {
           setIsLoading(false);
-          mutateSessionList();
+          mutateListSessions();
           return "Semua sesi aktif lainnya berhasil diakhiri.";
         },
         error: (e) => {
@@ -1836,7 +1839,7 @@ function RevokeUserSessionsDialog({
       {
         success: () => {
           setIsLoading(false);
-          mutateUserSessionList(data.id);
+          mutateListUserSessions(data.id);
           return `Semua sesi aktif milik ${data.name} berhasil diakhiri.`;
         },
         error: ({ error }) => {
@@ -2131,7 +2134,7 @@ function BanUserDialog({
           setIsLoading(false);
           setIsOpen(false);
           setIsDialogOpen(false);
-          mutateUsers();
+          mutateListUsers();
           return `Akun atas nama ${data.name} berhasil diblokir.`;
         },
         error: (e) => {
@@ -2147,7 +2150,7 @@ function BanUserDialog({
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Ban /> }} />
-          Blokir {data.name}
+          Blokir
         </Button>
       </DialogTrigger>
 
@@ -2239,7 +2242,7 @@ function UnbanUserDialog({
         success: () => {
           setIsLoading(false);
           setIsDialogOpen(false);
-          mutateUsers();
+          mutateListUsers();
           return `Akun atas nama ${data.name} berhasil dibuka.`;
         },
         error: ({ error }) => {
@@ -2323,7 +2326,7 @@ function RemoveUserDialog({
           setIsLoading(false);
           setIsOpen(false);
           setIsDialogOpen(false);
-          mutateUsers();
+          mutateListUsers();
           return `Akun atas nama ${data.name} berhasil dihapus.`;
         },
         error: (e) => {
@@ -2339,7 +2342,7 @@ function RemoveUserDialog({
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
-          {`${messages.actions.remove} ${data.name}`}
+          {messages.actions.remove}
         </Button>
       </DialogTrigger>
 
@@ -2436,7 +2439,7 @@ function ActionRemoveUsersDialog({
         setIsOpen(false);
 
         onSuccess();
-        mutateUsers();
+        mutateListUsers();
 
         const successLength = res.filter(({ success }) => success).length;
         return `${successLength} dari ${data.length} akun pengguna berhasil dihapus.`;

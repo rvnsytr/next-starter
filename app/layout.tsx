@@ -7,6 +7,7 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const sansFont = Geist({
   subsets: ["latin"],
@@ -39,17 +40,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={appMeta.lang} suppressHydrationWarning>
       <body className={cn(sansFont.variable, monoFont.variable)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          disableTransitionOnChange
-          enableSystem
-        >
-          <GridPattern className="stroke-muted dark:stroke-muted/60 -z-1 min-h-dvh" />
-          {children}
-          <Toaster position="top-center" closeButton richColors />
-          <GlobalShortcuts />
-        </ThemeProvider>
+        <NuqsAdapter>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            disableTransitionOnChange
+            enableSystem
+          >
+            <GridPattern className="stroke-muted dark:stroke-muted/60 -z-1 min-h-dvh" />
+            {children}
+            <Toaster position="top-center" closeButton richColors />
+            <GlobalShortcuts />
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

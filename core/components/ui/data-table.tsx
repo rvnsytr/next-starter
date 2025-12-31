@@ -8,19 +8,20 @@ import {
   ColumnFiltersState,
   ColumnPinningState,
   Table as DataTableType,
-  InitialTableState,
-  Row,
-  SortingState,
-  TableOptions,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
+  InitialTableState,
+  PaginationState,
+  Row,
+  RowSelectionState,
+  SortingState,
+  TableOptions,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import {
   ChevronLeft,
@@ -31,7 +32,9 @@ import {
   RotateCcw,
   SearchIcon,
 } from "lucide-react";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { parseAsInteger, useQueryStates } from "nuqs";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import useSWR, { mutate, SWRConfiguration } from "swr";
 import { Button } from "./button";
 import { ButtonGroup } from "./button-group";
 import { RefreshButton } from "./buttons.client";
@@ -49,6 +52,7 @@ import {
   FilterActions,
   FilterSelector,
 } from "./data-table-filter";
+import { ErrorFallback } from "./fallback";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./input-group";
 import { Kbd } from "./kbd";
 import { Label } from "./label";
@@ -61,6 +65,7 @@ import {
   SelectValue,
 } from "./select";
 import { Separator } from "./separator";
+import { Skeleton } from "./skeleton";
 import {
   Table,
   TableBody,
@@ -70,22 +75,43 @@ import {
   TableRow,
 } from "./table";
 
-type DataTableProps<TData> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<TData, any>[];
-  data: TData[];
+const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50, 100];
+export const defaultPageSize = pageSizes[1];
+
+export const mutateDataTable = (key: string) =>
+  mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
+
+export type DataTableValue<T> = { total: number; data: T[] };
+
+export type DataTableState = {
+  pagination: PaginationState;
 };
 
-export type TableProps<TData> = { table: DataTableType<TData> };
-export type ToolBoxProps = {
+type CoreDataTableProps<T> = {
+  swr: {
+    key: string;
+    fetcher: (state: DataTableState) => Promise<DataTableValue<T>>;
+    config?: SWRConfiguration;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  columns: ColumnDef<T, any>[];
+};
+
+type ToolBoxProps<T> = {
   searchPlaceholder?: string;
   withRefresh?: boolean;
+
+  renderRowSelection?: (props: {
+    rows: Row<T>[];
+    table: DataTableType<T>;
+  }) => ReactNode;
 };
 
-export type OtherDataTableProps<TData> = ToolBoxProps & {
+export type DataTableProps<T> = ToolBoxProps<T> & {
+  initialState?: InitialTableState;
+
   caption?: string;
   placeholder?: string;
-
   className?: string;
   classNames?: {
     toolbox?: string;
@@ -94,50 +120,80 @@ export type OtherDataTableProps<TData> = ToolBoxProps & {
     table?: string;
     footer?: string;
   };
-
-  initialState?: InitialTableState;
-  renderRowSelection?: (
-    data: Row<TData>[],
-    table: DataTableType<TData>,
-  ) => ReactNode;
 };
 
-const rowsLimitArr = [5, 10, 20, 30, 40, 50, 100];
-const defaultRowsLimit = rowsLimitArr[2];
-
-export function DataTable<TData>({
-  data,
+export function DataTable<T>({
+  swr,
   columns,
+
   caption,
   placeholder,
   className,
   classNames,
+
   initialState,
-  renderRowSelection,
   enableRowSelection,
+
   ...props
-}: DataTableProps<TData> &
-  OtherDataTableProps<TData> &
-  Pick<TableOptions<TData>, "enableRowSelection">) {
+}: CoreDataTableProps<T> &
+  DataTableProps<T> &
+  Pick<TableOptions<T>, "enableRowSelection">) {
+  const isMobile = useIsMobile();
+
+  const [pagination, setPagination] = useQueryStates(
+    {
+      pageIndex: parseAsInteger.withDefault(0),
+      pageSize: parseAsInteger.withDefault(defaultPageSize),
+    },
+    { urlKeys: { pageIndex: "pi", pageSize: "ps" } },
+  );
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
     left: [],
     right: [],
   });
 
-  const isMobile = useIsMobile();
-  const [rowSelector, setRowSelector] = useState<ReactNode>(null);
+  const allState = useMemo(() => ({ pagination }), [pagination]);
 
+  const { data, isLoading, error } = useSWR(
+    { key: swr.key, ...allState },
+    async () => swr.fetcher(allState),
+    swr.config,
+  );
+
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data,
     columns,
+    data: data?.data ?? [],
+
+    initialState: initialState,
+    state: {
+      pagination,
+
+      sorting,
+      globalFilter,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      columnPinning,
+    },
+
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+
+    onColumnPinningChange: setColumnPinning,
+    onColumnVisibilityChange: setColumnVisibility,
+
+    // ? Pagination
+    rowCount: data?.total ?? 0,
+    manualPagination: true,
+    onPaginationChange: setPagination,
+    // getPaginationRowModel: getPaginationRowModel(),
 
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
@@ -148,43 +204,14 @@ export function DataTable<TData>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
 
-    onColumnVisibilityChange: setColumnVisibility,
-
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
 
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
-
-    onColumnPinningChange: setColumnPinning,
-
-    initialState: {
-      pagination: { pageIndex: 0, pageSize: defaultRowsLimit },
-      ...initialState,
-    },
-
-    state: {
-      sorting,
-      globalFilter,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      columnPinning,
-    },
   });
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const filteredRows = table.getFilteredRowModel().rows;
-
-  const totalPage = table.getPageCount() > 0 ? table.getPageCount() : 1;
-  const pageNumber =
-    table.getPageCount() > 0 ? table.getState().pagination.pageIndex + 1 : 1;
-
-  useEffect(() => {
-    if (renderRowSelection)
-      setRowSelector(renderRowSelection(selectedRows, table));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [renderRowSelection, selectedRows]);
+  if (error) return <ErrorFallback error={error} />;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -193,9 +220,7 @@ export function DataTable<TData>({
         isMobile={isMobile}
         className={classNames?.toolbox}
         {...props}
-      >
-        {selectedRows.length > 0 && rowSelector}
-      </ToolBox>
+      />
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -241,7 +266,15 @@ export function DataTable<TData>({
         </TableHeader>
 
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            Array.from({ length: pagination.pageSize }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell colSpan={columns.length}>
+                  <Skeleton className="h-8 w-full" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -291,13 +324,15 @@ export function DataTable<TData>({
         <RowsPerPage
           table={table}
           isMobile={isMobile}
-          rowsLimitArr={rowsLimitArr}
           className="order-4 shrink-0 lg:order-1"
         />
 
         <small className="text-muted-foreground order-3 shrink-0 lg:order-2">
-          {formatNumber(selectedRows.length)} dari{" "}
-          {formatNumber(filteredRows.length)} baris dipilih
+          {formatNumber(table.getFilteredSelectedRowModel().rows.length)} dari{" "}
+          {isLoading
+            ? "?"
+            : formatNumber(table.getFilteredRowModel().rows.length)}{" "}
+          baris dipilih
         </small>
 
         <small className="text-muted-foreground order-1 mx-auto text-sm lg:order-3">
@@ -305,7 +340,8 @@ export function DataTable<TData>({
         </small>
 
         <small className="order-2 shrink-0 tabular-nums lg:order-4">
-          Halaman {formatNumber(pageNumber)} dari {formatNumber(totalPage)}
+          Halaman {isLoading ? "?" : formatNumber(pagination.pageIndex + 1)}{" "}
+          dari {isLoading ? "?" : formatNumber(table.getPageCount())}
         </small>
 
         <Pagination
@@ -318,19 +354,20 @@ export function DataTable<TData>({
   );
 }
 
-function ToolBox<TData>({
+function ToolBox<T>({
   table,
-  searchPlaceholder,
-  withRefresh = false,
-  isMobile = false,
+  isMobile,
   className,
-  children,
-}: TableProps<TData> &
-  ToolBoxProps & {
-    isMobile?: boolean;
-    className?: string;
-    children: ReactNode;
-  }) {
+  searchPlaceholder = "Cari...",
+  withRefresh = false,
+  renderRowSelection,
+}: ToolBoxProps<T> & {
+  table: DataTableType<T>;
+  isMobile: boolean;
+  className?: string;
+}) {
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+
   return (
     <div
       className={cn(
@@ -345,11 +382,10 @@ function ToolBox<TData>({
           {withRefresh && <RefreshButton variant="outline" />}
         </ButtonGroup>
 
-        {children && !isMobile && (
-          <Separator orientation="vertical" className="h-5" />
-        )}
+        {!isMobile && <Separator orientation="vertical" className="h-5" />}
 
-        {children}
+        {selectedRows.length > 0 &&
+          renderRowSelection?.({ table, rows: selectedRows })}
       </div>
 
       <div className="flex gap-x-2 *:grow">
@@ -364,12 +400,15 @@ function ToolBox<TData>({
   );
 }
 
-function View<TData>({
+function View<T>({
   table,
   isMobile,
   withRefresh,
-}: TableProps<TData> &
-  Pick<ToolBoxProps, "withRefresh"> & { isMobile: boolean }) {
+}: {
+  table: DataTableType<T>;
+  isMobile: boolean;
+  withRefresh: boolean;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -423,10 +462,13 @@ function View<TData>({
   );
 }
 
-function Reset<TData>({
+function Reset<T>({
   table,
   className,
-}: TableProps<TData> & { className?: string }) {
+}: {
+  table: DataTableType<T>;
+  className?: string;
+}) {
   return (
     <Button
       variant="outline"
@@ -458,11 +500,15 @@ function Reset<TData>({
   );
 }
 
-function Search<TData>({
+function Search<T>({
   table,
   placeholder = "Cari...",
   className,
-}: TableProps<TData> & { placeholder?: string; className?: string }) {
+}: {
+  table: DataTableType<T>;
+  placeholder?: string;
+  className?: string;
+}) {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -498,11 +544,15 @@ function Search<TData>({
   );
 }
 
-function Pagination<TData>({
+function Pagination<T>({
   table,
   isMobile,
   className,
-}: TableProps<TData> & { isMobile: boolean; className?: string }) {
+}: {
+  table: DataTableType<T>;
+  isMobile: boolean;
+  className?: string;
+}) {
   const size = isMobile ? "icon" : "icon-sm";
   const variant = "outline";
   return (
@@ -546,13 +596,12 @@ function Pagination<TData>({
   );
 }
 
-function RowsPerPage<TData>({
+function RowsPerPage<T>({
   table,
   isMobile,
-  rowsLimitArr,
   className,
-}: TableProps<TData> & {
-  rowsLimitArr: number[];
+}: {
+  table: DataTableType<T>;
   isMobile: boolean;
   className?: string;
 }) {
@@ -560,17 +609,15 @@ function RowsPerPage<TData>({
     <div className={cn("flex items-center gap-x-2", className)}>
       <Label>Baris per halaman</Label>
       <Select
-        value={String(table.getState().pagination.pageSize ?? defaultRowsLimit)}
-        onValueChange={(value) => {
-          table.setPageSize(Number(value));
-        }}
+        value={String(table.getState().pagination.pageSize ?? defaultPageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
       >
         <SelectTrigger size={isMobile ? "default" : "sm"}>
           <SelectValue />
         </SelectTrigger>
 
         <SelectContent>
-          {rowsLimitArr.map((item) => (
+          {pageSizes.map((item) => (
             <SelectItem key={item} value={String(item)}>
               {formatNumber(item)}
             </SelectItem>
