@@ -145,7 +145,7 @@ export function LayoutButton({
             toggleLayout();
           }}
           className={cn("hidden md:inline-flex", className)}
-          disabled={disabled ?? !layout}
+          disabled={disabled || layout === "unset"}
           {...props}
         >
           <Icon />
