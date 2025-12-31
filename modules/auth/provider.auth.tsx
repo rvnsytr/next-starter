@@ -1,6 +1,6 @@
 "use client";
 
-import { authorized } from "@/core/utils";
+import { authorizedRoute } from "@/core/utils";
 import { notFound, usePathname } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect } from "react";
 import { AuthSession } from "./constants";
@@ -19,7 +19,7 @@ export function AuthProvider({
   const { data: session, isValidating } = useSession({ fallbackData });
 
   useEffect(() => {
-    const isAuthorized = authorized(pathname, session?.user.role);
+    const isAuthorized = authorizedRoute(pathname, session?.user.role);
     if (!isAuthorized && !isValidating) return notFound();
   }, [pathname, session, isValidating]);
 

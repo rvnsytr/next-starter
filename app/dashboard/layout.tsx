@@ -2,7 +2,7 @@ import { getRequestMeta } from "@/core/actions";
 import { FooterNote, SidebarMain } from "@/core/components/layouts";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { LayoutProvider } from "@/core/providers";
-import { authorized, getRouteTitle } from "@/core/utils";
+import { authorizedRoute, getRouteTitle } from "@/core/utils";
 import { AuthProvider, getSession } from "@/modules/auth";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -15,7 +15,8 @@ export default async function DashboardLayout({
   const session = await getSession();
   const { pathname } = await getRequestMeta();
 
-  if (!session || !authorized(pathname, session.user.role)) return notFound();
+  if (!session || !authorizedRoute(pathname, session.user.role))
+    return notFound();
 
   return (
     <AuthProvider session={session}>

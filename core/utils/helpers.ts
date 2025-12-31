@@ -10,7 +10,7 @@ import {
   routesMeta,
 } from "../constants";
 
-export function authorized(route: Route | null, role?: Role) {
+export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
   const meta = routesMeta[route];
   if (!meta.role) return true;
