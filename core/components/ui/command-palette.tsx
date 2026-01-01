@@ -10,6 +10,7 @@ import {
   CommandSeparator,
 } from "@/core/components/ui/command";
 import { Menu, messages, routesMeta } from "@/core/constants";
+import { useIsMounted } from "@/core/hooks";
 import { cn, toKebab } from "@/core/utils";
 import { Dot, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -30,6 +31,7 @@ import {
 } from "./dialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./input-group";
 import { Kbd, KbdGroup } from "./kbd";
+import { Skeleton } from "./skeleton";
 import { LoadingSpinner } from "./spinner";
 
 type CommandPalleteProps = {
@@ -46,6 +48,7 @@ export function CommandPalette({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
+  const isMounted = useIsMounted();
 
   const placeholder = plch ?? "Pencarian cepat...";
   const onShortcut = useEffectEvent(() => setIsOpen((prev) => !prev));
@@ -61,6 +64,8 @@ export function CommandPalette({
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
+  if (!isMounted) return <Skeleton className="h-9 w-full" />;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

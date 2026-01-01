@@ -1,6 +1,7 @@
 "use client";
 
 import { routesMeta } from "@/core/constants";
+import { useIsMounted } from "@/core/hooks";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
 import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRight } from "lucide-react";
@@ -39,7 +40,6 @@ import { LinkSpinner } from "../ui/spinner";
 export function SidebarMainHeader() {
   const { user } = useAuth();
   const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
-
   return (
     <SidebarHeader>
       <SidebarMenu>
@@ -88,9 +88,10 @@ export function SidebarMainHeader() {
 
 export function SidebarMainContent() {
   const { user } = useAuth();
+  const { isMobile, toggleSidebar } = useSidebar();
 
   const pathname = usePathname();
-  const { isMobile, toggleSidebar } = useSidebar();
+  const isMounted = useIsMounted();
 
   const menu = useMemo(() => getMenuByRole(user.role), [user.role]);
 
@@ -137,42 +138,47 @@ export function SidebarMainContent() {
                       </Link>
                     </SidebarMenuButton>
 
-                    {subMenu && (
-                      <>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuAction className="data-[state=open]:rotate-90">
-                            <ChevronRight />
-                          </SidebarMenuAction>
-                        </CollapsibleTrigger>
+                    {subMenu &&
+                      (isMounted ? (
+                        <>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuAction className="data-[state=open]:rotate-90">
+                              <ChevronRight />
+                            </SidebarMenuAction>
+                          </CollapsibleTrigger>
 
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {subMenu.map((itm, idx) => (
-                              <SidebarMenuSubItem key={idx}>
-                                <SidebarMenuSubButton
-                                  variant={itm.variant}
-                                  className="flex justify-between"
-                                  disabled={itm.disabled}
-                                  asChild
-                                >
-                                  <Link
-                                    href={
-                                      itm.href ??
-                                      `${route}/#${toKebab(itm.displayName)}`
-                                    }
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {subMenu.map((itm, idx) => (
+                                <SidebarMenuSubItem key={idx}>
+                                  <SidebarMenuSubButton
+                                    variant={itm.variant}
+                                    className="flex justify-between"
+                                    disabled={itm.disabled}
+                                    asChild
                                   >
-                                    <span className="line-clamp-1">
-                                      {itm.displayName}
-                                    </span>
-                                    <LinkSpinner />
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </>
-                    )}
+                                    <Link
+                                      href={
+                                        itm.href ??
+                                        `${route}/#${toKebab(itm.displayName)}`
+                                      }
+                                    >
+                                      <span className="line-clamp-1">
+                                        {itm.displayName}
+                                      </span>
+                                      <LinkSpinner />
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </>
+                      ) : (
+                        <SidebarMenuAction disabled>
+                          <ChevronRight />
+                        </SidebarMenuAction>
+                      ))}
                   </SidebarMenuItem>
                 </SidebarMainContentCollapsible>
               );
