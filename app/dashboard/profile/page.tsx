@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <DashboardMain className="items-center">
+    <DashboardMain className="items-center" noLayoutLoader>
       <Card id="informasi-pribadi" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader className="border-b">
           <CardTitle>Informasi Pribadi</CardTitle>
