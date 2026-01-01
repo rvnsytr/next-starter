@@ -1,12 +1,11 @@
 "use client";
 
 import { messages } from "@/core/constants";
-import { useIsMobile } from "@/core/hooks";
+import { useDebounce, useIsMobile } from "@/core/hooks";
 import { cn, formatNumber } from "@/core/utils";
 import {
   ColumnDef,
   ColumnFiltersState,
-  ColumnPinningState,
   Table as DataTableType,
   flexRender,
   getCoreRowModel,
@@ -18,11 +17,8 @@ import {
   InitialTableState,
   PaginationState,
   Row,
-  RowSelectionState,
-  SortingState,
   TableOptions,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 import {
   ChevronLeft,
@@ -33,9 +29,17 @@ import {
   RotateCcw,
   SearchIcon,
 } from "lucide-react";
-import { parseAsInteger, useQueryStates } from "nuqs";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsJson,
+  parseAsString,
+  useQueryState,
+  useQueryStates,
+} from "nuqs";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import useSWR, { mutate, SWRConfiguration } from "swr";
+import z from "zod";
 import { Button } from "./button";
 import { ButtonGroup } from "./button-group";
 import { RefreshButton } from "./buttons.client";
@@ -146,26 +150,60 @@ export function DataTable<T>({
   const isServer = mode === "server";
   const isMobile = useIsMobile();
 
+  const arrayQueryState = parseAsArrayOf(parseAsString, ";").withDefault([]);
+  const recordQueryState = parseAsJson(
+    z.record(z.string(), z.boolean()),
+  ).withDefault({});
+
+  const [columnVisibility, setColumnVisibility] = useQueryState(
+    "col-v",
+    recordQueryState,
+  );
+
+  const [columnPinning, setColumnPinning] = useQueryStates(
+    { left: arrayQueryState, right: arrayQueryState },
+    { urlKeys: { left: "col-pl", right: "col-pr" } },
+  );
+
+  const [rowSelection, setRowSelection] = useQueryState(
+    "row-s",
+    recordQueryState,
+  );
+
   const [pagination, setPagination] = useQueryStates(
     {
       pageIndex: parseAsInteger.withDefault(0),
       pageSize: parseAsInteger.withDefault(defaultPageSize),
     },
-    { urlKeys: { pageIndex: "pi", pageSize: "ps" } },
+    { urlKeys: { pageIndex: "pg-i", pageSize: "pg-s" } },
   );
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting] = useQueryState(
+    "col-s",
+    parseAsArrayOf(
+      parseAsJson(z.object({ id: z.string(), desc: z.boolean() })),
+      ";",
+    ).withDefault([]),
+  );
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
-    left: [],
-    right: [],
-  });
 
-  const allState = useMemo(() => ({ pagination }), [pagination]);
+  const [globalFilter, setGlobalFilter] = useQueryState(
+    "fil-glo",
+    parseAsString.withDefault(""),
+  );
+
+  const debouncedGlobalFilter = useDebounce(globalFilter);
+
+  const allState = useMemo(
+    () => ({
+      pagination,
+      sorting,
+      // columnFilters,
+      globalFilter: debouncedGlobalFilter,
+    }),
+    [pagination, sorting, debouncedGlobalFilter],
+  );
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
@@ -207,22 +245,24 @@ export function DataTable<T>({
     onRowSelectionChange: setRowSelection,
 
     // * Pagination
-    rowCount: data?.total ?? 0,
     manualPagination: isServer,
+    rowCount: data?.total ?? 0,
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
-    // TODO: Sorting
+    // * Sorting
+    manualSorting: isServer,
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-
-    // TODO: Global Searching
-    globalFilterFn: "includesString",
-    onGlobalFilterChange: setGlobalFilter,
+    getSortedRowModel: !isServer ? getSortedRowModel() : undefined,
 
     // TODO: Column Filtering
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+
+    // * Global Searching
+    manualFiltering: isServer,
+    globalFilterFn: "includesString",
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   if (error) return <ErrorFallback error={error} />;
@@ -235,8 +275,6 @@ export function DataTable<T>({
         className={classNames?.toolbox}
         {...props}
       />
-
-      <pre>{JSON.stringify(sorting, null, 2)}</pre>
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -429,7 +467,7 @@ function View<T>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline">
-          <Columns3 /> {messages.actions.view}
+          <Columns3 /> Lihat
         </Button>
       </PopoverTrigger>
 
