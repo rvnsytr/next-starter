@@ -1,5 +1,4 @@
 import { Button } from "@/core/components/ui/button";
-import { ThemeButton } from "@/core/components/ui/buttons.client";
 import {
   Card,
   CardContent,
@@ -16,6 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/core/components/ui/tabs";
+import { ThemeToggle } from "@/core/components/ui/theme";
 import { cn } from "@/core/utils";
 import { ExampleForm, ExampleTypography } from "@/modules/docs";
 import { ArrowRight } from "lucide-react";
@@ -105,7 +105,7 @@ export default function Page() {
         <R />
 
         <div className="animate-fade flex flex-wrap gap-2 delay-750">
-          <ThemeButton variant="outline_primary" />
+          <ThemeToggle variant="outline_primary" />
 
           <Button variant="outline_primary" asChild>
             <Link href="/dashboard">

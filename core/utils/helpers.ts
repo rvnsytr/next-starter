@@ -17,8 +17,10 @@ export function authorizedRoute(route: Route | null, role?: Role) {
   return meta.role && (meta.role === "all" || meta.role.includes(role));
 }
 
-export function clamp(num: number, min: number, max: number) {
-  return Math.min(Math.max(num, min), max);
+export function nextTheme(currentTheme?: string) {
+  if (currentTheme === "light") return "dark";
+  if (currentTheme === "dark") return "system";
+  return "light";
 }
 
 export function cn(...inputs: ClassValue[]) {
@@ -27,6 +29,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function delay(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+export function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
 }
 
 export function normalizeRoute(route?: string | null): Route {

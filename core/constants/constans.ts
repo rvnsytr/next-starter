@@ -1,4 +1,37 @@
-import { LucideIcon, Mars, Venus } from "lucide-react";
+import {
+  FrameIcon,
+  LucideIcon,
+  MarsIcon,
+  MinimizeIcon,
+  MonitorIcon,
+  MoonIcon,
+  ScanIcon,
+  SunIcon,
+  VenusIcon,
+} from "lucide-react";
+
+export const allThemes = ["light", "system", "dark"] as const;
+export type Theme = (typeof allThemes)[number];
+
+export const themeMeta: Record<Theme, { icon: LucideIcon }> = {
+  light: { icon: SunIcon },
+  system: { icon: MonitorIcon },
+  dark: { icon: MoonIcon },
+};
+
+export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
+export type LayoutMode = (typeof allLayoutMode)[number];
+
+export const defaultLayout: LayoutMode = "centered";
+
+export const layoutModeMeta: Record<
+  LayoutMode,
+  { displayName: string; icon: LucideIcon }
+> = {
+  fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
+  centered: { displayName: "Centered", icon: MinimizeIcon },
+  unset: { displayName: "Unset", icon: FrameIcon },
+};
 
 export const allGenders = ["m", "f"] as const;
 export type Gender = (typeof allGenders)[number];
@@ -6,8 +39,16 @@ export const genderMeta: Record<
   Gender,
   { displayName: string; icon: LucideIcon; color: string }
 > = {
-  m: { displayName: "Laki-laki", icon: Mars, color: "var(--color-sky-500)" },
-  f: { displayName: "Perempuan", icon: Venus, color: "var(--color-pink-500)" },
+  m: {
+    displayName: "Laki-laki",
+    icon: MarsIcon,
+    color: "var(--color-sky-500)",
+  },
+  f: {
+    displayName: "Perempuan",
+    icon: VenusIcon,
+    color: "var(--color-pink-500)",
+  },
 };
 
 export const allLanguages = ["en", "id", "es", "fr", "de", "ar"] as const;

@@ -1,21 +1,18 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect } from "react";
+import { nextTheme } from "../utils";
 
 export function GlobalShortcuts() {
   const { setTheme } = useTheme();
 
-  const onTheme = useEffectEvent(() =>
-    setTheme((prev) => (prev === "dark" ? "light" : "dark")),
-  );
-
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      // Theme
+      // ? Theme
       if (e.altKey && e.key === "t") {
         e.preventDefault();
-        onTheme();
+        setTheme(nextTheme);
       }
 
       // more shortcuts here
@@ -23,7 +20,7 @@ export function GlobalShortcuts() {
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [setTheme]);
 
   return null;
 }

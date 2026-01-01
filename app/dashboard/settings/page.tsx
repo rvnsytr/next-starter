@@ -1,9 +1,5 @@
 import { DashboardMain } from "@/core/components/layouts";
 import {
-  LayoutSettings,
-  ThemeSettings,
-} from "@/core/components/ui/buttons.client";
-import {
   Card,
   CardAction,
   CardContent,
@@ -13,6 +9,8 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
+import { LayoutSettings } from "@/core/components/ui/layout";
+import { ThemeSettings } from "@/core/components/ui/theme";
 import { appMeta } from "@/core/constants";
 import { getRouteTitle } from "@/core/utils";
 import {

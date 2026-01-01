@@ -26,7 +26,7 @@ import {
 } from "@/core/utils";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
-import { ArrowRight, Ellipsis, ListFilter, X } from "lucide-react";
+import { ArrowRight, Ellipsis, FilterIcon, X } from "lucide-react";
 import {
   cloneElement,
   isValidElement,
@@ -244,7 +244,7 @@ export function FilterSelector<TData>({ table }: { table: Table<TData> }) {
     >
       <PopoverTrigger asChild>
         <Button variant="outline">
-          <ListFilter /> Filter
+          <FilterIcon /> Filter
         </Button>
       </PopoverTrigger>
 
