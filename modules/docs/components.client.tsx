@@ -47,7 +47,14 @@ import {
 } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
-import { Club, Diamond, Heart, Save, Spade, TextIcon } from "lucide-react";
+import {
+  ClubIcon,
+  DiamondIcon,
+  HeartIcon,
+  SaveIcon,
+  SpadeIcon,
+  TextIcon,
+} from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -59,7 +66,7 @@ const selectAndRadioData = [
     value: "spade",
     label: "Spade",
     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-    icon: Spade,
+    icon: SpadeIcon,
     color: "var(--primary)",
     fixed: true,
     group: "Card 1",
@@ -68,7 +75,7 @@ const selectAndRadioData = [
     value: "heart",
     label: "Heart",
     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-    icon: Heart,
+    icon: HeartIcon,
     color: "var(--color-red-500)",
     group: "Card 1",
     disabled: true,
@@ -77,7 +84,7 @@ const selectAndRadioData = [
     value: "diamond",
     label: "Diamond",
     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-    icon: Diamond,
+    icon: DiamondIcon,
     color: "var(--color-cyan-500)",
     group: "Card 1",
   },
@@ -85,7 +92,7 @@ const selectAndRadioData = [
     value: "club",
     label: "Club",
     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-    icon: Club,
+    icon: ClubIcon,
     color: "var(--color-green-500)",
     group: "Card 1",
   },
@@ -532,8 +539,8 @@ export function ExampleForm() {
 
       <div className="flex gap-2">
         <Button type="submit">
-          {/* <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} /> */}
-          <Save /> {messages.actions.save}
+          {/* <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} /> */}
+          <SaveIcon /> {messages.actions.save}
         </Button>
         <ResetButton onClick={() => form.reset()} />
       </div>

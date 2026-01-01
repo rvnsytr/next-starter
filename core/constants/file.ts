@@ -1,14 +1,14 @@
 import {
-  FileArchive,
-  Files,
-  FileSpreadsheet,
-  FileText,
-  Headphones,
-  Image,
+  FileArchiveIcon,
+  FilesIcon,
+  FileSpreadsheetIcon,
+  FileTextIcon,
+  HeadphonesIcon,
+  ImageIcon,
   LucideIcon,
   TableIcon,
-  Upload,
-  Video,
+  UploadIcon,
+  VideoIcon,
 } from "lucide-react";
 import { toBytes } from "../utils";
 
@@ -41,7 +41,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     mimeTypes: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
     extensions: [".png", ".jpg", ".jpeg", ".svg", ".webp"],
     size: { mb: 2, bytes: toBytes(2) },
-    icon: Image,
+    icon: ImageIcon,
   },
 
   pdf: {
@@ -49,7 +49,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     mimeTypes: ["application/pdf"],
     extensions: [".pdf"],
     size: { mb: 2, bytes: toBytes(2) },
-    icon: FileArchive,
+    icon: FileArchiveIcon,
   },
 
   document: {
@@ -60,7 +60,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     ],
     extensions: [".doc", ".docx"],
     size: { mb: 2, bytes: toBytes(2) },
-    icon: FileText,
+    icon: FileTextIcon,
   },
 
   spreadsheet: {
@@ -71,7 +71,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     ],
     extensions: [".xls", ".xlsx"],
     size: { mb: 2, bytes: toBytes(2) },
-    icon: FileSpreadsheet,
+    icon: FileSpreadsheetIcon,
   },
 
   presentation: {
@@ -95,7 +95,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     ],
     extensions: [".zip", ".rar", ".7z", ".tar"],
     size: { mb: 20, bytes: toBytes(20) },
-    icon: FileArchive,
+    icon: FileArchiveIcon,
   },
 
   audio: {
@@ -103,7 +103,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     mimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"],
     extensions: [".mp3", ".wav", ".ogg", ".flac"],
     size: { mb: 10, bytes: toBytes(10) },
-    icon: Headphones,
+    icon: HeadphonesIcon,
   },
 
   video: {
@@ -117,7 +117,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     ],
     extensions: [".mp4", ".avi", ".mkv", ".ogg", ".webm"],
     size: { mb: 50, bytes: toBytes(50) },
-    icon: Video,
+    icon: VideoIcon,
   },
 };
 
@@ -129,7 +129,7 @@ export const fileMeta: FileMetaProps = {
     mimeTypes: Object.values(meta).flatMap((item) => item.mimeTypes),
     extensions: Object.values(meta).flatMap((item) => item.extensions),
     size: { mb: maxFileSize, bytes: toBytes(maxFileSize) },
-    icon: Upload,
+    icon: UploadIcon,
   },
 
   office: {
@@ -147,7 +147,7 @@ export const fileMeta: FileMetaProps = {
       ...meta.presentation.extensions,
     ],
     size: { mb: 10, bytes: toBytes(10) },
-    icon: Files,
+    icon: FilesIcon,
   },
 
   ...meta,

@@ -1,5 +1,5 @@
 import { cn } from "@/core/utils";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
 import { Button, ButtonProps } from "./button";
 
@@ -74,7 +74,7 @@ function BreadcrumbSeparator({
       className={cn("[&>svg]:size-3.5", className)}
       {...props}
     >
-      {children ?? <ChevronRight />}
+      {children ?? <ChevronRightIcon />}
     </li>
   );
 }
@@ -89,7 +89,7 @@ function BreadcrumbEllipsis({ role = "presentation", ...props }: ButtonProps) {
       role={role}
       {...props}
     >
-      <MoreHorizontal />
+      <MoreHorizontalIcon />
       <span className="sr-only">More</span>
     </Button>
   );

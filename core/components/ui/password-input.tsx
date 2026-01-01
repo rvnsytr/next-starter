@@ -2,7 +2,13 @@
 
 import { messages } from "@/core/constants";
 import { cn } from "@/core/utils";
-import { Check, Eye, EyeOff, LockKeyhole, X } from "lucide-react";
+import {
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockKeyholeIcon,
+  XIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { FieldDescription } from "./field";
 import { InputProps } from "./input";
@@ -38,14 +44,14 @@ export function PasswordInput({
           {...props}
         />
 
-        <InputGroupAddon>{icon ?? <LockKeyhole />}</InputGroupAddon>
+        <InputGroupAddon>{icon ?? <LockKeyholeIcon />}</InputGroupAddon>
 
         <InputGroupAddon align="inline-end">
           <InputGroupButton
             size="icon-xs"
             onClick={() => setIsVisible((prev) => !prev)}
           >
-            {isVisible ? <Eye /> : <EyeOff />}
+            {isVisible ? <EyeIcon /> : <EyeOffIcon />}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
@@ -57,7 +63,7 @@ export function PasswordInput({
           <ul className="space-y-1">
             {regexes.map(({ regex, text }) => {
               const isValid = regex.test(String(value));
-              const Icon = isValid ? Check : X;
+              const Icon = isValid ? CheckIcon : XIcon;
               return (
                 <li
                   key={String(regex)}

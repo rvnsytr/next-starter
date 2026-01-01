@@ -18,7 +18,7 @@ import {
 import { ThemeToggle } from "@/core/components/ui/theme";
 import { cn } from "@/core/utils";
 import { ExampleForm, ExampleTypography } from "@/modules/docs";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
 
@@ -109,7 +109,7 @@ export default function Page() {
 
           <Button variant="outline_primary" asChild>
             <Link href="/dashboard">
-              Ke Dashboard <LinkSpinner icon={{ base: <ArrowRight /> }} />
+              Ke Dashboard <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
             </Link>
           </Button>
         </div>

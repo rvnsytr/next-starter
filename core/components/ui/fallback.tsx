@@ -1,5 +1,5 @@
 import { cn } from "@/core/utils";
-import { LoaderIcon, TriangleAlert } from "lucide-react";
+import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { motion } from "motion/react";
 import { Spinner } from "./spinner";
 
@@ -29,7 +29,7 @@ export function ErrorFallback({
       )}
     >
       <div className="flex items-center gap-x-2">
-        <TriangleAlert className="size-4 shrink-0" /> {error?.code}
+        <TriangleAlertIcon className="size-4 shrink-0" /> {error?.code}
       </div>
       {!hideText && <pre>{error?.message ?? "Tidak ada data"}</pre>}
     </div>

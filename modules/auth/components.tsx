@@ -11,7 +11,7 @@ import {
 } from "@/core/components/ui/tooltip";
 import { cn } from "@/core/utils";
 import { AuthSession, Role } from "@/modules/auth";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheckIcon } from "lucide-react";
 import { rolesMeta, UserStatus, userStatusMeta } from "./constants";
 
 export function UserStatusBadge({
@@ -92,7 +92,7 @@ export function UserVerifiedBadge({
     <Tooltip>
       <TooltipTrigger className={className} asChild>
         {withoutText ? (
-          <BadgeCheck
+          <BadgeCheckIcon
             className={cn("text-rvns size-4 shrink-0", classNames?.icon)}
           />
         ) : (
@@ -100,7 +100,7 @@ export function UserVerifiedBadge({
             variant="outline_rvns"
             className={cn("capitalize", classNames?.badge)}
           >
-            <BadgeCheck className={classNames?.icon} /> Terverifikasi
+            <BadgeCheckIcon className={classNames?.icon} /> Terverifikasi
           </Badge>
         )}
       </TooltipTrigger>

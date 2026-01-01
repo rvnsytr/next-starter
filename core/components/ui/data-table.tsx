@@ -21,10 +21,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
   FilterXIcon,
   SearchIcon,
   ViewIcon,
@@ -628,7 +628,7 @@ function Pagination<T>({
         onClick={() => table.firstPage()}
         disabled={!table.getCanPreviousPage()}
       >
-        <ChevronsLeft />
+        <ChevronsLeftIcon />
       </Button>
 
       <Button
@@ -637,7 +637,7 @@ function Pagination<T>({
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
       >
-        <ChevronLeft />
+        <ChevronLeftIcon />
       </Button>
 
       <Button
@@ -646,7 +646,7 @@ function Pagination<T>({
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
       >
-        <ChevronRight />
+        <ChevronRightIcon />
       </Button>
 
       <Button
@@ -655,7 +655,7 @@ function Pagination<T>({
         onClick={() => table.lastPage()}
         disabled={!table.getCanNextPage()}
       >
-        <ChevronsRight />
+        <ChevronsRightIcon />
       </Button>
     </ButtonGroup>
   );

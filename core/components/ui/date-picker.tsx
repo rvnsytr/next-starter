@@ -9,9 +9,9 @@ import {
 } from "@/core/utils";
 import { isSameDay } from "date-fns";
 import {
-  CalendarDays,
-  Calendar as CalendarIcon,
-  CalendarRange,
+  CalendarDaysIcon,
+  CalendarIcon,
+  CalendarRangeIcon,
 } from "lucide-react";
 import { useEffect, useEffectEvent, useState } from "react";
 import { DateRange, PropsBase } from "react-day-picker";
@@ -151,7 +151,7 @@ export function DateMultiPicker({
             invalid && "border-destructive text-destructive",
           )}
         >
-          {value ?? "Pilih tanggal"} <CalendarDays />
+          {value ?? "Pilih tanggal"} <CalendarDaysIcon />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="size-fit p-0">
@@ -188,7 +188,7 @@ export function DateRangePicker({
             invalid && "border-destructive text-destructive",
           )}
         >
-          {value ?? "Pilih rentang tanggal"} <CalendarRange />
+          {value ?? "Pilih rentang tanggal"} <CalendarRangeIcon />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="size-fit p-0">

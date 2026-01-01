@@ -12,7 +12,7 @@ import {
 import { Menu, messages, routesMeta } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks";
 import { cn, toKebab } from "@/core/utils";
-import { Dot, Search } from "lucide-react";
+import { DotIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
@@ -81,7 +81,10 @@ export function CommandPalette({
             align="inline-start"
             className="group-data-[collapsible=icon]:px-1.5"
           >
-            <LoadingSpinner loading={isPending} icon={{ base: <Search /> }} />
+            <LoadingSpinner
+              loading={isPending}
+              icon={{ base: <SearchIcon /> }}
+            />
           </InputGroupAddon>
 
           <InputGroupAddon
@@ -144,7 +147,7 @@ export function CommandPalette({
                                       "text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:text-destructive",
                                   )}
                                 >
-                                  <Dot
+                                  <DotIcon
                                     className={cn(
                                       isDestructive && "text-destructive",
                                     )}

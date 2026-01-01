@@ -26,7 +26,7 @@ import {
 } from "@/core/utils";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
-import { ArrowRight, Ellipsis, FilterIcon, X } from "lucide-react";
+import { ArrowRightIcon, EllipsisIcon, FilterIcon, XIcon } from "lucide-react";
 import {
   cloneElement,
   isValidElement,
@@ -169,7 +169,7 @@ export function FilterActions<TData>({
         table.setGlobalFilter("");
       }}
     >
-      <X /> {messages.actions.clear}
+      <XIcon /> {messages.actions.clear}
     </Button>
   );
 }
@@ -276,7 +276,7 @@ export function FilterableColumn<TData>({
           )}
           <span>{column.columnDef.meta?.displayName}</span>
         </div>
-        <ArrowRight className="opacity-0 group-aria-selected:opacity-100" />
+        <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
       </div>
     </CommandItem>
   );
@@ -398,7 +398,7 @@ function renderFilter<TData, T extends ColumnDataType>(
         variant="outline"
         onClick={() => table.getColumn(id)?.setFilterValue(undefined)}
       >
-        <X />
+        <XIcon />
       </Button>
     </ButtonGroup>
   );
@@ -978,7 +978,7 @@ export function FilterValueDateDisplay<TData, TValue>({
     : undefined;
 
   if (!filter) return null;
-  if (filter.values.length === 0) return <Ellipsis />;
+  if (filter.values.length === 0) return <EllipsisIcon />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
 
@@ -1001,7 +1001,7 @@ export function FilterValueTextDisplay<TData, TValue>({
 
   if (!filter) return null;
   if (filter.values.length === 0 || filter.values[0].trim() === "")
-    return <Ellipsis />;
+    return <EllipsisIcon />;
 
   const value = filter.values[0];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn, delay } from "@/core/utils";
-import { ArrowUp, Check, Copy, RefreshCcw } from "lucide-react";
+import { ArrowUpIcon, CheckIcon, CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, ButtonProps } from "./button";
@@ -34,9 +34,11 @@ export function CopyButton({
       }}
       {...props}
     >
-      <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
-      <Copy className={cn("transition", copied ? "scale-0" : "scale-100")} />
-      <Check
+      <span className="sr-only">{copied ? "Copied" : "CopyIcon"}</span>
+      <CopyIcon
+        className={cn("transition", copied ? "scale-0" : "scale-100")}
+      />
+      <CheckIcon
         className={cn("absolute transition", copied ? "scale-100" : "scale-0")}
       />
     </Button>
@@ -68,7 +70,7 @@ export function RefreshButton({
         variant="refresh"
         loading={refreshing}
         className="animate-reverse"
-        icon={{ base: <RefreshCcw /> }}
+        icon={{ base: <RefreshCcwIcon /> }}
       />
       {text}
     </Button>
@@ -94,7 +96,7 @@ export function ScrollToTopButton({
       }}
       {...props}
     >
-      <ArrowUp className="size-5" />
+      <ArrowUpIcon className="size-5" />
     </Button>
   );
 }

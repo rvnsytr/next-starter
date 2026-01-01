@@ -1,11 +1,11 @@
 import { auth } from "@/core/auth";
 import { roles } from "@/core/permission";
 import {
-  Ban,
-  CircleDot,
+  BanIcon,
+  CircleDotIcon,
   LucideIcon,
-  ShieldUser,
-  UserRound,
+  ShieldUserIcon,
+  UserRoundIcon,
 } from "lucide-react";
 
 export type AuthSession = typeof auth.$Infer.Session;
@@ -20,13 +20,13 @@ export const rolesMeta: Record<
 > = {
   user: {
     displayName: "Pengguna",
-    icon: UserRound,
+    icon: UserRoundIcon,
     desc: "Pengguna standar dengan akses dan izin dasar.",
     color: "var(--primary)",
   },
   admin: {
     displayName: "Admin",
-    icon: ShieldUser,
+    icon: ShieldUserIcon,
     desc: "Administrator dengan akses penuh dan kontrol pengelolaan sistem.",
     color: "var(--rvns)",
   },
@@ -42,13 +42,13 @@ export const userStatusMeta: Record<
   active: {
     displayName: "Aktif",
     desc: "Pengguna aktif dan dapat diakses",
-    icon: CircleDot,
+    icon: CircleDotIcon,
     color: "var(--success)",
   },
   banned: {
     displayName: "Nonaktif",
     desc: "Pengguna diblokir dan tidak dapat mengakses sistem",
-    icon: Ban,
+    icon: BanIcon,
     color: "var(--destructive)",
   },
 };

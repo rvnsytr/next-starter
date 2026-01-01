@@ -1,11 +1,11 @@
 import {
-  CircleHelp,
-  ExternalLink,
-  LayoutDashboard,
+  CircleHelpIcon,
+  ExternalLinkIcon,
+  LayoutDashboardIcon,
   LucideIcon,
-  Settings,
-  UserRound,
-  UsersRound,
+  SettingsIcon,
+  UserRoundIcon,
+  UsersRoundIcon,
 } from "lucide-react";
 import { Route } from "next";
 import { LinkProps } from "next/link";
@@ -32,8 +32,8 @@ export const dashboardMenu: Menu[] = [
   {
     section: "Umum",
     content: [
-      { route: "/dashboard", icon: LayoutDashboard },
-      { route: "/dashboard/users", icon: UsersRound },
+      { route: "/dashboard", icon: LayoutDashboardIcon },
+      { route: "/dashboard/users", icon: UsersRoundIcon },
     ],
   },
   {
@@ -41,12 +41,12 @@ export const dashboardMenu: Menu[] = [
     content: [
       {
         route: "/dashboard/profile",
-        icon: UserRound,
+        icon: UserRoundIcon,
         subMenu: [{ displayName: "Informasi Pribadi" }],
       },
       {
         route: "/dashboard/settings",
-        icon: Settings,
+        icon: SettingsIcon,
         subMenu: [
           { displayName: "Tema" },
           { displayName: "Layout" },
@@ -59,6 +59,11 @@ export const dashboardMenu: Menu[] = [
 ];
 
 export const dashboardfooterMenu: (MenuContent & { displayName: string })[] = [
-  { route: "/", displayName: "Beranda", icon: ExternalLink },
-  { route: "/help", displayName: "Bantuan", icon: CircleHelp, disabled: true },
+  { route: "/", displayName: "Beranda", icon: ExternalLinkIcon },
+  {
+    route: "/help",
+    displayName: "Bantuan",
+    icon: CircleHelpIcon,
+    disabled: true,
+  },
 ];

@@ -4,7 +4,7 @@ import { routesMeta } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
 import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
-import { ChevronRight } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -143,7 +143,7 @@ export function SidebarMainContent() {
                         <>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuAction className="data-[state=open]:rotate-90">
-                              <ChevronRight />
+                              <ChevronRightIcon />
                             </SidebarMenuAction>
                           </CollapsibleTrigger>
 
@@ -176,7 +176,7 @@ export function SidebarMainContent() {
                         </>
                       ) : (
                         <SidebarMenuAction disabled>
-                          <ChevronRight />
+                          <ChevronRightIcon />
                         </SidebarMenuAction>
                       ))}
                   </SidebarMenuItem>

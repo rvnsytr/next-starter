@@ -95,36 +95,36 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
 import {
-  ArrowUpRight,
-  Ban,
-  CalendarCheck2,
-  CalendarSync,
-  ChevronDown,
-  ChevronsUpDown,
-  CircleDot,
-  Cookie,
-  Ellipsis,
-  Gamepad2,
-  Info,
-  Layers2,
-  LockKeyholeOpen,
-  LogIn,
-  LogOut,
-  Mail,
-  Monitor,
-  MonitorOff,
-  MonitorSmartphone,
-  Save,
-  Settings2,
-  ShieldBan,
-  ShieldUser,
-  Smartphone,
-  Tablet,
-  Trash2,
-  TriangleAlert,
-  TvMinimal,
-  UserRound,
-  UserRoundPlus,
+  ArrowUpRightIcon,
+  BanIcon,
+  CalendarCheck2Icon,
+  CalendarSyncIcon,
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  CircleDotIcon,
+  CookieIcon,
+  EllipsisIcon,
+  Gamepad2Icon,
+  InfoIcon,
+  Layers2Icon,
+  LockKeyholeOpenIcon,
+  LogInIcon,
+  LogOutIcon,
+  MailIcon,
+  MonitorIcon,
+  MonitorOffIcon,
+  MonitorSmartphoneIcon,
+  SaveIcon,
+  Settings2Icon,
+  ShieldBanIcon,
+  ShieldUserIcon,
+  SmartphoneIcon,
+  TabletIcon,
+  Trash2Icon,
+  TriangleAlertIcon,
+  TvMinimalIcon,
+  UserRoundIcon,
+  UserRoundPlusIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -226,7 +226,7 @@ export function SignInForm() {
                 {...field}
               />
               <InputGroupAddon>
-                <Mail />
+                <MailIcon />
               </InputGroupAddon>
             </InputGroup>
           </FieldWrapper>
@@ -271,7 +271,7 @@ export function SignInForm() {
       />
 
       <Button type="submit" className="relative" disabled={isLoading}>
-        <LoadingSpinner loading={isLoading} icon={{ base: <LogIn /> }} />
+        <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
         Masuk ke Dashboard
         {/* {wasLastUsed && (
           <Badge className="bg-primary absolute -top-3 right-1 border border-transparent shadow">
@@ -353,7 +353,7 @@ export function SignUpForm() {
                 {...field}
               />
               <InputGroupAddon>
-                <UserRound />
+                <UserRoundIcon />
               </InputGroupAddon>
             </InputGroup>
           </FieldWrapper>
@@ -379,7 +379,7 @@ export function SignUpForm() {
                 {...field}
               />
               <InputGroupAddon>
-                <Mail />
+                <MailIcon />
               </InputGroupAddon>
             </InputGroup>
           </FieldWrapper>
@@ -459,7 +459,7 @@ export function SignUpForm() {
       <Button type="submit" disabled={isLoading}>
         <LoadingSpinner
           loading={isLoading}
-          icon={{ base: <UserRoundPlus /> }}
+          icon={{ base: <UserRoundPlusIcon /> }}
         />{" "}
         Daftar Sekarang
       </Button>
@@ -553,7 +553,11 @@ export function SignOutButton() {
       onClick={clickHandler}
     >
       {/* {variant} */}
-      <LoadingSpinner loading={isLoading} icon={{ base: <LogOut /> }} /> Keluar
+      <LoadingSpinner
+        loading={isLoading}
+        icon={{ base: <LogOutIcon /> }}
+      />{" "}
+      Keluar
     </SidebarMenuButton>
   );
 }
@@ -769,7 +773,7 @@ export function ProfileForm() {
                     {...field}
                   />
                   <InputGroupAddon>
-                    <Mail />
+                    <MailIcon />
                   </InputGroupAddon>
                 </InputGroup>
               </FieldWrapper>
@@ -795,7 +799,7 @@ export function ProfileForm() {
                     {...field}
                   />
                   <InputGroupAddon>
-                    <UserRound />
+                    <UserRoundIcon />
                   </InputGroupAddon>
                 </InputGroup>
               </FieldWrapper>
@@ -806,7 +810,7 @@ export function ProfileForm() {
 
       <CardFooter className="flex-col items-stretch border-t md:flex-row">
         <Button type="submit" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
+          <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>
 
@@ -845,7 +849,7 @@ const getUserColumn = (currentUserId: string) => [
       />
     ),
     filterFn: filterFn("text"),
-    meta: { displayName: "Nama", type: "text", icon: UserRound },
+    meta: { displayName: "Nama", type: "text", icon: UserRoundIcon },
   }),
   createUserColumn.accessor(({ email }) => email, {
     id: "email",
@@ -861,7 +865,7 @@ const getUserColumn = (currentUserId: string) => [
       );
     },
     filterFn: filterFn("text"),
-    meta: { displayName: "Alamat Email", type: "text", icon: Mail },
+    meta: { displayName: "Alamat Email", type: "text", icon: MailIcon },
   }),
   createUserColumn.accessor(
     ({ banned }) => (banned ? "banned" : "active") satisfies UserStatus,
@@ -875,7 +879,7 @@ const getUserColumn = (currentUserId: string) => [
       meta: {
         displayName: "Status",
         type: "option",
-        icon: CircleDot,
+        icon: CircleDotIcon,
         transformOptionFn: (value) => {
           const { displayName, icon } = userStatusMeta[value];
           return { value, label: displayName, icon };
@@ -896,7 +900,7 @@ const getUserColumn = (currentUserId: string) => [
     meta: {
       displayName: "Role",
       type: "option",
-      icon: ShieldUser,
+      icon: ShieldUserIcon,
       transformOptionFn: (value) => {
         const { displayName, icon } = rolesMeta[value];
         return { value, label: displayName, icon };
@@ -913,7 +917,7 @@ const getUserColumn = (currentUserId: string) => [
     meta: {
       displayName: "Terakhir Diperbarui",
       type: "date",
-      icon: CalendarSync,
+      icon: CalendarSyncIcon,
     },
   }),
   createUserColumn.accessor(({ createdAt }) => createdAt, {
@@ -923,7 +927,11 @@ const getUserColumn = (currentUserId: string) => [
     ),
     cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
-    meta: { displayName: "Waktu Dibuat", type: "date", icon: CalendarCheck2 },
+    meta: {
+      displayName: "Waktu Dibuat",
+      type: "date",
+      icon: CalendarCheck2Icon,
+    },
   }),
 ];
 
@@ -949,7 +957,7 @@ export function UserDataTable() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
-                <Settings2 /> {messages.actions.action}
+                <Settings2Icon /> {messages.actions.action}
               </Button>
             </PopoverTrigger>
 
@@ -970,7 +978,7 @@ export function UserDataTable() {
 
               {/* // TODO */}
               <Button size="sm" variant="ghost_destructive" disabled>
-                <Ban /> Blokir
+                <BanIcon /> Blokir
               </Button>
 
               <ActionRemoveUsersDialog
@@ -1005,7 +1013,7 @@ export function UserDetailDialog({
         <UserAvatar data={data} className="rounded-full" />
         <DialogTrigger className="group flex w-fit gap-x-1 hover:cursor-pointer">
           <span className="link-group">{data.name}</span>
-          <ArrowUpRight className="group-hover:text-primary size-3.5" />
+          <ArrowUpRightIcon className="group-hover:text-primary size-3.5" />
         </DialogTrigger>
       </div>
 
@@ -1023,7 +1031,7 @@ export function UserDetailDialog({
             <Popover>
               <PopoverTrigger asChild>
                 <Button size="icon-sm" variant="outline">
-                  <Ellipsis />
+                  <EllipsisIcon />
                 </Button>
               </PopoverTrigger>
 
@@ -1076,11 +1084,11 @@ export function UserDetailDialog({
           <Tabs defaultValue="profile">
             <TabsList>
               <TabsTrigger value="profile">
-                <UserRound /> Informasi Profil
+                <UserRoundIcon /> Informasi Profil
               </TabsTrigger>
 
               <TabsTrigger value="sessions">
-                <Cookie /> Sesi Terdaftar
+                <CookieIcon /> Sesi Terdaftar
               </TabsTrigger>
             </TabsList>
 
@@ -1169,7 +1177,7 @@ export function ChangePasswordForm() {
                 id={field.name}
                 aria-invalid={!!fieldState.error}
                 placeholder="Masukan kata sandi saat ini"
-                icon={<LockKeyholeOpen />}
+                icon={<LockKeyholeOpenIcon />}
                 required
                 {...field}
               />
@@ -1240,7 +1248,7 @@ export function ChangePasswordForm() {
 
       <CardFooter className="flex-col items-stretch md:flex-row">
         <Button type="submit" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Save /> }} />
+          <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>
 
@@ -1310,7 +1318,7 @@ export function CreateUserDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="w-full">
-          <UserRoundPlus /> Tambah Pengguna
+          <UserRoundPlusIcon /> Tambah Pengguna
         </Button>
       </DialogTrigger>
 
@@ -1342,7 +1350,7 @@ export function CreateUserDialog() {
                     {...field}
                   />
                   <InputGroupAddon>
-                    <UserRound />
+                    <UserRoundIcon />
                   </InputGroupAddon>
                 </InputGroup>
               </FieldWrapper>
@@ -1368,7 +1376,7 @@ export function CreateUserDialog() {
                     {...field}
                   />
                   <InputGroupAddon>
-                    <Mail />
+                    <MailIcon />
                   </InputGroupAddon>
                 </InputGroup>
               </FieldWrapper>
@@ -1475,7 +1483,7 @@ export function CreateUserDialog() {
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner
                 loading={isLoading}
-                icon={{ base: <UserRoundPlus /> }}
+                icon={{ base: <UserRoundPlusIcon /> }}
               />
               {messages.actions.add}
             </Button>
@@ -1535,7 +1543,7 @@ function UserRoleDropdown({
           >
             <LoadingSpinner
               loading={isLoading}
-              icon={{ base: <ChevronDown /> }}
+              icon={{ base: <ChevronDownIcon /> }}
             />
           </Button>
         </DropdownMenuTrigger>
@@ -1601,21 +1609,21 @@ function SessionListCollapsible({
   if (!data.length)
     return (
       <div className="flex flex-col items-center gap-2 py-4">
-        <ShieldBan className="size-4" />
+        <ShieldBanIcon className="size-4" />
         <small className="font-medium">Tidak ada Sesi yang terdaftar.</small>
       </div>
     );
 
   const deviceIcons = {
-    desktop: Monitor,
-    mobile: Smartphone,
-    tablet: Tablet,
-    console: Gamepad2,
-    smarttv: TvMinimal,
-    wearable: MonitorSmartphone,
-    xr: MonitorSmartphone,
-    embedded: MonitorSmartphone,
-    other: MonitorSmartphone,
+    desktop: MonitorIcon,
+    mobile: SmartphoneIcon,
+    tablet: TabletIcon,
+    console: Gamepad2Icon,
+    smarttv: TvMinimalIcon,
+    wearable: MonitorSmartphoneIcon,
+    xr: MonitorSmartphoneIcon,
+    embedded: MonitorSmartphoneIcon,
+    other: MonitorSmartphoneIcon,
   };
 
   const sections: { label: string; key: UAParserProps }[] = [
@@ -1713,14 +1721,14 @@ function SessionListCollapsible({
                         >
                           <LoadingSpinner
                             loading={isLoading}
-                            icon={{ base: <MonitorOff /> }}
+                            icon={{ base: <MonitorOffIcon /> }}
                           />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle className="flex items-center gap-x-2">
-                            <MonitorOff /> Akhiri Sesi {name}
+                            <MonitorOffIcon /> Akhiri Sesi {name}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Sesi pada perangkat <span>{name}</span> akan
@@ -1742,7 +1750,7 @@ function SessionListCollapsible({
 
                   <CollapsibleTrigger asChild>
                     <Button size="icon-sm" variant="ghost">
-                      <ChevronsUpDown />
+                      <ChevronsUpDownIcon />
                     </Button>
                   </CollapsibleTrigger>
                 </div>
@@ -1797,14 +1805,17 @@ export function RevokeOtherSessionsButton() {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
+          <LoadingSpinner
+            loading={isLoading}
+            icon={{ base: <MonitorOffIcon /> }}
+          />
           Akhiri Semua Sesi di Perangkat Lain
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Akhiri Semua Sesi di Perangkat Lain
+            <MonitorOffIcon /> Akhiri Semua Sesi di Perangkat Lain
           </AlertDialogTitle>
           <AlertDialogDescription>
             Semua sesi aktif di perangkat lain akan diakhiri, kecuali sesi ini.
@@ -1856,7 +1867,10 @@ function RevokeUserSessionsDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
+          <LoadingSpinner
+            loading={isLoading}
+            icon={{ base: <MonitorOffIcon /> }}
+          />
           Akhiri Sesi
         </Button>
       </AlertDialogTrigger>
@@ -1864,7 +1878,7 @@ function RevokeUserSessionsDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Akhiri Semua Sesi {data.name}
+            <MonitorOffIcon /> Akhiri Semua Sesi {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
             Semua sesi aktif milik <span>{data.name}</span> akan diakhiri,
@@ -1913,7 +1927,10 @@ function ActionRevokeUserSessionsDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <MonitorOff /> }} />
+          <LoadingSpinner
+            loading={isLoading}
+            icon={{ base: <MonitorOffIcon /> }}
+          />
           Akhiri Sesi
         </Button>
       </AlertDialogTrigger>
@@ -1921,7 +1938,7 @@ function ActionRevokeUserSessionsDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOff /> Akhiri Sesi untuk {userIds.length} Pengguna
+            <MonitorOffIcon /> Akhiri Sesi untuk {userIds.length} Pengguna
           </AlertDialogTitle>
           <AlertDialogDescription>
             Ini akan menghentikan semua sesi aktif dari{" "}
@@ -1958,7 +1975,7 @@ export function ImpersonateUserBadge({
   return (
     <div className="relative">
       <Badge variant="outline" className="relative">
-        <Layers2 />
+        <Layers2Icon />
         <span className="hidden md:flex">Mode Impersonasi</span>
       </Badge>
       <Ping />
@@ -2005,7 +2022,10 @@ function ImpersonateUserDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Layers2 /> }} />
+          <LoadingSpinner
+            loading={isLoading}
+            icon={{ base: <Layers2Icon /> }}
+          />
           Akses Akun
         </Button>
       </AlertDialogTrigger>
@@ -2013,7 +2033,7 @@ function ImpersonateUserDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <Layers2 /> Impersonasi {data.name}
+            <Layers2Icon /> Impersonasi {data.name}
           </AlertDialogTitle>
           <div className="space-y-2">
             <AlertDialogDescription>
@@ -2081,7 +2101,7 @@ export function StopImpersonateUserMenuItem() {
         disabled={isLoading}
         onClick={clickHandler}
       >
-        <LoadingSpinner loading={isLoading} icon={{ base: <Layers2 /> }} />
+        <LoadingSpinner loading={isLoading} icon={{ base: <Layers2Icon /> }} />
         Kembali ke akun saya
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -2151,7 +2171,7 @@ function BanUserDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Ban /> }} />
+          <LoadingSpinner loading={isLoading} icon={{ base: <BanIcon /> }} />
           Blokir
         </Button>
       </DialogTrigger>
@@ -2159,7 +2179,7 @@ function BanUserDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-x-2">
-            <TriangleAlert /> Blokir akun atas nama {data.name}
+            <TriangleAlertIcon /> Blokir akun atas nama {data.name}
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan memblokir and menonaktifkan akun{" "}
@@ -2212,7 +2232,10 @@ function BanUserDialog({
             <DialogClose>{messages.actions.cancel}</DialogClose>
             <ResetButton onClick={() => form.reset()} />
             <Button type="submit" variant="destructive" disabled={isLoading}>
-              <LoadingSpinner loading={isLoading} icon={{ base: <Ban /> }} />
+              <LoadingSpinner
+                loading={isLoading}
+                icon={{ base: <BanIcon /> }}
+              />
               {messages.actions.confirm}
             </Button>
           </DialogFooter>
@@ -2261,7 +2284,7 @@ function UnbanUserDialog({
         <Button size="sm" variant="ghost" disabled={isLoading}>
           <LoadingSpinner
             loading={isLoading}
-            icon={{ base: <LockKeyholeOpen /> }}
+            icon={{ base: <LockKeyholeOpenIcon /> }}
           />
           Buka Blokir
         </Button>
@@ -2270,7 +2293,7 @@ function UnbanUserDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <Info /> Buka Blokir {data.name}
+            <InfoIcon /> Buka Blokir {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
             PERINGATAN: Tindakan ini akan membuka blokir mengaktifkan kembali
@@ -2343,7 +2366,7 @@ function RemoveUserDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
+          <LoadingSpinner loading={isLoading} icon={{ base: <Trash2Icon /> }} />
           {messages.actions.remove}
         </Button>
       </DialogTrigger>
@@ -2351,7 +2374,7 @@ function RemoveUserDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-x-2">
-            <TriangleAlert /> Hapus akun atas nama {data.name}
+            <TriangleAlertIcon /> Hapus akun atas nama {data.name}
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan menghapus akun{" "}
@@ -2393,7 +2416,10 @@ function RemoveUserDialog({
               variant="destructive"
               disabled={input !== data.name || isLoading}
             >
-              <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
+              <LoadingSpinner
+                loading={isLoading}
+                icon={{ base: <Trash2Icon /> }}
+              />
               {messages.actions.confirm}
             </Button>
           </DialogFooter>
@@ -2457,7 +2483,7 @@ function ActionRemoveUsersDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="ghost_destructive" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
+          <LoadingSpinner loading={isLoading} icon={{ base: <Trash2Icon /> }} />
           {messages.actions.remove}
         </Button>
       </DialogTrigger>
@@ -2465,7 +2491,7 @@ function ActionRemoveUsersDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-x-2">
-            <TriangleAlert /> Hapus {data.length} Akun
+            <TriangleAlertIcon /> Hapus {data.length} Akun
           </DialogTitle>
           <DialogDescription>
             PERINGATAN: Tindakan ini akan menghapus{" "}
@@ -2508,7 +2534,10 @@ function ActionRemoveUsersDialog({
               variant="destructive"
               disabled={input !== inputValue || isLoading}
             >
-              <LoadingSpinner loading={isLoading} icon={{ base: <Trash2 /> }} />
+              <LoadingSpinner
+                loading={isLoading}
+                icon={{ base: <Trash2Icon /> }}
+              />
               {messages.actions.confirm}
             </Button>
           </DialogFooter>

@@ -4,7 +4,7 @@ import { messages } from "@/core/constants";
 import { useDebounce } from "@/core/hooks";
 import { cn } from "@/core/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { Check, LucideIcon, XIcon } from "lucide-react";
+import { CheckIcon, LucideIcon, XIcon } from "lucide-react";
 import {
   ComponentPropsWithoutRef,
   KeyboardEvent,
@@ -396,7 +396,7 @@ export function MultiSelect({
     >
       <div
         className={cn(
-          "border-input dark:bg-input/30 focus-within:border-ring focus-within:ring-ring/50 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40 has-aria-invalid:border-destructive relative min-h-[38px] rounded-md border text-sm transition-[color,box-shadow] outline-none focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
+          "border-input dark:bg-input/30 focus-within:border-ring focus-within:ring-ring/50 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40 has-aria-invalid:border-destructive relative min-h-9.5 rounded-md border text-sm transition-[color,box-shadow] outline-none focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
           "flex flex-wrap gap-1",
           selected.length !== 0 && "p-1",
           disabled && selected.length !== 0 && "cursor-text",
@@ -571,7 +571,7 @@ export function MultiSelect({
                                 "pointer-events-none cursor-not-allowed opacity-50",
                             )}
                           >
-                            <Check
+                            <CheckIcon
                               className={cn(
                                 isSelected
                                   ? "text-accent-foreground"
