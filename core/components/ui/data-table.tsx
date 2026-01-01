@@ -25,9 +25,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Columns3,
-  RotateCcw,
+  FilterXIcon,
   SearchIcon,
+  ViewIcon,
 } from "lucide-react";
 import {
   parseAsArrayOf,
@@ -81,7 +81,7 @@ import {
 } from "./table";
 
 const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50, 100];
-export const defaultPageSize = pageSizes[1];
+const defaultPageSize = pageSizes[1];
 
 export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
@@ -114,6 +114,7 @@ type ToolBoxProps<T> = {
 };
 
 export type DataTableProps<T> = ToolBoxProps<T> & {
+  id?: string; // TODO
   initialState?: InitialTableState;
 
   caption?: string;
@@ -129,6 +130,7 @@ export type DataTableProps<T> = ToolBoxProps<T> & {
 };
 
 export function DataTable<T>({
+  id,
   mode,
   swr,
   columns,
@@ -148,26 +150,28 @@ export function DataTable<T>({
   DataTableProps<T> &
   Pick<TableOptions<T>, "getRowId" | "enableRowSelection">) {
   const isServer = mode === "server";
+  const prefix = id ? `${id}-` : "";
+
   const isMobile = useIsMobile();
 
-  const arrayQueryState = parseAsArrayOf(parseAsString, ";").withDefault([]);
-  const recordQueryState = parseAsJson(
+  const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
+  const recordQSParser = parseAsJson(
     z.record(z.string(), z.boolean()),
   ).withDefault({});
 
   const [columnVisibility, setColumnVisibility] = useQueryState(
-    "col-v",
-    recordQueryState,
+    `${prefix}col-v`,
+    recordQSParser,
   );
 
   const [columnPinning, setColumnPinning] = useQueryStates(
-    { left: arrayQueryState, right: arrayQueryState },
-    { urlKeys: { left: "col-pl", right: "col-pr" } },
+    { left: arrayQSParser, right: arrayQSParser },
+    { urlKeys: { left: `${prefix}col-pl`, right: `${prefix}col-pr` } },
   );
 
   const [rowSelection, setRowSelection] = useQueryState(
-    "row-s",
-    recordQueryState,
+    `${prefix}row-s`,
+    recordQSParser,
   );
 
   const [pagination, setPagination] = useQueryStates(
@@ -175,11 +179,11 @@ export function DataTable<T>({
       pageIndex: parseAsInteger.withDefault(0),
       pageSize: parseAsInteger.withDefault(defaultPageSize),
     },
-    { urlKeys: { pageIndex: "pg-i", pageSize: "pg-s" } },
+    { urlKeys: { pageIndex: `${prefix}pg-i`, pageSize: `${prefix}pg-s` } },
   );
 
   const [sorting, setSorting] = useQueryState(
-    "col-s",
+    `${prefix}col-s`,
     parseAsArrayOf(
       parseAsJson(z.object({ id: z.string(), desc: z.boolean() })),
       ";",
@@ -189,7 +193,7 @@ export function DataTable<T>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const [globalFilter, setGlobalFilter] = useQueryState(
-    "fil-glo",
+    `${prefix}fil-glo`,
     parseAsString.withDefault(""),
   );
 
@@ -250,7 +254,7 @@ export function DataTable<T>({
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
-    // * Sorting
+    // * Column Sorting
     manualSorting: isServer,
     onSortingChange: setSorting,
     getSortedRowModel: !isServer ? getSortedRowModel() : undefined,
@@ -275,6 +279,8 @@ export function DataTable<T>({
         className={classNames?.toolbox}
         {...props}
       />
+
+      {/* <pre>{JSON.stringify(sorting, null, 2)}</pre> */}
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -421,6 +427,7 @@ function ToolBox<T>({
   className?: string;
 }) {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const isSelected = selectedRows.length > 0;
 
   return (
     <div
@@ -436,10 +443,11 @@ function ToolBox<T>({
           {withRefresh && <RefreshButton variant="outline" />}
         </ButtonGroup>
 
-        {!isMobile && <Separator orientation="vertical" className="h-5" />}
+        {isSelected && !isMobile && (
+          <Separator orientation="vertical" className="h-4" />
+        )}
 
-        {selectedRows.length > 0 &&
-          renderRowSelection?.({ table, rows: selectedRows })}
+        {isSelected && renderRowSelection?.({ table, rows: selectedRows })}
       </div>
 
       <div className="flex gap-x-2 *:grow">
@@ -467,7 +475,7 @@ function View<T>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline">
-          <Columns3 /> Lihat
+          <ViewIcon /> Lihat
         </Button>
       </PopoverTrigger>
 
@@ -529,27 +537,30 @@ function Reset<T>({
       className={className}
       onClick={() => {
         table.reset();
-        table.resetColumnFilters();
+
+        table.resetPagination();
+        table.resetPageIndex();
+        table.resetPageSize(false);
+
         table.resetColumnOrder();
-        table.resetColumnPinning();
         table.resetColumnSizing();
         table.resetColumnVisibility();
-        table.resetExpanded();
+        table.resetColumnPinning();
+        table.resetColumnFilters();
+
+        table.resetRowPinning();
+        table.resetRowSelection();
 
         table.resetGlobalFilter();
         table.setGlobalFilter("");
 
-        table.resetGrouping();
-        table.resetHeaderSizeInfo();
-        table.resetPageIndex();
-        table.resetPageSize();
-        table.resetPagination();
-        table.resetRowPinning();
-        table.resetRowSelection();
         table.resetSorting();
+        table.resetGrouping();
+        table.resetExpanded();
+        table.resetHeaderSizeInfo();
       }}
     >
-      <RotateCcw /> {messages.actions.reset}
+      <FilterXIcon /> {messages.actions.reset}
     </Button>
   );
 }
