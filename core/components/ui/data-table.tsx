@@ -31,6 +31,7 @@ import {
   ViewIcon,
 } from "lucide-react";
 import {
+  createParser,
   parseAsArrayOf,
   parseAsInteger,
   parseAsJson,
@@ -83,6 +84,27 @@ import {
 
 const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50, 100];
 const defaultPageSize = pageSizes[1];
+
+const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
+
+const recordQSParser = parseAsJson(
+  z.record(z.string(), z.boolean()),
+).withDefault({});
+
+const sortingParser = createParser<SortingState>({
+  parse: (value) => {
+    if (!value) return [];
+    return value.split(";").map((part) => {
+      const [id, dir] = part.split("-");
+      return { id, desc: dir === "desc" };
+    });
+  },
+  serialize: (value) => {
+    // Nuqs TS error? it should be `string | null`
+    if (!value || value.length === 0) return null as unknown as string;
+    return value.map((s) => `${s.id}-${s.desc ? "desc" : "asc"}`).join(";");
+  },
+}).withDefault([]);
 
 export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
@@ -152,16 +174,10 @@ export function DataTable<T>({
   const isServer = mode === "server";
   const prefix = id ? `${id}-` : "";
 
-  // const searchParams = useSearchParams();
   const isMobile = useIsMobile();
 
-  const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
-  const recordQSParser = parseAsJson(
-    z.record(z.string(), z.boolean()),
-  ).withDefault({});
-
   const [columnVisibility, setColumnVisibility] = useQueryState(
-    `${prefix}col-v`,
+    `${prefix}col-vis`,
     recordQSParser,
   );
 
@@ -171,7 +187,7 @@ export function DataTable<T>({
   );
 
   const [rowSelection, setRowSelection] = useQueryState(
-    `${prefix}row-s`,
+    `${prefix}row-sel`,
     recordQSParser,
   );
 
@@ -184,11 +200,8 @@ export function DataTable<T>({
   );
 
   const [sorting, setSorting] = useQueryState(
-    `${prefix}col-s`,
-    parseAsArrayOf(
-      parseAsJson(z.object({ id: z.string(), desc: z.boolean() })),
-      ";",
-    ).withDefault([]),
+    `${prefix}col-sort`,
+    sortingParser,
   );
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -198,12 +211,10 @@ export function DataTable<T>({
     parseAsString.withDefault(""),
   );
 
-  // const queryString = useDebounce(searchParams.toString());
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
   const allState: DataTableState = useMemo(() => {
     return {
-      // queryString,
       pagination,
       sorting,
       // columnFilters,
@@ -271,7 +282,8 @@ export function DataTable<T>({
   });
 
   if (error) return <ErrorFallback error={error} />;
-  if (!data?.success) return <ErrorFallback error={data?.error} />;
+  if (!isLoading && data && !data.success)
+    return <ErrorFallback error={data.error} />;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -282,7 +294,7 @@ export function DataTable<T>({
         {...props}
       />
 
-      {/* <pre>{JSON.stringify(allState, null, 2)}</pre> */}
+      <pre className="whitespace-pre">{JSON.stringify(allState, null, 2)}</pre>
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
