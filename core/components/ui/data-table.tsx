@@ -115,28 +115,32 @@ export type DataTableState = {
   globalFilter: string;
 };
 
-type CoreDataTableProps<T> = {
+type CoreDataTableProps<TData, TCount extends string> = {
   mode: "client" | "server";
   swr: {
     key: string;
-    fetcher: (state: DataTableState) => ActionResponse<T[]>;
+    fetcher: (
+      state: DataTableState,
+    ) => Promise<ActionResponse<TData[], TCount>>;
     config?: SWRConfiguration;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<T, any>[];
+  getColumns: (
+    res?: Extract<ActionResponse<TData[], TCount>, { success: true }>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ) => ColumnDef<TData, any>[]; // success only
 };
 
-type ToolBoxProps<T> = {
+type ToolBoxProps<TData> = {
   searchPlaceholder?: string;
   withRefresh?: boolean;
 
   renderRowSelection?: (props: {
-    rows: Row<T>[];
-    table: DataTableType<T>;
+    rows: Row<TData>[];
+    table: DataTableType<TData>;
   }) => ReactNode;
 };
 
-export type DataTableProps<T> = ToolBoxProps<T> & {
+export type DataTableProps<TData> = ToolBoxProps<TData> & {
   id?: string;
 
   caption?: string;
@@ -151,11 +155,11 @@ export type DataTableProps<T> = ToolBoxProps<T> & {
   };
 };
 
-export function DataTable<T>({
+export function DataTable<TData, TCount extends string>({
   id,
   mode,
   swr,
-  columns,
+  getColumns,
 
   caption,
   placeholder,
@@ -166,9 +170,9 @@ export function DataTable<T>({
   enableRowSelection,
 
   ...props
-}: CoreDataTableProps<T> &
-  DataTableProps<T> &
-  Pick<TableOptions<T>, "getRowId" | "enableRowSelection">) {
+}: CoreDataTableProps<TData, TCount> &
+  DataTableProps<TData> &
+  Pick<TableOptions<TData>, "getRowId" | "enableRowSelection">) {
   const isServer = mode === "server";
   const prefix = id ? `${id}-` : "";
 
@@ -227,6 +231,11 @@ export function DataTable<T>({
     swr.config,
   );
 
+  const columns = useMemo(() => {
+    if (data?.success) return getColumns(data);
+    return getColumns(undefined);
+  }, [data, getColumns]);
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
@@ -234,7 +243,6 @@ export function DataTable<T>({
 
     state: {
       pagination,
-
       sorting,
       globalFilter,
       columnFilters,
@@ -260,7 +268,7 @@ export function DataTable<T>({
 
     // * Pagination
     manualPagination: isServer,
-    rowCount: data?.success ? (data.total ?? 0) : 0,
+    rowCount: data?.success ? (data.count.total ?? 0) : 0,
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
@@ -291,6 +299,8 @@ export function DataTable<T>({
         className={classNames?.toolbox}
         {...props}
       />
+
+      {/* <pre>{JSON.stringify(allState, null, 2)}</pre> */}
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -424,15 +434,15 @@ export function DataTable<T>({
   );
 }
 
-function ToolBox<T>({
+function ToolBox<TData>({
   table,
   isMobile,
   className,
   searchPlaceholder = "Cari...",
   withRefresh = false,
   renderRowSelection,
-}: ToolBoxProps<T> & {
-  table: DataTableType<T>;
+}: ToolBoxProps<TData> & {
+  table: DataTableType<TData>;
   isMobile: boolean;
   className?: string;
 }) {
@@ -472,12 +482,12 @@ function ToolBox<T>({
   );
 }
 
-function View<T>({
+function View<TData>({
   table,
   isMobile,
   withRefresh,
 }: {
-  table: DataTableType<T>;
+  table: DataTableType<TData>;
   isMobile: boolean;
   withRefresh: boolean;
 }) {
@@ -534,11 +544,11 @@ function View<T>({
   );
 }
 
-function Reset<T>({
+function Reset<TData>({
   table,
   className,
 }: {
-  table: DataTableType<T>;
+  table: DataTableType<TData>;
   className?: string;
 }) {
   return (
@@ -575,12 +585,12 @@ function Reset<T>({
   );
 }
 
-function Search<T>({
+function Search<TData>({
   table,
   placeholder = "Cari...",
   className,
 }: {
-  table: DataTableType<T>;
+  table: DataTableType<TData>;
   placeholder?: string;
   className?: string;
 }) {
@@ -619,12 +629,12 @@ function Search<T>({
   );
 }
 
-function Pagination<T>({
+function Pagination<TData>({
   table,
   isMobile,
   className,
 }: {
-  table: DataTableType<T>;
+  table: DataTableType<TData>;
   isMobile: boolean;
   className?: string;
 }) {
@@ -671,12 +681,12 @@ function Pagination<T>({
   );
 }
 
-function RowsPerPage<T>({
+function RowsPerPage<TData>({
   table,
   isMobile,
   className,
 }: {
-  table: DataTableType<T>;
+  table: DataTableType<TData>;
   isMobile: boolean;
   className?: string;
 }) {

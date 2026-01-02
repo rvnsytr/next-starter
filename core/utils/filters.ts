@@ -70,9 +70,7 @@ export const defineMeta = <
   TType extends ColumnDataType,
 >(
   _accessor: TAccessor,
-  meta: Omit<ColumnMeta<TData, TVal>, "type"> & {
-    type: TType;
-  },
+  meta: Omit<ColumnMeta<TData, TVal>, "type"> & { type: TType },
 ): ColumnMeta<TData, TVal> => meta;
 
 /*
@@ -84,7 +82,9 @@ export type ColumnOption = {
   /* The internal value of the option. */
   value: string;
   /* An optional icon to display next to the label. */
-  icon?: React.ReactElement | React.ElementType;
+  icon?: LucideIcon;
+
+  count?: number;
 };
 
 /*

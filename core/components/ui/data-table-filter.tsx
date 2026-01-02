@@ -1144,7 +1144,7 @@ export function FilterValueOptionController<TData, TValue>({
         <CommandGroup>
           {options.map((v) => {
             const checked = Boolean(filter?.values.includes(v.value));
-            const count = optionsCount[v.value] ?? 0;
+            const count = v.count ?? optionsCount[v.value] ?? 0;
 
             return (
               <CommandItem
@@ -1173,7 +1173,8 @@ export function FilterValueOptionController<TData, TValue>({
                     count === 0 && "slashed-zero",
                   )}
                 >
-                  {count < 100 ? count : "100+"}
+                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
+                  {formatNumber(count)}
                 </span>
               </CommandItem>
             );
@@ -1304,7 +1305,7 @@ export function FilterValueMultiOptionController<
         <CommandGroup>
           {options.map((v) => {
             const checked = Boolean(filter?.values[0]?.includes(v.value));
-            const count = optionsCount[v.value] ?? 0;
+            const count = v.count ?? optionsCount[v.value] ?? 0;
 
             return (
               <CommandItem

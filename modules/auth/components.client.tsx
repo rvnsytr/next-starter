@@ -825,7 +825,10 @@ export function ProfileForm() {
 // #region USER
 
 const createUserColumn = createColumnHelper<AuthSession["user"]>();
-const getUserColumn = (currentUserId: string) => [
+const getUserColumn = (
+  currentUserId: string,
+  count?: Record<Role | UserStatus, number>,
+) => [
   createUserColumn.display({
     id: "select",
     header: ({ table }) => <ColumnHeaderCheckbox table={table} />,
@@ -882,7 +885,7 @@ const getUserColumn = (currentUserId: string) => [
         icon: CircleDotIcon,
         transformOptionFn: (value) => {
           const { displayName, icon } = userStatusMeta[value];
-          return { value, label: displayName, icon };
+          return { value, label: displayName, icon, count: count?.[value] };
         },
       },
     },
@@ -903,7 +906,7 @@ const getUserColumn = (currentUserId: string) => [
       icon: ShieldUserIcon,
       transformOptionFn: (value) => {
         const { displayName, icon } = rolesMeta[value];
-        return { value, label: displayName, icon };
+        return { value, label: displayName, icon, count: count?.[value] };
       },
     },
   }),
@@ -944,7 +947,7 @@ export function UserDataTable() {
         key: "/auth/list-users",
         fetcher: async (state) => await listUsers(user.role, state),
       }}
-      columns={getUserColumn(user.id)}
+      getColumns={(res) => getUserColumn(user.id, res?.count)}
       searchPlaceholder="Cari Pengguna..."
       getRowId={(row) => row.id}
       enableRowSelection={(row) => row.original.id !== user.id}

@@ -3,11 +3,12 @@
 import { auth } from "@/core/auth";
 import { DataTableState } from "@/core/components/ui/data-table";
 import { ActionResponse, messages } from "@/core/constants";
-import { db, withDataTable } from "@/core/db";
+import { db, withDataTable, WithDataTableConfig } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
+import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
-import { AuthSession, Role } from "./constants";
+import { AuthSession, Role, UserStatus } from "./constants";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await nextHeaders() });
@@ -16,7 +17,7 @@ export async function getSession() {
 export async function listUsers(
   role: Role,
   state: DataTableState,
-): ActionResponse<AuthSession["user"][]> {
+): Promise<ActionResponse<AuthSession["user"][], "user" | Role | UserStatus>> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await nextHeaders(),
     body: { permissions: { user: ["list"] }, role },
@@ -25,9 +26,19 @@ export async function listUsers(
   if (!hasPermission.success)
     return { success: false, error: messages.forbidden };
 
-  const qb = db.select().from(userTable).$dynamic();
+  const countQb = db
+    .select({
+      total: db.$count(userTable),
+      user: sql<number>`count(*) filter (where ${userTable.role} = 'user')`,
+      admin: sql<number>`count(*) filter (where ${userTable.role} = 'admin')`,
+      banned: sql<number>`count(*) filter (where ${userTable.banned} = true)`,
+      active: sql<number>`count(*) filter (where ${userTable.banned} = false)`,
+    })
+    .from(userTable)
+    .$dynamic();
+  const dataQb = db.select().from(userTable).$dynamic();
 
-  const data = (await withDataTable(qb, state, {
+  const config: WithDataTableConfig = {
     sorting: {
       default: { column: userTable.createdAt, desc: true },
       columns: [
@@ -40,11 +51,15 @@ export async function listUsers(
       ],
     },
     globalFilter: { columns: [userTable.name, userTable.email] },
-  }).execute()) as AuthSession["user"][];
+  };
 
-  const total = await db.$count(userTable);
+  const [count] = await withDataTable(countQb, state, {
+    disabled: ["pagination", "sorting"],
+    ...config,
+  }).execute();
+  const data = await withDataTable(dataQb, state, config).execute();
 
-  return { success: true, total, data };
+  return { success: true, count, data: data as AuthSession["user"][] };
 }
 
 export async function listSessions() {

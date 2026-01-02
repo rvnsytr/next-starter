@@ -10,9 +10,13 @@ import {
   VenusIcon,
 } from "lucide-react";
 
-export type ActionResponse<T> = Promise<
-  { success: true; total?: number; data: T } | { success: false; error: string }
->;
+export type ActionResponse<TData, TCount extends string> =
+  | {
+      success: true;
+      count: { total: number } & Record<TCount, number>;
+      data: TData;
+    }
+  | { success: false; error: string };
 
 export const allRequestMetaKey = [
   "basePath",

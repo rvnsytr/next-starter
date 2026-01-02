@@ -6,44 +6,47 @@ import * as schema from "./schema.db";
 
 export const db = drizzle(process.env.DATABASE_URL!, { schema });
 
+export type WithDataTableConfig = {
+  disabled?: ("pagination" | "sorting" | "globalFilter")[];
+  sorting: {
+    default: { column: AnyPgColumn; desc: boolean };
+    columns: { id: string; column: AnyPgColumn }[];
+  };
+  globalFilter: {
+    columns: AnyPgColumn[];
+  };
+};
+
 export function withDataTable<T extends PgSelect>(
   qb: T,
   state: DataTableState,
-  config: {
-    sorting: {
-      default: { column: AnyPgColumn; desc: boolean };
-      columns: { id: string; column: AnyPgColumn }[];
-    };
-    globalFilter: {
-      columns: AnyPgColumn[];
-    };
-  },
+  config: WithDataTableConfig,
 ) {
-  const { pagination, sorting, globalFilter } = state;
+  const { disabled, sorting, globalFilter } = config;
 
-  if (globalFilter)
+  if (!disabled?.includes("globalFilter") && state.globalFilter)
     qb = qb.where(
       or(
-        ...config.globalFilter.columns.map((c) =>
-          ilike(c, `%${globalFilter}%`),
-        ),
+        ...globalFilter.columns.map((c) => ilike(c, `%${state.globalFilter}%`)),
       ),
     );
 
-  if (sorting.length) {
-    sorting.forEach(({ id, desc: isDesc }) => {
-      const meta = config.sorting.columns.find((c) => c.id === id);
-      if (!meta) return;
-      qb = qb.orderBy(isDesc ? desc(meta.column) : asc(meta.column));
-    });
-  } else {
-    const { column, desc: isDesc } = config.sorting.default;
-    qb = qb.orderBy(isDesc ? desc(column) : asc(column));
-  }
+  if (!disabled?.includes("sorting"))
+    if (state.sorting.length) {
+      state.sorting.forEach(({ id, desc: isDesc }) => {
+        const meta = sorting.columns.find((c) => c.id === id);
+        if (!meta) return;
+        qb = qb.orderBy(isDesc ? desc(meta.column) : asc(meta.column));
+      });
+    } else {
+      const { column, desc: isDesc } = sorting.default;
+      qb = qb.orderBy(isDesc ? desc(column) : asc(column));
+    }
 
-  qb = qb
-    .limit(pagination.pageSize)
-    .offset(pagination.pageIndex * pagination.pageSize);
+  if (!disabled?.includes("pagination"))
+    qb = qb
+      .limit(state.pagination.pageSize)
+      .offset(state.pagination.pageIndex * state.pagination.pageSize);
 
   return qb;
 }
