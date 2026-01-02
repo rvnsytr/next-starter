@@ -3,10 +3,9 @@
 import { auth } from "@/core/auth";
 import { DataTableState } from "@/core/components/ui/data-table";
 import { ActionResponse, messages } from "@/core/constants";
-import { db, withPagination } from "@/core/db";
+import { db, withDataTable } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
-import { desc } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
 import { AuthSession, Role } from "./constants";
 
@@ -26,15 +25,26 @@ export async function listUsers(
   if (!hasPermission.success)
     return { success: false, error: messages.forbidden };
 
-  let qb = db.select().from(userTable).$dynamic();
-  qb = withPagination(qb, state.pagination);
+  const qb = db.select().from(userTable).$dynamic();
+
+  const data = (await withDataTable(qb, state, {
+    sorting: {
+      default: { column: userTable.createdAt, desc: true },
+      columns: [
+        { id: "name", column: userTable.name },
+        { id: "email", column: userTable.email },
+        { id: "status", column: userTable.banned },
+        { id: "role", column: userTable.role },
+        { id: "updatedAt", column: userTable.updatedAt },
+        { id: "createdAt", column: userTable.createdAt },
+      ],
+    },
+    globalFilter: { columns: [userTable.name, userTable.email] },
+  }).execute()) as AuthSession["user"][];
 
   const total = await db.$count(userTable);
-  const data = (await qb
-    .orderBy(desc(userTable.createdAt))
-    .execute()) as AuthSession["user"][];
 
-  return { success: true, total, data: data as AuthSession["user"][] };
+  return { success: true, total, data };
 }
 
 export async function listSessions() {
