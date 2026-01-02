@@ -10,6 +10,17 @@ import {
   VenusIcon,
 } from "lucide-react";
 
+export const allRequestMetaKey = [
+  "basePath",
+  "href",
+  "origin",
+  "hostname",
+  "pathname",
+  "hash",
+  "search",
+] as const;
+export type RequestMetaKey = (typeof allRequestMetaKey)[number];
+
 export const allThemes = ["light", "system", "dark"] as const;
 export type Theme = (typeof allThemes)[number];
 

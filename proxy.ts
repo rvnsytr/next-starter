@@ -1,23 +1,20 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
+import { allRequestMetaKey } from "./core/constants";
 
 export function proxy(req: NextRequest) {
-  const { pathname, origin } = req.nextUrl;
   const sessionCookie = getSessionCookie(req);
 
-  if (!sessionCookie && !pathname.startsWith("/sign-in"))
+  if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in"))
     return NextResponse.redirect(new URL("/sign-in", req.url));
 
-  if (sessionCookie && pathname.startsWith("/sign-in"))
+  if (sessionCookie && req.nextUrl.pathname.startsWith("/sign-in"))
     return NextResponse.redirect(new URL("/dashboard", req.url));
 
-  const requestHeaders = new Headers(req.headers);
+  const headers = new Headers(req.headers);
+  allRequestMetaKey.map((k) => headers.set(`x-${k}`, req.nextUrl[k]));
 
-  requestHeaders.set("x-url", req.url);
-  requestHeaders.set("x-origin", origin);
-  requestHeaders.set("x-pathname", pathname);
-
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  return NextResponse.next({ request: { headers } });
 }
 
 export const config = {
