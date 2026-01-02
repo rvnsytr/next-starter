@@ -949,7 +949,7 @@ export function UserDataTable() {
       getRowId={(row) => row.id}
       enableRowSelection={(row) => row.original.id !== user.id}
       renderRowSelection={({ rows, table }) => {
-        const filteredData = rows.map((row) => row.original);
+        const data = rows.map((row) => row.original);
         return (
           <Popover>
             <PopoverTrigger asChild>
@@ -959,17 +959,14 @@ export function UserDataTable() {
             </PopoverTrigger>
 
             <PopoverContent className="grid gap-y-1 p-1 [&_button]:justify-start">
-              <div className="flex justify-center py-1">
-                <small>
-                  Akun dipilih:{" "}
-                  <span className="font-medium">{filteredData.length}</span>
-                </small>
+              <div className="flex justify-center py-1 text-sm">
+                Akun dipilih: <span className="font-medium">{data.length}</span>
               </div>
 
               <Separator />
 
               <ActionRevokeUserSessionsDialog
-                userIds={filteredData.map(({ id }) => id)}
+                userIds={data.map(({ id }) => id)}
                 onSuccess={() => table.resetRowSelection()}
               />
 
@@ -979,7 +976,7 @@ export function UserDataTable() {
               </Button>
 
               <ActionRemoveUsersDialog
-                data={filteredData}
+                data={data}
                 onSuccess={() => table.resetRowSelection()}
               />
             </PopoverContent>

@@ -14,7 +14,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  InitialTableState,
   PaginationState,
   Row,
   SortingState,
@@ -82,7 +81,7 @@ import {
   TableRow,
 } from "./table";
 
-const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50, 100];
+const pageSizes = [5, 10, 20, 30, 40, 50, 100];
 const defaultPageSize = pageSizes[1];
 
 const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
@@ -139,7 +138,6 @@ type ToolBoxProps<T> = {
 
 export type DataTableProps<T> = ToolBoxProps<T> & {
   id?: string;
-  initialState?: InitialTableState;
 
   caption?: string;
   placeholder?: string;
@@ -293,8 +291,6 @@ export function DataTable<T>({
         className={classNames?.toolbox}
         {...props}
       />
-
-      <pre className="whitespace-pre">{JSON.stringify(allState, null, 2)}</pre>
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
