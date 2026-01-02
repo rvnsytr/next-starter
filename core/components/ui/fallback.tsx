@@ -33,7 +33,7 @@ export function ErrorFallback({
       <div className="flex items-center gap-x-2">
         <TriangleAlertIcon className="size-4 shrink-0" /> {error?.code}
       </div>
-      {!hideText && <pre>{message}</pre>}
+      {!hideText && <pre className="whitespace-pre-line">{message}</pre>}
     </div>
   );
 }
