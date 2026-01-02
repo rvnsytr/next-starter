@@ -1,6 +1,6 @@
 "use client";
 
-import { messages } from "@/core/constants";
+import { ActionResponse, messages } from "@/core/constants";
 import { useDebounce, useIsMobile } from "@/core/hooks";
 import { cn, formatNumber } from "@/core/utils";
 import {
@@ -17,6 +17,7 @@ import {
   InitialTableState,
   PaginationState,
   Row,
+  SortingState,
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
@@ -25,7 +26,7 @@ import {
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  FilterXIcon,
+  RotateCcwSquareIcon,
   SearchIcon,
   ViewIcon,
 } from "lucide-react";
@@ -86,17 +87,18 @@ const defaultPageSize = pageSizes[1];
 export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
 
-export type DataTableValue<T> = { total: number; data: T[] };
-
 export type DataTableState = {
   pagination: PaginationState;
+  sorting: SortingState;
+  // columnFilters: ColumnFiltersState,
+  globalFilter: string;
 };
 
 type CoreDataTableProps<T> = {
   mode: "client" | "server";
   swr: {
     key: string;
-    fetcher: (state: DataTableState) => Promise<DataTableValue<T>>;
+    fetcher: (state: DataTableState) => ActionResponse<T[]>;
     config?: SWRConfiguration;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,7 +116,7 @@ type ToolBoxProps<T> = {
 };
 
 export type DataTableProps<T> = ToolBoxProps<T> & {
-  id?: string; // TODO
+  id?: string;
   initialState?: InitialTableState;
 
   caption?: string;
@@ -140,8 +142,6 @@ export function DataTable<T>({
   className,
   classNames,
 
-  initialState,
-
   getRowId,
   enableRowSelection,
 
@@ -152,6 +152,7 @@ export function DataTable<T>({
   const isServer = mode === "server";
   const prefix = id ? `${id}-` : "";
 
+  // const searchParams = useSearchParams();
   const isMobile = useIsMobile();
 
   const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
@@ -197,17 +198,18 @@ export function DataTable<T>({
     parseAsString.withDefault(""),
   );
 
+  // const queryString = useDebounce(searchParams.toString());
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
-  const allState = useMemo(
-    () => ({
+  const allState: DataTableState = useMemo(() => {
+    return {
+      // queryString,
       pagination,
       sorting,
       // columnFilters,
       globalFilter: debouncedGlobalFilter,
-    }),
-    [pagination, sorting, debouncedGlobalFilter],
-  );
+    };
+  }, [pagination, sorting, debouncedGlobalFilter]);
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
@@ -219,9 +221,8 @@ export function DataTable<T>({
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
-    data: data?.data ?? [],
+    data: data?.success ? data.data : [],
 
-    initialState: initialState,
     state: {
       pagination,
 
@@ -250,7 +251,7 @@ export function DataTable<T>({
 
     // * Pagination
     manualPagination: isServer,
-    rowCount: data?.total ?? 0,
+    rowCount: data?.success ? (data.total ?? 0) : 0,
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
 
@@ -270,6 +271,7 @@ export function DataTable<T>({
   });
 
   if (error) return <ErrorFallback error={error} />;
+  if (!data?.success) return <ErrorFallback error={data?.error} />;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -280,7 +282,7 @@ export function DataTable<T>({
         {...props}
       />
 
-      {/* <pre>{JSON.stringify(sorting, null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(allState, null, 2)}</pre> */}
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -539,8 +541,8 @@ function Reset<T>({
         table.reset();
 
         table.resetPagination();
-        table.resetPageIndex();
-        table.resetPageSize(false);
+        // table.resetPageIndex();
+        // table.resetPageSize();
 
         table.resetColumnOrder();
         table.resetColumnSizing();
@@ -551,7 +553,7 @@ function Reset<T>({
         table.resetRowPinning();
         table.resetRowSelection();
 
-        table.resetGlobalFilter();
+        // table.resetGlobalFilter();
         table.setGlobalFilter("");
 
         table.resetSorting();
@@ -560,7 +562,7 @@ function Reset<T>({
         table.resetHeaderSizeInfo();
       }}
     >
-      <FilterXIcon /> {messages.actions.reset}
+      <RotateCcwSquareIcon /> {messages.actions.reset}
     </Button>
   );
 }

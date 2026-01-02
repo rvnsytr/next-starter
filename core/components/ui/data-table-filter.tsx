@@ -26,7 +26,13 @@ import {
 } from "@/core/utils";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
-import { ArrowRightIcon, EllipsisIcon, FilterIcon, XIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  EllipsisIcon,
+  FilterIcon,
+  FilterXIcon,
+  XIcon,
+} from "lucide-react";
 import {
   cloneElement,
   isValidElement,
@@ -169,7 +175,7 @@ export function FilterActions<TData>({
         table.setGlobalFilter("");
       }}
     >
-      <XIcon /> {messages.actions.clear}
+      <FilterXIcon /> {messages.actions.clear}
     </Button>
   );
 }
@@ -1643,7 +1649,7 @@ export function FilterValueNumberController<TData, TValue>({
 
   return (
     <Command>
-      <CommandList className="w-[300px] px-2 py-2">
+      <CommandList className="w-75 px-2 py-2">
         <CommandGroup>
           <div className="flex w-full flex-col">
             <Tabs

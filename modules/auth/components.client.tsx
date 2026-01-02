@@ -28,7 +28,7 @@ import {
   ColumnHeader,
   ColumnHeaderCheckbox,
 } from "@/core/components/ui/column";
-import { DataTable, DataTableValue } from "@/core/components/ui/data-table";
+import { DataTable } from "@/core/components/ui/data-table";
 import { DatePicker } from "@/core/components/ui/date-picker";
 import { DetailList, DetailListData } from "@/core/components/ui/detail-list";
 import {
@@ -942,10 +942,7 @@ export function UserDataTable() {
       mode="server"
       swr={{
         key: "/auth/list-users",
-        fetcher: async (state) => {
-          const data = await listUsers(user.role, state);
-          return data as DataTableValue<AuthSession["user"]>;
-        },
+        fetcher: async (state) => await listUsers(user.role, state),
       }}
       columns={getUserColumn(user.id)}
       searchPlaceholder="Cari Pengguna..."
@@ -1121,7 +1118,6 @@ export function ChangePasswordForm() {
       currentPassword: true,
       newPassword: true,
       confirmPassword: true,
-      revokeOtherSessions: true,
     })
     .extend({ revokeOtherSessions: z.boolean() })
     .refine((sc) => sc.newPassword === sc.confirmPassword, {
