@@ -1,7 +1,7 @@
 "use client";
 
 import { messages } from "@/core/constants";
-import { useIsMobile } from "@/core/hooks";
+import { useDebounce, useIsMobile } from "@/core/hooks";
 import {
   ColumnDataType,
   ColumnOption,
@@ -13,6 +13,7 @@ import {
   determineNewOperator,
   filterTypeOperatorDetails,
   formatDate,
+  formatNumber,
   getColumn,
   getColumnMeta,
   isColumnOptionArray,
@@ -123,9 +124,7 @@ export function ActiveFiltersMobileContainer({
   // Set up ResizeObserver to monitor container size
   useEffect(() => {
     if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        checkScroll();
-      });
+      const resizeObserver = new ResizeObserver(() => checkScroll());
       resizeObserver.observe(scrollContainerRef.current);
       return () => {
         resizeObserver.disconnect();
@@ -285,39 +284,6 @@ export function FilterableColumn<TData>({
         <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
       </div>
     </CommandItem>
-  );
-}
-
-export function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 250,
-  ...props
-}: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [value, onChange, debounce]);
-
-  return (
-    <Input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
   );
 }
 
@@ -543,23 +509,18 @@ function FilterOperatorOptionController<TData>({
     (o) => o.target === filterDetails.target,
   );
 
-  const changeOperator = (value: string) => {
-    column.setFilterValue((old: typeof filter) => ({
-      ...old,
-      operator: value,
-    }));
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
     closeController();
   };
 
   return (
     <CommandGroup heading="Operators">
-      {relatedFilters.map((r) => {
-        return (
-          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {r.label}
-          </CommandItem>
-        );
-      })}
+      {relatedFilters.map((r) => (
+        <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+          {r.label}
+        </CommandItem>
+      ))}
     </CommandGroup>
   );
 }
@@ -575,23 +536,18 @@ function FilterOperatorMultiOptionController<TData>({
     (o) => o.target === filterDetails.target,
   );
 
-  const changeOperator = (value: string) => {
-    column.setFilterValue((old: typeof filter) => ({
-      ...old,
-      operator: value,
-    }));
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
     closeController();
   };
 
   return (
     <CommandGroup heading="Operators">
-      {relatedFilters.map((r) => {
-        return (
-          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {r.label}
-          </CommandItem>
-        );
-      })}
+      {relatedFilters.map((r) => (
+        <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+          {r.label}
+        </CommandItem>
+      ))}
     </CommandGroup>
   );
 }
@@ -607,23 +563,18 @@ function FilterOperatorDateController<TData>({
     (o) => o.target === filterDetails.target,
   );
 
-  const changeOperator = (value: string) => {
-    column.setFilterValue((old: typeof filter) => ({
-      ...old,
-      operator: value,
-    }));
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
     closeController();
   };
 
   return (
     <CommandGroup>
-      {relatedFilters.map((r) => {
-        return (
-          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {r.label}
-          </CommandItem>
-        );
-      })}
+      {relatedFilters.map((r) => (
+        <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+          {r.label}
+        </CommandItem>
+      ))}
     </CommandGroup>
   );
 }
@@ -639,23 +590,18 @@ export function FilterOperatorTextController<TData>({
     (o) => o.target === filterDetails.target,
   );
 
-  const changeOperator = (value: string) => {
-    column.setFilterValue((old: typeof filter) => ({
-      ...old,
-      operator: value,
-    }));
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
     closeController();
   };
 
   return (
     <CommandGroup heading="Operators">
-      {relatedFilters.map((r) => {
-        return (
-          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {r.label}
-          </CommandItem>
-        );
-      })}
+      {relatedFilters.map((r) => (
+        <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+          {r.label}
+        </CommandItem>
+      ))}
     </CommandGroup>
   );
 }
@@ -669,36 +615,35 @@ function FilterOperatorNumberController<TData>({
 
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const relatedFilterOperators = relatedFilters.map((r) => r.value);
 
-  const changeOperator = (value: (typeof relatedFilterOperators)[number]) => {
+  const changeOperator = (
+    operator: (typeof relatedFilterOperators)[number],
+  ) => {
     column.setFilterValue((old: typeof filter) => {
       // Clear out the second value when switching to single-input operators
-      const target = numberFilterDetails[value].target;
-
+      const target = numberFilterDetails[operator].target;
       const newValues =
         target === "single" ? [old.values[0]] : createNumberRange(old.values);
-
-      return { ...old, operator: value, values: newValues };
+      return { ...old, operator, values: newValues };
     });
     closeController();
   };
 
   return (
-    <div>
-      <CommandGroup heading="Operators">
-        {relatedFilters.map((r) => (
-          <CommandItem
-            onSelect={() => changeOperator(r.value)}
-            value={r.value}
-            key={r.value}
-          >
-            {r.label} {/**/}
-          </CommandItem>
-        ))}
-      </CommandGroup>
-    </div>
+    <CommandGroup heading="Operators">
+      {relatedFilters.map((r) => (
+        <CommandItem
+          onSelect={() => changeOperator(r.value)}
+          value={r.value}
+          key={r.value}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
   );
 }
 
@@ -817,10 +762,7 @@ export function FilterValueOptionDisplay<TData, TValue>({
   const uniqueVals = uniq(columnVals);
 
   // If static options are provided, use them
-  if (columnMeta.options) {
-    options = columnMeta.options;
-  }
-
+  if (columnMeta.options) options = columnMeta.options;
   // No static options provided,
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
@@ -832,10 +774,7 @@ export function FilterValueOptionDisplay<TData, TValue>({
   }
 
   // Make sure the column data conforms to ColumnOption type
-  else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
-  }
-
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
   // Invalid configuration
   else {
     throw new Error(
@@ -865,7 +804,6 @@ export function FilterValueOptionDisplay<TData, TValue>({
   }
   const name = columnMeta.displayName.toLowerCase();
   const pluralName = name.endsWith("s") ? `${name}es` : `${name}s`;
-
   const hasOptionIcons = !options?.some((o) => !o.icon);
 
   return (
@@ -896,10 +834,7 @@ export function FilterValueMultiOptionDisplay<TData, TValue>({
   const uniqueVals = uniq(columnVals);
 
   // If static options are provided, use them
-  if (columnMeta.options) {
-    options = columnMeta.options;
-  }
-
+  if (columnMeta.options) options = columnMeta.options;
   // No static options provided,
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
@@ -911,10 +846,7 @@ export function FilterValueMultiOptionDisplay<TData, TValue>({
   }
 
   // Make sure the column data conforms to ColumnOption type
-  else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
-  }
-
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
   // Invalid configuration
   else {
     throw new Error(
@@ -931,7 +863,6 @@ export function FilterValueMultiOptionDisplay<TData, TValue>({
     return (
       <span className="inline-flex items-center gap-1.5">
         {hasIcon && (isValidElement(Icon) ? Icon : <Icon />)}
-
         <span>{label}</span>
       </span>
     );
@@ -965,13 +896,11 @@ function formatDateRange(start: Date, end: Date) {
   const sameMonth = start.getMonth() === end.getMonth();
   const sameYear = start.getFullYear() === end.getFullYear();
 
-  if (sameMonth && sameYear) {
+  if (sameMonth && sameYear)
     return `${formatDate(start, "MMM d")} - ${formatDate(end, "d, yyyy")}`;
-  }
 
-  if (sameYear) {
+  if (sameYear)
     return `${formatDate(start, "MMM d")} - ${formatDate(end, "MMM d, yyyy")}`;
-  }
 
   return `${formatDate(start, "MMM d, yyyy")} - ${formatDate(end, "MMM d, yyyy")}`;
 }
@@ -987,9 +916,7 @@ export function FilterValueDateDisplay<TData, TValue>({
   if (filter.values.length === 0) return <EllipsisIcon />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
-
     const formattedDateStr = formatDate(value, "MMM d, yyyy");
-
     return <span>{formattedDateStr}</span>;
   }
 
@@ -1045,9 +972,7 @@ export function FilterValueNumberDisplay<TData, TValue>({
     );
   }
 
-  if (!filter.values || filter.values.length === 0) {
-    return null;
-  }
+  if (!filter.values || filter.values.length === 0) return null;
 
   const value = filter.values[0];
   return <span className="tracking-tight tabular-nums">{value}</span>;
@@ -1137,12 +1062,11 @@ export function FilterValueOptionController<TData, TValue>({
     .getCoreRowModel()
     .rows.flatMap((r) => r.getValue<TValue>(id))
     .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
+
   const uniqueVals = uniq(columnVals);
 
   // If static options are provided, use them
-  if (columnMeta.options) {
-    options = columnMeta.options;
-  }
+  if (columnMeta.options) options = columnMeta.options;
   // No static options provided,
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
@@ -1154,10 +1078,7 @@ export function FilterValueOptionController<TData, TValue>({
   }
 
   // Make sure the column data conforms to ColumnOption type
-  else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
-  }
-
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
   // Invalid configuration
   else {
     throw new Error(
@@ -1177,7 +1098,7 @@ export function FilterValueOptionController<TData, TValue>({
     {} as Record<ColumnOption["value"], number>,
   );
 
-  function handleOptionSelect(value: string, check: boolean) {
+  const handleOptionSelect = (value: string, check: boolean) => {
     if (check)
       column?.setFilterValue(
         (old: undefined | FilterModel<"option", TData>) => {
@@ -1210,7 +1131,7 @@ export function FilterValueOptionController<TData, TValue>({
           } satisfies FilterModel<"option", TData>;
         },
       );
-  }
+  };
 
   return (
     <Command loop>
@@ -1284,10 +1205,7 @@ export function FilterValueMultiOptionController<
   const uniqueVals = uniq(columnVals);
 
   // If static options are provided, use them
-  if (columnMeta.options) {
-    options = columnMeta.options;
-  }
-
+  if (columnMeta.options) options = columnMeta.options;
   // No static options provided,
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
@@ -1299,10 +1217,7 @@ export function FilterValueMultiOptionController<
   }
 
   // Make sure the column data conforms to ColumnOption type
-  else if (isColumnOptionArray(uniqueVals)) {
-    options = uniqueVals;
-  }
-
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
   // Invalid configuration
   else {
     throw new Error(
@@ -1325,7 +1240,7 @@ export function FilterValueMultiOptionController<
   );
 
   // Handles the selection/deselection of an option
-  function handleOptionSelect(value: string, check: boolean) {
+  const handleOptionSelect = (value: string, check: boolean) => {
     if (check) {
       column.setFilterValue(
         (old: undefined | FilterModel<"multiOption", TData>) => {
@@ -1376,7 +1291,7 @@ export function FilterValueMultiOptionController<
           } satisfies FilterModel<"multiOption", TData>;
         },
       );
-  }
+  };
 
   return (
     <Command loop>
@@ -1410,7 +1325,7 @@ export function FilterValueMultiOptionController<
                     />
                   ))}
 
-                <span>{v.label} </span>
+                <span>{v.label}</span>
 
                 <span
                   className={cn(
@@ -1418,7 +1333,8 @@ export function FilterValueMultiOptionController<
                     count === 0 && "slashed-zero",
                   )}
                 >
-                  {count < 100 ? count : "100+"}
+                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
+                  {formatNumber(count)}
                 </span>
               </CommandItem>
             );
@@ -1441,7 +1357,7 @@ export function FilterValueDateController<TData, TValue>({
     to: filter?.values[1] ?? undefined,
   });
 
-  function changeDateRange(value: DateRange | undefined) {
+  const changeDateRange = (value: DateRange | undefined) => {
     const start = value?.from;
     const end =
       start && value?.to && !isEqual(start, value.to)
@@ -1472,7 +1388,7 @@ export function FilterValueDateController<TData, TValue>({
         columnMeta: column.columnDef.meta,
       } satisfies FilterModel<"date", TData>;
     });
-  }
+  };
 
   return (
     <Command>
@@ -1500,29 +1416,33 @@ export function FilterValueTextController<TData, TValue>({
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterModel<"text", TData>)
     : undefined;
+  const filterValue = filter?.values[0] ?? "";
 
-  const changeText = (value: string | number) => {
+  const [value, setValue] = useState(filterValue);
+  const debouncedValue = useDebounce(value);
+
+  useEffect(() => {
     column.setFilterValue((old: undefined | FilterModel<"text", TData>) => {
       if (!old || old.values.length === 0)
         return {
           operator: "contains",
-          values: [String(value)],
+          values: [debouncedValue],
           columnMeta: column.columnDef.meta,
         } satisfies FilterModel<"text", TData>;
-      return { operator: old.operator, values: [String(value)] };
+      return { operator: old.operator, values: [debouncedValue] };
     });
-  };
+  }, [column, debouncedValue]);
 
   return (
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
           <CommandItem>
-            <DebouncedInput
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
               placeholder={`Cari ${columnMeta.displayName}...`}
               autoFocus
-              value={filter?.values[0] ?? ""}
-              onChange={changeText}
             />
           </CommandItem>
         </CommandGroup>
@@ -1548,11 +1468,11 @@ export function FilterValueNumberController<TData, TValue>({
   const [datasetMin] = column.getFacetedMinMaxValues() ?? [0, 0];
 
   const initialValues = () => {
-    if (filter?.values) {
+    if (filter?.values)
       return filter.values.map((val) =>
         val >= cappedMax ? `${cappedMax}+` : val.toString(),
       );
-    }
+
     return [datasetMin.toString()];
   };
 
@@ -1562,19 +1482,14 @@ export function FilterValueNumberController<TData, TValue>({
     const sortedValues = [...value].sort((a, b) => a - b);
 
     column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
-      if (!old || old.values.length === 0) {
-        return {
-          operator: "is",
-          values: sortedValues,
-        };
-      }
+      if (!old || old.values.length === 0)
+        return { operator: "is", values: sortedValues };
 
       const operator = numberFilterDetails[old.operator];
       let newValues: number[];
 
-      if (operator.target === "single") {
-        newValues = [sortedValues[0]];
-      } else {
+      if (operator.target === "single") newValues = [sortedValues[0]];
+      else {
         newValues = [
           sortedValues[0] >= cappedMax ? cappedMax : sortedValues[0],
           sortedValues[1] >= cappedMax
@@ -1583,20 +1498,15 @@ export function FilterValueNumberController<TData, TValue>({
         ];
       }
 
-      return {
-        operator: old.operator,
-        values: newValues,
-      };
+      return { operator: old.operator, values: newValues };
     });
   };
 
   const handleInputChange = (index: number, value: string) => {
     const newValues = [...inputValues];
-    if (isNumberRange && Number.parseInt(value, 10) >= cappedMax) {
+    if (isNumberRange && Number.parseInt(value, 10) >= cappedMax)
       newValues[index] = `${cappedMax}+`;
-    } else {
-      newValues[index] = value;
-    }
+    else newValues[index] = value;
 
     setInputValues(newValues);
 
@@ -1611,22 +1521,15 @@ export function FilterValueNumberController<TData, TValue>({
 
   const changeType = (type: "single" | "range") => {
     column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
-      if (type === "single") {
-        return {
-          operator: "is",
-          values: [old?.values[0] ?? 0],
-        };
-      }
+      if (type === "single")
+        return { operator: "is", values: [old?.values[0] ?? 0] };
+
       const newMaxValue = old?.values[0] ?? cappedMax;
-      return {
-        operator: "is between",
-        values: [0, newMaxValue],
-      };
+      return { operator: "is between", values: [0, newMaxValue] };
     });
 
-    if (type === "single") {
-      setInputValues([inputValues[0]]);
-    } else {
+    if (type === "single") setInputValues([inputValues[0]]);
+    else {
       const maxValue = inputValues[0] || cappedMax.toString();
       setInputValues(["0", maxValue]);
     }
