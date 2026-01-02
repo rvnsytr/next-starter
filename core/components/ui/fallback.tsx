@@ -21,6 +21,8 @@ export function ErrorFallback({
   hideText?: boolean;
   className?: string;
 }) {
+  const message =
+    typeof error === "string" ? error : (error?.message ?? "Tidak ada data");
   return (
     <div
       className={cn(
@@ -31,7 +33,7 @@ export function ErrorFallback({
       <div className="flex items-center gap-x-2">
         <TriangleAlertIcon className="size-4 shrink-0" /> {error?.code}
       </div>
-      {!hideText && <pre>{error?.message ?? "Tidak ada data"}</pre>}
+      {!hideText && <pre>{message}</pre>}
     </div>
   );
 }

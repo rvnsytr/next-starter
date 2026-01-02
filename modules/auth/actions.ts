@@ -2,7 +2,7 @@
 
 import { auth } from "@/core/auth";
 import { DataTableState } from "@/core/components/ui/data-table";
-import { messages } from "@/core/constants";
+import { ActionResponse, messages } from "@/core/constants";
 import { db, withPagination } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
@@ -14,21 +14,27 @@ export async function getSession() {
   return await auth.api.getSession({ headers: await nextHeaders() });
 }
 
-export async function listUsers(role: Role, state: DataTableState) {
+export async function listUsers(
+  role: Role,
+  state: DataTableState,
+): ActionResponse<AuthSession["user"][]> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await nextHeaders(),
     body: { permissions: { user: ["list"] }, role },
   });
 
-  if (!hasPermission.success) throw new Error(messages.forbidden);
+  if (!hasPermission.success)
+    return { success: false, error: messages.forbidden };
 
   let qb = db.select().from(userTable).$dynamic();
   qb = withPagination(qb, state.pagination);
 
   const total = await db.$count(userTable);
-  const data = await qb.orderBy(desc(userTable.createdAt)).execute();
+  const data = (await qb
+    .orderBy(desc(userTable.createdAt))
+    .execute()) as AuthSession["user"][];
 
-  return { total, data };
+  return { success: true, total, data: data as AuthSession["user"][] };
 }
 
 export async function listSessions() {

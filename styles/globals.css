@@ -273,7 +273,7 @@
   }
 
   pre {
-    @apply font-mono;
+    @apply font-mono whitespace-pre-line;
   }
 
   code {

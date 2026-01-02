@@ -10,6 +10,10 @@ import {
   VenusIcon,
 } from "lucide-react";
 
+export type ActionResponse<T> = Promise<
+  { success: true; total?: number; data: T } | { success: false; error: string }
+>;
+
 export const allRequestMetaKey = [
   "basePath",
   "href",
