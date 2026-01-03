@@ -178,6 +178,18 @@ export const sharedSchemas = {
     { error: "Pilih rentang tanggal yang valid." },
   ),
 
+  jsonString: <T extends z.ZodTypeAny>(schema: T) =>
+    z
+      .string()
+      .transform((str) => {
+        try {
+          return JSON.parse(str);
+        } catch {
+          throw new Error(messages.invalid("JSON"));
+        }
+      })
+      .pipe(schema),
+
   email: z
     .email({ error: messages.invalid("Alamat email") })
     .trim()
