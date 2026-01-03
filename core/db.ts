@@ -8,12 +8,12 @@ export const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 export type WithDataTableConfig = {
   disabled?: ("pagination" | "sorting" | "globalFilter")[];
+  globalFilter: {
+    columns: AnyPgColumn[];
+  };
   sorting: {
     default: { column: AnyPgColumn; desc: boolean };
     columns: { id: string; column: AnyPgColumn }[];
-  };
-  globalFilter: {
-    columns: AnyPgColumn[];
   };
 };
 
@@ -24,6 +24,7 @@ export function withDataTable<T extends PgSelect>(
 ) {
   const { disabled, sorting, globalFilter } = config;
 
+  // * Global Filter
   if (!disabled?.includes("globalFilter") && state.globalFilter)
     qb = qb.where(
       or(
@@ -31,6 +32,7 @@ export function withDataTable<T extends PgSelect>(
       ),
     );
 
+  // * Sorting
   if (!disabled?.includes("sorting"))
     if (state.sorting.length) {
       state.sorting.forEach(({ id, desc: isDesc }) => {
@@ -43,6 +45,7 @@ export function withDataTable<T extends PgSelect>(
       qb = qb.orderBy(isDesc ? desc(column) : asc(column));
     }
 
+  // * Pagination
   if (!disabled?.includes("pagination"))
     qb = qb
       .limit(state.pagination.pageSize)

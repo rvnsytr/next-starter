@@ -39,6 +39,7 @@ export async function listUsers(
   const dataQb = db.select().from(userTable).$dynamic();
 
   const config: WithDataTableConfig = {
+    globalFilter: { columns: [userTable.name, userTable.email] },
     sorting: {
       default: { column: userTable.createdAt, desc: true },
       columns: [
@@ -50,7 +51,6 @@ export async function listUsers(
         { id: "createdAt", column: userTable.createdAt },
       ],
     },
-    globalFilter: { columns: [userTable.name, userTable.email] },
   };
 
   const [count] = await withDataTable(countQb, state, {

@@ -825,7 +825,7 @@ export function ProfileForm() {
 // #region USER
 
 const createUserColumn = createColumnHelper<AuthSession["user"]>();
-const getUserColumn = (
+const getUserColumns = (
   currentUserId: string,
   count?: Record<Role | UserStatus, number>,
 ) => [
@@ -947,7 +947,7 @@ export function UserDataTable() {
         key: "/auth/list-users",
         fetcher: async (state) => await listUsers(user.role, state),
       }}
-      getColumns={(res) => getUserColumn(user.id, res?.count)}
+      getColumns={(res) => getUserColumns(user.id, res?.count)}
       searchPlaceholder="Cari Pengguna..."
       getRowId={(row) => row.id}
       enableRowSelection={(row) => row.original.id !== user.id}
