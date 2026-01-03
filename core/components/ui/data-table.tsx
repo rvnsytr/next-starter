@@ -90,7 +90,7 @@ import {
 export type DataTableState = {
   pagination: PaginationState;
   sorting: SortingState;
-  // columnFilters: ColumnFiltersState,
+  columnFilters: z.infer<typeof columnFilterSchema>[];
   globalFilter: string;
 };
 
@@ -136,9 +136,12 @@ export type DataTableProps<TData> = ToolBoxProps<TData> & {
 const pageSizes = [5, 10, 20, 30, 40, 50, 100];
 const defaultPageSize = pageSizes[1];
 
-const columnFiltersSchema = z.object({
-  operator: z.string(),
-  values: z.union([z.string(), z.number(), z.date()]).array(),
+const columnFilterSchema = z.object({
+  id: z.string(),
+  value: z.object({
+    operator: z.string(),
+    values: z.union([z.string(), z.number(), z.date()]).array(),
+  }),
 });
 
 const arrayQSParser = parseAsArrayOf(parseAsString).withDefault([]);
@@ -215,7 +218,7 @@ export const columnFiltersParser = createParser<ColumnFiltersState>({
 
     return value
       .map(({ id, value: rawValue }) => {
-        const parsed = columnFiltersSchema.safeParse(rawValue);
+        const parsed = columnFilterSchema.shape.value.safeParse(rawValue);
         if (!parsed.success) return null;
 
         const { operator, values } = parsed.data;
@@ -294,13 +297,14 @@ export function DataTable<TData, TCount extends string>({
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
   const allState: DataTableState = useMemo(() => {
+    const parsed = columnFilterSchema.array().safeParse(columnFilters);
     return {
-      pagination,
-      sorting,
-      // columnFilters,
       globalFilter: debouncedGlobalFilter,
+      columnFilters: parsed.success ? parsed.data : [],
+      sorting,
+      pagination,
     };
-  }, [debouncedGlobalFilter, sorting, pagination]);
+  }, [debouncedGlobalFilter, columnFilters, sorting, pagination]);
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(

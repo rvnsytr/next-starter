@@ -7,10 +7,8 @@ import * as schema from "./schema.db";
 export const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 export type WithDataTableConfig = {
-  disabled?: ("pagination" | "sorting" | "globalFilter")[];
-  globalFilter: {
-    columns: AnyPgColumn[];
-  };
+  disabled?: ("globalFilter" | "columnFilter" | "sorting" | "pagination")[];
+  globalFilter: { columns: AnyPgColumn[] };
   sorting: {
     default: { column: AnyPgColumn; desc: boolean };
     columns: { id: string; column: AnyPgColumn }[];
@@ -31,6 +29,8 @@ export function withDataTable<T extends PgSelect>(
         ...globalFilter.columns.map((c) => ilike(c, `%${state.globalFilter}%`)),
       ),
     );
+
+  // TODO: Column Filters
 
   // * Sorting
   if (!disabled?.includes("sorting"))
