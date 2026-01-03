@@ -2,7 +2,12 @@
 
 import { ActionResponse, messages } from "@/core/constants";
 import { useDebounce, useIsMobile } from "@/core/hooks";
-import { cn, formatNumber } from "@/core/utils";
+import {
+  allDateFilterOperator,
+  allNumberFilterOperator,
+  cn,
+  formatNumber,
+} from "@/core/utils";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -20,6 +25,7 @@ import {
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
+import { isValid } from "date-fns";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -38,7 +44,7 @@ import {
   useQueryState,
   useQueryStates,
 } from "nuqs";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import z from "zod";
 import { Button } from "./button";
@@ -81,33 +87,6 @@ import {
   TableRow,
 } from "./table";
 
-const pageSizes = [5, 10, 20, 30, 40, 50, 100];
-const defaultPageSize = pageSizes[1];
-
-const arrayQSParser = parseAsArrayOf(parseAsString, ";").withDefault([]);
-
-const recordQSParser = parseAsJson(
-  z.record(z.string(), z.boolean()),
-).withDefault({});
-
-const sortingParser = createParser<SortingState>({
-  parse: (value) => {
-    if (!value) return [];
-    return value.split(";").map((part) => {
-      const [id, dir] = part.split("-");
-      return { id, desc: dir === "desc" };
-    });
-  },
-  serialize: (value) => {
-    // Nuqs TS error? it should be `string | null`
-    if (!value || value.length === 0) return null as unknown as string;
-    return value.map((s) => `${s.id}-${s.desc ? "desc" : "asc"}`).join(";");
-  },
-}).withDefault([]);
-
-export const mutateDataTable = (key: string) =>
-  mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
-
 export type DataTableState = {
   pagination: PaginationState;
   sorting: SortingState;
@@ -127,7 +106,7 @@ type CoreDataTableProps<TData, TCount extends string> = {
   getColumns: (
     res?: Extract<ActionResponse<TData[], TCount>, { success: true }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) => ColumnDef<TData, any>[]; // success only
+  ) => ColumnDef<TData, any>[];
 };
 
 type ToolBoxProps<TData> = {
@@ -142,7 +121,6 @@ type ToolBoxProps<TData> = {
 
 export type DataTableProps<TData> = ToolBoxProps<TData> & {
   id?: string;
-
   caption?: string;
   placeholder?: string;
   className?: string;
@@ -154,6 +132,106 @@ export type DataTableProps<TData> = ToolBoxProps<TData> & {
     footer?: string;
   };
 };
+
+const pageSizes = [5, 10, 20, 30, 40, 50, 100];
+const defaultPageSize = pageSizes[1];
+
+const columnFiltersSchema = z.object({
+  operator: z.string(),
+  values: z.union([z.string(), z.number(), z.date()]).array(),
+});
+
+const arrayQSParser = parseAsArrayOf(parseAsString).withDefault([]);
+
+const boolRecordQSParser = parseAsJson(
+  z.record(z.string(), z.boolean()),
+).withDefault({});
+
+const sortingParser = createParser<SortingState>({
+  parse: (value) => {
+    if (!value) return [];
+    return value
+      .split(";")
+      .map((part) => {
+        const [id, rawDir] = part.split(":");
+        const parsed = z.enum(["asc", "desc"]).safeParse(rawDir);
+        if (!id || !parsed.success) return null;
+        return { id, desc: parsed.data === "desc" };
+      })
+      .filter((v) => !!v);
+  },
+  serialize: (value) => {
+    // Nuqs TS bug? it should returned `string | null`
+    if (!value || !value.length) return null as unknown as string;
+    return value.map((s) => `${s.id}:${s.desc ? "desc" : "asc"}`).join(";");
+  },
+}).withDefault([]);
+
+export const columnFiltersParser = createParser<ColumnFiltersState>({
+  parse: (value) => {
+    if (!value) return [];
+    return value
+      .split(";")
+      .map((part) => {
+        const [id, operator, rawValues = ""] = part.split(":");
+        if (!id || !operator) return null;
+
+        const isDateFilter = z
+          .enum(allDateFilterOperator)
+          .safeParse(operator).success;
+
+        const isNumberFilter = z
+          .enum(allNumberFilterOperator)
+          .safeParse(operator).success;
+
+        const values = rawValues
+          ? rawValues
+              .split(",")
+              .map((v) => {
+                if (isDateFilter) {
+                  const d = new Date(Number(v));
+                  if (!isValid(d)) return null;
+                  else return d;
+                }
+
+                if (isNumberFilter) {
+                  const n = Number(v.slice(1));
+                  if (Number.isNaN(n)) return null;
+                  else return n;
+                }
+
+                return v;
+              })
+              .filter((v) => !!v)
+          : [];
+
+        return { id, value: { operator, values } };
+      })
+      .filter((v) => !!v);
+  },
+  serialize: (value) => {
+    // Nuqs TS bug? it should returned `string | null`
+    if (!value || !value.length) return null as unknown as string;
+
+    return value
+      .map(({ id, value: rawValue }) => {
+        const parsed = columnFiltersSchema.safeParse(rawValue);
+        if (!parsed.success) return null;
+
+        const { operator, values } = parsed.data;
+        const serializedValues = values.map((v) =>
+          v instanceof Date ? String(v.getTime()) : String(v),
+        );
+
+        return `${id}:${operator}:${serializedValues.join(",")}`;
+      })
+      .filter((v) => !!v)
+      .join(";");
+  },
+}).withDefault([]);
+
+export const mutateDataTable = (key: string) =>
+  mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
 
 export function DataTable<TData, TCount extends string>({
   id,
@@ -180,37 +258,37 @@ export function DataTable<TData, TCount extends string>({
 
   const [columnVisibility, setColumnVisibility] = useQueryState(
     `${prefix}col-vis`,
-    recordQSParser,
+    boolRecordQSParser,
   );
 
   const [columnPinning, setColumnPinning] = useQueryStates(
     { left: arrayQSParser, right: arrayQSParser },
-    { urlKeys: { left: `${prefix}col-pl`, right: `${prefix}col-pr` } },
+    { urlKeys: { left: `${prefix}pin-l`, right: `${prefix}pin-r` } },
   );
 
   const [rowSelection, setRowSelection] = useQueryState(
-    `${prefix}row-sel`,
-    recordQSParser,
+    `${prefix}row-selected`,
+    boolRecordQSParser,
   );
+
+  const [globalFilter, setGlobalFilter] = useQueryState(
+    `${prefix}global-filter`,
+    parseAsString.withDefault(""),
+  );
+
+  const [columnFilters, setColumnFilters] = useQueryState(
+    `${prefix}filter`,
+    columnFiltersParser,
+  );
+
+  const [sorting, setSorting] = useQueryState(`${prefix}sort`, sortingParser);
 
   const [pagination, setPagination] = useQueryStates(
     {
       pageIndex: parseAsInteger.withDefault(0),
       pageSize: parseAsInteger.withDefault(defaultPageSize),
     },
-    { urlKeys: { pageIndex: `${prefix}pg-i`, pageSize: `${prefix}pg-s` } },
-  );
-
-  const [sorting, setSorting] = useQueryState(
-    `${prefix}col-sort`,
-    sortingParser,
-  );
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const [globalFilter, setGlobalFilter] = useQueryState(
-    `${prefix}fil-glo`,
-    parseAsString.withDefault(""),
+    { urlKeys: { pageIndex: `${prefix}page-i`, pageSize: `${prefix}page-s` } },
   );
 
   const debouncedGlobalFilter = useDebounce(globalFilter);
@@ -222,7 +300,7 @@ export function DataTable<TData, TCount extends string>({
       // columnFilters,
       globalFilter: debouncedGlobalFilter,
     };
-  }, [pagination, sorting, debouncedGlobalFilter]);
+  }, [debouncedGlobalFilter, sorting, pagination]);
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
@@ -242,10 +320,10 @@ export function DataTable<TData, TCount extends string>({
     data: data?.success ? data.data : [],
 
     state: {
-      pagination,
-      sorting,
       globalFilter,
+      sorting,
       columnFilters,
+      pagination,
       columnVisibility,
       rowSelection,
       columnPinning,
@@ -266,25 +344,25 @@ export function DataTable<TData, TCount extends string>({
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
 
-    // * Pagination
-    manualPagination: isServer,
-    rowCount: data?.success ? (data.count.total ?? 0) : 0,
-    onPaginationChange: setPagination,
-    getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
+    // * Global Searching
+    manualFiltering: isServer,
+    globalFilterFn: "includesString",
+    onGlobalFilterChange: setGlobalFilter,
+
+    // TODO: Column Filtering
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: !isServer ? getFilteredRowModel() : undefined,
 
     // * Column Sorting
     manualSorting: isServer,
     onSortingChange: setSorting,
     getSortedRowModel: !isServer ? getSortedRowModel() : undefined,
 
-    // TODO: Column Filtering
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-
-    // * Global Searching
-    manualFiltering: isServer,
-    globalFilterFn: "includesString",
-    onGlobalFilterChange: setGlobalFilter,
+    // * Pagination
+    manualPagination: isServer,
+    rowCount: data?.success ? (data.count.total ?? 0) : 0,
+    onPaginationChange: setPagination,
+    getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
   });
 
   if (error) return <ErrorFallback error={error} />;
@@ -299,8 +377,6 @@ export function DataTable<TData, TCount extends string>({
         className={classNames?.toolbox}
         {...props}
       />
-
-      {/* <pre>{JSON.stringify(allState, null, 2)}</pre> */}
 
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersMobileContainer className={classNames?.filterContainer}>
@@ -702,9 +778,13 @@ function RowsPerPage<TData>({
         </SelectTrigger>
 
         <SelectContent>
-          {pageSizes.map((item) => (
-            <SelectItem key={item} value={String(item)}>
-              {formatNumber(item)}
+          {pageSizes.map((v) => (
+            <SelectItem
+              key={v}
+              value={String(v)}
+              className={cn(v === defaultPageSize && "font-semibold")}
+            >
+              {formatNumber(v)}
             </SelectItem>
           ))}
         </SelectContent>

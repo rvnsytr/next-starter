@@ -101,41 +101,55 @@ export type ColumnDataType =
   | "multiOption";
 
 /* Operators for text data */
-export type TextFilterOperator = "contains" | "does not contain";
+export const allTextFilterOperator = ["contains", "does not contain"] as const;
+export type TextFilterOperator = (typeof allTextFilterOperator)[number];
 
 /* Operators for number data */
-export type NumberFilterOperator =
-  | "is"
-  | "is not"
-  | "is less than"
-  | "is greater than or equal to"
-  | "is greater than"
-  | "is less than or equal to"
-  | "is between"
-  | "is not between";
+export const allNumberFilterOperator = [
+  "is",
+  "is not",
+  "is less than",
+  "is greater than or equal to",
+  "is greater than",
+  "is less than or equal to",
+  "is between",
+  "is not between",
+] as const;
+export type NumberFilterOperator = (typeof allNumberFilterOperator)[number];
 
 /* Operators for date data */
-export type DateFilterOperator =
-  | "is"
-  | "is not"
-  | "is before"
-  | "is on or after"
-  | "is after"
-  | "is on or before"
-  | "is between"
-  | "is not between";
+export const allDateFilterOperator = [
+  "is",
+  "is not",
+  "is before",
+  "is on or after",
+  "is after",
+  "is on or before",
+  "is between",
+  "is not between",
+] as const;
+export type DateFilterOperator = (typeof allDateFilterOperator)[number];
 
 /* Operators for option data */
-export type OptionFilterOperator = "is" | "is not" | "is any of" | "is none of";
+export const allOptionFilterOperator = [
+  "is",
+  "is not",
+  "is any of",
+  "is none of",
+] as const;
+export type OptionFilterOperator = (typeof allOptionFilterOperator)[number];
 
 /* Operators for multi-option data */
+export const allMultiOptionFilterOperator = [
+  "include",
+  "exclude",
+  "include any of",
+  "include all of",
+  "exclude if any of",
+  "exclude if all",
+] as const;
 export type MultiOptionFilterOperator =
-  | "include"
-  | "exclude"
-  | "include any of"
-  | "include all of"
-  | "exclude if any of"
-  | "exclude if all";
+  (typeof allMultiOptionFilterOperator)[number];
 
 /* Maps filter operators to their respective data types */
 type FilterOperators = {

@@ -338,9 +338,7 @@ export function ActiveFilters<TData>({ table }: { table: Table<TData> }) {
                 value: FilterModel<"multiOption", TData>;
               },
               column,
-              meta as ColumnMeta<TData, unknown> & {
-                type: "multiOption";
-              },
+              meta as ColumnMeta<TData, unknown> & { type: "multiOption" },
               table,
             );
           default:
@@ -802,6 +800,7 @@ export function FilterValueOptionDisplay<TData, TValue>({
       </span>
     );
   }
+
   const name = columnMeta.displayName.toLowerCase();
   const pluralName = name.endsWith("s") ? `${name}es` : `${name}s`;
   const hasOptionIcons = !options?.some((o) => !o.icon);
