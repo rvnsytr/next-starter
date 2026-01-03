@@ -3,7 +3,7 @@
 import { auth } from "@/core/auth";
 import { DataTableState } from "@/core/components/ui/data-table";
 import { ActionResponse, messages } from "@/core/constants";
-import { db, withDataTable, WithDataTableConfig } from "@/core/db";
+import { db, defineWDTConfig, withDataTable } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
 import { sql } from "drizzle-orm";
@@ -38,25 +38,24 @@ export async function listUsers(
     .$dynamic();
   const dataQb = db.select().from(userTable).$dynamic();
 
-  const config: WithDataTableConfig = {
-    globalFilter: { columns: [userTable.name, userTable.email] },
-    sorting: {
-      default: { column: userTable.createdAt, desc: true },
-      columns: [
-        { id: "name", column: userTable.name },
-        { id: "email", column: userTable.email },
-        { id: "status", column: userTable.banned },
-        { id: "role", column: userTable.role },
-        { id: "updatedAt", column: userTable.updatedAt },
-        { id: "createdAt", column: userTable.createdAt },
-      ],
+  const config = defineWDTConfig({
+    columns: {
+      name: userTable.name,
+      email: userTable.email,
+      status: userTable.banned,
+      role: userTable.role,
+      updatedAt: userTable.updatedAt,
+      createdAt: userTable.createdAt,
     },
-  };
+    globalFilterBy: ["name", "email"],
+    defaultOrderBy: { id: "createdAt", desc: true },
+  });
 
   const [count] = await withDataTable(countQb, state, {
     disabled: ["pagination", "sorting"],
     ...config,
   }).execute();
+
   const data = await withDataTable(dataQb, state, config).execute();
 
   return { success: true, count, data: data as AuthSession["user"][] };

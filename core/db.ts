@@ -6,43 +6,51 @@ import * as schema from "./schema.db";
 
 export const db = drizzle(process.env.DATABASE_URL!, { schema });
 
-export type WithDataTableConfig = {
+type WDTConfigColumns<I extends string = string> = Record<I, AnyPgColumn>;
+
+export type WDTConfig<TColumns extends WDTConfigColumns> = {
   disabled?: ("globalFilter" | "columnFilter" | "sorting" | "pagination")[];
-  globalFilter: { columns: AnyPgColumn[] };
-  sorting: {
-    default: { column: AnyPgColumn; desc: boolean };
-    columns: { id: string; column: AnyPgColumn }[];
-  };
+  columns: TColumns;
+  globalFilterBy?: (keyof TColumns)[];
+  defaultOrderBy?: { id: keyof TColumns; desc: boolean };
 };
 
-export function withDataTable<T extends PgSelect>(
-  qb: T,
-  state: DataTableState,
-  config: WithDataTableConfig,
-) {
-  const { disabled, sorting, globalFilter } = config;
+export const defineWDTConfig = <T extends WDTConfigColumns>(
+  config: WDTConfig<T>,
+) => config;
+
+export function withDataTable<
+  TQueryBuilder extends PgSelect,
+  TConfig extends WDTConfigColumns,
+>(qb: TQueryBuilder, state: DataTableState, config: WDTConfig<TConfig>) {
+  const { disabled, columns, globalFilterBy, defaultOrderBy } = config;
 
   // * Global Filter
-  if (!disabled?.includes("globalFilter") && state.globalFilter)
-    qb = qb.where(
-      or(
-        ...globalFilter.columns.map((c) => ilike(c, `%${state.globalFilter}%`)),
-      ),
+  if (
+    !disabled?.includes("globalFilter") &&
+    state.globalFilter &&
+    globalFilterBy
+  ) {
+    const conditions = globalFilterBy.map((id) =>
+      ilike(columns[id], `%${state.globalFilter}%`),
     );
 
+    qb = qb.where(or(...conditions));
+  }
+
   // TODO: Column Filters
+  if (!disabled?.includes("columnFilter") && state.columnFilters)
+    state.columnFilters.forEach(() => {});
 
   // * Sorting
   if (!disabled?.includes("sorting"))
     if (state.sorting.length) {
       state.sorting.forEach(({ id, desc: isDesc }) => {
-        const meta = sorting.columns.find((c) => c.id === id);
-        if (!meta) return;
-        qb = qb.orderBy(isDesc ? desc(meta.column) : asc(meta.column));
+        qb = qb.orderBy(isDesc ? desc(columns[id]) : asc(columns[id]));
       });
-    } else {
-      const { column, desc: isDesc } = sorting.default;
-      qb = qb.orderBy(isDesc ? desc(column) : asc(column));
+    } else if (defaultOrderBy) {
+      const { id, desc: isDesc } = defaultOrderBy;
+      qb = qb.orderBy(isDesc ? desc(columns[id]) : asc(columns[id]));
     }
 
   // * Pagination
