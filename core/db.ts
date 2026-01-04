@@ -1,4 +1,19 @@
-import { and, asc, desc, eq, ilike, not, or } from "drizzle-orm";
+import { isValid } from "date-fns";
+import {
+  and,
+  asc,
+  between,
+  desc,
+  eq,
+  gt,
+  gte,
+  ilike,
+  inArray,
+  lt,
+  lte,
+  not,
+  or,
+} from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
 import { DataTableState } from "./components/ui/data-table";
@@ -13,6 +28,10 @@ export type WDTConfig<Columns extends WDTConfigColumns> = {
   disabled?: ("globalFilter" | "columnFilter" | "sorting" | "pagination")[];
   columns: Columns;
   globalFilterBy?: (keyof Columns)[];
+  columnFilterParser?: ({ id: keyof Columns } & (
+    | { type: "number" | "date" }
+    | { type: "boolean"; condition: (value: string | number | Date) => boolean }
+  ))[];
   defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
 
@@ -24,17 +43,15 @@ export function withDataTable<
   TQueryBuilder extends PgSelect,
   TConfig extends WDTConfigColumns,
 >(qb: TQueryBuilder, state: DataTableState, config: WDTConfig<TConfig>) {
-  const { disabled, columns, globalFilterBy, defaultOrderBy } = config;
-
   // * Global Filter
   if (
-    !disabled?.includes("globalFilter") &&
+    !config.disabled?.includes("globalFilter") &&
     state.globalFilter &&
-    globalFilterBy
+    config.globalFilterBy
   ) {
-    const conditions = globalFilterBy
+    const conditions = config.globalFilterBy
       .map((id) => {
-        const col = columns[id] ?? null;
+        const col = config.columns[id] ?? null;
         if (!col) return null;
         return ilike(col, `%${state.globalFilter}%`);
       })
@@ -44,62 +61,92 @@ export function withDataTable<
   }
 
   // TODO: Column Filters
-  if (!disabled?.includes("columnFilter") && state.columnFilters) {
+  if (!config.disabled?.includes("columnFilter") && state.columnFilters) {
     const ilikeOp: FilterOperators[] = ["contains"];
     const notIlikeOp: FilterOperators[] = ["does not contain"];
 
     const eqOp: FilterOperators[] = ["is"];
     const notEqOp: FilterOperators[] = ["is not"];
 
-    // const ltOp: FilterOperators[] = ["is less than", "is before"];
-    // const lteOp: FilterOperators[] = [
-    //   "is less than or equal to",
-    //   "is on or before",
-    // ];
-    // const gtOp: FilterOperators[] = ["is greater than", "is after"];
-    // const gteOp: FilterOperators[] = [
-    //   "is greater than or equal to",
-    //   "is on or after",
-    // ];
-    // const betweenOp: FilterOperators[] = ["is between"];
-    // const notBetweenOp: FilterOperators[] = ["is not between"];
+    const ltOp: FilterOperators[] = ["is less than", "is before"];
+    const lteOp: FilterOperators[] = [
+      "is less than or equal to",
+      "is on or before",
+    ];
+    const gtOp: FilterOperators[] = ["is greater than", "is after"];
+    const gteOp: FilterOperators[] = [
+      "is greater than or equal to",
+      "is on or after",
+    ];
 
-    // const anyOfOp: FilterOperators[] = ["is any of", "include any of"];
-    // const noneOfOp: FilterOperators[] = ["is none of"];
-    // const includeAllOp: FilterOperators[] = ["include all of"];
+    const betweenOp: FilterOperators[] = ["is between"];
+    const notBetweenOp: FilterOperators[] = ["is not between"];
+
+    const anyOfOp: FilterOperators[] = ["is any of", "include any of"];
+    const noneOfOp: FilterOperators[] = ["is none of"];
+    const includeAllOp: FilterOperators[] = ["include all of"];
     // const excludeAnyOp: FilterOperators[] = ["exclude if any of"];
     // const excludeAllOp: FilterOperators[] = ["exclude if all"];
 
     const conditions = state.columnFilters
       .map(({ id, value: { operator, values } }) => {
-        const col = columns[id];
+        const col = config.columns[id];
         if (!col || !values.length) return null;
 
-        if (ilikeOp.includes(operator)) return ilike(col, `%${values[0]}%`);
+        let parsedValues: (string | number | boolean | Date)[] = values;
+
+        const withParse = config.columnFilterParser?.find((v) => v.id === id);
+        if (withParse) {
+          if (withParse.type === "date")
+            parsedValues = values
+              .map((v) => {
+                const d = v instanceof Date ? v : new Date(v);
+                if (!isValid(d)) return null;
+                return d;
+              })
+              .filter((v) => !!v);
+
+          if (withParse.type === "number")
+            parsedValues = values
+              .map((v) => {
+                const n = Number(v);
+                if (isNaN(n)) return null;
+                return n;
+              })
+              .filter((v) => v !== null);
+
+          if (withParse.type === "boolean")
+            parsedValues = values
+              .map((v) => withParse.condition(v))
+              .filter((v) => v !== null);
+        }
+
+        if (ilikeOp.includes(operator))
+          return ilike(col, `%${parsedValues[0]}%`);
         if (notIlikeOp.includes(operator))
-          return not(ilike(col, `%${values[0]}%`));
+          return not(ilike(col, `%${parsedValues[0]}%`));
 
-        if (eqOp.includes(operator)) return eq(col, values[0]);
-        if (notEqOp.includes(operator)) return not(eq(col, values[0]));
+        if (eqOp.includes(operator)) return eq(col, parsedValues[0]);
+        if (notEqOp.includes(operator)) return not(eq(col, parsedValues[0]));
 
-        // if (ltOp.includes(operator)) return lt(col, values[0]);
-        // if (lteOp.includes(operator)) return lte(col, values[0]);
-        // if (gtOp.includes(operator)) return gt(col, values[0]);
-        // if (gteOp.includes(operator)) return gte(col, values[0]);
+        if (ltOp.includes(operator)) return lt(col, parsedValues[0]);
+        if (lteOp.includes(operator)) return lte(col, parsedValues[0]);
+        if (gtOp.includes(operator)) return gt(col, parsedValues[0]);
+        if (gteOp.includes(operator)) return gte(col, parsedValues[0]);
 
-        // if (betweenOp.includes(operator))
-        //   return between(col, values[0], values[1]);
-        // if (notBetweenOp.includes(operator))
-        //   return not(between(col, values[0], values[1]));
+        if (betweenOp.includes(operator))
+          return between(col, parsedValues[0], parsedValues[1]);
+        if (notBetweenOp.includes(operator))
+          return not(between(col, parsedValues[0], parsedValues[1]));
 
-        // if (anyOfOp.includes(operator)) return inArray(col, values);
-        // if (noneOfOp.includes(operator)) return not(inArray(col, values));
-        // if (includeAllOp.includes(operator))
-        //   return and(...values.map((v) => eq(col, v)));
+        if (anyOfOp.includes(operator)) return inArray(col, parsedValues);
+        if (noneOfOp.includes(operator)) return not(inArray(col, parsedValues));
+        if (includeAllOp.includes(operator))
+          return and(...parsedValues.map((v) => eq(col, v)));
         // if (excludeAnyOp.includes(operator))
-        //   return not(or(...values.map((v) => eq(col, v))));
+        //   return not(or(...parsedValues.map((v) => eq(col, v))));
         // if (excludeAllOp.includes(operator))
-        //   return not(and(...values.map((v) => eq(col, v))));
+        //   return not(and(...parsedValues.map((v) => eq(col, v))));
 
         return null;
       })
@@ -109,12 +156,12 @@ export function withDataTable<
   }
 
   // * Sorting
-  if (!disabled?.includes("sorting")) {
+  if (!config.disabled?.includes("sorting")) {
     const sortingHandler = () => {
       if (state.sorting.length) {
         const conditions = state.sorting
           .map(({ id, desc: isDesc }) => {
-            const col = columns[id] ?? null;
+            const col = config.columns[id] ?? null;
             if (!col) return null;
             return isDesc ? desc(col) : asc(col);
           })
@@ -123,9 +170,11 @@ export function withDataTable<
         if (conditions.length) return (qb = qb.orderBy(...conditions));
       }
 
-      if (defaultOrderBy) {
-        const { id, desc: isDesc } = defaultOrderBy;
-        qb = qb.orderBy(isDesc ? desc(columns[id]) : asc(columns[id]));
+      if (config.defaultOrderBy) {
+        const { id, desc: isDesc } = config.defaultOrderBy;
+        const col = config.columns[id] ?? null;
+        if (!col) return null;
+        qb = qb.orderBy(isDesc ? desc(col) : asc(col));
       }
     };
 
@@ -133,7 +182,7 @@ export function withDataTable<
   }
 
   // * Pagination
-  if (!disabled?.includes("pagination"))
+  if (!config.disabled?.includes("pagination"))
     qb = qb
       .limit(state.pagination.pageSize)
       .offset(state.pagination.pageIndex * state.pagination.pageSize);

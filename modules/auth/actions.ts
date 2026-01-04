@@ -36,6 +36,7 @@ export async function listUsers(
     })
     .from(userTable)
     .$dynamic();
+
   const dataQb = db.select().from(userTable).$dynamic();
 
   const config = defineWDTConfig({
@@ -48,6 +49,15 @@ export async function listUsers(
       createdAt: userTable.createdAt,
     },
     globalFilterBy: ["name", "email"],
+    columnFilterParser: [
+      {
+        id: "status",
+        type: "boolean",
+        condition: (value) => value === "banned",
+      },
+      { id: "updatedAt", type: "date" },
+      { id: "createdAt", type: "date" },
+    ],
     defaultOrderBy: { id: "createdAt", desc: true },
   });
 
