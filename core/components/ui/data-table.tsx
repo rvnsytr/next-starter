@@ -3,8 +3,11 @@
 import { ActionResponse, messages } from "@/core/constants";
 import { useDebounce, useIsMobile } from "@/core/hooks";
 import {
-  allDateFilterOperator,
-  allNumberFilterOperator,
+  allDateFilterOperators,
+  allMultiOptionFilterOperators,
+  allNumberFilterOperators,
+  allOptionFilterOperators,
+  allTextFilterOperators,
   cn,
   formatNumber,
 } from "@/core/utils";
@@ -138,10 +141,24 @@ const defaultPageSize = pageSizes[1];
 
 const columnFilterSchema = z.object({
   id: z.string(),
-  value: z.object({
-    operator: z.string(),
-    values: z.union([z.string(), z.number(), z.date()]).array(),
-  }),
+  value: z.union([
+    z.object({
+      operator: z.enum([
+        ...allTextFilterOperators,
+        ...allOptionFilterOperators,
+        ...allMultiOptionFilterOperators,
+      ]),
+      values: z.string().array(),
+    }),
+    z.object({
+      operator: z.enum(allNumberFilterOperators),
+      values: z.number().array(),
+    }),
+    z.object({
+      operator: z.enum(allDateFilterOperators),
+      values: z.date().array(),
+    }),
+  ]),
 });
 
 const arrayQSParser = parseAsArrayOf(parseAsString).withDefault([]);
@@ -180,11 +197,11 @@ export const columnFiltersParser = createParser<ColumnFiltersState>({
         if (!id || !operator) return null;
 
         const isDateFilter = z
-          .enum(allDateFilterOperator)
+          .enum(allDateFilterOperators)
           .safeParse(operator).success;
 
         const isNumberFilter = z
-          .enum(allNumberFilterOperator)
+          .enum(allNumberFilterOperators)
           .safeParse(operator).success;
 
         const values = rawValues
@@ -300,7 +317,7 @@ export function DataTable<TData, TCount extends string>({
     const parsed = columnFilterSchema.array().safeParse(columnFilters);
     return {
       globalFilter: debouncedGlobalFilter,
-      columnFilters: parsed.success ? parsed.data : [],
+      columnFilters: parsed.data ?? [],
       sorting,
       pagination,
     };
@@ -375,6 +392,8 @@ export function DataTable<TData, TCount extends string>({
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
+      <pre>{JSON.stringify(allState, null, 2)}</pre>
+
       <ToolBox
         table={table}
         isMobile={isMobile}
