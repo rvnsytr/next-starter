@@ -42,7 +42,6 @@ import {
   createParser,
   parseAsArrayOf,
   parseAsInteger,
-  parseAsJson,
   parseAsString,
   useQueryState,
   useQueryStates,
@@ -163,9 +162,22 @@ const columnFilterSchema = z.object({
 
 const arrayQSParser = parseAsArrayOf(parseAsString).withDefault([]);
 
-const boolRecordQSParser = parseAsJson(
-  z.record(z.string(), z.boolean()),
-).withDefault({});
+const getRecordQSParser = (parseValue: boolean) =>
+  createParser<Record<string, boolean>>({
+    parse: (value) => {
+      if (!value) return {};
+      return Object.fromEntries(value.split(",").map((v) => [v, parseValue]));
+    },
+    serialize: (value) => {
+      const entries = Object.entries(value);
+      // Nuqs TS bug? it should returned `string | null`
+      if (!entries || !entries.length) return null as unknown as string;
+      return entries
+        .map(([k, v]) => (v === parseValue ? k : null))
+        .filter((v) => !!v)
+        .join(",");
+    },
+  }).withDefault({});
 
 const sortingParser = createParser<SortingState>({
   parse: (value) => {
@@ -278,7 +290,7 @@ export function DataTable<TData, TCount extends string>({
 
   const [columnVisibility, setColumnVisibility] = useQueryState(
     `${prefix}col-vis`,
-    boolRecordQSParser,
+    getRecordQSParser(false),
   );
 
   const [columnPinning, setColumnPinning] = useQueryStates(
@@ -288,7 +300,7 @@ export function DataTable<TData, TCount extends string>({
 
   const [rowSelection, setRowSelection] = useQueryState(
     `${prefix}row-selected`,
-    boolRecordQSParser,
+    getRecordQSParser(true),
   );
 
   const [globalFilter, setGlobalFilter] = useQueryState(
@@ -392,8 +404,6 @@ export function DataTable<TData, TCount extends string>({
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
-      <pre>{JSON.stringify(allState, null, 2)}</pre>
-
       <ToolBox
         table={table}
         isMobile={isMobile}
