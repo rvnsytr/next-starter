@@ -8,7 +8,7 @@ import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
 import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
-import { AuthSession, Role, UserStatus } from "./constants";
+import { AuthSession, Role } from "./constants";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await nextHeaders() });
@@ -17,7 +17,7 @@ export async function getSession() {
 export async function listUsers(
   role: Role,
   state: DataTableState,
-): Promise<ActionResponse<AuthSession["user"][], "user" | Role | UserStatus>> {
+): Promise<ActionResponse<AuthSession["user"][]>> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await nextHeaders(),
     body: { permissions: { user: ["list"] }, role },
@@ -52,7 +52,7 @@ export async function listUsers(
   });
 
   const [count] = await withDataTable(countQb, state, {
-    disabled: ["pagination", "sorting"],
+    disabled: ["sorting", "pagination"],
     ...config,
   }).execute();
 

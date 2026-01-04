@@ -96,17 +96,15 @@ export type DataTableState = {
   globalFilter: string;
 };
 
-type CoreDataTableProps<TData, TCount extends string> = {
+type CoreDataTableProps<TData> = {
   mode: "client" | "server";
   swr: {
     key: string;
-    fetcher: (
-      state: DataTableState,
-    ) => Promise<ActionResponse<TData[], TCount>>;
+    fetcher: (state: DataTableState) => Promise<ActionResponse<TData[]>>;
     config?: SWRConfiguration;
   };
   getColumns: (
-    res?: Extract<ActionResponse<TData[], TCount>, { success: true }>,
+    res?: Extract<ActionResponse<TData[]>, { success: true }>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => ColumnDef<TData, any>[];
 };
@@ -265,12 +263,12 @@ export const columnFiltersParser = createParser<ColumnFiltersState>({
 export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
 
-export function DataTable<TData, TCount extends string>({
-  id,
+export function DataTable<TData>({
   mode,
   swr,
   getColumns,
 
+  id,
   caption,
   placeholder,
   className,
@@ -280,7 +278,7 @@ export function DataTable<TData, TCount extends string>({
   enableRowSelection,
 
   ...props
-}: CoreDataTableProps<TData, TCount> &
+}: CoreDataTableProps<TData> &
   DataTableProps<TData> &
   Pick<TableOptions<TData>, "getRowId" | "enableRowSelection">) {
   const isServer = mode === "server";

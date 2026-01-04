@@ -944,8 +944,7 @@ export function FilterValueNumberDisplay<TData, TValue>({
   column,
   columnMeta,
 }: FilterValueDisplayProps<TData, TValue>) {
-  const maxFromMeta = columnMeta.max;
-  const cappedMax = maxFromMeta ?? 2147483647;
+  const cappedMax = columnMeta.max ?? 2147483647;
 
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterModel<"number", TData>)
@@ -1070,7 +1069,6 @@ export function FilterValueOptionController<TData, TValue>({
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
     const transformOptionFn = columnMeta.transformOptionFn;
-
     options = uniqueVals.map((v) =>
       transformOptionFn(v as ElementType<NonNullable<TValue>>),
     );
@@ -1141,30 +1139,28 @@ export function FilterValueOptionController<TData, TValue>({
       <CommandEmpty>{messages.empty}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          {options.map((v) => {
-            const checked = Boolean(filter?.values.includes(v.value));
-            const count = v.count ?? optionsCount[v.value] ?? 0;
-
+          {options.map(({ value, label, icon: Icon, count }) => {
+            const checked = Boolean(filter?.values.includes(value));
             return (
               <CommandItem
-                key={v.value}
-                onSelect={() => handleOptionSelect(v.value, !checked)}
+                key={value}
+                onSelect={() => handleOptionSelect(value, !checked)}
                 className="group flex items-center justify-between gap-2"
               >
                 <Checkbox checked={checked} />
 
-                {v.icon &&
-                  (isValidElement(v.icon) ? (
-                    v.icon
+                {Icon &&
+                  (isValidElement(Icon) ? (
+                    Icon
                   ) : (
-                    <v.icon
+                    <Icon
                       className={cn(
                         checked ? "text-foreground" : "text-muted-foreground",
                       )}
                     />
                   ))}
 
-                <span>{v.label}</span>
+                <span>{label}</span>
 
                 <span
                   className={cn(
@@ -1173,7 +1169,7 @@ export function FilterValueOptionController<TData, TValue>({
                   )}
                 >
                   {/* {count < 999 ? formatNumber(count) : "999+"} */}
-                  {formatNumber(count)}
+                  {formatNumber(count ?? optionsCount[value] ?? 0)}
                 </span>
               </CommandItem>
             );
@@ -1210,7 +1206,6 @@ export function FilterValueMultiOptionController<
   // We should dynamically generate them based on the column data
   else if (columnMeta.transformOptionFn) {
     const transformOptionFn = columnMeta.transformOptionFn;
-
     options = uniqueVals.map((v) =>
       transformOptionFn(v as ElementType<NonNullable<TValue>>),
     );
@@ -1302,30 +1297,28 @@ export function FilterValueMultiOptionController<
       <CommandEmpty>{messages.empty}</CommandEmpty>
       <CommandList>
         <CommandGroup>
-          {options.map((v) => {
-            const checked = Boolean(filter?.values[0]?.includes(v.value));
-            const count = v.count ?? optionsCount[v.value] ?? 0;
-
+          {options.map(({ value, label, icon: Icon, count }) => {
+            const checked = Boolean(filter?.values[0]?.includes(value));
             return (
               <CommandItem
-                key={v.value}
-                onSelect={() => handleOptionSelect(v.value, !checked)}
+                key={value}
+                onSelect={() => handleOptionSelect(value, !checked)}
                 className="group flex items-center justify-between gap-2"
               >
                 <Checkbox checked={checked} />
 
-                {v.icon &&
-                  (isValidElement(v.icon) ? (
-                    v.icon
+                {Icon &&
+                  (isValidElement(Icon) ? (
+                    Icon
                   ) : (
-                    <v.icon
+                    <Icon
                       className={cn(
                         checked ? "text-foreground" : "text-muted-foreground",
                       )}
                     />
                   ))}
 
-                <span>{v.label}</span>
+                <span>{label}</span>
 
                 <span
                   className={cn(
@@ -1334,7 +1327,7 @@ export function FilterValueMultiOptionController<
                   )}
                 >
                   {/* {count < 999 ? formatNumber(count) : "999+"} */}
-                  {formatNumber(count)}
+                  {formatNumber(count ?? optionsCount[value] ?? 0)}
                 </span>
               </CommandItem>
             );
@@ -1455,8 +1448,7 @@ export function FilterValueNumberController<TData, TValue>({
   column,
   columnMeta,
 }: ProperFilterValueMenuProps<TData, TValue>) {
-  const maxFromMeta = columnMeta.max;
-  const cappedMax = maxFromMeta ?? Number.MAX_SAFE_INTEGER;
+  const cappedMax = columnMeta.max ?? Number.MAX_SAFE_INTEGER;
 
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterModel<"number", TData>)

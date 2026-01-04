@@ -10,10 +10,10 @@ import {
   VenusIcon,
 } from "lucide-react";
 
-export type ActionResponse<TData, TCount extends string> =
+export type ActionResponse<TData> =
   | {
       success: true;
-      count: { total: number } & Record<TCount, number>;
+      count: { total: number } & Record<string, number>;
       data: TData;
     }
   | { success: false; error: string };

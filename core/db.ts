@@ -1,4 +1,4 @@
-import { and, asc, desc, ilike, not, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, not, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
 import { DataTableState } from "./components/ui/data-table";
@@ -46,17 +46,60 @@ export function withDataTable<
   // TODO: Column Filters
   if (!disabled?.includes("columnFilter") && state.columnFilters) {
     const ilikeOp: FilterOperators[] = ["contains"];
-
     const notIlikeOp: FilterOperators[] = ["does not contain"];
+
+    const eqOp: FilterOperators[] = ["is"];
+    const notEqOp: FilterOperators[] = ["is not"];
+
+    // const ltOp: FilterOperators[] = ["is less than", "is before"];
+    // const lteOp: FilterOperators[] = [
+    //   "is less than or equal to",
+    //   "is on or before",
+    // ];
+    // const gtOp: FilterOperators[] = ["is greater than", "is after"];
+    // const gteOp: FilterOperators[] = [
+    //   "is greater than or equal to",
+    //   "is on or after",
+    // ];
+    // const betweenOp: FilterOperators[] = ["is between"];
+    // const notBetweenOp: FilterOperators[] = ["is not between"];
+
+    // const anyOfOp: FilterOperators[] = ["is any of", "include any of"];
+    // const noneOfOp: FilterOperators[] = ["is none of"];
+    // const includeAllOp: FilterOperators[] = ["include all of"];
+    // const excludeAnyOp: FilterOperators[] = ["exclude if any of"];
+    // const excludeAllOp: FilterOperators[] = ["exclude if all"];
 
     const conditions = state.columnFilters
       .map(({ id, value: { operator, values } }) => {
-        const col = columns[id] ?? null;
-        if (!col) return null;
+        const col = columns[id];
+        if (!col || !values.length) return null;
 
         if (ilikeOp.includes(operator)) return ilike(col, `%${values[0]}%`);
         if (notIlikeOp.includes(operator))
           return not(ilike(col, `%${values[0]}%`));
+
+        if (eqOp.includes(operator)) return eq(col, values[0]);
+        if (notEqOp.includes(operator)) return not(eq(col, values[0]));
+
+        // if (ltOp.includes(operator)) return lt(col, values[0]);
+        // if (lteOp.includes(operator)) return lte(col, values[0]);
+        // if (gtOp.includes(operator)) return gt(col, values[0]);
+        // if (gteOp.includes(operator)) return gte(col, values[0]);
+
+        // if (betweenOp.includes(operator))
+        //   return between(col, values[0], values[1]);
+        // if (notBetweenOp.includes(operator))
+        //   return not(between(col, values[0], values[1]));
+
+        // if (anyOfOp.includes(operator)) return inArray(col, values);
+        // if (noneOfOp.includes(operator)) return not(inArray(col, values));
+        // if (includeAllOp.includes(operator))
+        //   return and(...values.map((v) => eq(col, v)));
+        // if (excludeAnyOp.includes(operator))
+        //   return not(or(...values.map((v) => eq(col, v))));
+        // if (excludeAllOp.includes(operator))
+        //   return not(and(...values.map((v) => eq(col, v))));
 
         return null;
       })

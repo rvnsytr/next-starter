@@ -141,6 +141,7 @@ import {
 } from "./components";
 import {
   allRoles,
+  allUserStatus,
   AuthSession,
   defaultRole,
   Role,
@@ -827,7 +828,7 @@ export function ProfileForm() {
 const createUserColumn = createColumnHelper<AuthSession["user"]>();
 const getUserColumns = (
   currentUserId: string,
-  count?: Record<Role | UserStatus, number>,
+  count?: Record<string, number>,
 ) => [
   createUserColumn.display({
     id: "select",
@@ -883,10 +884,10 @@ const getUserColumns = (
         displayName: "Status",
         type: "option",
         icon: CircleDotIcon,
-        transformOptionFn: (value) => {
+        options: allUserStatus.map((value) => {
           const { displayName, icon } = userStatusMeta[value];
           return { value, label: displayName, icon, count: count?.[value] };
-        },
+        }),
       },
     },
   ),
@@ -904,10 +905,10 @@ const getUserColumns = (
       displayName: "Role",
       type: "option",
       icon: ShieldUserIcon,
-      transformOptionFn: (value) => {
+      options: allRoles.map((value) => {
         const { displayName, icon } = rolesMeta[value];
         return { value, label: displayName, icon, count: count?.[value] };
-      },
+      }),
     },
   }),
   createUserColumn.accessor(({ updatedAt }) => updatedAt, {
