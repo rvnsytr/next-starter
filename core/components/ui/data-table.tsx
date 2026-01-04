@@ -41,6 +41,7 @@ import {
 import {
   createParser,
   parseAsArrayOf,
+  parseAsIndex,
   parseAsInteger,
   parseAsString,
   useQueryState,
@@ -96,6 +97,9 @@ export type DataTableState = {
   globalFilter: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DataTableColumnDef<TData> = ColumnDef<TData, any>[];
+
 type CoreDataTableProps<TData> = {
   mode: "client" | "server";
   swr: {
@@ -105,8 +109,7 @@ type CoreDataTableProps<TData> = {
   };
   getColumns: (
     res?: Extract<ActionResponse<TData[]>, { success: true }>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) => ColumnDef<TData, any>[];
+  ) => DataTableColumnDef<TData>;
 };
 
 type ToolBoxProps<TData> = {
@@ -197,68 +200,68 @@ const sortingParser = createParser<SortingState>({
   },
 }).withDefault([]);
 
-export const columnFiltersParser = createParser<ColumnFiltersState>({
-  parse: (value) => {
-    if (!value) return [];
-    return value
-      .split(";")
-      .map((part) => {
-        const [id, operator, rawValues = ""] = part.split(":");
-        if (!id || !operator) return null;
+export function columnFiltersParser<TData>(
+  getColumns: () => DataTableColumnDef<TData>,
+) {
+  return createParser<ColumnFiltersState>({
+    parse: (value) => {
+      if (!value) return [];
+      return value
+        .split(";")
+        .map((part) => {
+          const [id, operator, rawValues = ""] = part.split(":");
+          if (!id || !operator || !rawValues) return null;
 
-        const isDateFilter = z
-          .enum(allDateFilterOperators)
-          .safeParse(operator).success;
+          const col = getColumns().find((c) => c.id === id);
+          if (!col) return null;
 
-        const isNumberFilter = z
-          .enum(allNumberFilterOperators)
-          .safeParse(operator).success;
+          const values = rawValues
+            ? rawValues
+                .split(",")
+                .map((v) => {
+                  if (col.meta?.type === "date") {
+                    const d = new Date(Number(v));
+                    if (isValid(d)) return d;
+                    else return null;
+                  }
 
-        const values = rawValues
-          ? rawValues
-              .split(",")
-              .map((v) => {
-                if (isDateFilter) {
-                  const d = new Date(Number(v));
-                  if (!isValid(d)) return null;
-                  else return d;
-                }
+                  if (col.meta?.type === "number") {
+                    const n = Number(v.slice(1));
+                    if (!Number.isNaN(n)) return n;
+                    else return null;
+                  }
 
-                if (isNumberFilter) {
-                  const n = Number(v.slice(1));
-                  if (Number.isNaN(n)) return null;
-                  else return n;
-                }
+                  return v;
+                })
+                .filter((v) => !!v)
+            : [];
 
-                return v;
-              })
-              .filter((v) => !!v)
-          : [];
+          if (!values.length) return null;
+          return { id, value: { operator, values } };
+        })
+        .filter((v) => !!v);
+    },
+    serialize: (value) => {
+      // Nuqs TS bug? it should returned `string | null`
+      if (!value || !value.length) return null as unknown as string;
 
-        return { id, value: { operator, values } };
-      })
-      .filter((v) => !!v);
-  },
-  serialize: (value) => {
-    // Nuqs TS bug? it should returned `string | null`
-    if (!value || !value.length) return null as unknown as string;
+      return value
+        .map(({ id, value: rawValue }) => {
+          const parsed = columnFilterSchema.shape.value.safeParse(rawValue);
+          if (!parsed.success) return null;
 
-    return value
-      .map(({ id, value: rawValue }) => {
-        const parsed = columnFilterSchema.shape.value.safeParse(rawValue);
-        if (!parsed.success) return null;
+          const { operator, values } = parsed.data;
+          const serializedValues = values.map((v) =>
+            v instanceof Date ? v.getTime() : String(v),
+          );
 
-        const { operator, values } = parsed.data;
-        const serializedValues = values.map((v) =>
-          v instanceof Date ? String(v.getTime()) : String(v),
-        );
-
-        return `${id}:${operator}:${serializedValues.join(",")}`;
-      })
-      .filter((v) => !!v)
-      .join(";");
-  },
-}).withDefault([]);
+          return `${id}:${operator}:${serializedValues.join(",")}`;
+        })
+        .filter((v) => !!v)
+        .join(";");
+    },
+  }).withDefault([]);
+}
 
 export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
@@ -308,17 +311,17 @@ export function DataTable<TData>({
 
   const [columnFilters, setColumnFilters] = useQueryState(
     `${prefix}filter`,
-    columnFiltersParser,
+    columnFiltersParser(getColumns),
   );
 
   const [sorting, setSorting] = useQueryState(`${prefix}sort`, sortingParser);
 
   const [pagination, setPagination] = useQueryStates(
     {
-      pageIndex: parseAsInteger.withDefault(0),
+      pageIndex: parseAsIndex.withDefault(0),
       pageSize: parseAsInteger.withDefault(defaultPageSize),
     },
-    { urlKeys: { pageIndex: `${prefix}page-i`, pageSize: `${prefix}page-s` } },
+    { urlKeys: { pageIndex: `${prefix}page`, pageSize: `${prefix}size` } },
   );
 
   const debouncedGlobalFilter = useDebounce(globalFilter);
@@ -342,7 +345,7 @@ export function DataTable<TData>({
 
   const columns = useMemo(() => {
     if (data?.success) return getColumns(data);
-    return getColumns(undefined);
+    return getColumns();
   }, [data, getColumns]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
