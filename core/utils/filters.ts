@@ -84,7 +84,6 @@ export type ColumnOption = {
   /* An optional icon to display next to the label. */
   icon?: LucideIcon;
 
-  allValues?: string[];
   count?: number;
 };
 

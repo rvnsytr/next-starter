@@ -226,7 +226,7 @@ export function columnFiltersParser<TData>(
                   }
 
                   if (col.meta?.type === "number") {
-                    const n = Number(v.slice(1));
+                    const n = Number(v);
                     if (!Number.isNaN(n)) return n;
                     else return null;
                   }
@@ -326,7 +326,7 @@ export function DataTable<TData>({
 
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
-  const allState: DataTableState = useMemo(() => {
+  const allStates: DataTableState = useMemo(() => {
     const parsed = columnFilterSchema.array().safeParse(columnFilters);
     return {
       globalFilter: debouncedGlobalFilter,
@@ -338,8 +338,8 @@ export function DataTable<TData>({
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
-    isServer ? { ...baseArgument, ...allState } : baseArgument,
-    async () => await swr.fetcher(allState),
+    isServer ? { ...baseArgument, ...allStates } : baseArgument,
+    async () => await swr.fetcher(allStates),
     swr.config,
   );
 
