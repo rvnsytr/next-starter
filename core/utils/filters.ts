@@ -144,8 +144,8 @@ export const allMultiOptionFilterOperators = [
   "include",
   "exclude",
   "include any of",
-  "include all of",
   "exclude if any of",
+  "include all of",
   "exclude if all",
 ] as const;
 export type MultiOptionFilterOperator =

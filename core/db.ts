@@ -11,7 +11,11 @@ import {
   inArray,
   lt,
   lte,
+  ne,
   not,
+  notBetween,
+  notIlike,
+  notInArray,
   or,
 } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -60,7 +64,7 @@ export function withDataTable<
     if (conditions.length) qb = qb.where(or(...conditions));
   }
 
-  // TODO: Column Filters
+  // * Column Filters
   if (!config.disabled?.includes("columnFilter") && state.columnFilters) {
     const ilikeOp: FilterOperators[] = ["contains"];
     const notIlikeOp: FilterOperators[] = ["does not contain"];
@@ -82,11 +86,19 @@ export function withDataTable<
     const betweenOp: FilterOperators[] = ["is between"];
     const notBetweenOp: FilterOperators[] = ["is not between"];
 
-    const anyOfOp: FilterOperators[] = ["is any of", "include any of"];
-    const noneOfOp: FilterOperators[] = ["is none of"];
-    const includeAllOp: FilterOperators[] = ["include all of"];
-    // const excludeAnyOp: FilterOperators[] = ["exclude if any of"];
-    // const excludeAllOp: FilterOperators[] = ["exclude if all"];
+    const inArrayOp: FilterOperators[] = [
+      "is any of",
+      "include",
+      "include any of",
+    ];
+    const notInArrayOp: FilterOperators[] = [
+      "is none of",
+      "exclude",
+      "exclude if any of",
+    ];
+
+    const includeIfAllOp: FilterOperators[] = ["include all of"];
+    const excludeIfAllOp: FilterOperators[] = ["exclude if all"];
 
     const conditions = state.columnFilters
       .map(({ id, value: { operator, values } }) => {
@@ -121,32 +133,48 @@ export function withDataTable<
               .filter((v) => v !== null);
         }
 
+        if (!parsedValues.length) return null;
+
         if (ilikeOp.includes(operator))
           return ilike(col, `%${parsedValues[0]}%`);
         if (notIlikeOp.includes(operator))
-          return not(ilike(col, `%${parsedValues[0]}%`));
+          return notIlike(col, `%${parsedValues[0]}%`);
 
         if (eqOp.includes(operator)) return eq(col, parsedValues[0]);
-        if (notEqOp.includes(operator)) return not(eq(col, parsedValues[0]));
+        if (notEqOp.includes(operator)) return ne(col, parsedValues[0]);
 
         if (ltOp.includes(operator)) return lt(col, parsedValues[0]);
         if (lteOp.includes(operator)) return lte(col, parsedValues[0]);
         if (gtOp.includes(operator)) return gt(col, parsedValues[0]);
         if (gteOp.includes(operator)) return gte(col, parsedValues[0]);
 
-        if (betweenOp.includes(operator))
+        if (betweenOp.includes(operator)) {
+          if (parsedValues.length < 2) return null;
           return between(col, parsedValues[0], parsedValues[1]);
-        if (notBetweenOp.includes(operator))
-          return not(between(col, parsedValues[0], parsedValues[1]));
+        }
+        if (notBetweenOp.includes(operator)) {
+          if (parsedValues.length < 2) return null;
+          return notBetween(col, parsedValues[0], parsedValues[1]);
+        }
 
-        if (anyOfOp.includes(operator)) return inArray(col, parsedValues);
-        if (noneOfOp.includes(operator)) return not(inArray(col, parsedValues));
-        if (includeAllOp.includes(operator))
+        if (inArrayOp.includes(operator)) {
+          if (!parsedValues.length) return null;
+          return inArray(col, parsedValues);
+        }
+        if (notInArrayOp.includes(operator)) {
+          if (!parsedValues.length) return null;
+          return notInArray(col, parsedValues);
+        }
+
+        if (includeIfAllOp.includes(operator))
           return and(...parsedValues.map((v) => eq(col, v)));
-        // if (excludeAnyOp.includes(operator))
-        //   return not(or(...parsedValues.map((v) => eq(col, v))));
-        // if (excludeAllOp.includes(operator))
-        //   return not(and(...parsedValues.map((v) => eq(col, v))));
+        if (excludeIfAllOp.includes(operator)) {
+          const clauses = parsedValues.map((v) => eq(col, v));
+          if (!clauses.length) return null;
+          const combined = and(...clauses);
+          if (!combined) return null;
+          return not(combined);
+        }
 
         return null;
       })
