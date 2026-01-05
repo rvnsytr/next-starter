@@ -26,7 +26,9 @@ export const messages = {
   empty: "Tidak ada hasil yang ditemukan.",
   loading: "Mohon tunggu sebentar...",
 
+  success: "Sukses",
   error: "Terjadi kesalahan. Silakan coba lagi nanti.",
+  notFound: "Sumber daya yang diminta tidak ditemukan.",
 
   unauthorized: "Anda harus login untuk mengakses fitur ini.",
   forbidden: "Anda tidak memiliki izin untuk melakukan tindakan ini.",
