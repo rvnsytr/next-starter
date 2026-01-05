@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  allLayoutMode,
-  defaultLayout,
-  LayoutMode,
-  layoutModeMeta,
-} from "@/core/constants";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { cn } from "@/core/utils";
+import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
 import {
   ComponentProps,
   createContext,
@@ -26,6 +21,20 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd, KbdGroup } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+
+export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
+export type LayoutMode = (typeof allLayoutMode)[number];
+
+export const defaultLayout: LayoutMode = "centered";
+
+export const layoutModeMeta: Record<
+  LayoutMode,
+  { displayName: string; icon: LucideIcon }
+> = {
+  fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
+  centered: { displayName: "Centered", icon: MinimizeIcon },
+  unset: { displayName: "Unset", icon: FrameIcon },
+};
 
 type LayoutContextType = {
   layout: LayoutMode;
@@ -122,7 +131,7 @@ export function LayoutToggle({
             toggleLayout();
           }}
           className={cn("hidden md:inline-flex", className)}
-          disabled={disabled || layout === "unset"}
+          disabled={disabled ?? layout === "unset"}
           {...props}
         >
           <Icon />

@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
-import { nextTheme } from "../utils";
+import { nextTheme } from "../components/ui/theme";
 
 export function GlobalShortcuts() {
   const { setTheme } = useTheme();

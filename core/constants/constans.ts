@@ -1,19 +1,9 @@
-import {
-  FrameIcon,
-  LucideIcon,
-  MarsIcon,
-  MinimizeIcon,
-  MonitorIcon,
-  MoonIcon,
-  ScanIcon,
-  SunIcon,
-  VenusIcon,
-} from "lucide-react";
+import { LucideIcon, MarsIcon, VenusIcon } from "lucide-react";
 
 export type ActionResponse<TData> =
   | {
       success: true;
-      count: { total: number } & Record<string, number>;
+      count?: { total: number } & Record<string, number>;
       data: TData;
     }
   | { success: false; error: string };
@@ -28,29 +18,6 @@ export const allRequestMetaKey = [
   "search",
 ] as const;
 export type RequestMetaKey = (typeof allRequestMetaKey)[number];
-
-export const allThemes = ["light", "system", "dark"] as const;
-export type Theme = (typeof allThemes)[number];
-
-export const themeMeta: Record<Theme, { icon: LucideIcon }> = {
-  light: { icon: SunIcon },
-  system: { icon: MonitorIcon },
-  dark: { icon: MoonIcon },
-};
-
-export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
-export type LayoutMode = (typeof allLayoutMode)[number];
-
-export const defaultLayout: LayoutMode = "centered";
-
-export const layoutModeMeta: Record<
-  LayoutMode,
-  { displayName: string; icon: LucideIcon }
-> = {
-  fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
-  centered: { displayName: "Centered", icon: MinimizeIcon },
-  unset: { displayName: "Unset", icon: FrameIcon },
-};
 
 export const allGenders = ["m", "f"] as const;
 export type Gender = (typeof allGenders)[number];

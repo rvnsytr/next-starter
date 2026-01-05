@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Button, ButtonProps } from "./button";
 import { LoadingSpinner } from "./spinner";
 
-type ButtonPropsWithoutChildren = Omit<ButtonProps, "children">;
 type ButtonIconSize = "icon-xs" | "icon-sm" | "icon" | "icon-lg";
 
 export function CopyButton({
@@ -16,7 +15,7 @@ export function CopyButton({
   disabled,
   onClick,
   ...props
-}: Omit<ButtonPropsWithoutChildren, "value" | "size"> & {
+}: Omit<Omit<ButtonProps, "children">, "value" | "size"> & {
   value: string;
   size?: ButtonIconSize;
 }) {
@@ -50,7 +49,7 @@ export function RefreshButton({
   disabled,
   onClick,
   ...props
-}: ButtonPropsWithoutChildren & { text?: string }) {
+}: Omit<ButtonProps, "children"> & { text?: string }) {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -82,7 +81,7 @@ export function ScrollToTopButton({
   className,
   onClick,
   ...props
-}: ButtonPropsWithoutChildren) {
+}: Omit<ButtonProps, "children">) {
   return (
     <Button
       size={size}

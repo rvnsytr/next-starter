@@ -1,8 +1,7 @@
 "use client";
 
-import { Theme, themeMeta } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { nextTheme } from "@/core/utils";
+import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { Button, ButtonProps } from "./button";
@@ -11,6 +10,21 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd, KbdGroup } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+
+export const allThemes = ["light", "system", "dark"] as const;
+export type Theme = (typeof allThemes)[number];
+
+export const themeMeta: Record<Theme, { icon: LucideIcon }> = {
+  light: { icon: SunIcon },
+  system: { icon: MonitorIcon },
+  dark: { icon: MoonIcon },
+};
+
+export function nextTheme(currentTheme?: string) {
+  if (currentTheme === "light") return "dark";
+  if (currentTheme === "dark") return "system";
+  return "light";
+}
 
 export function ThemeToggle({
   align,
