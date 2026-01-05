@@ -6,7 +6,7 @@ import { ActionResponse, messages } from "@/core/constants";
 import { db } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
-import { defineWDTConfig, withDataTable } from "@/core/with-data-table";
+import { defineWDTConfig, withDataTable } from "@/core/utils";
 import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
 import { AuthSession, Role } from "./constants";

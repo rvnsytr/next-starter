@@ -1,6 +1,8 @@
 import { isValid } from "date-fns";
 import {
   and,
+  arrayContains,
+  arrayOverlaps,
   asc,
   between,
   desc,
@@ -19,8 +21,8 @@ import {
   or,
 } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import { DataTableState } from "./components/ui/data-table";
-import { FilterOperators } from "./utils";
+import { DataTableState } from "../components/ui/data-table";
+import { FilterOperators } from "./filters";
 
 type WDTConfigColumns<I extends string = string> = Record<I, AnyPgColumn>;
 
@@ -85,19 +87,19 @@ export function withDataTable<
     const betweenOperators: FilterOperators[] = ["is between"];
     const notBetweenOperators: FilterOperators[] = ["is not between"];
 
-    const inArrayOperators: FilterOperators[] = [
-      "is any of",
+    const inArrayOperators: FilterOperators[] = ["is any of"];
+    const notInArrayOperators: FilterOperators[] = ["is none of"];
+
+    const includeAnyOperators: FilterOperators[] = [
       "include",
       "include any of",
     ];
-    const notInArrayOperators: FilterOperators[] = [
-      "is none of",
+    const excludeAnyOperators: FilterOperators[] = [
       "exclude",
       "exclude if any of",
     ];
-
-    const includeIfAllOperators: FilterOperators[] = ["include all of"];
-    const excludeIfAllOperators: FilterOperators[] = ["exclude if all"];
+    const includeAllOperators: FilterOperators[] = ["include all of"];
+    const excludeAllOperators: FilterOperators[] = ["exclude if all"];
 
     const conditions = state.columnFilters
       .map(({ id, value: { operator, values } }) => {
@@ -131,7 +133,7 @@ export function withDataTable<
               .map((v) => {
                 if (parser.condition) return parser.condition(v);
                 if (typeof v !== "string") return null;
-                const n = v.toLowerCase();
+                const n = v.trim().toLowerCase();
                 if (n === "true" || v === "1") return true;
                 if (n === "false" || v === "0") return false;
                 return null;
@@ -163,24 +165,19 @@ export function withDataTable<
           return notBetween(col, parsedValues[0], parsedValues[1]);
         }
 
-        if (inArrayOperators.includes(operator)) {
-          if (!parsedValues.length) return null;
+        if (inArrayOperators.includes(operator))
           return inArray(col, parsedValues);
-        }
-        if (notInArrayOperators.includes(operator)) {
-          if (!parsedValues.length) return null;
+        if (notInArrayOperators.includes(operator))
           return notInArray(col, parsedValues);
-        }
 
-        if (includeIfAllOperators.includes(operator))
-          return and(...parsedValues.map((v) => eq(col, v)));
-        if (excludeIfAllOperators.includes(operator)) {
-          const clauses = parsedValues.map((v) => eq(col, v));
-          if (!clauses.length) return null;
-          const combined = and(...clauses);
-          if (!combined) return null;
-          return not(combined);
-        }
+        if (includeAnyOperators.includes(operator))
+          return arrayOverlaps(col, parsedValues);
+        if (excludeAnyOperators.includes(operator))
+          return not(arrayOverlaps(col, parsedValues));
+        if (includeAllOperators.includes(operator))
+          return arrayContains(col, parsedValues);
+        if (excludeAllOperators.includes(operator))
+          return not(arrayContains(col, parsedValues));
 
         return null;
       })

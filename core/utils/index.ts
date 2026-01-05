@@ -3,3 +3,4 @@ export * from "./date";
 export * from "./filters";
 export * from "./formaters";
 export * from "./helpers";
+export * from "./with-data-table";
