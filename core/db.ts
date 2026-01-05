@@ -34,7 +34,10 @@ export type WDTConfig<Columns extends WDTConfigColumns> = {
   globalFilterBy?: (keyof Columns)[];
   columnFilterParser?: ({ id: keyof Columns } & (
     | { type: "number" | "date" }
-    | { type: "boolean"; condition: (value: string | number | Date) => boolean }
+    | {
+        type: "boolean";
+        condition?: (value: string | number | Date) => boolean;
+      }
   ))[];
   defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
@@ -128,8 +131,15 @@ export function withDataTable<
               .filter((v) => v !== null);
 
           if (withParse.type === "boolean")
-            parsedValues = values
-              .map((v) => withParse.condition(v))
+            parsedValues = values // string[]
+              .map((v) => {
+                if (withParse.condition) return withParse.condition(v);
+                if (typeof v !== "string") return null;
+                const n = v.toLowerCase();
+                if (n === "true" || v === "1") return true;
+                if (n === "false" || v === "0") return false;
+                return null;
+              })
               .filter((v) => v !== null);
         }
 
