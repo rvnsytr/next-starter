@@ -233,6 +233,12 @@ export const apiResponseSchema = z.object({
   code: z.number(),
   success: z.boolean(),
   message: z.string(),
+  count: z
+    .intersection(
+      z.object({ total: z.number() }),
+      z.record(z.string(), z.number()),
+    )
+    .optional(),
 });
 
 export const userSchema = createSelectSchema(user, {

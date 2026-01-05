@@ -10,3 +10,16 @@ export const appMeta = {
   //   withText: "/logo-text.png",
   // },
 };
+
+export const appConfig = {
+  host: "http://localhost:8000",
+  basePath: "/api",
+
+  get baseUrl() {
+    return `${this.host}${this.basePath}`;
+  },
+
+  get authBaseUrl() {
+    return `${this.baseUrl}/auth`;
+  },
+};
