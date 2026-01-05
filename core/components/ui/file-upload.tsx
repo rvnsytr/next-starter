@@ -248,7 +248,7 @@ export function FileUpload({
                     )}
                   >
                     <span className="flex gap-x-2">
-                      {file.name}{" "}
+                      {file.name}
                       <ArrowUpRightIcon className="size-4 shrink-0" />
                     </span>
                   </Link>

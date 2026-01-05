@@ -22,7 +22,11 @@ export function ErrorFallback({
   className?: string;
 }) {
   const message =
-    typeof error === "string" ? error : (error?.message ?? "Tidak ada data");
+    error instanceof Error
+      ? error?.message
+      : typeof error === "string"
+        ? error
+        : "Tidak ada data";
   return (
     <div
       className={cn(

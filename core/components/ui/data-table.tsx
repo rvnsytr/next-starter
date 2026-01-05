@@ -172,7 +172,7 @@ const getRecordQSParser = (parseValue: boolean) =>
     serialize: (value) => {
       const entries = Object.entries(value);
       // Nuqs TS bug? it should returned `string | null`
-      if (!entries || !entries.length) return null as unknown as string;
+      if (!entries?.length) return null as unknown as string;
       return entries
         .map(([k, v]) => (v === parseValue ? k : null))
         .filter((v) => !!v)
@@ -195,7 +195,7 @@ const sortingParser = createParser<SortingState>({
   },
   serialize: (value) => {
     // Nuqs TS bug? it should returned `string | null`
-    if (!value || !value.length) return null as unknown as string;
+    if (!value?.length) return null as unknown as string;
     return value.map((s) => `${s.id}:${s.desc ? "desc" : "asc"}`).join(";");
   },
 }).withDefault([]);
@@ -243,7 +243,7 @@ export function columnFiltersParser<TData>(
     },
     serialize: (value) => {
       // Nuqs TS bug? it should returned `string | null`
-      if (!value || !value.length) return null as unknown as string;
+      if (!value?.length) return null as unknown as string;
 
       return value
         .map(({ id, value: rawValue }) => {
@@ -394,7 +394,7 @@ export function DataTable<TData>({
 
     // * Pagination
     manualPagination: isServer,
-    rowCount: data?.success ? (data.count.total ?? 0) : 0,
+    rowCount: data?.success ? (data.count?.total ?? 0) : 0,
     onPaginationChange: setPagination,
     getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
   });
