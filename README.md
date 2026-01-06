@@ -120,11 +120,13 @@ next-starter/
     api.ts
     auth.client.ts
     auth.ts
+    data-table.ts
     db.ts
+    filter.ts
     permissions.ts
-    s3.ts
     schema.db.ts             -- Modifiable.
     schema.zod.ts            -- Modifiable.
+    storage.ts
 
   public/
 
@@ -158,7 +160,6 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 ## TODO
 
 - Ban & Unban Table Action
-- Server-Side Data Table
 - More Numeric Form Inputs
 - Event Calendar
 - Rich Text Editor
