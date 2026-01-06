@@ -1,4 +1,4 @@
-import { FooterNote } from "@/core/components/layouts";
+import { FooterNote } from "@/core/components/layout";
 import {
   Card,
   CardContent,

@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layouts";
+import { DashboardMain } from "@/core/components/layout";
 import {
   Card,
   CardAction,

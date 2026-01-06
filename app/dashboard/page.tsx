@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layouts";
+import { DashboardMain } from "@/core/components/layout";
 import { R } from "@/core/components/ui/motion";
 
 export default function Page() {

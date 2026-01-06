@@ -1,5 +1,5 @@
 import { getRequestMeta } from "@/core/actions";
-import { FooterNote, SidebarMain } from "@/core/components/layouts";
+import { FooterNote, SidebarMain } from "@/core/components/layout";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { LayoutProvider } from "@/core/providers";
 import { authorizedRoute, getRouteTitle } from "@/core/utils";
