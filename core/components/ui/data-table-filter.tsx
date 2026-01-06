@@ -18,7 +18,7 @@ import {
   numberFilterDetails,
   optionFilterDetails,
   textFilterDetails,
-} from "@/core/filters";
+} from "@/core/filter";
 import { useDebounce, useIsMobile } from "@/core/hooks";
 import { cn, formatDate, formatNumber, take, uniq } from "@/core/utils";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";

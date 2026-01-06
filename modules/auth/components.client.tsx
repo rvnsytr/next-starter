@@ -88,7 +88,7 @@ import {
 } from "@/core/components/ui/tabs";
 import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
-import { filterFn } from "@/core/filters";
+import { filterFn } from "@/core/filter";
 import { sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { cn, formatDate } from "@/core/utils";

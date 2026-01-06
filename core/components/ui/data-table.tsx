@@ -7,7 +7,7 @@ import {
   allNumberFilterOperators,
   allOptionFilterOperators,
   allTextFilterOperators,
-} from "@/core/filters";
+} from "@/core/filter";
 import { useDebounce, useIsMobile } from "@/core/hooks";
 import { cn, formatNumber } from "@/core/utils";
 import {
@@ -382,7 +382,7 @@ export function DataTable<TData>({
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
 
-    // TODO: Column Filtering
+    // * Column Filtering
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: !isServer ? getFilteredRowModel() : undefined,
 
