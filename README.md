@@ -24,7 +24,7 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
 
 - Database and ORM
   - [PostgreSQL](https://www.postgresql.org)
-  - [Drizzle ORM](https://orm.drizzle.team) with [drizzle-zod](https://orm.drizzle.team/docs/zod)
+  - [Drizzle ORM](https://orm.drizzle.team)
 
 - Authentication
   - [Better Auth](https://better-auth.com)
