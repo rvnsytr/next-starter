@@ -1,9 +1,11 @@
 import { allRoles } from "@/modules/auth";
-import { createSelectSchema } from "drizzle-zod";
+import {
+  sessionSchema as authSessionSchema,
+  userSchema as authUserSchema,
+} from "better-auth";
 import z from "zod";
 import { id } from "zod/locales";
 import { allGenders, fileMeta, FileType, messages } from "./constants";
-import { user } from "./schema.db";
 import { toMegabytes } from "./utils";
 
 z.config(id());
@@ -241,13 +243,23 @@ export const apiResponseSchema = z.object({
     .optional(),
 });
 
-export const userSchema = createSelectSchema(user, {
-  name: () => sharedSchemas.string("Nama", { min: 1 }),
-  email: () => sharedSchemas.email,
-  role: () => z.enum(allRoles),
-}).extend({
+export const passwordSchema = z.object({
   password: sharedSchemas.string("Kata sandi", { min: 1 }),
   newPassword: sharedSchemas.password,
   confirmPassword: sharedSchemas.string("Konfirmasi kata sandi", { min: 1 }),
   currentPassword: sharedSchemas.string("Kata sandi saat ini", { min: 1 }),
+});
+
+export const userSchema = authUserSchema.extend({
+  email: sharedSchemas.email,
+  name: sharedSchemas.string("Nama", { min: 1 }),
+  image: z.string().optional().nullable(),
+  role: z.lazy(() => z.enum(allRoles)),
+  banned: z.boolean().optional().nullable(),
+  bannedReason: z.string().optional().nullable(),
+  bannedExpires: z.date().optional().nullable(),
+});
+
+export const sessionSchema = authSessionSchema.extend({
+  impersonatedBy: z.string().nullable().optional(),
 });

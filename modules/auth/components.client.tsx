@@ -89,7 +89,7 @@ import {
 import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
 import { filterFn } from "@/core/filter";
-import { sharedSchemas, userSchema } from "@/core/schema.zod";
+import { passwordSchema, sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { cn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -176,9 +176,10 @@ export function SignInForm() {
   // const wasLastUsed = authClient.isLastUsedLoginMethod("email");
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema
-    .pick({ email: true, password: true })
-    .extend({ rememberMe: z.boolean() });
+  const formSchema = userSchema.pick({ email: true }).extend({
+    password: passwordSchema.shape.password,
+    rememberMe: z.boolean(),
+  });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -290,8 +291,10 @@ export function SignUpForm() {
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema
-    .pick({ name: true, email: true, newPassword: true, confirmPassword: true })
+    .pick({ name: true, email: true })
     .extend({
+      newPassword: passwordSchema.shape.newPassword,
+      confirmPassword: passwordSchema.shape.confirmPassword,
       agreement: z.boolean().refine((v) => v, {
         error:
           "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
@@ -1111,7 +1114,7 @@ export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema
+  const formSchema = passwordSchema
     .pick({
       currentPassword: true,
       newPassword: true,
@@ -1257,12 +1260,10 @@ export function CreateUserDialog() {
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema
-    .pick({
-      name: true,
-      email: true,
-      newPassword: true,
-      confirmPassword: true,
-      role: true,
+    .pick({ name: true, email: true, role: true })
+    .extend({
+      newPassword: passwordSchema.shape.newPassword,
+      confirmPassword: passwordSchema.shape.confirmPassword,
     })
     .refine((sc) => sc.newPassword === sc.confirmPassword, {
       message: sharedText.passwordNotMatch,
