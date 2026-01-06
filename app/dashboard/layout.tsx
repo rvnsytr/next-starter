@@ -1,7 +1,7 @@
 import { getRequestMeta } from "@/core/actions";
 import { FooterNote, SidebarMain } from "@/core/components/layouts";
-import { LayoutProvider } from "@/core/components/ui/layout";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
+import { LayoutProvider } from "@/core/providers";
 import { authorizedRoute, getRouteTitle } from "@/core/utils";
 import { AuthProvider, getSession } from "@/modules/auth";
 import { Metadata } from "next";
