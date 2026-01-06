@@ -21,7 +21,7 @@ import {
   or,
 } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import { DataTableState } from "../components/ui/data-table";
+import { DataTableState } from "./components/ui/data-table";
 import { FilterOperators } from "./filters";
 
 type WDTConfigColumns<I extends string = string> = Record<I, AnyPgColumn>;

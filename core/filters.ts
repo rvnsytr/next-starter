@@ -15,7 +15,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { LucideIcon } from "lucide-react";
-import { intersection, uniq } from "./array";
+import { intersection, uniq } from "./utils/array";
 
 export type ElementType<T> = T extends (infer U)[] ? U : T;
 

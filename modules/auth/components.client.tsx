@@ -88,9 +88,10 @@ import {
 } from "@/core/components/ui/tabs";
 import { Textarea } from "@/core/components/ui/textarea";
 import { appMeta, fileMeta, messages } from "@/core/constants";
+import { filterFn } from "@/core/filters";
 import { sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
-import { cn, filterFn, formatDate } from "@/core/utils";
+import { cn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
@@ -553,11 +554,7 @@ export function SignOutButton() {
       disabled={isLoading}
       onClick={clickHandler}
     >
-      {/* {variant} */}
-      <LoadingSpinner
-        loading={isLoading}
-        icon={{ base: <LogOutIcon /> }}
-      />{" "}
+      <LoadingSpinner loading={isLoading} icon={{ base: <LogOutIcon /> }} />
       Keluar
     </SidebarMenuButton>
   );

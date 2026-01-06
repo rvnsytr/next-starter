@@ -3,10 +3,10 @@
 import { auth } from "@/core/auth";
 import { DataTableState } from "@/core/components/ui/data-table";
 import { ActionResponse, messages } from "@/core/constants";
+import { defineWDTConfig, withDataTable } from "@/core/data-table";
 import { db } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
-import { defineWDTConfig, withDataTable } from "@/core/utils";
 import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
 import { AuthSession, Role } from "./constants";
@@ -81,7 +81,6 @@ export async function listUserSessions(userId: string) {
     headers: await nextHeaders(),
     body: { userId },
   });
-
   return sessions as AuthSession["session"][];
 }
 
