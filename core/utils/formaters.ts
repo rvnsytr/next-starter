@@ -51,16 +51,23 @@ export function snakeToCamel<S extends string>(str: S): SnakeToCamel<S> {
 }
 
 type Camelize<T> = T extends readonly (infer U)[]
-  ? Camelize<U>[]
-  : T extends object
-    ? { [K in keyof T as K extends string ? SnakeToCamel<K> : K]: T[K] }
-    : T;
+  ? readonly Camelize<U>[]
+  : T extends (infer U)[]
+    ? Camelize<U>[]
+    : T extends object
+      ? {
+          [K in keyof T as K extends string ? SnakeToCamel<K> : K]: Camelize<
+            T[K]
+          >;
+        }
+      : T;
 
 export function camelize<T>(value: T): Camelize<T> {
   if (Array.isArray(value)) return value.map(camelize) as Camelize<T>;
-  if (value && typeof value === "object") {
+
+  if (value && typeof value === "object" && !(value instanceof Date)) {
     return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [snakeToCamel(k), v]),
+      Object.entries(value).map(([k, v]) => [snakeToCamel(k), camelize(v)]),
     ) as Camelize<T>;
   }
 
