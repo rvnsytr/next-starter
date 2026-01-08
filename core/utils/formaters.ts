@@ -42,20 +42,29 @@ export function kebabToRegular(str: string) {
   return str.trim().split("-").join(" ");
 }
 
-export function snakeToCamel(str: string) {
-  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+type SnakeToCamel<S extends string> = S extends `${infer H}_${infer T}`
+  ? `${H}${Capitalize<SnakeToCamel<T>>}`
+  : S;
+
+export function snakeToCamel<S extends string>(str: S): SnakeToCamel<S> {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase()) as SnakeToCamel<S>;
 }
 
-export function keysToCamel<T>(input: unknown): T {
-  if (Array.isArray(input)) {
-    return input.map((v) => keysToCamel(v)) as T;
-  } else if (input !== null && typeof input === "object") {
+type Camelize<T> = T extends readonly (infer U)[]
+  ? Camelize<U>[]
+  : T extends object
+    ? { [K in keyof T as K extends string ? SnakeToCamel<K> : K]: T[K] }
+    : T;
+
+export function camelize<T>(value: T): Camelize<T> {
+  if (Array.isArray(value)) return value.map(camelize) as Camelize<T>;
+  if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(input).map(([k, v]) => [snakeToCamel(k), v]),
-    ) as T;
+      Object.entries(value).map(([k, v]) => [snakeToCamel(k), v]),
+    ) as Camelize<T>;
   }
 
-  return input as T;
+  return value as Camelize<T>;
 }
 
 export function formatNumber(
