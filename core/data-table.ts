@@ -131,8 +131,8 @@ export function withDataTable<
               if (parser) return parser(v);
               if (typeof v !== "string") return null;
               const n = v.trim().toLowerCase();
-              if (n === "true" || v === "1") return true;
-              if (n === "false" || v === "0") return false;
+              if (n === "true" || n === "1") return true;
+              if (n === "false" || n === "0") return false;
               return null;
             })
             .filter((v) => v !== null);
@@ -157,11 +157,13 @@ export function withDataTable<
 
         if (betweenOperators.includes(operator)) {
           if (parsedValues.length < 2) return null;
-          return between(column, parsedValues[0], parsedValues[1]);
+          const [v1, v2] = parsedValues;
+          return between(column, v1, v2);
         }
         if (notBetweenOperators.includes(operator)) {
           if (parsedValues.length < 2) return null;
-          return notBetween(column, parsedValues[0], parsedValues[1]);
+          const [v1, v2] = parsedValues;
+          return notBetween(column, v1, v2);
         }
 
         if (inArrayOperators.includes(operator))
