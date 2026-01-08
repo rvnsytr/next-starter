@@ -36,7 +36,7 @@ type WDTColumnConfig = { column: AnyPgColumn } & (
 type WDTConfig<Columns extends Record<string, WDTColumnConfig>> = {
   disabled?: ("globalFilter" | "columnFilters" | "sorting" | "pagination")[];
   columns: Columns;
-  defaultOrder?: { id: keyof Columns; desc: boolean };
+  defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
 
 export const defineWDTConfig = <
@@ -51,14 +51,14 @@ export function withDataTable<
 >(qb: TQueryBuilder, state: DataTableState, config: WDTConfig<Columns>) {
   // #region Global Filter
   const columnValues = Object.values(config.columns);
-  const globalFilterCols = columnValues.filter((v) => v.type === "string");
+  const globalFilterCols = columnValues.filter((c) => c.type === "string");
   if (
     !config.disabled?.includes("globalFilter") &&
     state.globalFilter &&
     globalFilterCols.length
   ) {
     const value = `%${state.globalFilter}%`;
-    const conditions = globalFilterCols.map((v) => ilike(v.column, value));
+    const conditions = globalFilterCols.map((c) => ilike(c.column, value));
     if (conditions.length) qb = qb.where(or(...conditions));
   }
   // #endregion
@@ -202,8 +202,8 @@ export function withDataTable<
         if (conditions.length) return (qb = qb.orderBy(...conditions));
       }
 
-      if (config.defaultOrder) {
-        const { id, desc: isDesc } = config.defaultOrder;
+      if (config.defaultOrderBy) {
+        const { id, desc: isDesc } = config.defaultOrderBy;
         const { column } = config.columns[id];
         qb = qb.orderBy(isDesc ? desc(column) : asc(column));
       }

@@ -30,10 +30,10 @@ export async function listUsers(
   const countQb = db
     .select({
       total: db.$count(userTable),
-      user: sql<number>`count(*) filter (where ${userTable.role} = 'user')`,
-      admin: sql<number>`count(*) filter (where ${userTable.role} = 'admin')`,
-      banned: sql<number>`count(*) filter (where ${userTable.banned} = true)`,
-      active: sql<number>`count(*) filter (where ${userTable.banned} = false)`,
+      user: sql<number>`COUNT(*) FILTER (WHERE ${userTable.role} = 'user')`,
+      admin: sql<number>`COUNT(*) FILTER (WHERE ${userTable.role} = 'admin')`,
+      banned: sql<number>`COUNT(*) FILTER (WHERE ${userTable.banned} = true)`,
+      active: sql<number>`COUNT(*) FILTER (WHERE ${userTable.banned} = false)`,
     })
     .from(userTable)
     .$dynamic();
@@ -53,12 +53,12 @@ export async function listUsers(
       updatedAt: { column: userTable.updatedAt, type: "date" },
       createdAt: { column: userTable.createdAt, type: "date" },
     },
-    defaultOrder: { id: "createdAt", desc: true },
+    defaultOrderBy: { id: "createdAt", desc: true },
   });
 
   const [count] = await withDataTable(countQb, state, {
-    disabled: ["sorting", "pagination"],
     ...config,
+    disabled: ["sorting", "pagination"],
   }).execute();
 
   const data = await withDataTable(dataQb, state, config).execute();

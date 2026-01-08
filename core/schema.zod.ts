@@ -1,7 +1,9 @@
 import { allRoles } from "@/modules/auth";
 import {
-  sessionSchema as authSessionSchema,
-  userSchema as authUserSchema,
+  accountSchema as betterAuthAccountSchema,
+  sessionSchema as betterAuthSessionSchema,
+  userSchema as betterAuthUserSchema,
+  verificationSchema as betterAuthVerificationSchema,
 } from "better-auth";
 import z from "zod";
 import { id } from "zod/locales";
@@ -254,7 +256,7 @@ export const passwordSchema = z.object({
   currentPassword: sharedSchemas.string("Kata sandi saat ini", { min: 1 }),
 });
 
-export const userSchema = authUserSchema.extend({
+export const userSchema = betterAuthUserSchema.extend({
   email: sharedSchemas.email,
   name: sharedSchemas.string("Nama", { min: 1 }),
   image: z.string().optional().nullable(),
@@ -262,8 +264,22 @@ export const userSchema = authUserSchema.extend({
   banned: z.boolean().optional().nullable(),
   bannedReason: z.string().optional().nullable(),
   bannedExpires: z.date().optional().nullable(),
+  createdAt: sharedSchemas.createdAt,
+  updatedAt: sharedSchemas.updatedAt,
 });
 
-export const sessionSchema = authSessionSchema.extend({
+export const accountTableSchema = betterAuthAccountSchema.extend({
+  createdAt: sharedSchemas.createdAt,
+  updatedAt: sharedSchemas.updatedAt,
+});
+
+export const sessionSchema = betterAuthSessionSchema.extend({
+  createdAt: sharedSchemas.createdAt,
+  updatedAt: sharedSchemas.updatedAt,
   impersonatedBy: z.string().nullable().optional(),
+});
+
+export const verificationTableSchema = betterAuthVerificationSchema.extend({
+  createdAt: sharedSchemas.createdAt,
+  updatedAt: sharedSchemas.updatedAt,
 });
