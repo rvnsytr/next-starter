@@ -42,23 +42,17 @@ export async function listUsers(
 
   const config = defineWDTConfig({
     columns: {
-      name: userTable.name,
-      email: userTable.email,
-      status: userTable.banned,
-      role: userTable.role,
-      updatedAt: userTable.updatedAt,
-      createdAt: userTable.createdAt,
-    },
-    globalFilter: ["name", "email"],
-    columnFilterParser: [
-      {
-        id: "status",
+      name: { column: userTable.name, type: "string" },
+      email: { column: userTable.email, type: "string" },
+      status: {
+        column: userTable.banned,
         type: "boolean",
-        condition: (value) => value === "banned",
+        parser: (v) => typeof v === "string" && v === "banned",
       },
-      { id: "updatedAt", type: "date" },
-      { id: "createdAt", type: "date" },
-    ],
+      role: { column: userTable.role, type: "string" },
+      updatedAt: { column: userTable.updatedAt, type: "date" },
+      createdAt: { column: userTable.createdAt, type: "date" },
+    },
     defaultOrder: { id: "createdAt", desc: true },
   });
 
