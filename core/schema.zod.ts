@@ -10,6 +10,8 @@ import { toMegabytes } from "./utils";
 
 z.config(id());
 
+// #region CORE
+
 export const sharedSchemas = {
   string: (
     field: string,
@@ -242,6 +244,8 @@ export const apiResponseSchema = z.object({
     )
     .optional(),
 });
+
+// #endregion
 
 export const passwordSchema = z.object({
   password: sharedSchemas.string("Kata sandi", { min: 1 }),

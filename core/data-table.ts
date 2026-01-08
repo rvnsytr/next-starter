@@ -27,9 +27,9 @@ import { FilterOperators } from "./filter";
 type WDTConfigColumns<I extends string = string> = Record<I, AnyPgColumn>;
 
 export type WDTConfig<Columns extends WDTConfigColumns> = {
-  disabled?: ("globalFilter" | "columnFilter" | "sorting" | "pagination")[];
+  disabled?: ("globalFilter" | "columnFilters" | "sorting" | "pagination")[];
   columns: Columns;
-  globalFilterBy?: (keyof Columns)[];
+  globalFilter?: (keyof Columns)[];
   columnFilterParser?: ({ id: keyof Columns } & (
     | { type: "number" | "date" }
     | {
@@ -37,7 +37,7 @@ export type WDTConfig<Columns extends WDTConfigColumns> = {
         condition?: (value: string | number | Date) => boolean;
       }
   ))[];
-  defaultOrderBy?: { id: keyof Columns; desc: boolean };
+  defaultOrder?: { id: keyof Columns; desc: boolean };
 };
 
 export const defineWDTConfig = <TColumns extends WDTConfigColumns>(
@@ -52,9 +52,9 @@ export function withDataTable<
   if (
     !config.disabled?.includes("globalFilter") &&
     state.globalFilter &&
-    config.globalFilterBy
+    config.globalFilter
   ) {
-    const conditions = config.globalFilterBy
+    const conditions = config.globalFilter
       .map((id) => {
         const col = config.columns[id] ?? null;
         if (!col) return null;
@@ -66,7 +66,7 @@ export function withDataTable<
   }
 
   // * Column Filters
-  if (!config.disabled?.includes("columnFilter") && state.columnFilters) {
+  if (!config.disabled?.includes("columnFilters") && state.columnFilters) {
     const ilikeOperators: FilterOperators[] = ["contains"];
     const notIlikeOperators: FilterOperators[] = ["does not contain"];
 
@@ -129,7 +129,7 @@ export function withDataTable<
               .filter((v) => v !== null);
 
           if (parser.type === "boolean")
-            parsedValues = values // string[]
+            parsedValues = values
               .map((v) => {
                 if (parser.condition) return parser.condition(v);
                 if (typeof v !== "string") return null;
@@ -201,10 +201,9 @@ export function withDataTable<
         if (conditions.length) return (qb = qb.orderBy(...conditions));
       }
 
-      if (config.defaultOrderBy) {
-        const { id, desc: isDesc } = config.defaultOrderBy;
-        const col = config.columns[id] ?? null;
-        if (!col) return null;
+      if (config.defaultOrder) {
+        const { id, desc: isDesc } = config.defaultOrder;
+        const col = config.columns[id];
         qb = qb.orderBy(isDesc ? desc(col) : asc(col));
       }
     };
@@ -213,10 +212,10 @@ export function withDataTable<
   }
 
   // * Pagination
-  if (!config.disabled?.includes("pagination"))
-    qb = qb
-      .limit(state.pagination.pageSize)
-      .offset(state.pagination.pageIndex * state.pagination.pageSize);
+  if (!config.disabled?.includes("pagination")) {
+    const { pageIndex, pageSize } = state.pagination;
+    qb = qb.limit(pageSize).offset(pageIndex * pageSize);
+  }
 
   return qb;
 }

@@ -90,10 +90,10 @@ import {
 } from "./table";
 
 export type DataTableState = {
-  pagination: PaginationState;
-  sorting: SortingState;
-  columnFilters: z.infer<typeof columnFilterSchema>[];
   globalFilter: string;
+  columnFilters: z.infer<typeof columnFiltersSchema>[];
+  sorting: SortingState;
+  pagination: PaginationState;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,7 +138,7 @@ export type DataTableProps<TData> = ToolBoxProps<TData> & {
 const pageSizes = [5, 10, 20, 30, 40, 50, 100];
 const defaultPageSize = pageSizes[1];
 
-const columnFilterSchema = z.object({
+const columnFiltersSchema = z.object({
   id: z.string(),
   value: z.union([
     z.object({
@@ -246,7 +246,7 @@ export function columnFiltersParser<TData>(
 
       return value
         .map(({ id, value: rawValue }) => {
-          const parsed = columnFilterSchema.shape.value.safeParse(rawValue);
+          const parsed = columnFiltersSchema.shape.value.safeParse(rawValue);
           if (!parsed.success) return null;
 
           const { operator, values } = parsed.data;
@@ -326,7 +326,7 @@ export function DataTable<TData>({
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
   const allStates: DataTableState = useMemo(() => {
-    const parsed = columnFilterSchema.array().safeParse(columnFilters);
+    const parsed = columnFiltersSchema.array().safeParse(columnFilters);
     return {
       globalFilter: debouncedGlobalFilter,
       columnFilters: parsed.data ?? [],
@@ -401,6 +401,8 @@ export function DataTable<TData>({
   if (error) return <ErrorFallback error={error} />;
   if (!isLoading && data && !data.success)
     return <ErrorFallback error={data.error} />;
+
+  const pageCount = table.getPageCount();
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -530,7 +532,7 @@ export function DataTable<TData>({
 
         <small className="order-2 shrink-0 tabular-nums lg:order-4">
           Halaman {isLoading ? "?" : formatNumber(pagination.pageIndex + 1)}{" "}
-          dari {isLoading ? "?" : formatNumber(table.getPageCount())}
+          dari {isLoading ? "?" : formatNumber(pageCount > 0 ? pageCount : 1)}
         </small>
 
         <Pagination

@@ -49,7 +49,7 @@ export async function listUsers(
       updatedAt: userTable.updatedAt,
       createdAt: userTable.createdAt,
     },
-    globalFilterBy: ["name", "email"],
+    globalFilter: ["name", "email"],
     columnFilterParser: [
       {
         id: "status",
@@ -59,7 +59,7 @@ export async function listUsers(
       { id: "updatedAt", type: "date" },
       { id: "createdAt", type: "date" },
     ],
-    defaultOrderBy: { id: "createdAt", desc: true },
+    defaultOrder: { id: "createdAt", desc: true },
   });
 
   const [count] = await withDataTable(countQb, state, {
