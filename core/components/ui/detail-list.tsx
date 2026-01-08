@@ -12,7 +12,13 @@ export type DetailListData = {
 
 export function DetailList({ data }: { data: DetailListData }) {
   return data.map(({ label, content, className, classNames }, index) => (
-    <div key={index} className={cn("space-y-1", className)}>
+    <div
+      key={index}
+      className={cn(
+        "space-y-1 [&_svg:not([class*='size-'])]:size-4",
+        className,
+      )}
+    >
       <Label className={classNames?.label}>{label}</Label>
       <div className={cn("text-muted-foreground text-sm", classNames?.content)}>
         {Array.isArray(content) ? (

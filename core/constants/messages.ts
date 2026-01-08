@@ -42,8 +42,8 @@ export const messages = {
 
   thingAgo: (thing: string, time: Date) =>
     `${capitalize(thing, "first")} ${formatDateDistanceToNow(time)} yang lalu.`,
-  dateAgo: (time: Date) =>
-    `${formatDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} yang lalu.`,
+  dateRelative: (time: Date, mode: "future" | "past" = "past") =>
+    `${formatDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} ${mode === "past" ? "yang lalu" : "dari sekarang"}.`,
 
   // -- Validation
   invalid: (field: string) => `${capitalize(field, "first")} tidak valid.`,
