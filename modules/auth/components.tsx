@@ -80,18 +80,18 @@ export function UserRoleBadge({
 }
 
 export function UserVerifiedBadge({
-  withoutText = false,
+  noText = false,
   className,
   classNames,
 }: {
-  withoutText?: boolean;
+  noText?: boolean;
   className?: string;
   classNames?: { badge?: string; icon?: string; content?: string };
 }) {
   return (
     <Tooltip>
       <TooltipTrigger className={className} asChild>
-        {withoutText ? (
+        {noText ? (
           <BadgeCheckIcon
             className={cn("text-rvns size-4 shrink-0", classNames?.icon)}
           />

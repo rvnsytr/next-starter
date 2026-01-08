@@ -94,7 +94,7 @@ import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { cn, formatDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { endOfDay } from "date-fns";
+import { differenceInSeconds, endOfDay } from "date-fns";
 import {
   ArrowUpRightIcon,
   BanIcon,
@@ -106,6 +106,7 @@ import {
   CookieIcon,
   EllipsisIcon,
   Gamepad2Icon,
+  InfinityIcon,
   InfoIcon,
   Layers2Icon,
   LockKeyholeOpenIcon,
@@ -864,7 +865,7 @@ const getUserColumns = (
       return (
         <div className="flex items-center gap-x-2">
           <span>{cell.getValue()}</span>
-          {row.original.emailVerified && <UserVerifiedBadge withoutText />}
+          {row.original.emailVerified && <UserVerifiedBadge noText />}
         </div>
       );
     },
@@ -1001,8 +1002,23 @@ export function UserDetailDialog({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const profile: DetailListData = [
-    { label: "Terakhir diperbarui", content: messages.dateAgo(data.updatedAt) },
-    { label: "Waktu dibuat", content: messages.dateAgo(data.createdAt) },
+    {
+      label: "Terakhir diperbarui",
+      content: messages.dateRelative(data.updatedAt),
+    },
+    { label: "Waktu dibuat", content: messages.dateRelative(data.createdAt) },
+  ];
+
+  const banInfo: DetailListData = [
+    { label: "Alasan diblokir", content: data.banReason },
+    {
+      label: "Tanggal blokir berakhir",
+      content: data.banExpires ? (
+        messages.dateRelative(data.banExpires, "future")
+      ) : (
+        <InfinityIcon />
+      ),
+    },
   ];
 
   return (
@@ -1020,7 +1036,10 @@ export function UserDetailDialog({
           <div className="flex items-center gap-x-3">
             <UserAvatar data={data} className="size-12" />
             <div className="grid">
-              <SheetTitle className="text-base">{data.name}</SheetTitle>
+              <SheetTitle className="flex gap-x-2">
+                <span className="text-base">{data.name}</span>
+                {data.emailVerified && <UserVerifiedBadge noText />}
+              </SheetTitle>
               <SheetDescription>{data.email}</SheetDescription>
             </div>
           </div>
@@ -1072,9 +1091,8 @@ export function UserDetailDialog({
             {isCurrentUser && (
               <Badge variant="outline">Pengguna saat ini</Badge>
             )}
-
             <UserRoleBadge value={data.role} />
-            {data.emailVerified && <UserVerifiedBadge />}
+            <UserStatusBadge value={data.banned ? "banned" : "active"} />
           </div>
 
           <Separator />
@@ -1092,6 +1110,12 @@ export function UserDetailDialog({
 
             <TabsContent value="profile" className="grid gap-x-2 gap-y-4">
               <DetailList data={profile} />
+              {data.banned && (
+                <>
+                  <Separator />
+                  <DetailList data={banInfo} />
+                </>
+              )}
             </TabsContent>
 
             <TabsContent value="sessions">
@@ -2119,7 +2143,7 @@ function BanUserDialog({
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z.object({
-    banReason: sharedSchemas.string("Alasan blokir").optional(),
+    banReason: sharedSchemas.string("Alasan diblokir").optional(),
     banExpiresDate: sharedSchemas.date("Tanggal blokir berakhir").optional(),
   });
 
@@ -2139,7 +2163,7 @@ function BanUserDialog({
           userId: data.id,
           banReason,
           banExpiresIn: banExpiresDate
-            ? endOfDay(banExpiresDate).getTime()
+            ? differenceInSeconds(endOfDay(banExpiresDate), new Date())
             : undefined,
         });
 
@@ -2188,7 +2212,7 @@ function BanUserDialog({
             control={form.control}
             render={({ field, fieldState }) => (
               <FieldWrapper
-                label="Alasan blokir"
+                label="Alasan diblokir"
                 htmlFor={field.name}
                 errors={fieldState.error}
                 description="* Opsional"
@@ -2218,6 +2242,7 @@ function BanUserDialog({
                   invalid={!!fieldState.error}
                   selected={field.value}
                   onSelect={field.onChange}
+                  disabled={{ before: new Date() }}
                 />
               </FieldWrapper>
             )}
