@@ -17,7 +17,7 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   plugins: [nextCookies(), adminPlugin({ ac, roles, defaultRole })],
 
-  emailAndPassword: { enabled: true, autoSignIn: false },
+  emailAndPassword: { enabled: true },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
