@@ -1,9 +1,7 @@
 import { allRoles } from "@/modules/auth";
 import {
-  accountSchema as betterAuthAccountSchema,
   sessionSchema as betterAuthSessionSchema,
   userSchema as betterAuthUserSchema,
-  verificationSchema as betterAuthVerificationSchema,
 } from "better-auth";
 import z from "zod";
 import { id } from "zod/locales";
@@ -264,22 +262,8 @@ export const userSchema = betterAuthUserSchema.extend({
   banned: z.boolean().optional().nullable(),
   bannedReason: z.string().optional().nullable(),
   bannedExpires: z.date().optional().nullable(),
-  createdAt: sharedSchemas.createdAt,
-  updatedAt: sharedSchemas.updatedAt,
-});
-
-export const accountTableSchema = betterAuthAccountSchema.extend({
-  createdAt: sharedSchemas.createdAt,
-  updatedAt: sharedSchemas.updatedAt,
 });
 
 export const sessionSchema = betterAuthSessionSchema.extend({
-  createdAt: sharedSchemas.createdAt,
-  updatedAt: sharedSchemas.updatedAt,
   impersonatedBy: z.string().nullable().optional(),
-});
-
-export const verificationTableSchema = betterAuthVerificationSchema.extend({
-  createdAt: sharedSchemas.createdAt,
-  updatedAt: sharedSchemas.updatedAt,
 });

@@ -60,7 +60,7 @@ export function SidebarMainHeader() {
               />
 
               <div className="grid break-all">
-                <div className="flex items-center gap-x-2">
+                <div className="flex gap-x-2">
                   <span className="line-clamp-1 text-sm font-semibold">
                     {user.name}
                   </span>
