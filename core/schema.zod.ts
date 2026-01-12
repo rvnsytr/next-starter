@@ -24,7 +24,7 @@ export const sharedSchemas = {
     const max = options?.max;
     const sanitize = options?.sanitize ?? true;
 
-    let schema = z.string({ error: invalid(field) }).trim();
+    let schema = z.coerce.string({ error: invalid(field) }).trim();
 
     if (sanitize)
       schema = schema.regex(/^$|[A-Za-z0-9]/, { message: required(field) });
@@ -182,15 +182,18 @@ export const sharedSchemas = {
     { error: "Pilih rentang tanggal yang valid." },
   ),
 
-  jsonString: <T extends z.ZodTypeAny>(schema: T) =>
+  jsonString: <T>(schema: z.ZodType<T>) =>
     z
       .string()
-      .transform((str) => {
-        try {
-          return JSON.parse(str);
-        } catch {
-          throw new Error(messages.invalid("JSON"));
+      .transform((val) => {
+        if (typeof val === "string") {
+          try {
+            return JSON.parse(val);
+          } catch {
+            throw new Error(messages.invalid("JSON"));
+          }
         }
+        return val;
       })
       .pipe(schema),
 

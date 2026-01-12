@@ -98,6 +98,6 @@ export function formatPhone(number: string | number, prefix?: "+62" | "0") {
   return `${prefix ?? ""} ${formatted}`.trim();
 }
 
-export function formatZodError<T>(zodError: ZodError<T>) {
+export function formatZodError<T>(zodError: ZodError<T>): string {
   return JSON.parse(zodError.message)[0].message;
 }

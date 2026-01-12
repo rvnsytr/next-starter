@@ -445,9 +445,8 @@ export function DataTable<TData>({
                       //   right: column.getAfter("right"),
                       // }}
                     >
-                      {isPlaceholder
-                        ? null
-                        : flexRender(column.columnDef.header, getContext())}
+                      {!isPlaceholder &&
+                        flexRender(column.columnDef.header, getContext())}
                     </TableHead>
                   );
                 },

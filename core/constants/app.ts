@@ -11,7 +11,7 @@ export const appMeta = {
   // },
 };
 
-export const appConfig = {
+export const apiConfig = {
   host: "http://localhost:8000",
   basePath: "/api",
 

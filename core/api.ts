@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod";
-import { appConfig } from "./constants";
+import { apiConfig } from "./constants";
 import { apiResponseSchema } from "./schema.zod";
 
 export type FetcherConfig = RequestInit & { safeFetch?: boolean };
@@ -34,7 +34,7 @@ export async function apiFetcher<T>(
   config?: ApiFetcherConfig,
 ): Promise<ApiResponse<T>> {
   return await fetcher(
-    `${appConfig.baseUrl}${url}`,
+    `${apiConfig.baseUrl}${url}`,
     apiResponseSchema.extend({ data: schema }),
     { credentials: "include", ...config },
   );
