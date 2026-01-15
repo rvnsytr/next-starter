@@ -11,7 +11,7 @@ import {
 } from "@/core/components/ui/command";
 import { Menu, messages, routesMeta } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks";
-import { cn, toKebab } from "@/core/utils";
+import { cn, toCase } from "@/core/utils";
 import { DotIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -136,7 +136,7 @@ export function CommandPalette({
                             subMenu?.map((itm) => {
                               const isDestructive =
                                 itm.variant === "destructive";
-                              const href = `${route}/#${toKebab(itm.displayName)}`;
+                              const href = `${route}/#${toCase(itm.displayName, "slug")}`;
                               return (
                                 <CommandItem
                                   key={href}

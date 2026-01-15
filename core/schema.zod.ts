@@ -4,11 +4,8 @@ import {
   userSchema as betterAuthUserSchema,
 } from "better-auth";
 import z from "zod";
-import { id } from "zod/locales";
 import { allGenders, fileMeta, FileType, messages } from "./constants";
 import { toMegabytes } from "./utils";
-
-z.config(id());
 
 // #region CORE
 
@@ -24,7 +21,7 @@ export const sharedSchemas = {
     const max = options?.max;
     const sanitize = options?.sanitize ?? true;
 
-    let schema = z.coerce.string({ error: invalid(field) }).trim();
+    let schema = z.string({ error: invalid(field) }).trim();
 
     if (sanitize)
       schema = schema.regex(/^$|[A-Za-z0-9]/, { message: required(field) });
@@ -63,6 +60,23 @@ export const sharedSchemas = {
 
     return schema;
   },
+
+  boolean: (field: string) =>
+    z
+      .union(
+        [
+          z.boolean(),
+          z.literal("true"),
+          z.literal("false"),
+          z.literal("1"),
+          z.literal("0"),
+        ],
+        { error: messages.invalid(field) },
+      )
+      .transform((v) => {
+        if (typeof v === "boolean") return v;
+        return v === "true" || v === "1";
+      }),
 
   files: (
     type: FileType,
@@ -185,15 +199,15 @@ export const sharedSchemas = {
   jsonString: <T>(schema: z.ZodType<T>) =>
     z
       .string()
-      .transform((val) => {
-        if (typeof val === "string") {
+      .transform((v) => {
+        if (typeof v === "string") {
           try {
-            return JSON.parse(val);
+            return JSON.parse(v);
           } catch {
             throw new Error(messages.invalid("JSON"));
           }
         }
-        return val;
+        return v;
       })
       .pipe(schema),
 
@@ -215,25 +229,6 @@ export const sharedSchemas = {
     .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
 
   gender: z.enum(allGenders),
-
-  deletedAt: z.coerce
-    .date({ error: "Field 'deletedAt' tidak valid." })
-    .nullable()
-    .default(null),
-  deletedBy: z
-    .string({ error: "Field 'deletedBy' tidak valid." })
-    .nullable()
-    .default(null),
-  updatedAt: z.coerce
-    .date({ error: "Field 'updatedAt' tidak valid." })
-    .nullable()
-    .default(null),
-  updatedBy: z
-    .string({ error: "Field 'updatedBy' tidak valid." })
-    .nullable()
-    .default(null),
-  createdAt: z.coerce.date({ error: "Field 'createdAt' tidak valid." }),
-  createdBy: z.string({ error: "Field 'createdBy' tidak valid." }),
 };
 
 export const apiResponseSchema = z.object({

@@ -16,7 +16,7 @@ type MenuContent = {
   icon?: LucideIcon;
   disabled?: boolean;
 
-  // if href is not defined, the Link href prop will be `/{route}/#${toKebab(displayName)}`
+  // if href is not defined, the Link href prop will be `/{route}/#${toCase(displayName, "slug")}`
   subMenu?: {
     displayName: string;
     href?: LinkProps["href"];

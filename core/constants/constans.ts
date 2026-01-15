@@ -8,6 +8,30 @@ export type ActionResponse<TData> =
     }
   | { success: false; error: string };
 
+export type StringCase =
+  | "slug"
+  | "snake"
+  | "camel"
+  | "pascal"
+  | "constant"
+  | "title";
+
+export type SnakeToCamel<S extends string> = S extends `${infer H}_${infer T}`
+  ? `${H}${Capitalize<SnakeToCamel<T>>}`
+  : S;
+
+export type Camelize<T> = T extends readonly (infer U)[]
+  ? readonly Camelize<U>[]
+  : T extends (infer U)[]
+    ? Camelize<U>[]
+    : T extends object
+      ? {
+          [K in keyof T as K extends string ? SnakeToCamel<K> : K]: Camelize<
+            T[K]
+          >;
+        }
+      : T;
+
 export const allRequestMetaKey = [
   "basePath",
   "href",
@@ -19,18 +43,18 @@ export const allRequestMetaKey = [
 ] as const;
 export type RequestMetaKey = (typeof allRequestMetaKey)[number];
 
-export const allGenders = ["m", "f"] as const;
+export const allGenders = ["l", "p"] as const;
 export type Gender = (typeof allGenders)[number];
 export const genderMeta: Record<
   Gender,
   { displayName: string; icon: LucideIcon; color: string }
 > = {
-  m: {
+  l: {
     displayName: "Laki-laki",
     icon: MarsIcon,
     color: "var(--color-sky-500)",
   },
-  f: {
+  p: {
     displayName: "Perempuan",
     icon: VenusIcon,
     color: "var(--color-pink-500)",

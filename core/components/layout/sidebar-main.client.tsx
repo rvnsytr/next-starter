@@ -2,7 +2,7 @@
 
 import { routesMeta } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks";
-import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
+import { getActiveRoute, getMenuByRole, toCase } from "@/core/utils";
 import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
@@ -160,7 +160,7 @@ export function SidebarMainContent() {
                                     <Link
                                       href={
                                         itm.href ??
-                                        `${route}/#${toKebab(itm.displayName)}`
+                                        `${route}/#${toCase(itm.displayName, "slug")}`
                                       }
                                     >
                                       <span className="line-clamp-1">

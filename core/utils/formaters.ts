@@ -1,10 +1,24 @@
 import { ZodError } from "zod";
-import { appMeta, Language, languageMeta } from "../constants";
+import {
+  appMeta,
+  Camelize,
+  Language,
+  languageMeta,
+  StringCase,
+} from "../constants";
 
-export function capitalize(string: string, mode: "word" | "first" = "word") {
+export function capitalize(string: string, mode: "all" | "first" = "all") {
   const handler = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   if (mode === "first") return handler(string);
   return string.split(" ").map(handler).join(" ");
+}
+
+export function toBytes(mb: number) {
+  return mb * 1024 * 1024;
+}
+
+export function toMegabytes(bytes: number) {
+  return bytes / 1024 / 1024;
 }
 
 export function sanitizeNumber(str: string): number {
@@ -22,52 +36,47 @@ export function sanitizeNumber(str: string): number {
   return Number(normalized.replace(/[^\d]/g, "") || "0");
 }
 
-export function toBytes(mb: number) {
-  return mb * 1024 * 1024;
-}
-
-export function toMegabytes(bytes: number) {
-  return bytes / 1024 / 1024;
-}
-
-export function toKebab(str: string) {
+export function normalizeString(str: string) {
   return str
     .trim()
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]/g, " ")
+    .replace(/[^a-zA-Z0-9\s]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, "")
-    .replace(/\s+/g, "-");
+    .replace(/\s+/g, " ");
 }
 
-export function kebabToRegular(str: string) {
-  return str.trim().split("-").join(" ");
+export function toCase(str: string, mode: StringCase) {
+  const base = normalizeString(str);
+
+  switch (mode) {
+    case "slug":
+      return base.replace(/\s/g, "-");
+    case "snake":
+      return base.replace(/\s/g, "_");
+    case "camel":
+      return base.replace(/ (\w)/g, (_, c) => c.toUpperCase());
+    case "pascal":
+      return base.replace(/(^\w| \w)/g, (m) => m.trim().toUpperCase());
+    case "constant":
+      return base.replace(/\s/g, "_").toUpperCase();
+    case "title":
+      return base.replace(/\b\w/g, (c) => c.toUpperCase());
+    default:
+      return base;
+  }
 }
 
-type SnakeToCamel<S extends string> = S extends `${infer H}_${infer T}`
-  ? `${H}${Capitalize<SnakeToCamel<T>>}`
-  : S;
-
-export function snakeToCamel<S extends string>(str: S): SnakeToCamel<S> {
-  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase()) as SnakeToCamel<S>;
+export function fromCase(str: string) {
+  return str.trim().replace(/[-_]/g, " ");
 }
-
-type Camelize<T> = T extends readonly (infer U)[]
-  ? readonly Camelize<U>[]
-  : T extends (infer U)[]
-    ? Camelize<U>[]
-    : T extends object
-      ? {
-          [K in keyof T as K extends string ? SnakeToCamel<K> : K]: Camelize<
-            T[K]
-          >;
-        }
-      : T;
 
 export function camelize<T>(value: T): Camelize<T> {
   if (Array.isArray(value)) return value.map(camelize) as Camelize<T>;
 
   if (value && typeof value === "object" && !(value instanceof Date)) {
     return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [snakeToCamel(k), camelize(v)]),
+      Object.entries(value).map(([k, v]) => [toCase(k, "camel"), camelize(v)]),
     ) as Camelize<T>;
   }
 
