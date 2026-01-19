@@ -33,7 +33,7 @@ export function CopyButton({
       }}
       {...props}
     >
-      <span className="sr-only">{copied ? "Copied" : "CopyIcon"}</span>
+      <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
       <CopyIcon
         className={cn("transition", copied ? "scale-0" : "scale-100")}
       />

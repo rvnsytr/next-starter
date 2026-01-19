@@ -1,12 +1,8 @@
 import { LucideIcon, MarsIcon, VenusIcon } from "lucide-react";
 
-export type ActionResponse<TData> =
-  | {
-      success: true;
-      count?: { total: number } & Record<string, number>;
-      data: TData;
-    }
-  | { success: false; error: string };
+export type ActionResponse<TData> = {
+  count?: { total: number } & Record<string, number>;
+} & ({ success: true; data: TData } | { success: false; error: string });
 
 export type StringCase =
   | "slug"

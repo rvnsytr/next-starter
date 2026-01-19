@@ -262,26 +262,31 @@ function SidebarTrigger({
   ...props
 }: ComponentProps<typeof Button> &
   Pick<ComponentProps<typeof TooltipContent>, "align">) {
+  const isMobile = useIsMobile();
   const { toggleSidebar } = useSidebar();
+
+  const element = (
+    <Button
+      data-sidebar="trigger"
+      data-slot="sidebar-trigger"
+      variant="ghost"
+      size="icon"
+      onClick={(event) => {
+        onClick?.(event);
+        toggleSidebar();
+      }}
+      {...props}
+    >
+      <PanelLeftIcon />
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
+  );
+
+  if (isMobile) return element;
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          data-sidebar="trigger"
-          data-slot="sidebar-trigger"
-          variant="ghost"
-          size="icon"
-          onClick={(event) => {
-            onClick?.(event);
-            toggleSidebar();
-          }}
-          {...props}
-        >
-          <PanelLeftIcon />
-          <span className="sr-only">Toggle Sidebar</span>
-        </Button>
-      </TooltipTrigger>
+      <TooltipTrigger asChild>{element}</TooltipTrigger>
       <TooltipContent
         align={align}
         className="flex flex-col items-center gap-2"

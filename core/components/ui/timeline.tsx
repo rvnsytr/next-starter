@@ -63,7 +63,6 @@ function Timeline({
   );
 }
 
-// TimelineContent
 function TimelineContent({
   className,
   ...props
@@ -77,7 +76,6 @@ function TimelineContent({
   );
 }
 
-// TimelineDate
 type TimelineDateProps = React.HTMLAttributes<HTMLTimeElement> & {
   asChild?: boolean;
 };
@@ -101,7 +99,6 @@ function TimelineDate({
   );
 }
 
-// TimelineHeader
 function TimelineHeader({
   className,
   ...props
@@ -131,7 +128,6 @@ function TimelineIndicator({
   );
 }
 
-// TimelineItem
 type TimelineItemProps = React.HTMLAttributes<HTMLDivElement> & {
   step: number;
 };
@@ -152,7 +148,6 @@ function TimelineItem({ step, className, ...props }: TimelineItemProps) {
   );
 }
 
-// TimelineSeparator
 function TimelineSeparator({
   className,
   ...props
@@ -170,7 +165,6 @@ function TimelineSeparator({
   );
 }
 
-// TimelineTitle
 function TimelineTitle({
   className,
   ...props

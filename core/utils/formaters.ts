@@ -51,13 +51,13 @@ export function toCase(str: string, mode: StringCase) {
 
   switch (mode) {
     case "slug":
-      return base.replace(/\s/g, "-");
+      return base.replace(/\s/g, "-").toLowerCase();
     case "snake":
       return base.replace(/\s/g, "_");
     case "camel":
       return base.replace(/ (\w)/g, (_, c) => c.toUpperCase());
     case "pascal":
-      return base.replace(/(^\w| \w)/g, (m) => m.trim().toUpperCase());
+      return base.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\s/g, "");
     case "constant":
       return base.replace(/\s/g, "_").toUpperCase();
     case "title":
@@ -68,7 +68,10 @@ export function toCase(str: string, mode: StringCase) {
 }
 
 export function fromCase(str: string) {
-  return str.trim().replace(/[-_]/g, " ");
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]/g, " ")
+    .trim();
 }
 
 export function camelize<T>(value: T): Camelize<T> {

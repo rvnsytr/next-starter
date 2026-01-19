@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { AreaChart, BarChart, PieChart } from "@/core/components/ui/charts";
-import { R } from "@/core/components/ui/motion";
+import { R } from "@/core/components/ui/r";
 import { ScrollArea, ScrollBar } from "@/core/components/ui/scroll-area";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import {
