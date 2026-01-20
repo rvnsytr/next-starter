@@ -52,15 +52,17 @@ export function toCase(str: string, mode: StringCase) {
 
   switch (mode) {
     case "kebab":
-      return base.replace(/\s/g, "-");
+      return base.replace(/\s+/g, "-");
     case "snake":
-      return base.replace(/\s/g, "_");
+      return base.replace(/\s+/g, "_");
     case "camel":
-      return base.replace(/[_.-](\w|$)/g, (_, c) => c.toUpperCase());
+      return base
+        .replace(/\s+(\w)/g, (_, c) => c.toUpperCase())
+        .replace(/^\w/, (c) => c.toLowerCase());
     case "pascal":
-      return base.replace(/(^\w| \w)/g, (m) => m.trim().toUpperCase());
+      return base.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\s+/g, "");
     case "constant":
-      return base.replace(/\s/g, "_").toUpperCase();
+      return base.replace(/\s+/g, "_").toUpperCase();
     case "title":
       return base.replace(/\b\w/g, (c) => c.toUpperCase());
     default:
