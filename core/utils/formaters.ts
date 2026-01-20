@@ -1,10 +1,11 @@
 import { ZodError } from "zod";
 import {
   appMeta,
-  Camelize,
   Language,
   languageMeta,
   StringCase,
+  TransformableStringCase,
+  TransformKeys,
 } from "../constants";
 
 export function capitalize(string: string, mode: "all" | "first" = "all") {
@@ -50,14 +51,14 @@ export function toCase(str: string, mode: StringCase) {
   const base = normalizeString(str);
 
   switch (mode) {
-    case "slug":
-      return base.replace(/\s/g, "-").toLowerCase();
+    case "kebab":
+      return base.replace(/\s/g, "-");
     case "snake":
       return base.replace(/\s/g, "_");
     case "camel":
-      return base.replace(/ (\w)/g, (_, c) => c.toUpperCase());
+      return base.replace(/[_.-](\w|$)/g, (_, c) => c.toUpperCase());
     case "pascal":
-      return base.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\s/g, "");
+      return base.replace(/(^\w| \w)/g, (m) => m.trim().toUpperCase());
     case "constant":
       return base.replace(/\s/g, "_").toUpperCase();
     case "title":
@@ -74,16 +75,27 @@ export function fromCase(str: string) {
     .trim();
 }
 
-export function camelize<T>(value: T): Camelize<T> {
-  if (Array.isArray(value)) return value.map(camelize) as Camelize<T>;
+export function transformKeys<T, C extends TransformableStringCase>(
+  value: T,
+  keyCase: C,
+): TransformKeys<T, C> {
+  const transform = (val: unknown): unknown => {
+    if (Array.isArray(val)) return val.map(transform);
 
-  if (value && typeof value === "object" && !(value instanceof Date)) {
+    if (
+      val === null ||
+      typeof val !== "object" ||
+      val instanceof Date ||
+      val instanceof RegExp
+    )
+      return val;
+
     return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [toCase(k, "camel"), camelize(v)]),
-    ) as Camelize<T>;
-  }
+      Object.entries(val).map(([k, v]) => [toCase(k, keyCase), transform(v)]),
+    );
+  };
 
-  return value as Camelize<T>;
+  return transform(value) as TransformKeys<T, C>;
 }
 
 export function formatNumber(
