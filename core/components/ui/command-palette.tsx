@@ -136,7 +136,7 @@ export function CommandPalette({
                             subMenu?.map((itm) => {
                               const isDestructive =
                                 itm.variant === "destructive";
-                              const href = `${route}/#${toCase(itm.displayName, "slug")}`;
+                              const href = `${route}/#${toCase(itm.displayName, "kebab")}`;
                               return (
                                 <CommandItem
                                   key={href}

@@ -63,16 +63,7 @@ export const sharedSchemas = {
 
   boolean: (field: string) =>
     z
-      .union(
-        [
-          z.boolean(),
-          z.literal("true"),
-          z.literal("false"),
-          z.literal("1"),
-          z.literal("0"),
-        ],
-        { error: messages.invalid(field) },
-      )
+      .union([z.boolean(), z.string()], { error: messages.invalid(field) })
       .transform((v) => {
         if (typeof v === "boolean") return v;
         return v === "true" || v === "1";

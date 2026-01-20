@@ -1,9 +1,12 @@
 "use server";
 
 import { auth } from "@/core/auth";
-import { DataTableState } from "@/core/components/ui/data-table";
 import { ActionResponse, messages } from "@/core/constants";
-import { defineWDTConfig, withDataTable } from "@/core/data-table";
+import {
+  DataTableState,
+  defineWDTConfig,
+  withDataTable,
+} from "@/core/data-table";
 import { db } from "@/core/db";
 import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
