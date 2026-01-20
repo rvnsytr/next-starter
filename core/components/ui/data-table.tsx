@@ -1,13 +1,7 @@
 "use client";
 
 import { ActionResponse, messages } from "@/core/constants";
-import {
-  allDateFilterOperators,
-  allMultiOptionFilterOperators,
-  allNumberFilterOperators,
-  allOptionFilterOperators,
-  allTextFilterOperators,
-} from "@/core/filter";
+import { columnFiltersSchema, DataTableState } from "@/core/data-table";
 import { useDebounce, useIsMobile } from "@/core/hooks";
 import { cn, formatNumber } from "@/core/utils";
 import {
@@ -21,7 +15,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
   Row,
   SortingState,
   TableOptions,
@@ -89,13 +82,6 @@ import {
   TableRow,
 } from "./table";
 
-export type DataTableState = {
-  globalFilter: string;
-  columnFilters: z.infer<typeof columnFiltersSchema>[];
-  sorting: SortingState;
-  pagination: PaginationState;
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DataTableColumnDef<TData> = ColumnDef<TData, any>[];
 
@@ -137,28 +123,6 @@ export type DataTableProps<TData> = ToolBoxProps<TData> & {
 
 const pageSizes = [5, 10, 20, 30, 40, 50, 100];
 const defaultPageSize = pageSizes[1];
-
-const columnFiltersSchema = z.object({
-  id: z.string(),
-  value: z.union([
-    z.object({
-      operator: z.enum([
-        ...allTextFilterOperators,
-        ...allOptionFilterOperators,
-        ...allMultiOptionFilterOperators,
-      ]),
-      values: z.string().array(),
-    }),
-    z.object({
-      operator: z.enum(allNumberFilterOperators),
-      values: z.number().array(),
-    }),
-    z.object({
-      operator: z.enum(allDateFilterOperators),
-      values: z.date().array(),
-    }),
-  ]),
-});
 
 const arrayQSParser = parseAsArrayOf(parseAsString).withDefault([]);
 

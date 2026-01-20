@@ -1,3 +1,4 @@
+import { PaginationState, SortingState } from "@tanstack/react-table";
 import { isValid } from "date-fns";
 import {
   and,
@@ -21,16 +22,21 @@ import {
   or,
 } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import { DataTableState } from "./components/ui/data-table";
-import { FilterOperators } from "./filter";
+import z from "zod";
+import { allFilterOperators, FilterOperators } from "./filter";
 
-type ConfigParserValue = string | number | Date;
+export type DataTableState = {
+  globalFilter: string;
+  columnFilters: z.infer<typeof columnFiltersSchema>[];
+  sorting: SortingState;
+  pagination: PaginationState;
+};
 
 type WDTColumnConfig = { column: AnyPgColumn } & (
-  | { type: "string"; parser?: (value: ConfigParserValue) => string }
-  | { type: "number"; parser?: (value: ConfigParserValue) => number }
-  | { type: "date"; parser?: (value: ConfigParserValue) => Date }
-  | { type: "boolean"; parser: (value: ConfigParserValue) => boolean }
+  | { type: "string"; parser?: (value: string | number | Date) => string }
+  | { type: "number"; parser?: (value: string | number | Date) => number }
+  | { type: "date"; parser?: (value: string | number | Date) => Date }
+  | { type: "boolean"; parser: (value: string | number | Date) => boolean }
 );
 
 type WDTConfig<Columns extends Record<string, WDTColumnConfig>> = {
@@ -38,6 +44,14 @@ type WDTConfig<Columns extends Record<string, WDTColumnConfig>> = {
   columns: Columns;
   defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
+
+export const columnFiltersSchema = z.object({
+  id: z.string(),
+  value: z.object({
+    operator: z.enum(allFilterOperators),
+    values: z.union([z.string(), z.number(), z.coerce.date()]).array(),
+  }),
+});
 
 export const defineWDTConfig = <
   Columns extends Record<string, WDTColumnConfig>,
@@ -105,7 +119,7 @@ export function withDataTable<
         if (!columnConfig || !values.length) return null;
 
         const { column, type, parser } = columnConfig;
-        let parsedValues: (string | number | boolean | Date)[] = values;
+        let parsedValues: (string | number | Date | boolean)[] = values;
 
         if (type === "date")
           parsedValues = values

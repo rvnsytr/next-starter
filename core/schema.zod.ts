@@ -257,9 +257,9 @@ export const userSchema = betterAuthUserSchema.extend({
   name: sharedSchemas.string("Nama", { min: 1 }),
   image: z.string().optional().nullable(),
   role: z.lazy(() => z.enum(allRoles)),
-  banned: z.boolean().optional().nullable(),
-  bannedReason: z.string().optional().nullable(),
-  bannedExpires: z.date().optional().nullable(),
+  banned: z.boolean().default(false),
+  banReason: z.string().optional().nullable(),
+  banExpires: z.date().optional().nullable(),
 });
 
 export const sessionSchema = betterAuthSessionSchema.extend({
