@@ -16,8 +16,14 @@ export type StringCase =
 
 export type TransformableStringCase = Extract<
   StringCase,
-  "kebab" | "snake" | "camel"
+  "snake" | "kebab" | "camel"
 >;
+
+export type SnakeCase<S extends string> = S extends `${infer A}${infer B}`
+  ? B extends Uncapitalize<B>
+    ? `${Lowercase<A>}${SnakeCase<B>}`
+    : `${Lowercase<A>}_${SnakeCase<B>}`
+  : S;
 
 export type KebabCase<S extends string> =
   SnakeCase<S> extends `${infer A}_${infer B}`
@@ -26,12 +32,6 @@ export type KebabCase<S extends string> =
 
 export type CamelCase<S extends string> = S extends `${infer A}_${infer B}`
   ? `${A}${Capitalize<CamelCase<B>>}`
-  : S;
-
-export type SnakeCase<S extends string> = S extends `${infer A}${infer B}`
-  ? B extends Uncapitalize<B>
-    ? `${Lowercase<A>}${SnakeCase<B>}`
-    : `${Lowercase<A>}_${SnakeCase<B>}`
   : S;
 
 export type TransformKeys<
@@ -44,10 +44,10 @@ export type TransformKeys<
     : T extends object
       ? {
           [K in keyof T as K extends string
-            ? C extends "kebab"
-              ? KebabCase<K>
-              : C extends "snake"
-                ? SnakeCase<K>
+            ? C extends "snake"
+              ? SnakeCase<K>
+              : C extends "kebab"
+                ? KebabCase<K>
                 : CamelCase<K>
             : K]: TransformKeys<T[K], C>;
         }
