@@ -28,7 +28,7 @@ export const rolesMeta: Record<
     displayName: "Admin",
     icon: ShieldUserIcon,
     desc: "Administrator dengan akses penuh dan kontrol pengelolaan sistem.",
-    color: "var(--rvns)",
+    color: "var(--color-cyan-500)",
   },
 };
 

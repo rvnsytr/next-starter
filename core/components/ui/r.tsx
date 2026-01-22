@@ -34,7 +34,7 @@ export function R({
         <motion.path
           d="m 699.37981,772.08865 0,61.04471 a 24.107944,24.107944 67.5 0 0 7.06105,17.04689 l 45.75392,45.75392 a 20.57795,20.57795 22.5 0 0 14.55081,6.02714 h 62.50688 C 785.96159,858.67042 742.6707,815.37954 699.37981,772.08865 Z"
           className={cn(
-            "stroke-rvns fill-transparent stroke-6",
+            "fill-transparent stroke-cyan-500 stroke-6 dark:stroke-cyan-400",
             classNames?.lower,
           )}
           initial={{ pathLength: 0, fillOpacity: 0 }}

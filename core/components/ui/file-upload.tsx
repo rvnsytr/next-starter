@@ -20,11 +20,11 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "./empty";
-import { Input, InputProps } from "./input";
+import { Input } from "./input";
 import { Separator } from "./separator";
 
 export type FileUploadProps = Pick<
-  InputProps,
+  React.ComponentProps<"input">,
   "id" | "name" | "className" | "multiple" | "required"
 > & {
   value: File[];

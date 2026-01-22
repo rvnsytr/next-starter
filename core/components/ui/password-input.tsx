@@ -9,9 +9,8 @@ import {
   LockKeyholeIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FieldDescription } from "./field";
-import { InputProps } from "./input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -24,7 +23,10 @@ export function PasswordInput({
   withList = false,
   value,
   ...props
-}: Omit<InputProps, "type"> & { icon?: React.ReactNode; withList?: boolean }) {
+}: Omit<React.ComponentProps<"input">, "type"> & {
+  icon?: React.ReactNode;
+  withList?: boolean;
+}) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const { lowercase, uppercase, number, character } = messages.password;
 

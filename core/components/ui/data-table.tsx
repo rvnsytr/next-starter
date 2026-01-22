@@ -749,8 +749,6 @@ function RowsPerPage<TData>({
   table: DataTableType<TData>;
   className?: string;
 }) {
-  const isMobile = useIsMobile();
-
   return (
     <div className={cn("flex items-center gap-x-2", className)}>
       <Label>Baris per halaman</Label>
@@ -758,7 +756,7 @@ function RowsPerPage<TData>({
         value={String(table.getState().pagination.pageSize ?? defaultPageSize)}
         onValueChange={(value) => table.setPageSize(Number(value))}
       >
-        <SelectTrigger size={isMobile ? "default" : "sm"}>
+        <SelectTrigger size="sm">
           <SelectValue />
         </SelectTrigger>
 

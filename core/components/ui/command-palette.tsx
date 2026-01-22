@@ -99,7 +99,7 @@ export function CommandPalette({
         </InputGroup>
       </DialogTrigger>
 
-      <DialogContent className="p-1" hideCloseButton>
+      <DialogContent className="p-1" showCloseButton={false}>
         <DialogHeader className="sr-only">
           <DialogTitle>Command Pallete</DialogTitle>
           <DialogDescription>Command Menu Pallete</DialogDescription>
@@ -144,7 +144,7 @@ export function CommandPalette({
                                   onSelect={() => onSelectHandler(href)}
                                   className={cn(
                                     isDestructive &&
-                                      "text-destructive data-[selected=true]:bg-destructive/10 data-[selected=true]:text-destructive",
+                                      "text-destructive data-selected:bg-destructive/10 data-selected:text-destructive",
                                   )}
                                 >
                                   <DotIcon

@@ -5,7 +5,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --rvns: var(--color-cyan-500);
   --success: var(--color-green-600);
   --warning: var(--color-yellow-600);
 
@@ -67,7 +66,6 @@
 }
 
 .dark {
-  --rvns: rgb(20, 255, 236);
   --success: var(--color-green-500);
   --warning: var(--color-yellow-500);
 
@@ -108,7 +106,6 @@
 @theme inline {
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --color-rvns: var(--rvns);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

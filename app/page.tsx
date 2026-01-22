@@ -16,7 +16,6 @@ import {
   TabsTrigger,
 } from "@/core/components/ui/tabs";
 import { ThemeToggle } from "@/core/components/ui/theme";
-import { cn } from "@/core/utils";
 import { ExampleForm, ExampleTypography } from "@/modules/docs";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
@@ -96,6 +95,7 @@ const tabs: { section: string; content?: (keyof typeof comp)[] }[] = [
   { section: "Typography", content: ["typography"] },
   { section: "Chart", content: ["pieChart", "timelineChart"] },
   { section: "Event Calendar" },
+  { section: "Form Builder" },
 ];
 
 export default function Page() {
@@ -105,9 +105,9 @@ export default function Page() {
         <R />
 
         <div className="animate-fade flex flex-wrap gap-2 delay-750">
-          <ThemeToggle variant="outline_primary" />
+          <ThemeToggle variant="outline" />
 
-          <Button variant="outline_primary" asChild>
+          <Button variant="outline" asChild>
             <Link href="/dashboard">
               Ke Dashboard <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
             </Link>
@@ -117,20 +117,12 @@ export default function Page() {
 
       <Tabs
         defaultValue={tabs[0].section}
-        orientation="vertical"
-        className="animate-fade w-full gap-x-8 delay-1000 md:flex-row"
+        className="animate-fade w-full flex-col gap-x-4 delay-1000 md:flex-row"
       >
-        <ScrollArea className="pb-2 md:hidden">
-          <TabsList className="w-full rounded-none border-b bg-transparent p-0">
+        <ScrollArea className="pb-2">
+          <TabsList variant="line">
             {tabs.map(({ section }) => (
-              <TabsTrigger
-                key={section}
-                value={section}
-                className={cn(
-                  "relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5",
-                  "data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-transparent",
-                )}
-              >
+              <TabsTrigger key={section} value={section}>
                 {section}
               </TabsTrigger>
             ))}
@@ -138,25 +130,10 @@ export default function Page() {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <TabsList className="hidden h-full flex-col items-start justify-start rounded-none border-l bg-transparent p-0 md:flex">
-          {tabs.map(({ section }) => (
-            <TabsTrigger
-              key={section}
-              value={section}
-              className={cn(
-                "relative w-full justify-start rounded-none after:absolute after:inset-y-0 after:-start-0.5 after:w-0.5",
-                "data-[state=active]:after:bg-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-transparent",
-              )}
-            >
-              {section}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
         <div className="w-full">
           {tabs.map(({ section, content }) => (
             <TabsContent key={section} value={section} className="grid gap-y-4">
-              <h2>{section}</h2>
+              <h3>{section}</h3>
               {content ? (
                 content.map((key, index) => (
                   <Fragment key={index}>{comp[key]}</Fragment>

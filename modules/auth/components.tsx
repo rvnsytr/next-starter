@@ -93,11 +93,11 @@ export function UserVerifiedBadge({
       <TooltipTrigger className={className} asChild>
         {noText ? (
           <BadgeCheckIcon
-            className={cn("text-rvns size-4 shrink-0", classNames?.icon)}
+            className={cn("text-success size-4 shrink-0", classNames?.icon)}
           />
         ) : (
           <Badge
-            variant="outline_rvns"
+            variant="success"
             className={cn("capitalize", classNames?.badge)}
           >
             <BadgeCheckIcon className={classNames?.icon} /> Terverifikasi

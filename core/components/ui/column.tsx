@@ -88,6 +88,7 @@ export function ColumnHeader<TData, TValue>({
 
 export function ColumnHeaderCheckbox<TData, TValue>({
   table,
+  className,
   ...props
 }: Pick<HeaderContext<TData, TValue>, "table"> &
   Omit<CheckboxProps, "checked" | "onCheckedChange">) {
@@ -99,6 +100,7 @@ export function ColumnHeaderCheckbox<TData, TValue>({
         table.getIsAllPageRowsSelected() ||
         (table.getIsSomePageRowsSelected() && "indeterminate")
       }
+      className={cn("mx-auto", className)}
       {...props}
     />
   );
@@ -106,6 +108,7 @@ export function ColumnHeaderCheckbox<TData, TValue>({
 
 export function ColumnCellCheckbox<TData, TValue>({
   row,
+  className,
   ...props
 }: Pick<CellContext<TData, TValue>, "row"> &
   Omit<CheckboxProps, "checked" | "onCheckedChange">) {
@@ -115,6 +118,7 @@ export function ColumnCellCheckbox<TData, TValue>({
       aria-label="Select row"
       checked={row.getIsSelected()}
       onCheckedChange={(value) => row.toggleSelected(!!value)}
+      className={cn("mx-auto", className)}
       {...props}
     />
   );
