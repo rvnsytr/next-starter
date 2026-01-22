@@ -46,9 +46,9 @@ export function CommandPalette({
   placeholder: plch,
 }: CommandPalleteProps) {
   const router = useRouter();
+  const isMounted = useIsMounted();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
-  const isMounted = useIsMounted();
 
   const placeholder = plch ?? "Pencarian cepat...";
   const onShortcut = useEffectEvent(() => setIsOpen((prev) => !prev));

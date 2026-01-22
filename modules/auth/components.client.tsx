@@ -1344,7 +1344,7 @@ export function CreateUserDialog({
         <Button
           size={size}
           variant={variant}
-          className={cn("w-full", className)}
+          className={className}
         >
           <UserRoundPlusIcon /> Tambah Pengguna
         </Button>
@@ -1457,7 +1457,7 @@ export function CreateUserDialog({
             control={form.control}
             render={({ field, fieldState }) => (
               <FieldWrapper
-                label="Ubah role"
+                label="Role"
                 htmlFor={field.name}
                 errors={fieldState.error}
               >

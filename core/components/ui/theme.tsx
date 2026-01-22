@@ -34,8 +34,8 @@ export function ThemeToggle({
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<ComponentProps<typeof TooltipContent>, "align">) {
-  const { theme, setTheme } = useTheme();
   const isMounted = useIsMounted();
+  const { theme, setTheme } = useTheme();
 
   const currentTheme = (theme ?? "system") as Theme;
   const { icon: Icon } = themeMeta[currentTheme];
@@ -81,8 +81,8 @@ export function ThemeToggle({
 }
 
 export function ThemeSettings() {
-  const { theme, setTheme } = useTheme();
   const isMounted = useIsMounted();
+  const { theme, setTheme } = useTheme();
 
   if (!isMounted) return <LoadingFallback />;
 

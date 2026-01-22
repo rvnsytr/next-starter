@@ -21,8 +21,8 @@ export function LayoutToggle({
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<ComponentProps<typeof TooltipContent>, "align">) {
-  const { layout, setLayout } = useLayout();
   const isMounted = useIsMounted();
+  const { layout, setLayout } = useLayout();
 
   const { icon: Icon } = layoutModeMeta[layout];
 
@@ -84,8 +84,8 @@ export function LayoutToggle({
 }
 
 export function LayoutSettings() {
-  const { layout, setLayout } = useLayout();
   const isMounted = useIsMounted();
+  const { layout, setLayout } = useLayout();
 
   if (!isMounted) return <LoadingFallback />;
 
