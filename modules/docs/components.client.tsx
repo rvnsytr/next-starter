@@ -293,8 +293,8 @@ export function ExampleForm() {
                 defaultValue={selectAndRadioData}
                 placeholder="Pilih kartu"
                 value={field.value}
-                onChange={(v) => field.onChange(v.map((it) => it.value))}
-                props={{
+                onChange={(v) => field.onChange(v.map((itm) => itm.value))}
+                otherProps={{
                   input: {
                     id: field.name,
                     "aria-invalid": !!fieldState.error,
@@ -424,7 +424,7 @@ export function ExampleForm() {
               name={field.name}
               value={field.value}
               onValueChange={field.onChange}
-              className="flex-col md:flex-row"
+              className="flex flex-col md:flex-row"
               required
             >
               {selectAndRadioData.map(({ icon: Icon, ...item }) => (
