@@ -13,6 +13,7 @@ import {
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
   const meta = routesMeta[route];
+  if (!meta) return false;
   if (!meta.role) return true;
   return meta.role && (meta.role === "all" || meta.role.includes(role));
 }
@@ -31,7 +32,7 @@ export function clamp(num: number, min: number, max: number) {
 
 export function normalizeRoute(route?: string | null): Route {
   if (!route) return "/";
-  return (route.replace(/\/+$/, "") as Route) || "/";
+  return (route.split("?")[0].replace(/\/+$/, "") as Route) || "/";
 }
 
 export function setRouteTitle(title: string) {

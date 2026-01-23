@@ -23,12 +23,10 @@ export function AuthProvider({
     if (!isAuthorized && !isValidating) return notFound();
   }, [pathname, session, isValidating]);
 
+  if (!session) return;
+
   return (
-    session && (
-      <AuthContext.Provider value={{ ...session }}>
-        {children}
-      </AuthContext.Provider>
-    )
+    <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
   );
 }
 

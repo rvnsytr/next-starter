@@ -163,7 +163,7 @@ const sortingParser = createParser<SortingState>({
   },
 }).withDefault([]);
 
-export function columnFiltersParser<TData>(
+function columnFiltersParser<TData>(
   getColumns: () => DataTableColumnDef<TData>,
 ) {
   return createParser<ColumnFiltersState>({
@@ -261,12 +261,12 @@ export function DataTable<TData>({
   );
 
   const [rowSelection, setRowSelection] = useQueryState(
-    `${prefix}row-selected`,
+    `${prefix}selected`,
     getRecordQSParser(true),
   );
 
   const [globalFilter, setGlobalFilter] = useQueryState(
-    `${prefix}global-filter`,
+    `${prefix}search`,
     parseAsString.withDefault(""),
   );
 
