@@ -15,7 +15,7 @@ export function DetailList({ data }: { data: DetailListData }) {
     <div
       key={index}
       className={cn(
-        "space-y-1 [&_svg:not([class*='size-'])]:size-4",
+        "space-y-1 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
     >

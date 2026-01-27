@@ -1,4 +1,4 @@
-import z, { ZodType } from "zod";
+import z from "zod";
 import { apiConfig } from "./constants";
 import { apiResponseSchema } from "./schema.zod";
 
@@ -13,7 +13,7 @@ export type ApiFetcherConfig = Omit<FetcherConfig, "credentials">;
 
 export async function fetcher<T>(
   url: string,
-  schema: ZodType<T>,
+  schema: z.ZodType<T>,
   config?: FetcherConfig,
 ): Promise<T> {
   const res = await fetch(url, config);
@@ -30,7 +30,7 @@ export async function fetcher<T>(
 
 export async function apiFetcher<T>(
   url: string,
-  schema: ZodType<T>,
+  schema: z.ZodType<T>,
   config?: ApiFetcherConfig,
 ): Promise<ApiResponse<T>> {
   return await fetcher(

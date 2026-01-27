@@ -130,7 +130,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-base leading-none font-medium", className)}
+      className={cn(
+        "text-base leading-none font-medium *:[svg:not([class*='size-'])]:size-4",
+        className,
+      )}
       {...props}
     />
   );

@@ -30,7 +30,7 @@ export const sharedSchemas = {
     let schema = z.string({ error: invalid(field) }).trim();
 
     if (sanitize)
-      schema = schema.regex(/^$|[A-Za-z0-9]/, { message: required(field) });
+      schema = schema.regex(/^$|[A-Za-z0-9]/, { message: invalid(field) });
 
     if (min) {
       const message = min <= 1 && withRequired ? required : tooShort;
