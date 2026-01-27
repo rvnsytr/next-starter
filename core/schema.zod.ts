@@ -12,7 +12,12 @@ import { toMegabytes } from "./utils";
 export const sharedSchemas = {
   string: (
     field: string,
-    options?: { min?: number; max?: number; sanitize?: boolean },
+    options?: {
+      min?: number;
+      max?: number;
+      sanitize?: boolean;
+      withRequired?: boolean;
+    },
   ) => {
     const { invalid, required } = messages;
     const { tooShort, tooLong } = messages.string;
@@ -20,6 +25,7 @@ export const sharedSchemas = {
     const min = options?.min;
     const max = options?.max;
     const sanitize = options?.sanitize ?? true;
+    const withRequired = options?.withRequired ?? true;
 
     let schema = z.string({ error: invalid(field) }).trim();
 
@@ -27,7 +33,7 @@ export const sharedSchemas = {
       schema = schema.regex(/^$|[A-Za-z0-9]/, { message: required(field) });
 
     if (min) {
-      const message = min <= 1 ? required : tooShort;
+      const message = min <= 1 && withRequired ? required : tooShort;
       schema = schema.min(min, { error: message(field, min) });
     }
 
@@ -39,17 +45,21 @@ export const sharedSchemas = {
     return schema;
   },
 
-  number: (field: string, options?: { min?: number; max?: number }) => {
+  number: (
+    field: string,
+    options?: { min?: number; max?: number; withRequired?: boolean },
+  ) => {
     const { invalid, required } = messages;
     const { tooSmall, tooLarge } = messages.number;
 
     const min = options?.min;
     const max = options?.max;
+    const withRequired = options?.withRequired ?? true;
 
     let schema = z.coerce.number({ error: invalid(field) });
 
     if (min) {
-      const message = min <= 1 ? required : tooSmall;
+      const message = min <= 1 && withRequired ? required : tooSmall;
       schema = schema.min(min, { error: message(field, min) });
     }
 

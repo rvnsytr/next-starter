@@ -947,13 +947,13 @@ export function UserDataTable() {
   const { user } = useAuth();
   return (
     <DataTable
-      mode="server"
+      mode="manual"
+      searchPlaceholder="Cari Pengguna..."
       swr={{
         key: "/auth/list-users",
         fetcher: async (state) => await listUsers(user.role, state),
       }}
       getColumns={(res) => getUserColumns(user.id, res?.count)}
-      searchPlaceholder="Cari Pengguna..."
       getRowId={(row) => row.id}
       enableRowSelection={(row) => row.original.id !== user.id}
       renderRowSelection={({ rows, table }) => {
@@ -1341,11 +1341,7 @@ export function CreateUserDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          size={size}
-          variant={variant}
-          className={className}
-        >
+        <Button size={size} variant={variant} className={className}>
           <UserRoundPlusIcon /> Tambah Pengguna
         </Button>
       </DialogTrigger>

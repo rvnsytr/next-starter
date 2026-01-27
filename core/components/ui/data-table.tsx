@@ -86,14 +86,14 @@ import {
 type DataTableColumnDef<TData> = ColumnDef<TData, any>[];
 
 type CoreDataTableProps<TData> = {
-  mode: "client" | "server";
+  mode?: "auto" | "manual";
   swr: {
     key: string;
     fetcher: (state: DataTableState) => Promise<ActionResponse<TData[]>>;
     config?: SWRConfiguration;
   };
   getColumns: (
-    res?: Extract<ActionResponse<TData[]>, { success: true }>,
+    response?: Extract<ActionResponse<TData[]>, { success: true }>,
   ) => DataTableColumnDef<TData>;
 };
 
@@ -107,7 +107,7 @@ type ToolBoxProps<TData> = {
   }) => ReactNode;
 };
 
-export type DataTableProps<TData> = ToolBoxProps<TData> & {
+export type DataTableProps = {
   id?: string;
   caption?: string;
   placeholder?: string;
@@ -230,7 +230,7 @@ export const mutateDataTable = (key: string) =>
   mutate((a) => !!a && typeof a === "object" && "key" in a && a.key === key);
 
 export function DataTable<TData>({
-  mode,
+  mode = "auto",
   swr,
   getColumns,
 
@@ -245,19 +245,20 @@ export function DataTable<TData>({
 
   ...props
 }: CoreDataTableProps<TData> &
-  DataTableProps<TData> &
+  DataTableProps &
+  ToolBoxProps<TData> &
   Pick<TableOptions<TData>, "getRowId" | "enableRowSelection">) {
-  const isServer = mode === "server";
+  const isManual = mode === "manual";
   const prefix = id ? `${id}-` : "";
 
   const [columnVisibility, setColumnVisibility] = useQueryState(
-    `${prefix}col-vis`,
+    `${prefix}hidden`,
     getRecordQSParser(false),
   );
 
   const [columnPinning, setColumnPinning] = useQueryStates(
     { left: arrayQSParser, right: arrayQSParser },
-    { urlKeys: { left: `${prefix}pin-l`, right: `${prefix}pin-r` } },
+    { urlKeys: { left: `${prefix}left`, right: `${prefix}right` } },
   );
 
   const [rowSelection, setRowSelection] = useQueryState(
@@ -287,7 +288,7 @@ export function DataTable<TData>({
 
   const debouncedGlobalFilter = useDebounce(globalFilter);
 
-  const allStates: DataTableState = useMemo(() => {
+  const dataTableState: DataTableState = useMemo(() => {
     const parsed = columnFiltersSchema.array().safeParse(columnFilters);
     return {
       globalFilter: debouncedGlobalFilter,
@@ -299,8 +300,8 @@ export function DataTable<TData>({
 
   const baseArgument = { key: swr.key };
   const { data, isLoading, error } = useSWR(
-    isServer ? { ...baseArgument, ...allStates } : baseArgument,
-    async () => await swr.fetcher(allStates),
+    isManual ? { ...baseArgument, ...dataTableState } : baseArgument,
+    async () => await swr.fetcher(dataTableState),
     swr.config,
   );
 
@@ -340,24 +341,24 @@ export function DataTable<TData>({
     onRowSelectionChange: setRowSelection,
 
     // * Global Searching
-    manualFiltering: isServer,
+    manualFiltering: isManual,
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
 
     // * Column Filtering
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: !isServer ? getFilteredRowModel() : undefined,
+    getFilteredRowModel: !isManual ? getFilteredRowModel() : undefined,
 
     // * Column Sorting
-    manualSorting: isServer,
+    manualSorting: isManual,
     onSortingChange: setSorting,
-    getSortedRowModel: !isServer ? getSortedRowModel() : undefined,
+    getSortedRowModel: !isManual ? getSortedRowModel() : undefined,
 
     // * Pagination
-    manualPagination: isServer,
+    manualPagination: isManual,
     rowCount: data?.count?.total ?? 0,
     onPaginationChange: setPagination,
-    getPaginationRowModel: !isServer ? getPaginationRowModel() : undefined,
+    getPaginationRowModel: !isManual ? getPaginationRowModel() : undefined,
   });
 
   if (error) return <ErrorFallback error={error} />;
