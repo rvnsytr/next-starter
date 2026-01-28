@@ -1,8 +1,8 @@
 "use client";
 
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { LayoutMode, layoutModeMeta, useLayout } from "@/core/providers";
-import { cn } from "@/core/utils";
+import { LayoutMode, layoutModeMeta, useLayout } from "@/core/providers/layout";
+import { cn } from "@/core/utils/helpers";
 import { ComponentProps, useEffect, useEffectEvent } from "react";
 import { Button, ButtonProps } from "./button";
 import { LoadingFallback } from "./fallback";

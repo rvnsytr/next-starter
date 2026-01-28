@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import {
   FrameIcon,
   Loader2Icon,

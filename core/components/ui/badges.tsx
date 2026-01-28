@@ -1,5 +1,5 @@
-import { Gender, genderMeta } from "@/core/constants";
-import { cn } from "@/core/utils";
+import { Gender, genderMeta } from "@/core/constants/metadata";
+import { cn } from "@/core/utils/helpers";
 import { Badge } from "./badge";
 
 export function GenderBadge({

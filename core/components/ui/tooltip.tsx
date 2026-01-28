@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 
 function TooltipProvider({

@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layout";
+import { DashboardMain } from "@/core/components/layout/dashboard";
 import { Button } from "@/core/components/ui/button";
 import {
   CardAction,
@@ -12,8 +12,11 @@ import {
   PopoverTrigger,
 } from "@/core/components/ui/popover";
 import { Separator } from "@/core/components/ui/separator";
-import { getRouteTitle } from "@/core/utils";
-import { CreateUserDialog, UserDataTable } from "@/modules/auth";
+import { getRouteTitle } from "@/core/route";
+import {
+  CreateUserDialog,
+  UserDataTable,
+} from "@/modules/auth/components.client";
 import { EllipsisIcon } from "lucide-react";
 import { Metadata } from "next";
 

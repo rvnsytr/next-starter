@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, delay } from "@/core/utils";
+import { cn, delay } from "@/core/utils/helpers";
 import { ArrowUpIcon, CheckIcon, CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

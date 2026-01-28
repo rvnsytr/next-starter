@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
 import { createContext, useCallback, useContext, useState } from "react";

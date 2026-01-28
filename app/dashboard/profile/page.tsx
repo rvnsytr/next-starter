@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layout";
+import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
   CardAction,
@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
-import { appMeta } from "@/core/constants";
-import { getRouteTitle } from "@/core/utils";
-import { ProfileBadges, ProfileForm } from "@/modules/auth";
+import { appMeta } from "@/core/constants/app";
+import { getRouteTitle } from "@/core/route";
+import { ProfileBadges, ProfileForm } from "@/modules/auth/components.client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

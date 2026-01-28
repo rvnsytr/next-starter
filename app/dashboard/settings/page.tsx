@@ -1,4 +1,4 @@
-import { DashboardMain } from "@/core/components/layout";
+import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
   CardAction,
@@ -11,13 +11,13 @@ import {
 import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
 import { LayoutSettings } from "@/core/components/ui/layout";
 import { ThemeSettings } from "@/core/components/ui/theme";
-import { appMeta } from "@/core/constants";
-import { getRouteTitle } from "@/core/utils";
+import { appMeta } from "@/core/constants/app";
+import { getRouteTitle } from "@/core/route";
 import {
   ChangePasswordForm,
   RevokeOtherSessionsButton,
   SessionList,
-} from "@/modules/auth";
+} from "@/modules/auth/components.client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

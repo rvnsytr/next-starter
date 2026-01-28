@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { useId } from "react";
 
 type GridPatternProps = React.SVGProps<SVGSVGElement> & {

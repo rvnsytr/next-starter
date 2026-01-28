@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { VariantProps } from "class-variance-authority";
 import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui";
 import { createContext, useContext } from "react";

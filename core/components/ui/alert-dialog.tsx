@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
 import { Button, ButtonProps } from "./button";
 

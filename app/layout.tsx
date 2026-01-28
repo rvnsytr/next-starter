@@ -1,8 +1,8 @@
 import { GridPattern } from "@/core/components/ui/grid-pattern";
 import { Toaster } from "@/core/components/ui/sonner";
-import { appMeta } from "@/core/constants";
-import { GlobalShortcuts } from "@/core/providers";
-import { cn } from "@/core/utils";
+import { appMeta } from "@/core/constants/app";
+import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
+import { cn } from "@/core/utils/helpers";
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";

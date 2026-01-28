@@ -1,11 +1,13 @@
-import { allRoles } from "@/modules/auth";
+import { allRoles } from "@/modules/auth/constants";
 import {
   sessionSchema as betterAuthSessionSchema,
   userSchema as betterAuthUserSchema,
 } from "better-auth";
 import z from "zod";
-import { allGenders, fileMeta, FileType, messages } from "./constants";
-import { toMegabytes } from "./utils";
+import { fileMeta, FileType } from "./constants/file";
+import { messages } from "./constants/messages";
+import { allGenders } from "./constants/metadata";
+import { toMegabytes } from "./utils/formaters";
 
 // #region CORE
 
@@ -257,7 +259,7 @@ export const userSchema = betterAuthUserSchema.extend({
   email: sharedSchemas.email,
   name: sharedSchemas.string("Nama", { min: 1 }),
   image: z.string().optional().nullable(),
-  role: z.lazy(() => z.enum(allRoles)),
+  role: z.enum(allRoles),
   banned: z.boolean().default(false),
   banReason: z.string().optional().nullable(),
   banExpires: z.date().optional().nullable(),

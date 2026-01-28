@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Route } from "next";
 import { LinkProps } from "next/link";
-import { RouteRole } from "./routes";
+import { RouteRole } from "../route";
 
 type MenuContent = {
   route: Route;

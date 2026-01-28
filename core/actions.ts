@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { allRequestMetaKey, RequestMetaKey } from "./constants";
+import { allRequestMetaKey, RequestMetaKey } from "./constants/metadata";
 
 export async function getRequestMeta() {
   const req = await headers();

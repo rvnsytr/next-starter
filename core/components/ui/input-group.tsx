@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { cva, VariantProps } from "class-variance-authority";
 import { Button, ButtonProps } from "./button";
 import { Input } from "./input";

@@ -10,7 +10,7 @@ import {
   UploadIcon,
   VideoIcon,
 } from "lucide-react";
-import { toBytes } from "../utils";
+import { toBytes } from "../utils/formaters";
 
 export type FileType =
   | "file"

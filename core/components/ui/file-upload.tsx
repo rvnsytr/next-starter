@@ -1,6 +1,8 @@
-import { fileMeta, FileType, messages } from "@/core/constants";
+import { fileMeta, FileType } from "@/core/constants/file";
+import { messages } from "@/core/constants/messages";
 import { sharedSchemas } from "@/core/schema.zod";
-import { cn, toMegabytes } from "@/core/utils";
+import { toMegabytes } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
 import { ArrowUpRightIcon, DotIcon, XIcon } from "lucide-react";
 import { Route } from "next";
 import Image from "next/image";

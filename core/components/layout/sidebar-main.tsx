@@ -1,5 +1,8 @@
-import { dashboardfooterMenu } from "@/core/constants";
-import { SignOutButton, StopImpersonateUserMenuItem } from "@/modules/auth";
+import { dashboardfooterMenu } from "@/core/constants/menu";
+import {
+  SignOutButton,
+  StopImpersonateUserMenuItem,
+} from "@/modules/auth/components.client";
 import Link from "next/link";
 import {
   Sidebar,

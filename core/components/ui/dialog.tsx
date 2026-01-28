@@ -1,7 +1,7 @@
 "use client";
 
-import { messages } from "@/core/constants";
-import { cn } from "@/core/utils";
+import { messages } from "@/core/constants/messages";
+import { cn } from "@/core/utils/helpers";
 import { XIcon } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { Button } from "./button";

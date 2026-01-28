@@ -1,9 +1,11 @@
 import { getRequestMeta } from "@/core/actions";
-import { FooterNote, SidebarMain } from "@/core/components/layout";
+import { FooterNote } from "@/core/components/layout/footer-note";
+import { SidebarMain } from "@/core/components/layout/sidebar-main";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
-import { LayoutProvider } from "@/core/providers";
-import { authorizedRoute, getRouteTitle } from "@/core/utils";
-import { AuthProvider, getSession } from "@/modules/auth";
+import { LayoutProvider } from "@/core/providers/layout";
+import { authorizedRoute, getRouteTitle } from "@/core/route";
+import { getSession } from "@/modules/auth/actions";
+import { AuthProvider } from "@/modules/auth/provider.auth";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 

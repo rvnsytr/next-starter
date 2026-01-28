@@ -68,7 +68,6 @@ This project uses a **feature-based module architecture**, where each feature is
 
 - Each feature lives in `modules/<feature>/`
 - A Module contain **only what the module needs**
-- Export only **high-level** module APIs via `index.ts`
 - Prefer the **shortest possible import path**
 - Components can be structured either as:
   - a single file (`component.tsx`, `component.client.tsx`), or
@@ -76,7 +75,7 @@ This project uses a **feature-based module architecture**, where each feature is
 - `core/` contains shared, stable, low-change code and **should not be edited**
 - Only edit the following files when extending domain logic:
   - `core/constants/menu.ts` — Menus metadata
-  - `core/constants/routes.ts` — Routes metadata
+  - `core/route.ts` — Routes metadata
   - `core/schema.db.ts` — Drizzle DB schemas
   - `core/schema.zod.ts` — Zod schemas
 
@@ -98,12 +97,9 @@ next-starter/
       constants.ts
       hooks.ts                -- Module-specific hooks and SWR helpers (useSWR and its mutator).
       provider.auth.tsx       -- format: provider.<name>.tsx
-      index.ts                -- high-level exports
 
     parent-module/
       sub-module/
-        index.ts
-      index.ts
 
   core/
     components/
@@ -111,7 +107,6 @@ next-starter/
       ui/
     constants/
       menu.ts                 -- Modifiable.
-      routes.ts               -- Modifiable.
     hooks/
     providers/
     utils/
@@ -124,6 +119,7 @@ next-starter/
     db.ts
     filter.ts
     permissions.ts
+    route.ts             -- Modifiable.
     schema.db.ts             -- Modifiable.
     schema.zod.ts            -- Modifiable.
     storage.ts
@@ -135,17 +131,6 @@ next-starter/
 ```
 
 ### Examples
-
-#### - Module Entry Point ( `@/modules/<features>/index.ts` )
-
-```typescript
-export * from "./actions";
-export * from "./components";
-export * from "./components.client";
-export * from "./constants";
-export * from "./hooks";
-export * from "./provider.auth";
-```
 
 #### - Prefer Shortest Import
 
@@ -163,3 +148,4 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 - More Numeric Form Inputs
 - Event Calendar
 - Rich Text Editor
+- from react-starter: reset-password

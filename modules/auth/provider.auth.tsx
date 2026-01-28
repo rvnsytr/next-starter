@@ -1,6 +1,6 @@
 "use client";
 
-import { authorizedRoute } from "@/core/utils";
+import { authorizedRoute } from "@/core/route";
 import { notFound, usePathname } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect } from "react";
 import { AuthSession } from "./constants";

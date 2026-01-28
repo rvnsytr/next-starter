@@ -1,5 +1,5 @@
-import { messages } from "@/core/constants";
-import { cn } from "@/core/utils";
+import { messages } from "@/core/constants/messages";
+import { cn } from "@/core/utils/helpers";
 import { RotateCcwIcon } from "lucide-react";
 import Link from "next/link";
 import { Button, ButtonProps } from "./button";

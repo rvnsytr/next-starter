@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 

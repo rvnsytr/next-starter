@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
 function ScrollArea({

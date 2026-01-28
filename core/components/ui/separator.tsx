@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "@/core/utils/helpers";
 import { Separator as SeparatorPrimitive } from "radix-ui";
 
 export function Separator({

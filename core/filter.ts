@@ -15,7 +15,6 @@ import {
   startOfDay,
 } from "date-fns";
 import { LucideIcon } from "lucide-react";
-import { intersection, uniq } from "./utils/array";
 
 export type ElementType<T> = T extends (infer U)[] ? U : T;
 
@@ -731,6 +730,8 @@ export function multiOptionFilterFn<TData>(
   );
 }
 
+const intersection = <T>(a: T[], b: T[]): T[] => a.filter((x) => b.includes(x));
+
 export function __multiOptionFilterFn<TData>(
   inputData: string[],
   filterValue: FilterModel<"multiOption", TData>,
@@ -744,8 +745,8 @@ export function __multiOptionFilterFn<TData>(
   )
     return true;
 
-  const values = uniq(inputData);
-  const filterValues = uniq(filterValue.values[0]);
+  const values = Array.from(new Set(inputData));
+  const filterValues = Array.from(new Set(filterValue.values[0]));
 
   switch (filterValue.operator) {
     case "include":

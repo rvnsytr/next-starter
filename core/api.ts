@@ -1,5 +1,5 @@
 import z from "zod";
-import { apiConfig } from "./constants";
+import { apiConfig } from "./constants/app";
 
 export type FetcherConfig = RequestInit & { safeFetch?: boolean };
 

@@ -16,7 +16,8 @@ import {
   TabsTrigger,
 } from "@/core/components/ui/tabs";
 import { ThemeToggle } from "@/core/components/ui/theme";
-import { ExampleForm, ExampleTypography } from "@/modules/docs";
+import { ExampleTypography } from "@/modules/docs/components";
+import { ExampleForm } from "@/modules/docs/components.client";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";

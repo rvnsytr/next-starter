@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  cn,
   formatDate,
   formatDDMMYY,
   parseDDMMYYYY,
   sanitizeDate,
-} from "@/core/utils";
+} from "@/core/utils/date";
+import { cn } from "@/core/utils/helpers";
 import { isSameDay } from "date-fns";
 import {
   CalendarDaysIcon,

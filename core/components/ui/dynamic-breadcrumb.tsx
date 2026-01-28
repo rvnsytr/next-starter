@@ -1,7 +1,7 @@
 "use client";
 
-import { routesMeta } from "@/core/constants";
-import { useIsMobile } from "@/core/hooks";
+import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { routesMeta } from "@/core/route";
 import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

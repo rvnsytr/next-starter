@@ -1,8 +1,8 @@
 "use client";
 
-import { messages } from "@/core/constants";
-import { useDebounce } from "@/core/hooks";
-import { cn } from "@/core/utils";
+import { messages } from "@/core/constants/messages";
+import { useDebounce } from "@/core/hooks/use-debounce";
+import { cn } from "@/core/utils/helpers";
 import { Command as CommandPrimitive } from "cmdk";
 import { CheckIcon, LucideIcon, XIcon } from "lucide-react";
 import {

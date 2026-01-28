@@ -1,6 +1,6 @@
 "use client";
 
-import { messages } from "@/core/constants";
+import { messages } from "@/core/constants/messages";
 import {
   ColumnDataType,
   ColumnOption,
@@ -19,8 +19,11 @@ import {
   optionFilterDetails,
   textFilterDetails,
 } from "@/core/filter";
-import { useDebounce, useIsMobile } from "@/core/hooks";
-import { cn, formatDate, formatNumber, take, uniq } from "@/core/utils";
+import { useDebounce } from "@/core/hooks/use-debounce";
+import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { formatDate } from "@/core/utils/date";
+import { formatNumber } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
 import {
@@ -742,6 +745,10 @@ export function FilterValueDisplay<TData, TValue>({
   }
 }
 
+function uniq<T>(a: T[]): T[] {
+  return Array.from(new Set(a));
+}
+
 export function FilterValueOptionDisplay<TData, TValue>({
   id,
   column,
@@ -770,11 +777,10 @@ export function FilterValueOptionDisplay<TData, TValue>({
   // Make sure the column data conforms to ColumnOption type
   else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
   // Invalid configuration
-  else {
+  else
     throw new Error(
       `[data-table-filter] [${id}] Either provide static options, a transformOptionFn, or ensure the column data conforms to ColumnOption type`,
     );
-  }
 
   const filter = column.getFilterValue() as FilterModel<"option", TData>;
   const selected = options.filter((o) => filter?.values.includes(o.value));
@@ -804,7 +810,7 @@ export function FilterValueOptionDisplay<TData, TValue>({
   return (
     <div className="inline-flex items-center gap-0.5">
       {hasOptionIcons &&
-        take(selected, 3).map(({ value, icon }) => {
+        selected.slice(0, 3).map(({ value, icon }) => {
           const Icon = icon!;
           return isValidElement(Icon) ? Icon : <Icon key={value} />;
         })}
@@ -870,7 +876,7 @@ export function FilterValueMultiOptionDisplay<TData, TValue>({
     <div className="inline-flex items-center gap-1.5">
       {hasOptionIcons && (
         <div key="icons" className="inline-flex items-center gap-0.5">
-          {take(selected, 3).map(({ value, icon }) => {
+          {selected.slice(0, 3).map(({ value, icon }) => {
             const Icon = icon!;
             return isValidElement(Icon) ? (
               cloneElement(Icon, { key: value })

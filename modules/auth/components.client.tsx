@@ -90,12 +90,16 @@ import {
   TabsTrigger,
 } from "@/core/components/ui/tabs";
 import { Textarea } from "@/core/components/ui/textarea";
-import { appMeta, fileMeta, messages } from "@/core/constants";
+import { appMeta } from "@/core/constants/app";
+import { fileMeta } from "@/core/constants/file";
+import { messages } from "@/core/constants/messages";
 import { filterFn } from "@/core/filter";
-import { useIsMobile } from "@/core/hooks";
+import { useIsMobile } from "@/core/hooks/use-is-mobile";
 import { passwordSchema, sharedSchemas, userSchema } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
-import { capitalize, cn, formatDate } from "@/core/utils";
+import { formatDate } from "@/core/utils/date";
+import { capitalize } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { differenceInSeconds, endOfDay } from "date-fns";

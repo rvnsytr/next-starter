@@ -1,12 +1,11 @@
 import { ZodError } from "zod";
+import { appMeta } from "../constants/app";
+import { Language, languageMeta } from "../constants/metadata";
 import {
-  appMeta,
-  Language,
-  languageMeta,
   StringCase,
   TransformableStringCase,
   TransformKeys,
-} from "../constants";
+} from "../constants/types";
 
 export function capitalize(string: string, mode: "all" | "first" = "all") {
   const handler = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

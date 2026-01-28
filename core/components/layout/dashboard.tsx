@@ -1,5 +1,5 @@
-import { cn } from "@/core/utils";
-import { ImpersonateUserBadge } from "@/modules/auth";
+import { cn } from "@/core/utils/helpers";
+import { ImpersonateUserBadge } from "@/modules/auth/components.client";
 import { ReactNode } from "react";
 import {
   DynamicBreadcrumb,

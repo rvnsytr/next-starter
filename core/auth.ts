@@ -1,4 +1,4 @@
-import { allRoles, defaultRole } from "@/modules/auth";
+import { allRoles, defaultRole } from "@/modules/auth/constants";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -6,7 +6,7 @@ import {
   admin as adminPlugin,
   createAuthMiddleware,
 } from "better-auth/plugins";
-import { appMeta } from "./constants";
+import { appMeta } from "./constants/app";
 import { db } from "./db";
 import { ac, roles } from "./permission";
 import { removeFiles } from "./storage";

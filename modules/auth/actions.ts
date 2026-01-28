@@ -1,7 +1,8 @@
 "use server";
 
 import { auth } from "@/core/auth";
-import { ActionResponse, messages } from "@/core/constants";
+import { messages } from "@/core/constants/messages";
+import { ActionResponse } from "@/core/constants/types";
 import {
   DataTableState,
   defineWDTConfig,
