@@ -63,7 +63,6 @@ export function withDataTable<
   TQueryBuilder extends PgSelect,
   Columns extends Record<string, WDTColumnConfig>,
 >(qb: TQueryBuilder, state: DataTableState, config: WDTConfig<Columns>) {
-  // #region Global Filter
   const columnValues = Object.values(config.columns);
   const globalFilterCols = columnValues.filter((c) => c.type === "string");
   if (
@@ -75,9 +74,7 @@ export function withDataTable<
     const conditions = globalFilterCols.map((c) => ilike(c.column, value));
     if (conditions.length) qb = qb.where(or(...conditions));
   }
-  // #endregion
 
-  // #region Column Filters
   if (!config.disabled?.includes("columnFilters") && state.columnFilters) {
     const ilikeOperators: FilterOperators[] = ["contains"];
     const notIlikeOperators: FilterOperators[] = ["does not contain"];
@@ -200,9 +197,7 @@ export function withDataTable<
 
     if (conditions.length) qb = qb.where(and(...conditions));
   }
-  // #endregion
 
-  // #region Sorting
   if (!config.disabled?.includes("sorting")) {
     const applySorting = () => {
       if (state.sorting.length) {
@@ -227,14 +222,11 @@ export function withDataTable<
 
     applySorting();
   }
-  // #endregion
 
-  // #region Pagination
   if (!config.disabled?.includes("pagination")) {
     const { pageIndex, pageSize } = state.pagination;
     qb = qb.limit(pageSize).offset(pageIndex * pageSize);
   }
-  // #endregion
 
   return qb;
 }

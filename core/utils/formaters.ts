@@ -124,6 +124,11 @@ export function formatPhone(number: string | number, prefix?: "+62" | "0") {
   return `${prefix ?? ""} ${formatted}`.trim();
 }
 
-export function formatZodError<T>(zodError: ZodError<T>): string {
-  return JSON.parse(zodError.message)[0].message;
+export function formatZodError<T>(
+  zodError: ZodError<T>,
+  withPath = false,
+): string {
+  const error = JSON.parse(zodError.message)[0];
+  if (withPath) return `${error.path}: ${error.message}`;
+  return error.message;
 }

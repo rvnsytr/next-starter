@@ -27,7 +27,6 @@ export const messages = {
   empty: "Tidak ada hasil yang ditemukan.",
   notFound: "Sumber daya yang diminta tidak ditemukan.",
 
-  success: "Sukses",
   error: "Terjadi kesalahan. Silakan coba lagi nanti.",
 
   unauthorized: "Tindakan tidak terautentikasi",

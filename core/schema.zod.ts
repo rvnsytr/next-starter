@@ -202,6 +202,8 @@ export const sharedSchemas = {
       .string()
       .transform((v) => {
         if (typeof v === "string") {
+          if (!v) return undefined;
+
           try {
             return JSON.parse(v);
           } catch {
@@ -232,17 +234,15 @@ export const sharedSchemas = {
   gender: z.enum(allGenders),
 };
 
-export const apiResponseSchema = z.object({
-  code: z.number(),
-  success: z.boolean(),
-  message: z.string(),
-  count: z
-    .intersection(
-      z.object({ total: z.number() }),
-      z.record(z.string(), z.number()),
-    )
-    .optional(),
-});
+export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(
+  prefix: P,
+  schema: z.ZodObject<S>,
+) {
+  const prefixedShape = Object.fromEntries(
+    Object.entries(schema.shape).map(([k, v]) => [`${prefix}${k}`, v]),
+  ) as { [K in keyof S as `${P}${string & K}`]: S[K] };
+  return z.object(prefixedShape);
+}
 
 // #endregion
 
