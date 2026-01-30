@@ -148,4 +148,5 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 - More Numeric Form Inputs
 - Event Calendar
 - Rich Text Editor
-- from react-starter: reset-password
+- from react-starter: email verification
+- from react-starter: reset password
