@@ -100,10 +100,11 @@ export type ColumnDataType =
   | "multiOption";
 
 /* Operators for text data */
-export const allTextFilterOperators = ["contains", "does not contain"] as const;
 export type TextFilterOperator = (typeof allTextFilterOperators)[number];
+export const allTextFilterOperators = ["contains", "does not contain"] as const;
 
 /* Operators for number data */
+export type NumberFilterOperator = (typeof allNumberFilterOperators)[number];
 export const allNumberFilterOperators = [
   "is",
   "is not",
@@ -114,9 +115,9 @@ export const allNumberFilterOperators = [
   "is between",
   "is not between",
 ] as const;
-export type NumberFilterOperator = (typeof allNumberFilterOperators)[number];
 
 /* Operators for date data */
+export type DateFilterOperator = (typeof allDateFilterOperators)[number];
 export const allDateFilterOperators = [
   "is",
   "is not",
@@ -127,18 +128,19 @@ export const allDateFilterOperators = [
   "is between",
   "is not between",
 ] as const;
-export type DateFilterOperator = (typeof allDateFilterOperators)[number];
 
 /* Operators for option data */
+export type OptionFilterOperator = (typeof allOptionFilterOperators)[number];
 export const allOptionFilterOperators = [
   "is",
   "is not",
   "is any of",
   "is none of",
 ] as const;
-export type OptionFilterOperator = (typeof allOptionFilterOperators)[number];
 
 /* Operators for multi-option data */
+export type MultiOptionFilterOperator =
+  (typeof allMultiOptionFilterOperators)[number];
 export const allMultiOptionFilterOperators = [
   "include",
   "exclude",
@@ -147,9 +149,8 @@ export const allMultiOptionFilterOperators = [
   "include all of",
   "exclude if all",
 ] as const;
-export type MultiOptionFilterOperator =
-  (typeof allMultiOptionFilterOperators)[number];
 
+export type FilterOperators = (typeof allFilterOperators)[number];
 export const allFilterOperators = [
   ...allTextFilterOperators,
   ...allNumberFilterOperators,
@@ -157,7 +158,6 @@ export const allFilterOperators = [
   ...allOptionFilterOperators,
   ...allMultiOptionFilterOperators,
 ];
-export type FilterOperators = (typeof allFilterOperators)[number];
 
 /* Maps filter operators to their respective data types */
 type FilterOperatorsMap = {

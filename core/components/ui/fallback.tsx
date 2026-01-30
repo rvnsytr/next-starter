@@ -1,8 +1,10 @@
 "use client";
 
+import { appMeta } from "@/core/constants/app";
 import { cn } from "@/core/utils/helpers";
 import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { Separator } from "./separator";
 import { Spinner } from "./spinner";
 
 export function LoadingFallback({ className }: { className?: string }) {
@@ -24,21 +26,24 @@ export function ErrorFallback({
   className?: string;
 }) {
   const message =
-    error instanceof Error
-      ? error?.message
-      : typeof error === "string"
-        ? error
-        : "Tidak ada data";
+    error?.message ?? (typeof error === "string" ? error : "Tidak ada data");
   return (
     <div
       className={cn(
-        "bg-destructive/10 text-destructive flex flex-col items-center justify-center gap-2 rounded-md p-4 text-center text-sm",
+        "border-destructive/40 shadow-destructive text-destructive flex flex-col items-center gap-4 rounded-md border p-4 text-center text-sm",
         className,
       )}
     >
-      <div className="flex items-center gap-x-2">
-        <TriangleAlertIcon className="size-4 shrink-0" /> {error?.code}
+      <div className="flex w-full items-center justify-between gap-x-12">
+        <div className="flex items-center gap-x-2 font-medium">
+          <TriangleAlertIcon className="size-4 shrink-0" /> {appMeta.name}
+        </div>
+
+        <code className="bg-destructive/10 texxs">{error?.code ?? 500}</code>
       </div>
+
+      <Separator className="bg-destructive/40" />
+
       {!hideText && <pre className="whitespace-pre-line">{message}</pre>}
     </div>
   );
@@ -60,7 +65,7 @@ export function AppLoadingFallback() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function AppErrorFallback({ error }: { error?: any }) {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-y-8">
+    <div className="container flex min-h-dvh flex-col items-center justify-center gap-y-8">
       <ErrorFallback error={error} />
     </div>
   );

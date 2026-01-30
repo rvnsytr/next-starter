@@ -11,8 +11,8 @@ import { Kbd, KbdGroup } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-export const allThemes = ["light", "system", "dark"] as const;
 export type Theme = (typeof allThemes)[number];
+export const allThemes = ["light", "system", "dark"] as const;
 
 export const themeMeta: Record<Theme, { icon: LucideIcon }> = {
   light: { icon: SunIcon },

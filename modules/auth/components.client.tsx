@@ -13,11 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/core/components/ui/alert-dialog";
 import { Badge } from "@/core/components/ui/badge";
-import {
-  Button,
-  ButtonProps,
-  buttonVariants,
-} from "@/core/components/ui/button";
+import { Button, ButtonProps } from "@/core/components/ui/button";
 import { ResetButton } from "@/core/components/ui/buttons";
 import { CardContent, CardFooter } from "@/core/components/ui/card";
 import { Checkbox } from "@/core/components/ui/checkbox";
@@ -705,8 +701,9 @@ export function ProfilePicture({
               <AlertDialogFooter>
                 <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
                 <AlertDialogAction
-                  className={buttonVariants({ variant: "destructive" })}
+                  variant="destructive"
                   onClick={() => deleteHandler()}
+                  autoFocus
                 >
                   {messages.actions.confirm}
                 </AlertDialogAction>
@@ -1771,7 +1768,10 @@ function SessionListCollapsible({
                           <AlertDialogCancel>
                             {messages.actions.cancel}
                           </AlertDialogCancel>
-                          <AlertDialogAction onClick={() => clickHandler(s)}>
+                          <AlertDialogAction
+                            onClick={() => clickHandler(s)}
+                            autoFocus
+                          >
                             {messages.actions.confirm}
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -1859,7 +1859,7 @@ export function RevokeOtherSessionsButton() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={clickHandler}>
+          <AlertDialogAction onClick={clickHandler} autoFocus>
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -1924,7 +1924,7 @@ function RevokeUserSessionsDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
 
-          <AlertDialogAction onClick={clickHandler}>
+          <AlertDialogAction onClick={clickHandler} autoFocus>
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -1984,7 +1984,7 @@ function ActionRevokeUserSessionsDialog({
 
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={clickHandler}>
+          <AlertDialogAction onClick={clickHandler} autoFocus>
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -2089,7 +2089,7 @@ function ImpersonateUserDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
 
-          <AlertDialogAction onClick={clickHandler}>
+          <AlertDialogAction onClick={clickHandler} autoFocus>
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -2339,7 +2339,7 @@ function UnbanUserDialog({
 
         <AlertDialogFooter>
           <AlertDialogCancel>{messages.actions.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={clickHandler}>
+          <AlertDialogAction onClick={clickHandler} autoFocus>
             {messages.actions.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>

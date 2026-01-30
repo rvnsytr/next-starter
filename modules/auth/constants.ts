@@ -9,11 +9,10 @@ import {
 } from "lucide-react";
 
 export type AuthSession = typeof auth.$Infer.Session;
-export type Role = keyof typeof roles;
 
+export type Role = keyof typeof roles;
 export const allRoles = Object.keys(roles) as Role[];
 export const defaultRole: Role = "user";
-
 export const rolesMeta: Record<
   Role,
   { displayName: string; desc: string; icon: LucideIcon; color: string }
@@ -34,7 +33,6 @@ export const rolesMeta: Record<
 
 export type UserStatus = (typeof allUserStatus)[number];
 export const allUserStatus = ["active", "banned"] as const;
-
 export const userStatusMeta: Record<
   UserStatus,
   { displayName: string; desc: string; icon: LucideIcon; color: string }
