@@ -39,12 +39,12 @@ export const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-2.5 in-data-[slot=button-group]:rounded-md",
-        xs: "h-6 rounded-[min(var(--radius-md),8px)] px-2 text-xs in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3.5",
+        xs: "h-6 rounded-[min(var(--radius-md),8px)] px-2 text-xs in-data-[slot=button-group]:rounded-md **:[svg:not([class*='size-'])]:size-3.5",
         sm: "h-8 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md",
         lg: "h-10 px-3",
         icon: "size-9",
         "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3.5",
+          "size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md **:[svg:not([class*='size-'])]:size-3.5",
         "icon-sm":
           "size-8 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-md",
         "icon-lg": "size-10",

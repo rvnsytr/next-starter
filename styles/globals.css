@@ -278,7 +278,7 @@
   }
 
   form {
-    @apply flex flex-col gap-x-2 gap-y-4 has-data-[slot=card-content]:gap-y-6;
+    @apply group/field-group @container/field-group flex w-full flex-col gap-x-2 gap-y-4 has-data-[slot=card-content]:gap-y-6 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4;
   }
 }
 
