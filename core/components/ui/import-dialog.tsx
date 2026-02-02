@@ -2,8 +2,13 @@
 
 import { messages } from "@/core/constants/messages";
 import { sharedSchemas } from "@/core/schema.zod";
-import { formatNumber, sanitizeNumber } from "@/core/utils/formaters";
-import { getExcelColumnKey, parseCsvRanges } from "@/core/utils/helpers";
+import {
+  formatCsvRange,
+  formatNumber,
+  formatNumberRange,
+  sanitizeNumber,
+} from "@/core/utils/formaters";
+import { getExcelColumnKey } from "@/core/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FileSpreadsheetIcon,
@@ -120,7 +125,7 @@ export function ImportDialog<T, K extends string>({
   });
 
   const parse = (value: string) =>
-    parseCsvRanges(value, { sort: "asc", distinct: true });
+    formatCsvRange(value, { sort: "asc", distinct: true });
 
   const formHandler = (formData: ImportDialogFormSchema) => {
     setIsLoading(true);
@@ -235,8 +240,7 @@ export function ImportDialog<T, K extends string>({
                 name="skipRows"
                 control={form.control}
                 render={({ field, fieldState }) => {
-                  const rows = parse(field.value);
-
+                  const rows = formatNumberRange(parse(field.value));
                   return (
                     <FieldWrapper
                       label="Lewati baris"

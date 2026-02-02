@@ -1,6 +1,5 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { sharedSchemas } from "../schema.zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -45,55 +44,4 @@ export function getExcelColumnKey(columnNumber: number): string {
   }
 
   return !!result ? result : "-";
-}
-
-export type ParseCsvRangeOptions = {
-  sort?: "asc" | "desc";
-  distinct?: boolean;
-  exclude?: number[];
-};
-
-const parseCsvRangesSchema = sharedSchemas.number("Baris").int().positive();
-
-export function parseCsvRanges(
-  input: string,
-  options: ParseCsvRangeOptions = {},
-): number[] {
-  const { sort, distinct = false, exclude = [] } = options;
-
-  const excludeSet = new Set(exclude);
-
-  const result: number[] = [];
-  const tokens = input.split(",");
-
-  for (const token of tokens) {
-    const trimmed = token.trim();
-
-    if (trimmed.includes("-")) {
-      const [startStr, endStr] = trimmed.split("-");
-
-      const start = Number(startStr);
-      const end = Number(endStr);
-
-      if (
-        parseCsvRangesSchema.safeParse(start).success &&
-        parseCsvRangesSchema.safeParse(end).success &&
-        start <= end
-      ) {
-        for (let i = start; i <= end; i++)
-          if (!excludeSet.has(i)) result.push(i);
-      }
-
-      continue;
-    }
-
-    const value = Number(trimmed);
-    if (parseCsvRangesSchema.safeParse(value).success && !excludeSet.has(value))
-      result.push(value);
-  }
-
-  const finalResult = distinct ? Array.from(new Set(result)) : result;
-  if (sort) finalResult.sort((a, b) => (sort === "asc" ? a - b : b - a));
-
-  return finalResult;
 }
