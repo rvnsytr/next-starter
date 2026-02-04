@@ -8,8 +8,8 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.980.0",
-    "@aws-sdk/s3-request-presigner": "^3.980.0",
+    "@aws-sdk/client-s3": "^3.982.0",
+    "@aws-sdk/s3-request-presigner": "^3.982.0",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.4.18",
@@ -19,10 +19,10 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.7",
     "lucide-react": "^0.542.0",
-    "motion": "^12.29.2",
+    "motion": "^12.31.0",
     "next": "^16.1.6",
     "next-themes": "^0.4.6",
-    "nuqs": "^2.8.7",
+    "nuqs": "^2.8.8",
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",
     "react-day-picker": "^9.13.0",
@@ -32,12 +32,12 @@
     "sonner": "^2.0.7",
     "swr": "^2.4.0",
     "tailwind-merge": "^3.4.0",
-    "ua-parser-js": "^2.0.8",
+    "ua-parser-js": "^2.0.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
-    "@types/node": "^24.10.9",
+    "@types/node": "^24.10.10",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "drizzle-kit": "^0.31.8",
