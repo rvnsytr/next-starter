@@ -91,7 +91,7 @@ import { fileMeta } from "@/core/constants/file";
 import { messages } from "@/core/constants/messages";
 import { filterFn } from "@/core/filter";
 import { useIsMobile } from "@/core/hooks/use-is-mobile";
-import { passwordSchema, sharedSchemas, userSchema } from "@/core/schema.zod";
+import { sharedSchemas } from "@/core/schema.zod";
 import { getFilePublicUrl, removeFiles } from "@/core/storage";
 import { formatDate } from "@/core/utils/date";
 import { capitalize } from "@/core/utils/formaters";
@@ -164,6 +164,7 @@ import {
   useListUserSessions,
 } from "./hooks";
 import { useAuth } from "./provider.auth";
+import { passwordSchema, userSchema } from "./schema.zod";
 
 const sharedText = {
   signIn: (name?: string) =>
@@ -200,7 +201,7 @@ export function SignInForm() {
           callbackURL: "/dashboard",
         });
 
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -325,7 +326,7 @@ export function SignUpForm() {
     toast.promise(
       async () => {
         const res = await authClient.signUp.email({ password, ...rest });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -491,7 +492,7 @@ export function SignOnGithubButton() {
           errorCallbackURL: "/sign-in",
         });
 
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -539,7 +540,7 @@ export function SignOutButton() {
     toast.promise(
       async () => {
         const res = await authClient.signOut();
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -582,7 +583,7 @@ export function ProfileBadges() {
   );
 }
 
-export function ProfilePicture({
+function ProfilePicture({
   data,
 }: {
   data: Pick<AuthSession["user"], "id" | "name" | "image">;
@@ -609,7 +610,7 @@ export function ProfilePicture({
         // await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
         const res = await authClient.updateUser({ image: url });
 
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -631,7 +632,7 @@ export function ProfilePicture({
       async () => {
         setIsRemoved(true);
         const res = await authClient.updateUser({ image: null });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -739,7 +740,7 @@ export function ProfileForm() {
     toast.promise(
       async () => {
         const res = await authClient.updateUser({ name: newName });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -1167,7 +1168,7 @@ export function ChangePasswordForm() {
     toast.promise(
       async () => {
         const res = await authClient.changePassword(formData);
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -1321,7 +1322,7 @@ export function CreateUserDialog({
           ...rest,
         });
 
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -1537,7 +1538,7 @@ function UserRoleDropdown({
     toast.promise(
       async () => {
         const res = await authClient.admin.setRole({ userId: data.id, role });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -1819,7 +1820,7 @@ export function RevokeOtherSessionsButton() {
     toast.promise(
       async () => {
         const res = await authClient.revokeOtherSessions();
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -1881,7 +1882,7 @@ function RevokeUserSessionsDialog({
       async () => {
         const userId = data.id;
         const res = await authClient.admin.revokeUserSessions({ userId });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -2034,7 +2035,7 @@ function ImpersonateUserDialog({
       async () => {
         const userId = data.id;
         const res = await authClient.admin.impersonateUser({ userId });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -2110,7 +2111,7 @@ export function StopImpersonateUserMenuItem() {
     toast.promise(
       async () => {
         const res = await authClient.admin.stopImpersonating();
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -2182,7 +2183,7 @@ function BanUserDialog({
             : undefined,
         });
 
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -2294,7 +2295,7 @@ function UnbanUserDialog({
       async () => {
         const userId = data.id;
         const res = await authClient.admin.unbanUser({ userId });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
@@ -2377,7 +2378,7 @@ function RemoveUserDialog({
       async () => {
         if (data.image) removeFiles([data.image], { isPublicUrl: true });
         const res = await authClient.admin.removeUser({ userId: data.id });
-        if (res.error) throw new Error(res.error.message);
+        if (res.error) throw res.error;
         return res;
       },
       {
