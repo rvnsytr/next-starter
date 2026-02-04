@@ -9,11 +9,11 @@ import {
   withDataTable,
 } from "@/core/data-table";
 import { db } from "@/core/db";
-import { user as userTable } from "@/core/schema.db";
 import { removeFiles } from "@/core/storage";
 import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
 import { AuthSession, Role } from "./constants";
+import { user as userTable } from "./schema.db";
 
 export async function getSession() {
   return await auth.api.getSession({ headers: await nextHeaders() });

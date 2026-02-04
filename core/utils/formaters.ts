@@ -1,4 +1,4 @@
-import z, { ZodError } from "zod";
+import z from "zod";
 import { appMeta } from "../constants/app";
 import { Language, languageMeta } from "../constants/metadata";
 import {
@@ -124,7 +124,7 @@ export function formatPhone(number: string | number, prefix?: "+62" | "0") {
 }
 
 export function formatZodError<T>(
-  zodError: ZodError<T>,
+  zodError: z.ZodError<T>,
   withPath = false,
 ): string {
   const error = JSON.parse(zodError.message)[0];
