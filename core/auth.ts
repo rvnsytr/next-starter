@@ -9,7 +9,7 @@ import {
 import { appMeta } from "./constants/app";
 import { db } from "./db";
 import { ac, roles } from "./permission";
-import { removeFiles } from "./storage";
+import { getFilePresignedUrl, removeFiles } from "./storage";
 
 export const auth = betterAuth({
   appName: appMeta.name,
@@ -35,12 +35,27 @@ export const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       const { session, newSession } = ctx.context;
 
-      if (ctx.path === "/update-user") {
-        const oldImageId = session?.user.image;
-        const newImageId = newSession?.user.image;
+      if (ctx.path === "/get-session") {
+        if (!session) return ctx.json(null);
 
-        if (oldImageId && oldImageId !== newImageId)
-          removeFiles([oldImageId], { isPublicUrl: true });
+        const { session: sessionData, user: userData } = session;
+        if (!userData.image) return ctx.json(session);
+
+        return ctx.json({
+          session: sessionData,
+          user: {
+            ...userData,
+            image: await getFilePresignedUrl(userData.image),
+          },
+        });
+      }
+
+      if (ctx.path === "/update-user") {
+        const oldImageKey = session?.user.image;
+        const newImageKey = newSession?.user.image;
+
+        if (oldImageKey && oldImageKey !== newImageKey)
+          removeFiles([oldImageKey]);
       }
     }),
   },

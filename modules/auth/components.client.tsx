@@ -92,7 +92,7 @@ import { messages } from "@/core/constants/messages";
 import { filterFn } from "@/core/filter";
 import { useIsMobile } from "@/core/hooks/use-is-mobile";
 import { sharedSchemas } from "@/core/schema.zod";
-import { getFilePublicUrl, removeFiles } from "@/core/storage";
+import { getFilePresignedUrl, removeFiles, uploadFiles } from "@/core/storage";
 import { formatDate } from "@/core/utils/date";
 import { capitalize } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
@@ -604,11 +604,10 @@ function ProfilePicture({
         if (!parseRes.success) return toast.error(parseRes.error.message);
 
         const file = files[0];
-        const key = `${data.id}_${file.name}`;
-        const url = await getFilePublicUrl(key);
+        const key = `avatar/${data.id}`;
 
-        // await uploadFiles({ files: [{ key, file }], ACL: "public-read" });
-        const res = await authClient.updateUser({ image: url });
+        await uploadFiles([{ key, file }]);
+        const res = await authClient.updateUser({ image: key });
 
         if (res.error) throw res.error;
         return res;
@@ -953,7 +952,25 @@ export function UserDataTable() {
       searchPlaceholder="Cari Pengguna..."
       swr={{
         key: "/auth/list-users",
-        fetcher: async (state) => await listUsers(user.role, state),
+        fetcher: async (state) => {
+          const res = await listUsers(user.role, state);
+          if (!res.success) return res;
+
+          const data = await Promise.all(
+            res.data.map(async (v) => {
+              if (!v.image) return v;
+              return {
+                ...v,
+                image:
+                  v.id === user.id
+                    ? user.image
+                    : await getFilePresignedUrl(v.image),
+              };
+            }),
+          );
+
+          return { ...res, data };
+        },
       }}
       getColumns={(res) => getUserColumns(user.id, res?.count)}
       getRowId={(row) => row.id}
@@ -2376,7 +2393,7 @@ function RemoveUserDialog({
     setIsLoading(true);
     toast.promise(
       async () => {
-        if (data.image) removeFiles([data.image], { isPublicUrl: true });
+        if (data.image) removeFiles([data.image]);
         const res = await authClient.admin.removeUser({ userId: data.id });
         if (res.error) throw res.error;
         return res;

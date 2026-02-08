@@ -2,17 +2,23 @@
 
 import {
   DeleteObjectCommand,
+  DeleteObjectCommandInput,
   GetObjectCommand,
+  GetObjectCommandInput,
   ListObjectsV2Command,
+  ListObjectsV2CommandInput,
   PutObjectCommand,
   type PutObjectCommandInput,
   type PutObjectCommandOutput,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Override } from "./constants/types";
 
 const endpoint = process.env.S3_ENDPOINT!;
-const Bucket = process.env.S3_BUCKET_NAME!;
+const defaultBucket = process.env.S3_BUCKET_NAME!;
+
+type ControlledS3Options<T> = Override<Omit<T, "Key">, { Bucket?: string }>;
 
 const s3 = new S3Client({
   endpoint,
@@ -24,12 +30,12 @@ const s3 = new S3Client({
   forcePathStyle: true,
 });
 
-export async function uploadFiles({
-  files,
-  ...options
-}: Omit<PutObjectCommandInput, "Key" | "Bucket" | "Body" | "ContentType"> & {
-  files: File[] | { key: string; file: File }[];
-}): Promise<{ key: string; res: PutObjectCommandOutput }[]> {
+export async function uploadFiles(
+  files: File[] | { key: string; file: File }[],
+  options?: ControlledS3Options<
+    Omit<PutObjectCommandInput, "Body" | "ContentType">
+  >,
+): Promise<{ key: string; res: PutObjectCommandOutput }[]> {
   return Promise.all(
     files.map(async (item) => {
       let key: string;
@@ -45,10 +51,10 @@ export async function uploadFiles({
 
       const command = new PutObjectCommand({
         Key: key,
-        Bucket,
         Body: Buffer.from(await file.arrayBuffer()),
         ContentType: file.type,
         ...options,
+        Bucket: options?.Bucket ?? defaultBucket,
       });
 
       return { key, res: await s3.send(command) };
@@ -56,34 +62,54 @@ export async function uploadFiles({
   );
 }
 
-export async function getAllFiles(MaxKeys = 1000, ContinuationToken?: string) {
-  const param = { Bucket, MaxKeys, ContinuationToken };
-  return await s3.send(new ListObjectsV2Command(param));
+export async function getAllFiles(
+  options?: Override<ListObjectsV2CommandInput, { Bucket?: string }>,
+) {
+  const command = new ListObjectsV2Command({
+    ...options,
+    Bucket: options?.Bucket ?? defaultBucket,
+  });
+
+  return await s3.send(command);
 }
 
-export async function getFilePresignedUrl(Key: string) {
-  return await getSignedUrl(s3, new GetObjectCommand({ Bucket, Key }));
+export async function getFilePresignedUrl(
+  Key: string,
+  options?: ControlledS3Options<GetObjectCommandInput>,
+) {
+  const command = new GetObjectCommand({
+    Key,
+    ...options,
+    Bucket: options?.Bucket ?? defaultBucket,
+  });
+
+  return await getSignedUrl(s3, command);
 }
 
-export async function getFilePublicUrl(key: string) {
-  return `${endpoint}/${Bucket}/${encodeURIComponent(key)}`;
-}
+// export async function getFilePublicUrl(key: string) {
+//   return `${endpoint}/${Bucket}/${encodeURIComponent(key)}`;
+// }
 
-export async function getKeyFromPublicUrl(url: string) {
-  const { pathname } = new URL(url);
-  const [, bucket, ...keyParts] = pathname.split("/");
-  if (bucket !== Bucket) throw new Error("URL does not belong to this bucket");
-  return decodeURIComponent(keyParts.join("/"));
-}
+// export async function getKeyFromPublicUrl(url: string) {
+//   const { pathname } = new URL(url);
+//   const [, bucket, ...keyParts] = pathname.split("/");
+//   if (bucket !== Bucket) throw new Error("URL does not belong to this bucket");
+//   return decodeURIComponent(keyParts.join("/"));
+// }
 
 export async function removeFiles(
   keys: string[],
-  options?: { isPublicUrl?: boolean },
+  options?: ControlledS3Options<DeleteObjectCommandInput>,
 ) {
   return Promise.all(
-    keys.map(async (item) => {
-      const Key = options?.isPublicUrl ? await getKeyFromPublicUrl(item) : item;
-      await s3.send(new DeleteObjectCommand({ Bucket, Key }));
+    keys.map(async (Key) => {
+      const command = new DeleteObjectCommand({
+        Key,
+        ...options,
+        Bucket: options?.Bucket ?? defaultBucket,
+      });
+
+      return await s3.send(command);
     }),
   );
 }

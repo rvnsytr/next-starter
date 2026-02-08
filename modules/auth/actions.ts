@@ -98,7 +98,7 @@ export async function removeUsers(
   const headers = await nextHeaders();
   return Promise.all(
     data.map(async ({ id, image }) => {
-      if (image) await removeFiles([image], { isPublicUrl: true });
+      if (image) await removeFiles([image]);
       return await auth.api.removeUser({ body: { userId: id }, headers });
     }),
   );
