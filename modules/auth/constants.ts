@@ -1,5 +1,4 @@
 import { auth } from "@/core/auth";
-import { roles } from "@/core/permission";
 import {
   BanIcon,
   CircleCheckIcon,
@@ -12,9 +11,11 @@ import {
 
 export type AuthSession = typeof auth.$Infer.Session;
 
-export type Role = keyof typeof roles;
-export const allRoles = Object.keys(roles) as Role[];
+export type Role = (typeof allRoles)[number];
+export const allRoles = ["user", "admin"] as const;
+
 export const defaultRole: Role = "user";
+
 export const rolesMeta: Record<
   Role,
   { displayName: string; description: string; icon: LucideIcon; color: string }

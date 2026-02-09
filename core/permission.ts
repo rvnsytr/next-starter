@@ -1,18 +1,24 @@
 // https://www.better-auth.com/docs/plugins/admin#admin-roles
 
-import { createAccessControl } from "better-auth/plugins/access";
+import { Role } from "@/modules/auth/constants";
+import {
+  Role as BetterAuthRole,
+  createAccessControl,
+} from "better-auth/plugins/access";
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
 export const ac = createAccessControl({
   ...defaultStatements,
-  project: ["create", "update", "delete"],
+  example: ["create", "update", "delete"],
 });
 
-export const roles = {
-  user: ac.newRole({ project: ["create"] }),
+export const roles: Record<Role, BetterAuthRole> = {
+  user: ac.newRole({
+    example: ["create"],
+  }),
 
   admin: ac.newRole({
     ...adminAc.statements,
-    project: ["create", "update", "delete"],
+    example: ["create", "update", "delete"],
   }),
 };

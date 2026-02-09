@@ -275,9 +275,7 @@ export function FilterableColumn<TData>({
     <CommandItem onSelect={() => setProperty(column.id)} className="group">
       <div className="flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-1.5">
-          {Icon && (
-            <Icon className="text-muted-foreground group-hover:text-primary transition-colors" />
-          )}
+          {Icon && <Icon />}
           <span>{column.columnDef.meta?.displayName}</span>
         </div>
         <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
