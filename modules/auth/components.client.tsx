@@ -175,6 +175,15 @@ const sharedText = {
   passwordNotMatch: messages.thingNotMatch("Kata sandi Anda"),
 };
 
+function getUserStatus(
+  data: Pick<AuthSession["user"], "email" | "emailVerified" | "banned">,
+): UserStatus {
+  if (data.banned) return "banned";
+  if (data.emailVerified) return "verified";
+  if (data.email) return "active";
+  return "nonactive";
+}
+
 // #region SIGN
 
 export function SignInForm() {
@@ -839,70 +848,63 @@ const getUserColumns = (
 ) => [
   createUserColumn.display({
     id: "select",
-    header: ({ table }) => <ColumnHeaderCheckbox table={table} />,
-    cell: ({ row }) => <ColumnCellCheckbox row={row} />,
+    header: (c) => <ColumnHeaderCheckbox table={c.table} />,
+    cell: (c) => <ColumnCellCheckbox row={c.row} />,
     enableHiding: false,
     enableSorting: false,
   }),
   createUserColumn.display({
     id: "no",
     header: "No",
-    cell: ({ table, row }) => <ColumnCellNumber table={table} row={row} />,
+    cell: (c) => <ColumnCellNumber table={c.table} row={c.row} />,
     enableHiding: false,
   }),
-  createUserColumn.accessor(({ name }) => name, {
+  createUserColumn.accessor((ac) => ac.name, {
     id: "name",
     header: ({ column }) => <ColumnHeader column={column}>Nama</ColumnHeader>,
-    cell: ({ row }) => (
+    cell: (c) => (
       <UserDetailDialog
-        data={row.original}
-        isCurrentUser={row.original.id === currentUserId}
+        data={c.row.original}
+        isCurrentUser={c.row.original.id === currentUserId}
       />
     ),
     filterFn: filterFn("text"),
     meta: { displayName: "Nama", type: "text", icon: UserRoundIcon },
   }),
-  createUserColumn.accessor(({ email }) => email, {
+  createUserColumn.accessor((ac) => ac.email, {
     id: "email",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Alamat Email</ColumnHeader>
-    ),
-    cell: ({ row, cell }) => (
+    header: (c) => <ColumnHeader column={c.column}>Alamat Email</ColumnHeader>,
+    cell: (c) => (
       <div className="flex items-center gap-x-2">
-        <span>{cell.getValue()}</span>
-        {row.original.emailVerified && <UserVerifiedBadge noText />}
+        <span>{c.cell.getValue()}</span>
+        {c.row.original.emailVerified && <UserVerifiedBadge noText />}
       </div>
     ),
     filterFn: filterFn("text"),
     meta: { displayName: "Alamat Email", type: "text", icon: MailIcon },
   }),
-  createUserColumn.accessor(
-    ({ banned }) => (banned ? "banned" : "active") satisfies UserStatus,
-    {
-      id: "status",
-      header: ({ column }) => (
-        <ColumnHeader column={column}>Status</ColumnHeader>
-      ),
-      cell: ({ cell }) => <UserStatusBadge value={cell.getValue()} />,
-      filterFn: filterFn("option"),
-      meta: {
-        displayName: "Status",
-        type: "option",
-        icon: CircleDotIcon,
-        options: allUserStatus.map((value) => {
-          const { displayName, icon } = userStatusMeta[value];
-          return { value, label: displayName, icon, count: count?.[value] };
-        }),
-      },
+  createUserColumn.accessor((ac) => getUserStatus(ac), {
+    id: "status",
+    header: (c) => <ColumnHeader column={c.column}>Status</ColumnHeader>,
+    cell: (c) => <UserStatusBadge value={c.cell.getValue()} />,
+    filterFn: filterFn("option"),
+    meta: {
+      displayName: "Status",
+      type: "option",
+      icon: CircleDotIcon,
+      options: allUserStatus.map((value) => {
+        const { displayName, icon } = userStatusMeta[value];
+        return { value, label: displayName, icon, count: count?.[value] };
+      }),
     },
-  ),
-  createUserColumn.accessor(({ role }) => role, {
+  }),
+  createUserColumn.accessor((ac) => ac.role, {
     id: "role",
-    header: ({ column }) => <ColumnHeader column={column}>Role</ColumnHeader>,
-    cell: ({ row }) => (
+    header: (c) => <ColumnHeader column={c.column}>Role</ColumnHeader>,
+    cell: (c) => (
       <UserRoleDropdown
-        data={row.original}
-        isCurrentUser={row.original.id === currentUserId}
+        data={c.row.original}
+        isCurrentUser={c.row.original.id === currentUserId}
       />
     ),
     filterFn: filterFn("option"),
@@ -916,12 +918,12 @@ const getUserColumns = (
       }),
     },
   }),
-  createUserColumn.accessor(({ updatedAt }) => updatedAt, {
+  createUserColumn.accessor((ac) => ac.updatedAt, {
     id: "updatedAt",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Terakhir Diperbarui</ColumnHeader>
+    header: (c) => (
+      <ColumnHeader column={c.column}>Terakhir Diperbarui</ColumnHeader>
     ),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    cell: (c) => formatDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
     meta: {
       displayName: "Terakhir Diperbarui",
@@ -929,12 +931,10 @@ const getUserColumns = (
       icon: CalendarSyncIcon,
     },
   }),
-  createUserColumn.accessor(({ createdAt }) => createdAt, {
+  createUserColumn.accessor((c) => c.createdAt, {
     id: "createdAt",
-    header: ({ column }) => (
-      <ColumnHeader column={column}>Waktu Dibuat</ColumnHeader>
-    ),
-    cell: ({ cell }) => formatDate(cell.getValue(), "PPPp"),
+    header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
+    cell: (c) => formatDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
     meta: {
       displayName: "Waktu Dibuat",
@@ -1112,7 +1112,7 @@ export function UserDetailDialog({
               <Badge variant="outline">Pengguna saat ini</Badge>
             )}
             <UserRoleBadge value={data.role} />
-            <UserStatusBadge value={data.banned ? "banned" : "active"} />
+            <UserStatusBadge value={getUserStatus(data)} />
           </div>
 
           <Separator />
@@ -1499,7 +1499,7 @@ export function CreateUserDialog({
                               <Icon /> {meta.displayName}
                             </FieldTitle>
                             <FieldDescription className="text-(--field-color)/80">
-                              {meta.desc}
+                              {meta.description}
                             </FieldDescription>
                           </FieldContent>
                           <RadioGroupItem

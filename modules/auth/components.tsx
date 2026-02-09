@@ -21,7 +21,7 @@ export function UserStatusBadge({
   value: UserStatus;
   className?: string;
 }) {
-  const { displayName, desc, icon: Icon, color } = userStatusMeta[value];
+  const { displayName, description, icon: Icon, color } = userStatusMeta[value];
   return (
     <Tooltip>
       <TooltipTrigger className={className} asChild>
@@ -40,7 +40,7 @@ export function UserStatusBadge({
         className="bg-(--tooltip-color)"
         arrowClassName="bg-(--tooltip-color) fill-(--tooltip-color)"
       >
-        {desc}
+        {description}
       </TooltipContent>
     </Tooltip>
   );
@@ -53,7 +53,7 @@ export function UserRoleBadge({
   value: Role;
   className?: string;
 }) {
-  const { displayName, desc, icon: Icon, color } = rolesMeta[value];
+  const { displayName, description, icon: Icon, color } = rolesMeta[value];
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -73,7 +73,7 @@ export function UserRoleBadge({
         className="bg-(--tooltip-color)"
         arrowClassName="bg-(--tooltip-color) fill-(--tooltip-color)"
       >
-        {desc}
+        {description}
       </TooltipContent>
     </Tooltip>
   );
@@ -88,26 +88,24 @@ export function UserVerifiedBadge({
   className?: string;
   classNames?: { badge?: string; icon?: string; content?: string };
 }) {
-  return (
+  return noText ? (
     <Tooltip>
       <TooltipTrigger className={className} asChild>
-        {noText ? (
-          <BadgeCheckIcon
-            className={cn("text-success size-4 shrink-0", classNames?.icon)}
-          />
-        ) : (
-          <Badge
-            variant="success"
-            className={cn("capitalize", classNames?.badge)}
-          >
-            <BadgeCheckIcon className={classNames?.icon} /> Terverifikasi
-          </Badge>
-        )}
+        <BadgeCheckIcon
+          className={cn("text-success size-4 shrink-0", classNames?.icon)}
+        />
       </TooltipTrigger>
-      <TooltipContent className={classNames?.content}>
-        Pengguna ini telah memverifikasi email mereka.
+      <TooltipContent
+        className="bg-success"
+        arrowClassName="bg-success fill-success"
+      >
+        Terverifikasi.
       </TooltipContent>
     </Tooltip>
+  ) : (
+    <Badge variant="success" className={cn("capitalize", classNames?.badge)}>
+      <BadgeCheckIcon className={classNames?.icon} /> Terverifikasi
+    </Badge>
   );
 }
 
