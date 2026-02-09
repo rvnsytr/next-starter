@@ -9,7 +9,7 @@ import {
 import { appMeta } from "./constants/app";
 import { db } from "./db";
 import { ac, roles } from "./permission";
-import { getFilePresignedUrl, removeFiles } from "./storage";
+import { getPresignUrl, removeFiles } from "./storage";
 
 export const auth = betterAuth({
   appName: appMeta.name,
@@ -45,7 +45,7 @@ export const auth = betterAuth({
           session: sessionData,
           user: {
             ...userData,
-            image: await getFilePresignedUrl(userData.image),
+            image: await getPresignUrl(userData.image),
           },
         });
       }

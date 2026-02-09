@@ -73,7 +73,7 @@ export async function getAllFiles(
   return await s3.send(command);
 }
 
-export async function getFilePresignedUrl(
+export async function getPresignUrl(
   Key: string,
   options?: ControlledS3Options<GetObjectCommandInput>,
 ) {

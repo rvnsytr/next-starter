@@ -92,7 +92,7 @@ import { messages } from "@/core/constants/messages";
 import { filterFn } from "@/core/filter";
 import { useIsMobile } from "@/core/hooks/use-is-mobile";
 import { sharedSchemas } from "@/core/schema.zod";
-import { getFilePresignedUrl, removeFiles, uploadFiles } from "@/core/storage";
+import { getPresignUrl, removeFiles, uploadFiles } from "@/core/storage";
 import { formatDate } from "@/core/utils/date";
 import { capitalize } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
@@ -962,9 +962,7 @@ export function UserDataTable() {
               return {
                 ...v,
                 image:
-                  v.id === user.id
-                    ? user.image
-                    : await getFilePresignedUrl(v.image),
+                  v.id === user.id ? user.image : await getPresignUrl(v.image),
               };
             }),
           );
