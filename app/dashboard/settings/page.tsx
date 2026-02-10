@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <DashboardMain className="items-center" noLayoutLoader>
+    <DashboardMain className="items-center" withLayoutLoader={false}>
       <Card id="tema" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-x-2">

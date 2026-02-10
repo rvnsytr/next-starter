@@ -12,12 +12,12 @@ import { Spinner } from "../ui/spinner";
 import { ThemeToggle } from "../ui/theme";
 
 export function DashboardMain({
-  noLayoutLoader = false,
+  withLayoutLoader = true,
   className,
   children,
   ...props
 }: DynamicBreadcrumbProps & {
-  noLayoutLoader?: boolean;
+  withLayoutLoader?: boolean;
   className?: string;
   children?: ReactNode;
 }) {
@@ -42,7 +42,8 @@ export function DashboardMain({
         variant="frame"
         className={cn(
           "m-auto hidden size-5",
-          !noLayoutLoader && "group-data-[layout-mode=unset]/layout-mode:flex",
+          !withLayoutLoader &&
+            "group-data-[layout-mode=unset]/layout-mode:flex",
         )}
       />
 
@@ -51,7 +52,7 @@ export function DashboardMain({
         className={cn(
           "relative z-10 flex flex-1 flex-col gap-4 py-4",
           "px-4 group-data-[layout-mode=centered]/layout-mode:container",
-          !noLayoutLoader &&
+          !withLayoutLoader &&
             "group-data-[layout-mode=unset]/layout-mode:hidden",
           className,
         )}
