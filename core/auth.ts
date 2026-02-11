@@ -17,7 +17,20 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   plugins: [nextCookies(), adminPlugin({ ac, roles, defaultRole })],
 
-  emailAndPassword: { enabled: true },
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, token }) => {
+      const { name, email } = user;
+      const url = `${appMeta.url}/reset-password?token=${token}`;
+      console.log("name", name);
+      console.log("email", email);
+      console.log(url);
+      // void novu.trigger("reset-password", {
+      //   to: { subscriberId: email, email },
+      //   payload: { name, url },
+      // });
+    },
+  },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,

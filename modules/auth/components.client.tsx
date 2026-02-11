@@ -100,6 +100,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { differenceInSeconds, endOfDay } from "date-fns";
 import {
+  ArrowLeftIcon,
   ArrowUpRightIcon,
   BanIcon,
   CalendarCheck2Icon,
@@ -113,6 +114,7 @@ import {
   InfinityIcon,
   InfoIcon,
   Layers2Icon,
+  LockKeyholeIcon,
   LockKeyholeOpenIcon,
   LogInIcon,
   LogOutIcon,
@@ -121,6 +123,7 @@ import {
   MonitorOffIcon,
   MonitorSmartphoneIcon,
   SaveIcon,
+  SendIcon,
   Settings2Icon,
   ShieldBanIcon,
   ShieldUserIcon,
@@ -132,6 +135,7 @@ import {
   UserRoundIcon,
   UserRoundPlusIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -271,22 +275,25 @@ export function SignInForm() {
         )}
       />
 
-      <Controller
-        name="rememberMe"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field orientation="horizontal" data-invalid={!!fieldState.error}>
-            <Checkbox
-              id={field.name}
-              name={field.name}
-              aria-invalid={!!fieldState.error}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <Label htmlFor={field.name}>Ingat Saya</Label>
-          </Field>
-        )}
-      />
+      <div className="flex items-center justify-between gap-x-2">
+        <Controller
+          name="rememberMe"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field orientation="horizontal" data-invalid={!!fieldState.error}>
+              <Checkbox
+                id={field.name}
+                name={field.name}
+                aria-invalid={!!fieldState.error}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <Label htmlFor={field.name}>Ingat Saya</Label>
+            </Field>
+          )}
+        />
+        <ResetPasswordDialog />
+      </div>
 
       <Button type="submit" className="relative" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
@@ -1152,151 +1159,6 @@ export function UserDetailDialog({
   );
 }
 
-export function ChangePasswordForm() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = passwordSchema
-    .pick({
-      currentPassword: true,
-      newPassword: true,
-      confirmPassword: true,
-    })
-    .extend({ revokeOtherSessions: z.boolean() })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: sharedText.passwordNotMatch,
-      path: ["confirmPassword"],
-    });
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-      revokeOtherSessions: false,
-    },
-  });
-
-  const formHandler = (formData: FormSchema) => {
-    setIsLoading(true);
-    toast.promise(
-      async () => {
-        const res = await authClient.changePassword(formData);
-        if (res.error) throw res.error;
-        return res;
-      },
-      {
-        success: () => {
-          setIsLoading(false);
-          form.reset();
-          return "Kata sandi Anda berhasil diperbarui.";
-        },
-        error: (e) => {
-          setIsLoading(false);
-          return e.message;
-        },
-      },
-    );
-  };
-
-  return (
-    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
-      <CardContent className="flex flex-col gap-y-4">
-        <Controller
-          name="currentPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <FieldWrapper
-              label="Kata sandi saat ini"
-              htmlFor={field.name}
-              errors={fieldState.error}
-            >
-              <PasswordInput
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Masukan kata sandi saat ini"
-                icon={<LockKeyholeOpenIcon />}
-                required
-                {...field}
-              />
-            </FieldWrapper>
-          )}
-        />
-
-        <Controller
-          name="newPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <FieldWrapper
-              label="Kata sandi baru"
-              htmlFor={field.name}
-              errors={fieldState.error}
-            >
-              <PasswordInput
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Masukan kata sandi anda"
-                required
-                withList
-                {...field}
-              />
-            </FieldWrapper>
-          )}
-        />
-
-        <Controller
-          name="confirmPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <FieldWrapper
-              label="Konfirmasi kata sandi"
-              htmlFor={field.name}
-              errors={fieldState.error}
-            >
-              <PasswordInput
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Konfirmasi kata sandi anda"
-                required
-                {...field}
-              />
-            </FieldWrapper>
-          )}
-        />
-
-        <Controller
-          name="revokeOtherSessions"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field orientation="horizontal" data-invalid={!!fieldState.error}>
-              <Checkbox
-                id={field.name}
-                name={field.name}
-                aria-invalid={!!fieldState.error}
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-              <FieldLabel htmlFor={field.name}>
-                Keluar dari perangkat lainnya
-              </FieldLabel>
-            </Field>
-          )}
-        />
-      </CardContent>
-
-      <CardFooter className="flex-col items-stretch md:flex-row">
-        <Button type="submit" disabled={isLoading}>
-          <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
-          {messages.actions.update}
-        </Button>
-
-        <ResetButton onClick={() => form.reset()} />
-      </CardFooter>
-    </form>
-  );
-}
-
 export function CreateUserDialog({
   size,
   variant,
@@ -1611,6 +1473,357 @@ function UserRoleDropdown({
         })}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+// #endregion
+
+// #region PASSWORD
+
+function ResetPasswordDialog() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  type FormSchema = z.infer<typeof formSchema>;
+  const formSchema = userSchema.pick({ email: true });
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: "" },
+  });
+
+  const formHandler = async ({ email }: FormSchema) => {
+    setIsLoading(true);
+    toast.promise(
+      async () => {
+        const res = await authClient.requestPasswordReset({ email });
+        if (res.error) throw res.error;
+        return res;
+      },
+      {
+        loading: messages.loading,
+        success: () => {
+          setIsLoading(false);
+          form.reset();
+          return "Tautan untuk mengatur ulang kata sandi telah dikirim ke email Anda.";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger className="link shrink-0">
+        <Label>Lupa kata sandi ?</Label>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            <LockKeyholeOpenIcon /> Atur ulang kata sandi
+          </DialogTitle>
+          <DialogDescription>
+            Masukan alamat email yang terdaftar pada akun Anda, dan kami akan
+            mengirimkan tautan untuk mengatur ulang kata sandi Anda.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={form.handleSubmit(formHandler)} noValidate>
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <FieldWrapper
+                label="Alamat email"
+                htmlFor={field.name}
+                errors={fieldState.error}
+              >
+                <InputGroup>
+                  <InputGroupInput
+                    type="email"
+                    id={field.name}
+                    aria-invalid={!!fieldState.error}
+                    placeholder="Masukan email anda"
+                    required
+                    {...field}
+                  />
+                  <InputGroupAddon>
+                    <MailIcon />
+                  </InputGroupAddon>
+                </InputGroup>
+              </FieldWrapper>
+            )}
+          />
+
+          <DialogFooter showCloseButton>
+            <ResetButton onClick={() => form.reset()} />
+            <Button
+              type="submit"
+              disabled={isLoading}
+              onClick={form.handleSubmit(formHandler)}
+            >
+              <LoadingSpinner
+                loading={isLoading}
+                icon={{ base: <SendIcon /> }}
+              />
+              Atur ulang kata sandi
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function ResetPasswordForm({ token }: { token?: string }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  type FormSchema = z.infer<typeof formSchema>;
+  const formSchema = passwordSchema
+    .pick({ newPassword: true, confirmPassword: true })
+    .refine((sc) => sc.newPassword === sc.confirmPassword, {
+      message: messages.thingNotMatch("Kata sandi"),
+      path: ["confirmPassword"],
+    });
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { newPassword: "", confirmPassword: "" },
+  });
+
+  const formHandler = ({ newPassword }: FormSchema) => {
+    setIsLoading(true);
+    toast.promise(
+      async () => {
+        const res = await authClient.resetPassword({ token, newPassword });
+        if (res.error) throw res.error;
+        return res;
+      },
+      {
+        loading: messages.loading,
+        success: () => {
+          router.push("/sign-in");
+          return "Kata sandi berhasil diatur ulang. Silakan masuk kembali.";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
+      <CardContent className="flex flex-col gap-y-4">
+        <Controller
+          name="newPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldWrapper
+              label="Kata sandi baru"
+              htmlFor={field.name}
+              errors={fieldState.error}
+            >
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Masukan kata sandi anda"
+                required
+                withList
+                {...field}
+              />
+            </FieldWrapper>
+          )}
+        />
+        <Controller
+          name="confirmPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldWrapper
+              label="Konfirmasi kata sandi"
+              htmlFor={field.name}
+              errors={fieldState.error}
+            >
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Konfirmasi kata sandi anda"
+                required
+                {...field}
+              />
+            </FieldWrapper>
+          )}
+        />
+      </CardContent>
+
+      <CardFooter className="flex-col items-stretch justify-between gap-2 border-t md:flex-row">
+        <Button variant="outline" asChild>
+          <Link href="/sign-in">
+            <ArrowLeftIcon /> {messages.actions.back}
+          </Link>
+        </Button>
+
+        <div className="flex flex-col gap-2 md:flex-row">
+          <ResetButton onClick={() => form.reset()} />
+          <Button type="submit" disabled={isLoading}>
+            <LoadingSpinner
+              loading={isLoading}
+              icon={{ base: <LockKeyholeIcon /> }}
+            />
+            {messages.actions.update}
+          </Button>
+        </div>
+      </CardFooter>
+    </form>
+  );
+}
+
+export function ChangePasswordForm() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  type FormSchema = z.infer<typeof formSchema>;
+  const formSchema = passwordSchema
+    .pick({
+      currentPassword: true,
+      newPassword: true,
+      confirmPassword: true,
+    })
+    .extend({ revokeOtherSessions: z.boolean() })
+    .refine((sc) => sc.newPassword === sc.confirmPassword, {
+      message: sharedText.passwordNotMatch,
+      path: ["confirmPassword"],
+    });
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+      revokeOtherSessions: false,
+    },
+  });
+
+  const formHandler = (formData: FormSchema) => {
+    setIsLoading(true);
+    toast.promise(
+      async () => {
+        const res = await authClient.changePassword(formData);
+        if (res.error) throw res.error;
+        return res;
+      },
+      {
+        success: () => {
+          setIsLoading(false);
+          form.reset();
+          return "Kata sandi Anda berhasil diperbarui.";
+        },
+        error: (e) => {
+          setIsLoading(false);
+          return e.message;
+        },
+      },
+    );
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
+      <CardContent className="flex flex-col gap-y-4">
+        <Controller
+          name="currentPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldWrapper
+              label="Kata sandi saat ini"
+              htmlFor={field.name}
+              errors={fieldState.error}
+            >
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Masukan kata sandi saat ini"
+                icon={<LockKeyholeOpenIcon />}
+                required
+                {...field}
+              />
+            </FieldWrapper>
+          )}
+        />
+
+        <Controller
+          name="newPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldWrapper
+              label="Kata sandi baru"
+              htmlFor={field.name}
+              errors={fieldState.error}
+            >
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Masukan kata sandi anda"
+                required
+                withList
+                {...field}
+              />
+            </FieldWrapper>
+          )}
+        />
+
+        <Controller
+          name="confirmPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldWrapper
+              label="Konfirmasi kata sandi"
+              htmlFor={field.name}
+              errors={fieldState.error}
+            >
+              <PasswordInput
+                id={field.name}
+                aria-invalid={!!fieldState.error}
+                placeholder="Konfirmasi kata sandi anda"
+                required
+                {...field}
+              />
+            </FieldWrapper>
+          )}
+        />
+
+        <Controller
+          name="revokeOtherSessions"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field orientation="horizontal" data-invalid={!!fieldState.error}>
+              <Checkbox
+                id={field.name}
+                name={field.name}
+                aria-invalid={!!fieldState.error}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <FieldLabel htmlFor={field.name}>
+                Keluar dari perangkat lainnya
+              </FieldLabel>
+            </Field>
+          )}
+        />
+      </CardContent>
+
+      <CardFooter className="flex-col items-stretch md:flex-row">
+        <Button type="submit" disabled={isLoading}>
+          <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
+          {messages.actions.update}
+        </Button>
+        <ResetButton onClick={() => form.reset()} />
+      </CardFooter>
+    </form>
   );
 }
 

@@ -9,6 +9,8 @@ export const appMeta = {
   //   default: "/logo.png",
   //   withText: "/logo-text.png",
   // },
+
+  url: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 };
 
 export const apiConfig = {
@@ -21,9 +23,5 @@ export const apiConfig = {
 
   get baseUrl() {
     return `${this.host}${this.basePath}`;
-  },
-
-  get authBaseUrl() {
-    return `${this.baseUrl}/auth`;
   },
 };
