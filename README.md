@@ -92,11 +92,13 @@ next-starter/
   modules/
     auth/
       actions.ts
-      components.tsx
       components.client.tsx
+      components.tsx
       constants.ts
       hooks.ts                -- Module-specific hooks and SWR helpers (useSWR and its mutator).
       provider.auth.tsx       -- format: provider.<name>.tsx
+      schema.db.ts            -- Module-specific Drizzle DB schemas.
+      schema.zod.ts           -- Module-specific Zod schemas.
 
     parent-module/
       sub-module/
@@ -119,9 +121,9 @@ next-starter/
     db.ts
     filter.ts
     permissions.ts
-    route.ts             -- Modifiable.
-    schema.db.ts             -- Modifiable.
-    schema.zod.ts            -- Modifiable.
+    route.ts                  -- Modifiable.
+    schema.db.ts              -- Modifiable.
+    schema.zod.ts
     storage.ts
 
   public/
@@ -148,5 +150,7 @@ import ... from "../../auth";  // ❌ Avoid deep relative imports
 - More Numeric Form Inputs
 - Event Calendar
 - Rich Text Editor
-- from react-starter: email verification
-- from react-starter: reset password
+- from react/express-starter: email verification
+- from react/express-starter: reset password
+- from react/express-starter: storage table
+- from react/express-starter: event-log
