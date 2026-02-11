@@ -1,5 +1,9 @@
 export type Override<T, U> = Omit<T, keyof U> & U;
 
+export type OmitByType<T, V> = {
+  [K in keyof T as T[K] extends V ? never : K]: T[K];
+};
+
 export type ActionResponse<TData> = {
   count?: { total: number } & Record<string, number>;
 } & ({ success: true; data: TData } | { success: false; error: string });
