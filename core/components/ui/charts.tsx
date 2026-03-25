@@ -10,6 +10,7 @@ import {
   LabelList,
   Pie,
   PieChart as PieChartComp,
+  PieProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -32,13 +33,19 @@ const tickMargin = 10;
 const tickFormatter = (str: string) => str.slice(0, 3);
 
 export function PieChart({
-  label,
   data,
+  label,
+  withLegend = true,
+  withTooltip = true,
   className,
+  pieProps,
 }: {
-  label: string;
   data: { nameKey: string; dataKey: number; fill: string }[];
+  label?: React.ReactNode;
+  withLegend?: boolean;
+  withTooltip?: boolean;
   className?: string;
+  pieProps?: Omit<PieProps, "ref" | "data" | "nameKey" | "dataKey">;
 }) {
   return (
     <ChartContainer
@@ -54,8 +61,8 @@ export function PieChart({
       }}
       className={cn(
         "aspect-square",
-        "[&_.recharts-pie-label-text]:animate-fade [&_.recharts-pie-label-text]:animate-delay-1000",
-        "[&_.recharts-pie-label-line]:animate-fade [&_.recharts-pie-label-line]:animate-delay-1250",
+        "**:[.recharts-pie-label-text]:animate-fade **:[.recharts-pie-label-text]:animate-delay-1000",
+        "**:[.recharts-pie-label-line]:animate-fade **:[.recharts-pie-label-line]:animate-delay-1250",
         className,
       )}
     >
@@ -66,18 +73,21 @@ export function PieChart({
           dataKey="dataKey"
           innerRadius={40}
           label
+          {...pieProps}
         />
 
-        <ChartLegend
-          content={
-            <ChartLegendContent
-              nameKey="nameKey"
-              className="animate-fade animate-delay-1000 flex-wrap gap-y-2"
-            />
-          }
-        />
+        {withLegend && (
+          <ChartLegend
+            content={
+              <ChartLegendContent
+                nameKey="nameKey"
+                className="animate-fade animate-delay-1000 flex-wrap gap-y-2"
+              />
+            }
+          />
+        )}
 
-        <ChartTooltip content={<ChartTooltipContent />} />
+        {withTooltip && <ChartTooltip content={<ChartTooltipContent />} />}
       </PieChartComp>
     </ChartContainer>
   );

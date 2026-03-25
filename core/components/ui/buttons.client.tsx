@@ -1,5 +1,6 @@
 "use client";
 
+import { useCopyToClipboard } from "@/core/hooks/use-copy-to-clipboard";
 import { cn, delay } from "@/core/utils/helpers";
 import { ArrowUpIcon, CheckIcon, CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -19,26 +20,27 @@ export function CopyButton({
   value: string;
   size?: ButtonIconSize;
 }) {
-  const [copied, setCopied] = useState<boolean>(false);
+  const { copyToClipboard, isCopied } = useCopyToClipboard();
+
   return (
     <Button
       size={size}
-      disabled={copied || disabled}
-      onClick={async (e) => {
+      disabled={isCopied || disabled}
+      onClick={(e) => {
         onClick?.(e);
-        setCopied(true);
-        navigator.clipboard.writeText(value);
-        await delay(1);
-        setCopied(false);
+        copyToClipboard(value);
       }}
       {...props}
     >
-      <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
+      <span className="sr-only">{isCopied ? "Copied" : "Copy"}</span>
       <CopyIcon
-        className={cn("transition", copied ? "scale-0" : "scale-100")}
+        className={cn("transition", isCopied ? "scale-0" : "scale-100")}
       />
       <CheckIcon
-        className={cn("absolute transition", copied ? "scale-100" : "scale-0")}
+        className={cn(
+          "absolute transition",
+          isCopied ? "scale-100" : "scale-0",
+        )}
       />
     </Button>
   );
@@ -86,7 +88,7 @@ export function ScrollToTopButton({
     <Button
       size={size}
       className={cn(
-        "fixed right-4 bottom-4 z-40 rounded-full lg:right-10 lg:bottom-8",
+        "fixed right-6 bottom-6 z-40 rounded-full lg:right-10 lg:bottom-8",
         className,
       )}
       onClick={(e) => {

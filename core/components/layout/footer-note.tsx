@@ -6,7 +6,7 @@ export function FooterNote({ className }: { className?: string }) {
     <small className={cn("text-muted-foreground", className)}>
       {"Built by "}
       <Link
-        href="https://github.com/RvnSytR"
+        href="https://github.com/rvnsytr"
         target="_blank"
         className="link-underline"
       >

@@ -1,10 +1,9 @@
 "use client";
 
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { getActiveRoute, getMenuByRole, routesMeta } from "@/core/route";
-import { toCase } from "@/core/utils/formaters";
-import { UserAvatar, UserVerifiedBadge } from "@/modules/auth/components";
-import { useAuth } from "@/modules/auth/provider.auth";
+import { routesMeta } from "@/core/constants";
+import { useIsMounted } from "@/core/hooks";
+import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
+import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,7 +60,7 @@ export function SidebarMainHeader() {
               />
 
               <div className="grid break-all">
-                <div className="flex gap-x-2">
+                <div className="flex items-center gap-x-2">
                   <span className="line-clamp-1 text-sm font-semibold">
                     {user.name}
                   </span>
@@ -161,7 +160,7 @@ export function SidebarMainContent() {
                                     <Link
                                       href={
                                         itm.href ??
-                                        `${route}/#${toCase(itm.displayName, "kebab")}`
+                                        `${route}/#${toKebab(itm.displayName)}`
                                       }
                                     >
                                       <span className="line-clamp-1">

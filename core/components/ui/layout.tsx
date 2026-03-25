@@ -1,99 +1,77 @@
-"use client";
-
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { LayoutMode, layoutModeMeta, useLayout } from "@/core/providers/layout";
+import {
+  LAYOUT_TOGGLE_HOTKEY,
+  layoutModeMeta,
+} from "@/core/constants/registries";
+import { useIsMobile } from "@/core/hooks/use-media-query";
+import { useLayout } from "@/core/providers/layout";
 import { cn } from "@/core/utils/helpers";
-import { ComponentProps, useEffect, useEffectEvent } from "react";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import { Button, ButtonProps } from "./button";
-import { LoadingFallback } from "./fallback";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
-import { Kbd, KbdGroup } from "./kbd";
+import { Kbd } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 export function LayoutToggle({
   align,
-  size = "icon",
+  size = "icon-sm",
   variant = "ghost",
   onClick,
   className,
   disabled,
   ...props
 }: Omit<ButtonProps, "children"> &
-  Pick<ComponentProps<typeof TooltipContent>, "align">) {
-  const isMounted = useIsMounted();
+  Pick<React.ComponentProps<typeof TooltipContent>, "align">) {
+  const isMobile = useIsMobile();
   const { layout, setLayout } = useLayout();
 
   const { icon: Icon } = layoutModeMeta[layout];
 
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
-  const onLayout = useEffectEvent(() => toggleLayout());
 
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === "l") {
-        e.preventDefault();
-        onLayout();
-      }
-    };
+  useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
+  const element = (
+    <Button
+      size={size}
+      variant={variant}
+      onClick={(e) => {
+        onClick?.(e);
+        toggleLayout();
+      }}
+      className={cn("hidden 2xl:inline-flex", className)}
+      disabled={disabled ?? layout === "unset"}
+      {...props}
+    >
+      <Icon />
+    </Button>
+  );
 
-  if (!isMounted) {
-    const { icon: UnsetIcon } = layoutModeMeta.unset;
-    return (
-      <Button size={size} variant={variant} disabled>
-        <UnsetIcon />
-      </Button>
-    );
-  }
+  if (isMobile) return element;
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          size={size}
-          variant={variant}
-          onClick={(e) => {
-            onClick?.(e);
-            toggleLayout();
-          }}
-          className={cn("hidden md:inline-flex", className)}
-          disabled={disabled ?? layout === "unset"}
-          {...props}
-        >
-          <Icon />
-        </Button>
-      </TooltipTrigger>
+      <TooltipTrigger render={element} />
       <TooltipContent
         align={align}
         className="flex flex-col items-center gap-2"
       >
         <span>Toggle Layout</span>
-        <KbdGroup>
-          <Kbd>Alt</Kbd>
-          <span>+</span>
-          <Kbd>L</Kbd>
-        </KbdGroup>
+        <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
       </TooltipContent>
     </Tooltip>
   );
 }
 
 export function LayoutSettings() {
-  const isMounted = useIsMounted();
   const { layout, setLayout } = useLayout();
-
-  if (!isMounted) return <LoadingFallback />;
 
   return (
     <RadioGroup
       value={layout}
       defaultValue="default"
-      onValueChange={(v) => setLayout(v as LayoutMode)}
+      onValueChange={setLayout}
       className="grid grid-cols-2"
       required
     >

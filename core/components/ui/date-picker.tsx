@@ -1,5 +1,3 @@
-"use client";
-
 import {
   formatDate,
   formatDDMMYY,
@@ -93,19 +91,21 @@ export function DatePicker({
 
       <InputGroupAddon align="inline-end">
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <InputGroupButton
-              size="icon-xs"
-              variant={invalid ? "outline_destructive" : "outline"}
-              disabled={props.disabled === true}
-              className={cn(
-                !selected && "text-muted-foreground",
-                invalid && "border-destructive text-destructive",
-              )}
-            >
-              <CalendarIcon />
-            </InputGroupButton>
-          </PopoverTrigger>
+          <PopoverTrigger
+            render={
+              <InputGroupButton
+                size="icon-xs"
+                variant={invalid ? "outline-destructive" : "outline"}
+                disabled={props.disabled === true}
+                className={cn(
+                  !selected && "text-muted-foreground",
+                  invalid && "border-destructive text-destructive",
+                )}
+              >
+                <CalendarIcon />
+              </InputGroupButton>
+            }
+          />
 
           <PopoverContent align="end" sideOffset={12} className="size-fit p-0">
             <Calendar
@@ -141,19 +141,22 @@ export function DateMultiPicker({
   return (
     <Popover>
       <RequiredBridge required={props.required} />
-      <PopoverTrigger asChild>
-        <Button
-          variant={invalid ? "outline_destructive" : "outline"}
-          disabled={props.disabled === true}
-          className={cn(
-            "justify-between",
-            !selected?.length && "text-muted-foreground",
-            invalid && "border-destructive text-destructive",
-          )}
-        >
-          {value ?? "Pilih tanggal"} <CalendarDaysIcon />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button
+            variant={invalid ? "outline-destructive" : "outline"}
+            disabled={props.disabled === true}
+            className={cn(
+              "justify-between",
+              !selected?.length && "text-muted-foreground",
+              invalid && "border-destructive text-destructive",
+            )}
+          >
+            {value ?? "Pilih tanggal"} <CalendarDaysIcon />
+          </Button>
+        }
+      />
+
       <PopoverContent className="size-fit p-0">
         <Calendar mode="multiple" selected={selected} {...props} />
       </PopoverContent>
@@ -178,19 +181,22 @@ export function DateRangePicker({
   return (
     <Popover>
       <RequiredBridge required={props.required} />
-      <PopoverTrigger asChild>
-        <Button
-          variant={invalid ? "outline_destructive" : "outline"}
-          disabled={props.disabled === true}
-          className={cn(
-            "justify-between",
-            !selected?.from && "text-muted-foreground",
-            invalid && "border-destructive text-destructive",
-          )}
-        >
-          {value ?? "Pilih rentang tanggal"} <CalendarRangeIcon />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button
+            variant={invalid ? "outline-destructive" : "outline"}
+            disabled={props.disabled === true}
+            className={cn(
+              "justify-between",
+              !selected?.from && "text-muted-foreground",
+              invalid && "border-destructive text-destructive",
+            )}
+          >
+            {value ?? "Pilih rentang tanggal"} <CalendarRangeIcon />
+          </Button>
+        }
+      />
+
       <PopoverContent className="size-fit p-0">
         <Calendar
           mode="range"

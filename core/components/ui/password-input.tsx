@@ -9,7 +9,7 @@ import {
   LockKeyholeIcon,
   XIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FieldDescription } from "./field";
 import {
   InputGroup,
@@ -23,7 +23,7 @@ export function PasswordInput({
   withList = false,
   value,
   ...props
-}: Omit<React.ComponentProps<"input">, "type"> & {
+}: Omit<React.ComponentProps<typeof InputGroupInput>, "type"> & {
   icon?: React.ReactNode;
   withList?: boolean;
 }) {

@@ -9,7 +9,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { Button } from "./button";
-import { Checkbox, CheckboxProps } from "./checkbox";
+import { Checkbox } from "./checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,11 @@ import {
 export function ColumnHeader<TData, TValue>({
   column,
   className,
+  disabled = false,
   children,
 }: Pick<HeaderContext<TData, TValue>, "column"> & {
   className?: string;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   const columnPinned = column.getIsPinned();
@@ -43,6 +45,7 @@ export function ColumnHeader<TData, TValue>({
             size="icon-xs"
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            disabled={disabled}
           >
             <ArrowUpDownIcon />
           </Button>
@@ -50,14 +53,16 @@ export function ColumnHeader<TData, TValue>({
 
         {column.getCanPin() && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon-xs" variant="ghost">
-                <ColumnPinIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-fit flex-row">
+            <DropdownMenuTrigger
+              render={
+                <Button size="icon-xs" variant="ghost" disabled={disabled}>
+                  <ColumnPinIcon />
+                </Button>
+              }
+            />
+
+            <DropdownMenuContent className="flex min-w-fit flex-row *:size-5 *:items-center *:justify-center *:p-0">
               <DropdownMenuItem
-                className="size-6"
                 onClick={() => column.pin("left")}
                 disabled={columnPinned === "left"}
               >
@@ -65,14 +70,12 @@ export function ColumnHeader<TData, TValue>({
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
-                className="size-6"
                 onClick={() => column.pin(false)}
                 disabled={columnPinned === false}
               >
                 <XIcon />
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="size-6"
                 onClick={() => column.pin("right")}
                 disabled={columnPinned === "right"}
               >
@@ -91,15 +94,13 @@ export function ColumnHeaderCheckbox<TData, TValue>({
   className,
   ...props
 }: Pick<HeaderContext<TData, TValue>, "table"> &
-  Omit<CheckboxProps, "checked" | "onCheckedChange">) {
+  Omit<React.ComponentProps<typeof Checkbox>, "checked" | "onCheckedChange">) {
   return (
     <Checkbox
       aria-label="Select all"
       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      checked={
-        table.getIsAllPageRowsSelected() ||
-        (table.getIsSomePageRowsSelected() && "indeterminate")
-      }
+      indeterminate={table.getIsSomePageRowsSelected()}
+      checked={table.getIsAllPageRowsSelected()}
       className={cn("mx-auto", className)}
       {...props}
     />
@@ -111,7 +112,7 @@ export function ColumnCellCheckbox<TData, TValue>({
   className,
   ...props
 }: Pick<CellContext<TData, TValue>, "row"> &
-  Omit<CheckboxProps, "checked" | "onCheckedChange">) {
+  Omit<React.ComponentProps<typeof Checkbox>, "checked" | "onCheckedChange">) {
   if (!row.getCanSelect()) return;
   return (
     <Checkbox

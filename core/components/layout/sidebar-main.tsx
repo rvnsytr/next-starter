@@ -1,9 +1,7 @@
-import { dashboardfooterMenu } from "@/core/constants/menu";
-import {
-  SignOutButton,
-  StopImpersonateUserMenuItem,
-} from "@/modules/auth/components.client";
+import { dashboardfooterMenu } from "@/core/constants";
+import { SignOutButton, StopImpersonateUserMenuItem } from "@/modules/auth";
 import Link from "next/link";
+import { RefreshButton } from "../ui/buttons.client";
 import {
   Sidebar,
   SidebarFooter,
@@ -18,7 +16,10 @@ import { SidebarMainContent, SidebarMainHeader } from "./sidebar-main.client";
 
 export function SidebarMain() {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+    >
       {/* Header */}
       <SidebarMainHeader />
 
@@ -28,6 +29,16 @@ export function SidebarMain() {
       {/* Footer */}
       <SidebarFooter>
         <SidebarMenu className="gap-2">
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip="Refresh Page" asChild>
+              <RefreshButton
+                size="xs"
+                variant="ghost"
+                className="justify-start text-xs"
+              />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
           {dashboardfooterMenu.map(
             ({ route, displayName, icon: Icon, disabled }) => {
               const iconElement = Icon && <Icon />;

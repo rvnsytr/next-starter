@@ -1,6 +1,4 @@
-import { SVGAttributes } from "lucide-react";
-
-export function GithubIcon({ ...props }: SVGAttributes) {
+export function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +17,7 @@ export function GithubIcon({ ...props }: SVGAttributes) {
   );
 }
 
-export function GoogleIcon({ ...props }: SVGAttributes) {
+export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

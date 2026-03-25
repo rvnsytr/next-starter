@@ -1,18 +1,9 @@
 "use client";
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/core/components/ui/command";
+import { routesMeta } from "@/config/route";
 import { Menu } from "@/core/constants/menu";
 import { messages } from "@/core/constants/messages";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { routesMeta } from "@/core/route";
 import { toCase } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { DotIcon, SearchIcon } from "lucide-react";
@@ -24,6 +15,15 @@ import {
   useState,
   useTransition,
 } from "react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "./command";
 import {
   Dialog,
   DialogContent,
@@ -72,35 +72,37 @@ export function CommandPalette({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <InputGroup className="group-data-[collapsible=icon]:size-8">
-          <InputGroupInput
-            placeholder={placeholder}
-            className={cn("disabled:opacity-100", className)}
-            disabled
-          />
-
-          <InputGroupAddon
-            align="inline-start"
-            className="group-data-[collapsible=icon]:px-1.5"
-          >
-            <LoadingSpinner
-              loading={isPending}
-              icon={{ base: <SearchIcon /> }}
+      <DialogTrigger
+        render={
+          <InputGroup className="group-data-[collapsible=icon]:size-8">
+            <InputGroupInput
+              placeholder={placeholder}
+              className={cn("disabled:opacity-100", className)}
+              disabled
             />
-          </InputGroupAddon>
 
-          <InputGroupAddon
-            align="inline-end"
-            className="group-data-[collapsible=icon]:hidden"
-          >
-            <KbdGroup>
-              <Kbd>⌘</Kbd>
-              <Kbd>K</Kbd>
-            </KbdGroup>
-          </InputGroupAddon>
-        </InputGroup>
-      </DialogTrigger>
+            <InputGroupAddon
+              align="inline-start"
+              className="group-data-[collapsible=icon]:px-1.5"
+            >
+              <LoadingSpinner
+                loading={isPending}
+                icon={{ base: <SearchIcon /> }}
+              />
+            </InputGroupAddon>
+
+            <InputGroupAddon
+              align="inline-end"
+              className="group-data-[collapsible=icon]:hidden"
+            >
+              <KbdGroup>
+                <Kbd>⌘</Kbd>
+                <Kbd>K</Kbd>
+              </KbdGroup>
+            </InputGroupAddon>
+          </InputGroup>
+        }
+      />
 
       <DialogContent className="p-1" showCloseButton={false}>
         <DialogHeader className="sr-only">
@@ -132,14 +134,14 @@ export function CommandPalette({
                             disabled={disabled}
                             onSelect={() => onSelectHandler(route)}
                           >
-                            {Icon && <Icon />} {meta.displayName}
+                            {Icon && <Icon />} {meta.label}
                           </CommandItem>
 
                           {!disabled &&
                             subMenu?.map((itm) => {
                               const isDestructive =
                                 itm.variant === "destructive";
-                              const href = `${route}/#${toCase(itm.displayName, "kebab")}`;
+                              const href = `${route}/#${toCase(itm.label, "kebab")}`;
                               return (
                                 <CommandItem
                                   key={href}
@@ -155,7 +157,7 @@ export function CommandPalette({
                                       isDestructive && "text-destructive",
                                     )}
                                   />
-                                  {itm.displayName}
+                                  {itm.label}
                                 </CommandItem>
                               );
                             })}

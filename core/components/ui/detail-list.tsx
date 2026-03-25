@@ -10,20 +10,35 @@ export type DetailListData = {
   classNames?: { label?: string; content?: string };
 }[];
 
-export function DetailList({ data }: { data: DetailListData }) {
-  return data.map(({ label, content, className, classNames }, index) => (
+export function DetailList({
+  data,
+  className,
+  classNames,
+}: Pick<DetailListData[number], "className" | "classNames"> & {
+  data: DetailListData;
+}) {
+  return data.map((item, index) => (
     <div
       key={index}
       className={cn(
-        "space-y-1 **:[svg:not([class*='size-'])]:size-4",
+        "flex flex-col gap-x-2 gap-y-1 **:[svg:not([class*='size-'])]:size-4",
         className,
+        item.className,
       )}
     >
-      <Label className={classNames?.label}>{label}</Label>
-      <div className={cn("text-muted-foreground text-sm", classNames?.content)}>
-        {Array.isArray(content) ? (
+      <Label className={cn(classNames?.label, item.classNames?.label)}>
+        {item.label}
+      </Label>
+      <div
+        className={cn(
+          "text-muted-foreground text-sm",
+          classNames?.content,
+          item.classNames?.content,
+        )}
+      >
+        {Array.isArray(item.content) ? (
           <ul className="list-inside list-disc">
-            {content.map(({ subLabel, subContent }) => (
+            {item.content.map(({ subLabel, subContent }) => (
               <li key={subLabel}>
                 <span className="capitalize">{subLabel}</span>:{" "}
                 <span className="text-foreground font-medium">
@@ -33,7 +48,7 @@ export function DetailList({ data }: { data: DetailListData }) {
             ))}
           </ul>
         ) : (
-          (content ?? "-")
+          (item.content ?? "-")
         )}
       </div>
     </div>

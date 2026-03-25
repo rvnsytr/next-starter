@@ -85,7 +85,7 @@ export function Calendar({
           "select-none font-medium",
           captionLayout === "label"
             ? "text-sm"
-            : "rounded-md pl-2 pr-1 flex h-full items-center gap-1 text-sm [&>svg]:text-muted-foreground [&>svg]:size-3.5",
+            : "rounded-md pl-2 pr-1 flex h-full items-center gap-1 text-sm *:[svg]:text-muted-foreground *:[svg]:size-3.5",
           defaultClassNames.caption_label,
         ),
         table: "w-full border-collapse",
@@ -134,15 +134,8 @@ export function Calendar({
         ...classNames,
       }}
       components={{
-        Root: ({ className, rootRef, ...props }) => {
-          return (
-            <div
-              data-slot="calendar"
-              ref={rootRef}
-              className={cn(className)}
-              {...props}
-            />
-          );
+        Root: ({ rootRef, ...props }) => {
+          return <div data-slot="calendar" ref={rootRef} {...props} />;
         },
         Chevron: ({ className, orientation, ...props }) => {
           const Icon =

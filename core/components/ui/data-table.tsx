@@ -706,7 +706,7 @@ function Pagination<TData>({
   const size = isMobile ? "icon" : "icon-sm";
   const variant = "outline";
   return (
-    <ButtonGroup className={cn(className)}>
+    <ButtonGroup className={className}>
       <Button
         size={size}
         variant={variant}

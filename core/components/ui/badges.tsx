@@ -1,4 +1,4 @@
-import { Gender, genderMeta } from "@/core/constants/metadata";
+import { Gender, genderMeta } from "@/core/constants/registries";
 import { cn } from "@/core/utils/helpers";
 import { Badge } from "./badge";
 

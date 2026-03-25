@@ -1,14 +1,6 @@
 import { cn } from "@/core/utils/helpers";
-import { ReactNode } from "react";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldErrorProps,
-  FieldLabel,
-  FieldProps,
-} from "./field";
-import { LabelProps } from "./label";
+import { Field, FieldDescription, FieldError, FieldLabel } from "./field";
+import { Label } from "./label";
 
 /**
  * @note
@@ -22,6 +14,8 @@ import { LabelProps } from "./label";
  * [building forms](https://ui.shadcn.com/docs/forms/react-hook-form) for additional guidance.
  */
 
+type FieldErrorProps = React.ComponentProps<typeof FieldError>;
+
 export function FieldWrapper({
   label,
   htmlFor,
@@ -33,18 +27,21 @@ export function FieldWrapper({
 
   otherProps,
 }: {
-  label?: ReactNode;
+  label?: React.ReactNode;
   htmlFor?: string;
   errors: Pick<FieldErrorProps, "errors">["errors"];
-  description?: ReactNode;
+  description?: React.ReactNode;
 
   className?: string;
-  children: ReactNode;
+  children: React.ReactNode;
 
   // Other optional props
   otherProps?: {
-    field?: Omit<FieldProps, "className" | "data-invalid">;
-    label?: Omit<LabelProps, "htmlFor">;
+    field?: Omit<
+      React.ComponentProps<typeof Field>,
+      "className" | "data-invalid"
+    >;
+    label?: Omit<React.ComponentProps<typeof Label>, "htmlFor">;
     fieldDesc?: React.ComponentProps<"p">;
     fieldError?: Omit<FieldErrorProps, "errors">;
   };
