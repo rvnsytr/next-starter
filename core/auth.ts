@@ -1,36 +1,67 @@
-import { allRoles, defaultRole } from "@/modules/auth/constants";
+import { appMeta } from "@/config/app";
+import { ac, roles } from "@/config/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import {
-  admin as adminPlugin,
-  createAuthMiddleware,
-} from "better-auth/plugins";
-import { appMeta } from "./constants/app";
+import { admin as adminPlugin } from "better-auth/plugins";
 import { db } from "./db";
-import { ac, roles } from "./permission";
-import { getPresignUrl, removeFiles } from "./storage";
+import { removeFiles } from "./storage";
+
+export type ACStatements = typeof ac.statements;
+export type Permissions = {
+  [K in keyof ACStatements]?: ACStatements[K][number][];
+};
+
+export type AuthSession = typeof auth.$Infer.Session;
+
+export type Role = (typeof allRoles)[number];
+export const allRoles = ["user", "admin"] as const;
+export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
   appName: appMeta.name,
 
   database: drizzleAdapter(db, { provider: "pg" }),
+
   plugins: [nextCookies(), adminPlugin({ ac, roles, defaultRole })],
 
   emailAndPassword: {
     enabled: true,
-    sendResetPassword: async ({ user, token }) => {
-      const { name, email } = user;
-      const url = `${appMeta.url}/reset-password?token=${token}`;
-      console.log("name", name);
-      console.log("email", email);
-      console.log(url);
-      // void novu.trigger("reset-password", {
-      //   to: { subscriberId: email, email },
-      //   payload: { name, url },
-      // });
-    },
+    // sendResetPassword: async ({ user, token }) => {
+    //   const { name, email } = user;
+    //   const url = `${appMeta.cors.origin}/reset-password?token=${token}`;
+    //   void novu.trigger("purnaku-reset-password", {
+    //     to: { subscriberId: email, email },
+    //     payload: { name, url },
+    //   });
+    // },
+    // onPasswordReset: async ({ user }) => {
+    //   await db
+    //     .insertInto("event_log")
+    //     .values({ type: "password-reset", user_id: user.id })
+    //     .execute();
+    // },
   },
+
+  emailVerification: {
+    // sendOnSignUp: true,
+    // sendVerificationEmail: async ({ user, token }) => {
+    //   const { name, email } = user;
+    //   const url = `${appMeta.cors.origin}/verify-user?token=${token}`;
+    //   void novu.trigger("purnaku-verification", {
+    //     to: { subscriberId: email, email },
+    //     payload: { name, url },
+    //   });
+    // },
+    // afterEmailVerification: async (user) => {
+    //   await db
+    //     .insertInto("event_log")
+    //     .values({ type: "user-verified", user_id: user.id })
+    //     .execute();
+    // },
+  },
+
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -40,7 +71,7 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      role: { type: [...allRoles], defaultValue: defaultRole, input: false },
+      role: { type: [...allRoles], input: false, defaultValue: defaultRole },
     },
   },
 
@@ -48,27 +79,11 @@ export const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       const { session, newSession } = ctx.context;
 
-      if (ctx.path === "/get-session") {
-        if (!session) return ctx.json(null);
-
-        const { session: sessionData, user: userData } = session;
-        if (!userData.image) return ctx.json(session);
-
-        return ctx.json({
-          session: sessionData,
-          user: {
-            ...userData,
-            image: await getPresignUrl(userData.image),
-          },
-        });
-      }
-
       if (ctx.path === "/update-user") {
-        const oldImageKey = session?.user.image;
-        const newImageKey = newSession?.user.image;
+        const oldImageId = session?.user.image;
+        const newImageId = newSession?.user.image;
 
-        if (oldImageKey && oldImageKey !== newImageKey)
-          removeFiles([oldImageKey]);
+        if (oldImageId && oldImageId !== newImageId) removeFiles([oldImageId]);
       }
     }),
   },

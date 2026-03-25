@@ -1,17 +1,11 @@
 {
-  "files.readonlyInclude": { "**/core/**": true },
+  "files.readonlyInclude": { "**/api/auth/**": true, "**/core/**": true },
+  "search.exclude": { "**/api/auth/**": true, "**/core/**": true },
 
-  "files.readonlyExclude": {
-    "**/core/constants/menu.ts": true,
-    "**/core/route.ts": true,
-    "**/core/schema.db.ts": true
-  },
-
-  "typescript.preferences.autoImportFileExcludePatterns": [
+  "js/ts.preferences.autoImportFileExcludePatterns": [
     "next/router",
     "radix-ui"
   ],
 
-  "typescript.preferences.importModuleSpecifier": "shortest",
-  "javascript.preferences.importModuleSpecifier": "shortest"
+  "js/ts.preferences.importModuleSpecifier": "shortest"
 }

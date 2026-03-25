@@ -17,6 +17,14 @@ export function sanitizeDate(str: string) {
   return digits.slice(0, 7) + digits[digits.length - 1];
 }
 
+export function getTimeOfDay(date = new Date()) {
+  const hour = date.getHours();
+  if (hour >= 4 && hour < 11) return "pagi";
+  if (hour < 15) return "siang";
+  if (hour < 18) return "sore";
+  return "malam";
+}
+
 export function formatDDMMYY(str: string) {
   const digits = str.replace(/\D/g, "");
   if (digits.length <= 2) return digits;
@@ -34,6 +42,19 @@ export function parseDDMMYYYY(str: string) {
 
 export function formatDate(date: Date, formatStr: string) {
   return format(date, formatStr, { locale });
+}
+
+export function formatDateRange(start: Date, end: Date) {
+  const sameMonth = start.getMonth() === end.getMonth();
+  const sameYear = start.getFullYear() === end.getFullYear();
+
+  if (sameMonth && sameYear)
+    return `${formatDate(start, "MMM d")} - ${formatDate(end, "d, yyyy")}`;
+
+  if (sameYear)
+    return `${formatDate(start, "MMM d")} - ${formatDate(end, "MMM d, yyyy")}`;
+
+  return `${formatDate(start, "MMM d, yyyy")} - ${formatDate(end, "MMM d, yyyy")}`;
 }
 
 export function formatDateDistanceToNow(date: Date) {

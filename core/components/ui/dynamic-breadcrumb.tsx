@@ -1,6 +1,6 @@
 "use client";
 
-import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { routesMeta } from "@/core/route";
 import { Route } from "next";
 import Link from "next/link";

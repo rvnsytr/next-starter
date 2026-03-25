@@ -1,6 +1,6 @@
 "use client";
 
-import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { cn } from "@/core/utils/helpers";
 import { cva, VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";

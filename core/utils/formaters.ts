@@ -1,7 +1,8 @@
+import { appMeta } from "@/config/app";
 import z from "zod";
-import { appMeta } from "../constants/app";
-import { Language, languageMeta } from "../constants/metadata";
+import { Language, languageMeta } from "../constants/registries";
 import {
+  ActionResponse,
   StringCase,
   TransformableStringCase,
   TransformKeys,
@@ -46,6 +47,13 @@ export function normalizeString(str: string) {
     .replace(/\s+/g, " ");
 }
 
+export function fromCase(str: string) {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]/g, " ")
+    .trim();
+}
+
 export function toCase(str: string, mode: StringCase) {
   const base = normalizeString(str);
 
@@ -67,13 +75,6 @@ export function toCase(str: string, mode: StringCase) {
     default:
       return base;
   }
-}
-
-export function fromCase(str: string) {
-  return str
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/[-_]/g, " ")
-    .trim();
 }
 
 export function transformKeys<T, C extends TransformableStringCase>(
@@ -103,7 +104,8 @@ export function formatNumber(
   number: number,
   props?: { lang?: Language; options?: Intl.NumberFormatOptions },
 ) {
-  const locale = languageMeta[props?.lang ?? (appMeta.lang as Language)].locale;
+  const locale =
+    languageMeta[props?.lang ?? (appMeta.defaultLanguage as Language)].locale;
   const value = new Intl.NumberFormat(locale, props?.options).format(number);
   return value === "0" ? "0" : value;
 }
@@ -125,11 +127,17 @@ export function formatPhone(number: string | number, prefix?: "+62" | "0") {
 
 export function formatZodError<T>(
   zodError: z.ZodError<T>,
-  withPath = false,
-): string {
-  const error = JSON.parse(zodError.message)[0];
-  if (withPath) return `${error.path}: ${error.message}`;
-  return error.message;
+  options?: { withPath?: boolean },
+): Extract<ActionResponse, { success: false }> {
+  const firstIssue = zodError.issues[0];
+  let message = firstIssue?.message ?? "Validation error";
+
+  if (options?.withPath && firstIssue?.path.length) {
+    const paths = firstIssue.path.filter(Boolean);
+    message = `[${paths.join(".")}] ${firstIssue.message}`;
+  }
+
+  return { success: false, message, error: z.treeifyError(zodError) };
 }
 
 export type FormatCsvRangeOptions = {
@@ -183,11 +191,11 @@ export function formatNumberRange(nums: number[], minRangeSize = 10) {
   if (!nums.length) return [];
 
   const result: string[] = [];
-  let start = nums[0];
-  let prev = nums[0];
+  let start = nums[0]!;
+  let prev = nums[0]!;
 
   for (let i = 1; i <= nums.length; i++) {
-    const curr = nums[i];
+    const curr = nums[i]!;
 
     if (curr === prev + 1) {
       prev = curr;

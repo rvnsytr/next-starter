@@ -1,5 +1,5 @@
 import useSWR, { SWRConfiguration, SWRResponse } from "swr";
-import z from "zod";
+import { ZodType } from "zod";
 import { fetcher, FetcherConfig } from "../api";
 
 export type UseValidatedSWRConfig = {
@@ -9,7 +9,7 @@ export type UseValidatedSWRConfig = {
 
 export function useValidatedSWR<T>(
   key: string,
-  schema: z.ZodType<T>,
+  schema: ZodType<T>,
   config?: UseValidatedSWRConfig,
 ): SWRResponse<T> {
   const fn = async () => await fetcher(key, schema, config?.fetcher);

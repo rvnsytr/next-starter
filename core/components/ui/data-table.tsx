@@ -4,7 +4,7 @@ import { messages } from "@/core/constants/messages";
 import { ActionResponse } from "@/core/constants/types";
 import { columnFiltersSchema, DataTableState } from "@/core/data-table";
 import { useDebounce } from "@/core/hooks/use-debounce";
-import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import {

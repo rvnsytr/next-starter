@@ -1,3 +1,5 @@
+import { FileType } from "@/core/constants/registries";
+import { toBytes } from "@/core/utils/formaters";
 import {
   FileArchiveIcon,
   FilesIcon,
@@ -10,21 +12,8 @@ import {
   UploadIcon,
   VideoIcon,
 } from "lucide-react";
-import { toBytes } from "../utils/formaters";
 
-export type FileType =
-  | "file"
-  | "image"
-  | "pdf"
-  | "document"
-  | "spreadsheet"
-  | "presentation"
-  | "office"
-  | "archive"
-  | "audio"
-  | "video";
-
-type FileMetaProps = Record<
+export type FileMetaProps = Record<
   FileType,
   {
     displayName: string;

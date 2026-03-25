@@ -1,4 +1,3 @@
-import { PaginationState, SortingState } from "@tanstack/react-table";
 import { isValid } from "date-fns";
 import {
   and,
@@ -22,47 +21,35 @@ import {
   or,
 } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import z from "zod";
-import { allFilterOperators, FilterOperators } from "./filter";
+import { DataTableState } from "./components/ui/data-table";
+import { FilterOperators } from "./data-filter";
 
-export type DataTableState = {
-  globalFilter: string;
-  columnFilters: z.infer<typeof columnFiltersSchema>[];
-  sorting: SortingState;
-  pagination: PaginationState;
-};
+type ConfigParserValue = string | number | Date;
 
-type WDTColumnConfig = { column: AnyPgColumn } & (
-  | { type: "string"; parser?: (value: string | number | Date) => string }
-  | { type: "number"; parser?: (value: string | number | Date) => number }
-  | { type: "date"; parser?: (value: string | number | Date) => Date }
-  | { type: "boolean"; parser: (value: string | number | Date) => boolean }
+type WDCColumnConfig = { column: AnyPgColumn } & (
+  | { type: "string"; parser?: (value: ConfigParserValue) => string }
+  | { type: "number"; parser?: (value: ConfigParserValue) => number }
+  | { type: "date"; parser?: (value: ConfigParserValue) => Date }
+  | { type: "boolean"; parser: (value: ConfigParserValue) => boolean }
 );
 
-type WDTConfig<Columns extends Record<string, WDTColumnConfig>> = {
+type WDCConfig<Columns extends Record<string, WDCColumnConfig>> = {
   disabled?: ("globalFilter" | "columnFilters" | "sorting" | "pagination")[];
   columns: Columns;
   defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
 
-export const columnFiltersSchema = z.object({
-  id: z.string(),
-  value: z.object({
-    operator: z.enum(allFilterOperators),
-    values: z.union([z.string(), z.number(), z.coerce.date()]).array(),
-  }),
-});
-
-export const defineWDTConfig = <
-  Columns extends Record<string, WDTColumnConfig>,
+export const defineWDCConfig = <
+  Columns extends Record<string, WDCColumnConfig>,
 >(
-  config: WDTConfig<Columns>,
+  config: WDCConfig<Columns>,
 ) => config;
 
-export function withDataTable<
+export function withDataController<
   TQueryBuilder extends PgSelect,
-  Columns extends Record<string, WDTColumnConfig>,
->(qb: TQueryBuilder, state: DataTableState, config: WDTConfig<Columns>) {
+  Columns extends Record<string, WDCColumnConfig>,
+>(qb: TQueryBuilder, state: DataTableState, config: WDCConfig<Columns>) {
+  // #region Global Filter
   const columnValues = Object.values(config.columns);
   const globalFilterCols = columnValues.filter((c) => c.type === "string");
   if (
@@ -74,7 +61,9 @@ export function withDataTable<
     const conditions = globalFilterCols.map((c) => ilike(c.column, value));
     if (conditions.length) qb = qb.where(or(...conditions));
   }
+  // #endregion
 
+  // #region Column Filters
   if (!config.disabled?.includes("columnFilters") && state.columnFilters) {
     const ilikeOperators: FilterOperators[] = ["contains"];
     const notIlikeOperators: FilterOperators[] = ["does not contain"];
@@ -116,7 +105,7 @@ export function withDataTable<
         if (!columnConfig || !values.length) return null;
 
         const { column, type, parser } = columnConfig;
-        let parsedValues: (string | number | Date | boolean)[] = values;
+        let parsedValues: (string | number | boolean | Date)[] = values;
 
         if (type === "date")
           parsedValues = values
@@ -197,7 +186,9 @@ export function withDataTable<
 
     if (conditions.length) qb = qb.where(and(...conditions));
   }
+  // #endregion
 
+  // #region Sorting
   if (!config.disabled?.includes("sorting")) {
     const applySorting = () => {
       if (state.sorting.length) {
@@ -222,11 +213,14 @@ export function withDataTable<
 
     applySorting();
   }
+  // #endregion
 
+  // #region Pagination
   if (!config.disabled?.includes("pagination")) {
     const { pageIndex, pageSize } = state.pagination;
     qb = qb.limit(pageSize).offset(pageIndex * pageSize);
   }
+  // #endregion
 
   return qb;
 }

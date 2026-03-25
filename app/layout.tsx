@@ -1,4 +1,3 @@
-import { GridPattern } from "@/core/components/ui/grid-pattern";
 import { Toaster } from "@/core/components/ui/sonner";
 import { appMeta } from "@/core/constants/app";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
@@ -13,13 +12,20 @@ import { id } from "zod/locales";
 
 z.config(id());
 
-const sansFont = Geist({
+const fontHeading = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-heading",
+  weight: "600",
+});
+
+const fontSans = Geist({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
 });
 
-const monoFont = Geist_Mono({
+const fontMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-mono",
@@ -43,7 +49,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={appMeta.lang} suppressHydrationWarning>
-      <body className={cn(sansFont.variable, monoFont.variable)}>
+      <body
+        className={cn(
+          fontHeading.variable,
+          fontSans.variable,
+          fontMono.variable,
+          "relative",
+        )}
+      >
         <NuqsAdapter>
           <ThemeProvider
             attribute="class"
@@ -51,9 +64,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             disableTransitionOnChange
             enableSystem
           >
-            <GridPattern className="stroke-muted dark:stroke-muted/60 -z-10 min-h-dvh" />
-            {children}
+            {/* <GridPattern className="stroke-muted dark:stroke-muted/60 -z-10 min-h-dvh" /> */}
+
+            <div className="relative isolate flex min-h-svh flex-col">
+              {children}
+            </div>
+
             <Toaster position="top-center" closeButton richColors />
+
             <GlobalShortcuts />
           </ThemeProvider>
         </NuqsAdapter>

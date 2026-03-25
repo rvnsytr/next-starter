@@ -1,78 +1,85 @@
+import { messages } from "@/core/constants/messages";
+import { allGenders, FileType } from "@/core/constants/registries";
+import { toMegabytes } from "@/core/utils/formaters";
 import z from "zod";
-import { fileMeta, FileType } from "./constants/file";
-import { messages } from "./constants/messages";
-import { allGenders } from "./constants/metadata";
-import { toMegabytes } from "./utils/formaters";
+import { fileMeta } from "./file";
 
 export const sharedSchemas = {
-  string: (
-    field: string,
-    options?: {
-      min?: number;
-      max?: number;
-      sanitize?: boolean;
-      withRequired?: boolean;
-    },
-  ) => {
+  string: (options?: {
+    label?: string;
+    min?: number;
+    max?: number;
+    sanitize?: boolean;
+    withRequired?: boolean;
+  }) => {
     const { invalid, required } = messages;
     const { tooShort, tooLong } = messages.string;
 
-    const min = options?.min;
-    const max = options?.max;
+    const label = options?.label ?? undefined;
+    const min = options?.min ?? 0;
+    const max = options?.max ?? 0;
     const sanitize = options?.sanitize ?? true;
-    const withRequired = options?.withRequired ?? true;
+    const withRequired = options?.withRequired ?? false;
 
-    let schema = z.string({ error: invalid(field) }).trim();
+    const invalidError = label && invalid(label);
+    let schema = z.string({ error: invalidError }).trim();
 
     if (sanitize)
-      schema = schema.regex(/^$|[A-Za-z0-9]/, { message: invalid(field) });
+      schema = schema.regex(/^$|[A-Za-z0-9]/, { message: invalidError });
 
-    if (min) {
-      const message = min <= 1 && withRequired ? required : tooShort;
-      schema = schema.min(min, { error: message(field, min) });
+    if (min > 0) {
+      const error =
+        label && (min <= 1 && withRequired ? required : tooShort)(label, min);
+      schema = schema.min(min, { error });
     }
 
-    if (max) {
-      const message = tooLong(field, max);
-      schema = schema.max(max, { error: message });
+    if (max > 0) {
+      const error = label && tooLong(label, max);
+      schema = schema.max(max, { error });
     }
 
     return schema;
   },
 
-  number: (
-    field: string,
-    options?: { min?: number; max?: number; withRequired?: boolean },
-  ) => {
+  number: (options?: {
+    label?: string;
+    min?: number;
+    max?: number;
+    withRequired?: boolean;
+  }) => {
     const { invalid, required } = messages;
     const { tooSmall, tooLarge } = messages.number;
 
-    const min = options?.min;
-    const max = options?.max;
+    const label = options?.label ?? undefined;
+    const min = options?.min ?? 0;
+    const max = options?.max ?? 0;
     const withRequired = options?.withRequired ?? true;
 
-    let schema = z.coerce.number({ error: invalid(field) });
+    const invalidError = label && invalid(label);
+    let schema = z.number({ error: invalidError });
 
-    if (min) {
-      const message = min <= 1 && withRequired ? required : tooSmall;
-      schema = schema.min(min, { error: message(field, min) });
+    if (min > 0) {
+      const error =
+        label && (min <= 1 && withRequired ? required : tooSmall)(label, min);
+      schema = schema.min(min, { error });
     }
 
-    if (max) {
-      const message = tooLarge(field, max);
-      schema = schema.max(max, { error: message });
+    if (max > 0) {
+      const error = label && tooLarge(label, max);
+      schema = schema.max(max, { error });
     }
 
     return schema;
   },
 
-  boolean: (field: string) =>
-    z
-      .union([z.boolean(), z.string()], { error: messages.invalid(field) })
-      .transform((v) => {
-        if (typeof v === "boolean") return v;
-        return v === "true" || v === "1";
-      }),
+  boolean: (label?: string) => {
+    const error = label ? messages.invalid(label) : undefined;
+    return z
+      .union([z.boolean(), z.string()], { error })
+      .transform((v) =>
+        typeof v === "boolean" ? v : v === "true" || v === "1",
+      );
+  },
 
   files: (
     type: FileType,
@@ -85,9 +92,11 @@ export const sharedSchemas = {
     const { mimeInvalid, tooLarge, tooFew, tooMany } = messages.files;
     const { displayName, size, mimeTypes } = fileMeta[type];
 
-    const min = options?.min;
-    const max = options?.max;
-    const maxFileSize = options?.maxFileSize ?? size.bytes;
+    const min = options?.min ?? 0;
+    const max = options?.max ?? 0;
+
+    const mFS = options?.maxFileSize;
+    const maxFileSize = mFS && mFS > 0 ? mFS : size.bytes;
     const maxFileSizeInMB = toMegabytes(maxFileSize).toFixed(2);
 
     let schema = z
@@ -97,12 +106,12 @@ export const sharedSchemas = {
       .max(maxFileSize, { error: tooLarge(displayName, maxFileSizeInMB) })
       .array();
 
-    if (min) {
+    if (min > 0) {
       const message = tooFew(displayName, min);
       schema = schema.min(min, { error: message });
     }
 
-    if (max && max > 0) {
+    if (max > 0) {
       const message = tooMany(displayName, max);
       schema = schema.max(max, { error: message });
     }
@@ -110,75 +119,79 @@ export const sharedSchemas = {
     return schema;
   },
 
-  date: (
-    field: string,
-    options?: { min?: Date | "now"; max?: Date | "now" },
-  ) => {
+  date: (options?: {
+    label?: string;
+    min?: Date | "now";
+    max?: Date | "now";
+  }) => {
     const { tooEarly, tooLate } = messages.date;
 
+    const label = options?.label ?? undefined;
     const min = options?.min;
     const max = options?.max;
 
-    let schema = z.coerce.date({ error: messages.invalid(field) });
+    const invalidError = label && messages.invalid(label);
+    let schema = z.coerce.date({ error: invalidError });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
-      const message = tooEarly(field, value);
-      schema = schema.min(value, { error: message });
+      const error = label && tooEarly(label, value);
+      schema = schema.min(value, { error });
     }
 
     if (max) {
       const value = max === "now" ? new Date() : max;
-      const message = tooLate(field, value);
-      schema = schema.max(value, { error: message });
+      const error = label && tooLate(label, value);
+      schema = schema.max(value, { error });
     }
 
     return schema;
   },
 
-  dateMultiple: (
-    field: string,
-    options?: {
-      min?: number;
-      max?: number;
-      minDate?: Date | "now";
-      maxDate?: Date | "now";
-    },
-  ) => {
+  dateMultiple: (options?: {
+    label?: string;
+    min?: number;
+    max?: number;
+    minDate?: Date | "now";
+    maxDate?: Date | "now";
+  }) => {
     const { invalid, required } = messages;
     const { tooEarly, tooLate, tooFew, tooMany } = messages.date;
 
+    const label = options?.label ?? undefined;
     const min = options?.min;
     const max = options?.max;
     const minDate = options?.minDate;
     const maxDate = options?.maxDate;
 
-    let dateSchema = z.date({ error: invalid(field) });
+    const invalidError = label && invalid(label);
+    let dateSchema = z.date({ error: invalidError });
 
     if (minDate) {
       const value = minDate === "now" ? new Date() : minDate;
-      const message = tooEarly(field, value);
-      dateSchema = dateSchema.min(value, { error: message });
+      const error = label && tooEarly(label, value);
+      dateSchema = dateSchema.min(value, { error });
     }
 
     if (maxDate) {
       const value = maxDate === "now" ? new Date() : maxDate;
-      const message = tooLate(field, value);
-      dateSchema = dateSchema.max(value, { error: message });
+      const error = label && tooLate(label, value);
+      dateSchema = dateSchema.max(value, { error });
     }
 
-    let schema = z.array(dateSchema, {
-      error: "Beberapa tanggal yang dipilih tidak valid.",
-    });
+    const arrayInvalidError = label
+      ? "Beberapa tanggal yang dipilih tidak valid."
+      : undefined;
+    let schema = z.array(dateSchema, { error: arrayInvalidError });
 
     if (min) {
-      const message = min <= 1 ? required : tooFew;
-      schema = schema.min(min, { error: message(field, min) });
+      const error = label && (min <= 1 ? required : tooFew)(label, min);
+      schema = schema.min(min, { error });
     }
 
     if (max) {
-      const message = tooMany(field, max);
-      schema = schema.max(max, { error: message });
+      const error = label && tooMany(label, max);
+      schema = schema.max(max, { error });
     }
 
     return schema;
@@ -226,7 +239,7 @@ export const sharedSchemas = {
     .regex(/[0-9]/, { error: messages.password.number })
     .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
 
-  gender: z.enum(allGenders),
+  gender: z.enum(allGenders, { error: messages.invalid("Jenis kelamin") }),
 };
 
 export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(

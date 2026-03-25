@@ -1,21 +1,10 @@
+import { appMeta } from "@/config/app";
+import { routesMeta } from "@/config/route";
 import { Role } from "@/modules/auth/constants";
 import { Route } from "next";
-import { appMeta } from "./constants/app";
-import { dashboardMenu, Menu } from "./constants/menu";
+import { Menu } from "./constants/menu";
 
 export type RouteRole = "all" | Role[];
-
-export const routesMeta: Record<
-  Route,
-  { displayName: string; role?: RouteRole }
-> = {
-  "/": { displayName: "Beranda" },
-  "/sign-in": { displayName: "Masuk" },
-  "/dashboard": { displayName: "Dashboard", role: "all" },
-  "/dashboard/profile": { displayName: "Profil Saya", role: "all" },
-  "/dashboard/settings": { displayName: "Pengaturan", role: "all" },
-  "/dashboard/users": { displayName: "Pengguna", role: ["admin"] },
-};
 
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
@@ -35,13 +24,33 @@ export function setRouteTitle(title: string) {
 }
 
 export function getRouteTitle(route: Route) {
-  return setRouteTitle(routesMeta[route].displayName);
+  return setRouteTitle(routesMeta[route].label);
 }
 
-export function getMenuByRole(
-  currentRole: Role,
-  menu: Menu[] = dashboardMenu,
-): Menu[] {
+export function getRouteHierarchy(path: string): Route[] {
+  const parts = path.split("/").filter(Boolean);
+  return parts.map((_, i) => "/" + parts.slice(0, i + 1).join("/")) as Route[];
+}
+
+export function getActiveRoute(menu: Menu[], pathname: string) {
+  const allRoutes = Object.keys(routesMeta) as Route[];
+  const allMenuRoutes = menu.flatMap((m) => m.content.map((c) => c.route));
+
+  const parts = pathname.split("/").filter(Boolean);
+  const paths: string[] = [];
+
+  for (let i = parts.length; i > 0; i--)
+    paths.push("/" + parts.slice(0, i).join("/"));
+
+  paths.push("/");
+
+  for (const path of paths) {
+    const p = path as Route;
+    if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
+  }
+}
+
+export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {
   const checkRole = (role?: RouteRole) => {
     if (!role) return true;
     return role === "all" || role?.includes(currentRole);
@@ -66,24 +75,4 @@ export function getMenuByRole(
   });
 
   return filteredMenu.filter((item) => item !== null);
-}
-
-export function getActiveRoute(pathname: string) {
-  const allRoutes = Object.keys(routesMeta) as Route[];
-  const allMenuRoutes = dashboardMenu.flatMap((m) =>
-    m.content.map((c) => c.route),
-  );
-
-  const parts = pathname.split("/").filter(Boolean);
-  const paths: string[] = [];
-
-  for (let i = parts.length; i > 0; i--)
-    paths.push("/" + parts.slice(0, i).join("/"));
-
-  paths.push("/");
-
-  for (const path of paths) {
-    const p = path as Route;
-    if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
-  }
 }

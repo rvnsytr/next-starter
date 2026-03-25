@@ -1,26 +1,14 @@
 "use client";
 
+import { useHotkey } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
 import { nextTheme } from "../components/ui/theme";
+import { THEME_TOGGLE_HOTKEY } from "../constants/registries";
 
 export function GlobalShortcuts() {
   const { setTheme } = useTheme();
 
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      // ? Theme
-      if (e.altKey && e.key === "t") {
-        e.preventDefault();
-        setTheme(nextTheme);
-      }
-
-      // more shortcuts here
-    };
-
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [setTheme]);
+  useHotkey(THEME_TOGGLE_HOTKEY, () => setTheme(nextTheme));
 
   return null;
 }

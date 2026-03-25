@@ -1,6 +1,6 @@
+import { allRequestMetaKey } from "@/core/constants/registries";
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
-import { allRequestMetaKey } from "./core/constants/metadata";
 
 export function proxy(req: NextRequest) {
   const sessionCookie = getSessionCookie(req);

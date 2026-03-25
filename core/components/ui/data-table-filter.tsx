@@ -18,9 +18,9 @@ import {
   numberFilterDetails,
   optionFilterDetails,
   textFilterDetails,
-} from "@/core/filter";
+} from "@/core/data-filter";
 import { useDebounce } from "@/core/hooks/use-debounce";
-import { useIsMobile } from "@/core/hooks/use-is-mobile";
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { formatDate } from "@/core/utils/date";
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
