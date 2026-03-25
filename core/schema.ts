@@ -1,8 +1,8 @@
+import { fileMeta } from "@/config/file";
 import { messages } from "@/core/constants/messages";
 import { allGenders, FileType } from "@/core/constants/registries";
 import { toMegabytes } from "@/core/utils/formaters";
 import z from "zod";
-import { fileMeta } from "./file";
 
 export const sharedSchemas = {
   string: (options?: {

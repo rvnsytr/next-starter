@@ -10,8 +10,12 @@ export function useCopyToClipboard(config?: {
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   const copyToClipboard = (value: string): void => {
-    if (typeof window === "undefined" || !navigator.clipboard.writeText) return;
-    if (!value) return;
+    if (
+      typeof window === "undefined" ||
+      !navigator?.clipboard.writeText ||
+      !value
+    )
+      return;
 
     navigator.clipboard.writeText(value).then(() => {
       if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
