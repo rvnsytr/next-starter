@@ -1,7 +1,7 @@
 import { cn } from "@/core/utils/helpers";
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 
-function Separator({
+export function Separator({
   className,
   orientation = "horizontal",
   ...props
@@ -11,12 +11,11 @@ function Separator({
       data-slot="separator"
       orientation={orientation}
       className={cn(
-        "bg-border shrink-0 data-horizontal:h-px data-horizontal:w-full data-vertical:h-full data-vertical:w-px",
+        "bg-border shrink-0",
+        orientation === "vertical" ? "h-full w-px" : "h-px w-full",
         className,
       )}
       {...props}
     />
   );
 }
-
-export { Separator };

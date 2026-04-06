@@ -1,5 +1,9 @@
-import { Toaster } from "@/core/components/ui/sonner";
-import { appMeta } from "@/core/constants/app";
+import { appMeta } from "@/config/app";
+import { GridPattern } from "@/core/components/ui/grid-pattern";
+import {
+  AnchoredToastProvider,
+  ToastProvider,
+} from "@/core/components/ui/toast";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils/helpers";
 import "@/styles/globals.css";
@@ -11,13 +15,6 @@ import z from "zod";
 import { id } from "zod/locales";
 
 z.config(id());
-
-const fontHeading = Geist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-heading",
-  weight: "600",
-});
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -48,15 +45,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={appMeta.lang} suppressHydrationWarning>
-      <body
-        className={cn(
-          fontHeading.variable,
-          fontSans.variable,
-          fontMono.variable,
-          "relative",
-        )}
-      >
+    <html lang={appMeta.defaultLanguage} suppressHydrationWarning>
+      <body className={cn(fontSans.variable, fontMono.variable, "relative")}>
         <NuqsAdapter>
           <ThemeProvider
             attribute="class"
@@ -64,15 +54,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             disableTransitionOnChange
             enableSystem
           >
-            {/* <GridPattern className="stroke-muted dark:stroke-muted/60 -z-10 min-h-dvh" /> */}
+            <ToastProvider>
+              <AnchoredToastProvider>
+                <main className="relative isolate flex min-h-svh flex-col">
+                  <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
+                  {children}
+                </main>
 
-            <div className="relative isolate flex min-h-svh flex-col">
-              {children}
-            </div>
-
-            <Toaster position="top-center" closeButton richColors />
-
-            <GlobalShortcuts />
+                <GlobalShortcuts />
+              </AnchoredToastProvider>
+            </ToastProvider>
           </ThemeProvider>
         </NuqsAdapter>
       </body>

@@ -4,8 +4,8 @@ import { useIsMobile } from "@/core/hooks/use-media-query";
 import { cn } from "@/core/utils/helpers";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { cva, type VariantProps } from "class-variance-authority";
+import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
+import { cva, VariantProps } from "class-variance-authority";
 import { SidebarCloseIcon, SidebarOpenIcon } from "lucide-react";
 import {
   createContext,
@@ -16,7 +16,7 @@ import {
 } from "react";
 import { Button, ButtonProps } from "./button";
 import { Input } from "./input";
-import { Kbd, KbdGroup } from "./kbd";
+import { Kbd } from "./kbd";
 import { Separator } from "./separator";
 import {
   Sheet,
@@ -26,7 +26,7 @@ import {
   SheetTitle,
 } from "./sheet";
 import { Skeleton } from "./skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -34,8 +34,7 @@ const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 
-export const SIDEBAR_TOGGLE_HOTKEY_CONTROL: Hotkey = "Control+B";
-export const SIDEBAR_TOGGLE_HOTKEY_ALT: Hotkey = "Alt+B";
+const SIDEBAR_TOGGLE_HOTKEYS: Hotkey[] = ["Control+B", "Alt+B"];
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed";
@@ -95,8 +94,12 @@ function SidebarProvider({
   );
 
   // Adds a keyboard shortcut to toggle the sidebar.
-  useHotkey(SIDEBAR_TOGGLE_HOTKEY_CONTROL, toggleSidebar);
-  useHotkey(SIDEBAR_TOGGLE_HOTKEY_ALT, toggleSidebar);
+  useHotkeys(
+    SIDEBAR_TOGGLE_HOTKEYS.map((k) => ({
+      hotkey: k,
+      callback: toggleSidebar,
+    })),
+  );
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
@@ -243,7 +246,7 @@ function SidebarToggle({
   className,
   onClick,
   ...props
-}: ButtonProps & Pick<React.ComponentProps<typeof TooltipContent>, "align">) {
+}: ButtonProps & Pick<React.ComponentProps<typeof TooltipPopup>, "align">) {
   const isMobile = useIsMobile();
   const { open, toggleSidebar } = useSidebar();
 
@@ -270,17 +273,10 @@ function SidebarToggle({
   return (
     <Tooltip>
       <TooltipTrigger render={element} />
-      <TooltipContent
-        align={align}
-        className="flex flex-col items-center gap-2"
-      >
+      <TooltipPopup align={align} className="flex flex-col items-center gap-2">
         <span>Toggle Sidebar</span>
-        <KbdGroup>
-          <Kbd>{formatForDisplay(SIDEBAR_TOGGLE_HOTKEY_CONTROL)}</Kbd>
-          <span>or</span>
-          <Kbd>{formatForDisplay(SIDEBAR_TOGGLE_HOTKEY_ALT)}</Kbd>
-        </KbdGroup>
-      </TooltipContent>
+        <Kbd>{formatForDisplay(SIDEBAR_TOGGLE_HOTKEYS[0])}</Kbd>
+      </TooltipPopup>
     </Tooltip>
   );
 }
@@ -310,9 +306,9 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   );
 }
 
-function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+function SidebarInset({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <main
+    <div
       data-slot="sidebar-inset"
       className={cn(
         "relative flex w-full flex-1 flex-col contain-inline-size",
@@ -478,18 +474,18 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
+  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground **:[svg]:size-4 **:[svg]:shrink-0 [&>span:last-child]:truncate",
   {
     variants: {
-      variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-        outline:
-          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
-      },
       size: {
         default: "h-8 text-sm",
         sm: "h-7 text-xs",
         lg: "h-12 text-sm group-data-[collapsible=icon]:p-0!",
+      },
+      variant: {
+        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        outline:
+          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },
     },
     defaultVariants: { variant: "default", size: "default" },
@@ -507,7 +503,7 @@ function SidebarMenuButton({
 }: useRender.ComponentProps<"button"> &
   React.ComponentProps<"button"> & {
     isActive?: boolean;
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+    tooltip?: string | React.ComponentProps<typeof TooltipPopup>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar();
   const comp = useRender({
@@ -533,7 +529,7 @@ function SidebarMenuButton({
   return (
     <Tooltip>
       {comp}
-      <TooltipContent
+      <TooltipPopup
         side="right"
         align="center"
         hidden={state !== "collapsed" || isMobile}

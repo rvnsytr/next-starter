@@ -9,7 +9,7 @@ export function useCopyToClipboard(config?: {
   const [isCopied, setIsCopied] = useState(false);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
-  const copyToClipboard = (value: string): void => {
+  const copy = (value: string): void => {
     if (
       typeof window === "undefined" ||
       !navigator?.clipboard.writeText ||
@@ -27,7 +27,7 @@ export function useCopyToClipboard(config?: {
         timeoutIdRef.current = setTimeout(() => {
           setIsCopied(false);
           timeoutIdRef.current = null;
-        }, config?.timeout);
+        }, config?.timeout ?? 1000);
       }
     }, console.error);
   };
@@ -38,5 +38,5 @@ export function useCopyToClipboard(config?: {
     };
   }, []);
 
-  return { copyToClipboard, isCopied };
+  return { copy, isCopied };
 }

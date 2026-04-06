@@ -21,7 +21,7 @@ export function AnimateOnView({
   return (
     <Comp
       viewport={{ once: true }}
-      initial={{ opacity: 0, x: initial?.x ?? 0, y: initial?.y ?? 25 }}
+      initial={{ opacity: 0, x: initial?.x ?? 0, y: initial?.y ?? 15 }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       transition={{ ease: "easeOut", delay: delay, duration }}
       className={className}

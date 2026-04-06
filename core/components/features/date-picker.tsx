@@ -1,3 +1,5 @@
+"use client";
+
 import {
   formatDate,
   formatDDMMYY,
@@ -13,16 +15,15 @@ import {
 } from "lucide-react";
 import { useEffect, useEffectEvent, useState } from "react";
 import { DateRange, PropsBase } from "react-day-picker";
-import { Button } from "./button";
-import { Calendar } from "./calendar";
-import { Input } from "./input";
+import { Button } from "../ui/button";
+import { Calendar } from "../ui/calendar";
+import { Input } from "../ui/input";
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
-} from "./input-group";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+} from "../ui/input-group";
+import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
 
 export type DatePickerBaseProps = Omit<PropsBase, "mode"> & {
   invalid?: boolean;
@@ -93,9 +94,9 @@ export function DatePicker({
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             render={
-              <InputGroupButton
+              <Button
                 size="icon-xs"
-                variant={invalid ? "outline-destructive" : "outline"}
+                variant={invalid ? "destructive-outline" : "outline"}
                 disabled={props.disabled === true}
                 className={cn(
                   !selected && "text-muted-foreground",
@@ -103,11 +104,11 @@ export function DatePicker({
                 )}
               >
                 <CalendarIcon />
-              </InputGroupButton>
+              </Button>
             }
           />
 
-          <PopoverContent align="end" sideOffset={12} className="size-fit p-0">
+          <PopoverPopup align="end" sideOffset={12} className="size-fit p-0">
             <Calendar
               mode="single"
               selected={selected}
@@ -115,7 +116,7 @@ export function DatePicker({
               defaultMonth={selected}
               {...props}
             />
-          </PopoverContent>
+          </PopoverPopup>
         </Popover>
       </InputGroupAddon>
     </InputGroup>
@@ -144,7 +145,7 @@ export function DateMultiPicker({
       <PopoverTrigger
         render={
           <Button
-            variant={invalid ? "outline-destructive" : "outline"}
+            variant={invalid ? "destructive-outline" : "outline"}
             disabled={props.disabled === true}
             className={cn(
               "justify-between",
@@ -157,9 +158,9 @@ export function DateMultiPicker({
         }
       />
 
-      <PopoverContent className="size-fit p-0">
+      <PopoverPopup className="size-fit p-0">
         <Calendar mode="multiple" selected={selected} {...props} />
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }
@@ -184,7 +185,7 @@ export function DateRangePicker({
       <PopoverTrigger
         render={
           <Button
-            variant={invalid ? "outline-destructive" : "outline"}
+            variant={invalid ? "destructive-outline" : "outline"}
             disabled={props.disabled === true}
             className={cn(
               "justify-between",
@@ -197,14 +198,14 @@ export function DateRangePicker({
         }
       />
 
-      <PopoverContent className="size-fit p-0">
+      <PopoverPopup className="size-fit p-0">
         <Calendar
           mode="range"
           numberOfMonths={2}
           selected={selected}
           {...props}
         />
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }

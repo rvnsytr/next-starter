@@ -6,6 +6,9 @@ import { motion } from "motion/react";
 type Variant =
   | "default"
   | "secondary"
+  | "success"
+  | "warning"
+  | "info"
   | "destructive"
   | "red"
   | "blue"
@@ -37,6 +40,9 @@ type ShimmerTextProps = {
 const variantMap: Record<Variant, string> = {
   default: "",
   secondary: "text-secondary-foreground",
+  success: "text-success dark:text-success-foreground",
+  warning: "text-warning dark:text-warning-foreground",
+  info: "text-info dark:text-info-foreground",
   destructive: "text-destructive dark:text-destructive-foreground",
   red: "text-red-600 dark:text-red-400",
   blue: "text-blue-600 dark:text-blue-400",

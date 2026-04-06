@@ -28,7 +28,6 @@ type TimelineChart = {
   data: { xLabel: string; dataKeys: Record<string, number> }[];
 };
 
-const radius = 8;
 const tickMargin = 10;
 const tickFormatter = (str: string) => str.slice(0, 3);
 
@@ -173,7 +172,7 @@ export function BarChart({
             key={item}
             dataKey={item}
             fill={`var(--color-${item})`}
-            radius={radius}
+            radius={8}
           >
             <LabelList className="fill-foreground" />
           </Bar>

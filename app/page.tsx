@@ -1,151 +1,1427 @@
-import { Button } from "@/core/components/ui/button";
+// export const metadata: Metadata = { title: "Current Page" };
+
+// export default function Page() {
+//   return (
+//     <div>Page</div>
+//   )
+// }
+
+import {
+  CommandPaletteGroup,
+  QuickSearch,
+} from "@/core/components/features/quick-search";
+import { FooterNote } from "@/core/components/layout/footer-note";
+import { PageTitle } from "@/core/components/layout/page";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/core/components/ui/accordion";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/core/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/core/components/ui/alert-dialog";
+import { AnimateOnView } from "@/core/components/ui/animate-on-view";
+import {
+  Badge,
+  CustomColorBadge,
+  GenderBadge,
+} from "@/core/components/ui/badge";
+import { BoxReveal } from "@/core/components/ui/box-reveal";
+import {
+  Button,
+  CopyButton,
+  PulsatingButton,
+  RefreshButton,
+  ResetButton,
+  ScrollToTopButton,
+} from "@/core/components/ui/button";
+import { ButtonGroup } from "@/core/components/ui/button-group";
 import {
   Card,
+  CardAction,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
-import { AreaChart, BarChart, PieChart } from "@/core/components/ui/charts";
-import { R } from "@/core/components/ui/r";
-import { ScrollArea, ScrollBar } from "@/core/components/ui/scroll-area";
-import { LinkSpinner } from "@/core/components/ui/spinner";
+import { Checkbox } from "@/core/components/ui/checkbox";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/core/components/ui/tabs";
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+} from "@/core/components/ui/collapsible";
+import { DetailList } from "@/core/components/ui/detail-list";
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+  DialogTrigger,
+} from "@/core/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerPopup,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/core/components/ui/drawer";
+import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldTitle,
+} from "@/core/components/ui/field";
+import { Input } from "@/core/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/core/components/ui/input-group";
+import { Label } from "@/core/components/ui/label";
+import {
+  Menu,
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuPopup,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuShortcut,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+  MenuTrigger,
+} from "@/core/components/ui/menu";
+import { Ping } from "@/core/components/ui/ping";
+import {
+  Popover,
+  PopoverDescription,
+  PopoverPopup,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/core/components/ui/popover";
+import { R } from "@/core/components/ui/r";
+import { Scales, ScalesWrapper } from "@/core/components/ui/scales";
+import { Scrollspy } from "@/core/components/ui/scroll-spy";
+import {
+  Select,
+  SelectGroup,
+  SelectGroupLabel,
+  SelectItem,
+  SelectPopup,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/components/ui/select";
+import { Separator } from "@/core/components/ui/separator";
+import { LinkSpinner } from "@/core/components/ui/spinner";
+import { Textarea } from "@/core/components/ui/textarea";
 import { ThemeToggle } from "@/core/components/ui/theme";
-import { ExampleTypography } from "@/modules/docs/components";
-import { ExampleForm } from "@/modules/docs/components.client";
-import { ArrowRightIcon } from "lucide-react";
+import { toCase } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
+import { DocsContentWrapper, DocsSection } from "@/modules/docs/components";
+import {
+  AutocompleteExample,
+  ComboboxExample,
+  ToastExample,
+} from "@/modules/docs/components.client";
+import { Docs } from "@/modules/docs/constants";
+import { formatForDisplay } from "@tanstack/react-hotkeys";
+import {
+  ArrowRightIcon,
+  BellIcon,
+  CheckIcon,
+  ChevronsUpDownIcon,
+  CircleDotIcon,
+  CircleFadingArrowUpIcon,
+  DotIcon,
+  Layers2Icon,
+  LayoutGridIcon,
+  LogInIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+  SearchIcon,
+  SendIcon,
+  ShapesIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  SquareSquareIcon,
+  TrashIcon,
+  TriangleAlertIcon,
+  UserRoundIcon,
+  WandSparklesIcon,
+  WebhookIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
 
-// export const metadata: Metadata = { title: "Current Page" };
+const docs: Docs[] = [
+  {
+    icon: SquareSquareIcon,
+    section: "Core",
+    content: [
+      {
+        type: "docs",
+        label: "Data Controller",
+        refs: [{ url: "/#featured-components-data-controller" }],
+      },
+      { type: "docs", label: "Data Filter" },
+      { type: "docs", label: "Fetcher" },
+      { type: "docs", label: "Storage" },
+    ],
+  },
 
-const pieChartData = [
-  { nameKey: "Chrome", dataKey: 275, fill: "var(--color-chart-1)" },
-  { nameKey: "Safari", dataKey: 200, fill: "var(--color-chart-2)" },
-  { nameKey: "Firefox", dataKey: 187, fill: "var(--color-chart-3)" },
-  { nameKey: "Edge", dataKey: 173, fill: "var(--color-chart-4)" },
-  { nameKey: "Other", dataKey: 90, fill: "var(--color-chart-5)" },
-];
+  {
+    icon: WebhookIcon,
+    section: "Core Hooks",
+    content: [
+      { type: "docs", label: "use-copy-to-clipboard", refs: ["cosshooks"] },
+      { type: "docs", label: "use-debounce" },
+      {
+        type: "docs",
+        label: "use-file-upload",
+        refs: [
+          {
+            label: "REUI Hooks",
+            url: "https://reui.io/docs/components/base/file-upload",
+          },
+        ],
+      },
+      { type: "docs", label: "use-is-mounted" },
+      { type: "docs", label: "use-media-query", refs: ["cosshooks"] },
+      { type: "docs", label: "use-validated-swr" },
+    ],
+  },
 
-const areaAndPieChartData = [
-  { xLabel: "Januari", dataKeys: { key1: 186, key2: 80 } },
-  { xLabel: "Februari", dataKeys: { key1: 305, key2: 200 } },
-  { xLabel: "Maret", dataKeys: { key1: 237, key2: 120 } },
-  { xLabel: "April", dataKeys: { key1: 73, key2: 190 } },
-  { xLabel: "Mei", dataKeys: { key1: 209, key2: 130 } },
-  { xLabel: "Juni", dataKeys: { key1: 214, key2: 140 } },
-];
+  {
+    icon: CircleFadingArrowUpIcon,
+    section: "Featured Components",
+    content: [
+      {
+        type: "comp",
+        label: "Data Controller",
+        variants: [{ label: "Data Table", render: "To Do" }],
+        refs: [{ url: "/#core-data-controller" }],
+      },
+      { type: "comp", label: "Date Picker" },
+      {
+        type: "comp",
+        label: "Dynamic Breadcrumb",
+        refs: [{ url: "/#components-breadcrumb" }],
+      },
+      { type: "comp", label: "File Upload" },
+      { type: "comp", label: "Import Dialog" },
+      { type: "comp", label: "Password Input" },
+      { type: "comp", label: "Scroll Spy" },
+      {
+        type: "comp",
+        label: "Quick Search",
+        render: <small>Navbar Quick Search (Desktop Only)</small>,
+        refs: [{ url: "/#components-command" }],
+      },
+    ],
+  },
 
-const areaAndPieChartConfig = {
-  key1: { label: "Desktop", color: "var(--color-chart-1)" },
-  key2: { label: "Mobile", color: "var(--color-chart-2)" },
-};
-
-const comp = {
-  pieChart: (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pie Chart</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mx-auto aspect-square h-80">
-          <PieChart label="Kategori" data={pieChartData} />
-        </div>
-      </CardContent>
-    </Card>
-  ),
-
-  timelineChart: (
-    <Card>
-      <CardHeader>
-        <CardTitle>Timeline Chart</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 md:flex-row">
-        <div className="md:basis-1/2">
-          <AreaChart
-            config={areaAndPieChartConfig}
-            data={areaAndPieChartData}
+  {
+    icon: LayoutGridIcon,
+    section: "Layout Components",
+    content: [
+      { type: "comp", label: "Page" },
+      {
+        type: "comp",
+        label: "Footer Note",
+        render: <small>At the bottom of this page.</small>,
+      },
+      {
+        type: "comp",
+        label: "Sidebar",
+        refs: ["shadcnui"],
+        render: (
+          <Button
+            size="sm"
+            variant="link"
+            render={
+              <Link href="/dashboard">
+                Go to Dashboard
+                <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
+              </Link>
+            }
           />
-        </div>
+        ),
+      },
+    ],
+  },
 
-        <div className="md:basis-1/2">
-          <BarChart config={areaAndPieChartConfig} data={areaAndPieChartData} />
-        </div>
-      </CardContent>
-    </Card>
-  ),
+  {
+    icon: CircleDotIcon,
+    section: "Components",
+    content: [
+      {
+        type: "comp",
+        label: "Accordion",
+        refs: ["cossui"],
+        render: (
+          <Accordion className="max-w-lg">
+            <AccordionItem value="shipping">
+              <AccordionTrigger>
+                What are your shipping options?
+              </AccordionTrigger>
+              <AccordionPanel>
+                We offer standard (5-7 days), express (2-3 days), and overnight
+                shipping. Free shipping on international orders.
+              </AccordionPanel>
+            </AccordionItem>
+            <AccordionItem value="returns">
+              <AccordionTrigger>What is your return policy?</AccordionTrigger>
+              <AccordionPanel>
+                Returns accepted within 30 days. Items must be unused and in
+                original packaging. Refunds processed within 5-7 business days.
+              </AccordionPanel>
+            </AccordionItem>
+            <AccordionItem value="support">
+              <AccordionTrigger>
+                How can I contact customer support?
+              </AccordionTrigger>
+              <AccordionPanel>
+                Reach us via email, live chat, or phone. We respond within 24
+                hours during business days.
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Alert",
+        refs: ["cossui"],
+        render: (
+          <div className="grid w-full max-w-md items-start gap-4">
+            <Alert>
+              <CheckIcon />
+              <AlertTitle>Payment successful</AlertTitle>
+              <AlertDescription>
+                Your payment of $29.99 has been processed. A receipt has been
+                sent to your email address.
+              </AlertDescription>
+            </Alert>
 
-  form: (
-    <Card>
-      <CardContent>
-        <ExampleForm />
-      </CardContent>
-    </Card>
-  ),
+            <Alert variant="destructive">
+              <TriangleAlertIcon />
+              <AlertTitle>New feature available</AlertTitle>
+              <AlertDescription>
+                We&apos;ve added dark mode support. You can enable it in your
+                account settings.
+              </AlertDescription>
+            </Alert>
+          </div>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Alert Dialog",
+        refs: ["cossui"],
+        render: (
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={<Button variant="destructive-outline" />}
+            >
+              Delete Account
+            </AlertDialogTrigger>
+            <AlertDialogPopup>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  <TriangleAlertIcon /> Are you absolutely sure?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogClose render={<Button variant="ghost" />}>
+                  Cancel
+                </AlertDialogClose>
+                <AlertDialogClose render={<Button variant="destructive" />}>
+                  Delete Account
+                </AlertDialogClose>
+              </AlertDialogFooter>
+            </AlertDialogPopup>
+          </AlertDialog>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Autocomplete",
+        refs: ["cossui"],
+        render: (
+          <>
+            <div className="flex w-full max-w-lg gap-2">
+              <AutocompleteExample size="sm" />
+              <Button size="icon-sm">
+                <SendIcon />
+              </Button>
+            </div>
+            <div className="flex w-full max-w-lg gap-2">
+              <AutocompleteExample />
+              <Button size="icon">
+                <SendIcon />
+              </Button>
+            </div>
+            <div className="flex w-full max-w-lg gap-2">
+              <AutocompleteExample size="lg" />
+              <Button size="icon-lg">
+                <SendIcon />
+              </Button>
+            </div>
+          </>
+        ),
+      },
+      { type: "comp", label: "Avatar", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Badge",
+        refs: ["shadcnui"],
+        render: (
+          <div className="flex flex-col items-center gap-y-2 *:flex *:flex-wrap *:items-center *:justify-center *:gap-2 **:capitalize">
+            <div>
+              <Badge variant="outline">
+                <CheckIcon /> verified
+              </Badge>
+              <Badge variant="outline" className="aspect-square">
+                1
+              </Badge>
+              <Badge variant="link" render={<Link href="/">With Link</Link>} />
+            </div>
 
-  typography: <ExampleTypography />,
-};
+            <Separator className="my-1" />
 
-const tabs: { section: string; content?: (keyof typeof comp)[] }[] = [
-  { section: "Form", content: ["form"] },
-  { section: "Typography", content: ["typography"] },
-  { section: "Chart", content: ["pieChart", "timelineChart"] },
-  { section: "Event Calendar" },
-  { section: "Form Builder" },
+            <div>
+              <Badge>Default</Badge>
+              <Badge variant="secondary">secondary</Badge>
+              <Badge variant="outline">outline</Badge>
+              <Badge variant="ghost">ghost</Badge>
+              <Badge variant="link">link</Badge>
+            </div>
+
+            <div>
+              <Badge variant="success">success</Badge>
+              <Badge variant="warning">warning</Badge>
+              <Badge variant="info">info</Badge>
+              <Badge variant="destructive">destructive</Badge>
+            </div>
+          </div>
+        ),
+        variants: [
+          {
+            label: "Custom Color Badge",
+            render: (
+              <div className="flex flex-wrap justify-center gap-2">
+                <CustomColorBadge color="var(--color-muted-foreground)">
+                  Muted Foreground
+                </CustomColorBadge>
+
+                <CustomColorBadge color="orange">Orange</CustomColorBadge>
+
+                <CustomColorBadge color="black" darkColor="white">
+                  Black and White
+                </CustomColorBadge>
+              </div>
+            ),
+          },
+          {
+            label: "GenderBadge",
+            render: (
+              <div className="flex flex-wrap justify-center gap-2">
+                <GenderBadge value="m" />
+                <GenderBadge value="f" />
+              </div>
+            ),
+          },
+        ],
+      },
+      { type: "comp", label: "Breadcrumb", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Button",
+        refs: ["shadcnui", "cossui"],
+        render: (
+          <div className="flex flex-col items-center gap-y-2 *:flex *:flex-wrap *:items-center *:justify-center *:gap-2 **:capitalize">
+            <div>
+              <Button variant="default">default</Button>
+              <Button variant="secondary">secondary</Button>
+              <Button variant="outline">outline</Button>
+              <Button variant="ghost">ghost</Button>
+              <Button variant="link">link</Button>
+            </div>
+
+            <div>
+              <Button variant="success">success</Button>
+              <Button variant="success-soft">success</Button>
+              <Button variant="success-outline">success</Button>
+              <Button variant="success-ghost">success</Button>
+            </div>
+
+            <div>
+              <Button variant="warning">warning</Button>
+              <Button variant="warning-soft">warning</Button>
+              <Button variant="warning-outline">warning</Button>
+              <Button variant="warning-ghost">warning</Button>
+            </div>
+
+            <div>
+              <Button variant="info">info</Button>
+              <Button variant="info-soft">info</Button>
+              <Button variant="info-outline">info</Button>
+              <Button variant="info-ghost">info</Button>
+            </div>
+
+            <div>
+              <Button variant="destructive">destructive</Button>
+              <Button variant="destructive-soft">destructive</Button>
+              <Button variant="destructive-outline">destructive</Button>
+              <Button variant="destructive-ghost">destructive</Button>
+            </div>
+          </div>
+        ),
+        variants: [
+          { label: "Copy Button", render: <CopyButton value="Next Starter" /> },
+          {
+            label: "Pulsating Button",
+            render: (
+              <PulsatingButton href="/">Pulsating Button</PulsatingButton>
+            ),
+          },
+          { label: "Refresh Button", render: <RefreshButton /> },
+          { label: "Reset Button", render: <ResetButton /> },
+          {
+            label: "Scroll To Top Button",
+            render: <small>In the bottom right corner of the screen.</small>,
+          },
+        ],
+      },
+      {
+        type: "comp",
+        label: "Button Group",
+        refs: ["shadcnui"],
+        render: (
+          <>
+            <ButtonGroup>
+              <Button variant="outline">Button 1</Button>
+              <Button variant="outline">Button 2</Button>
+            </ButtonGroup>
+          </>
+        ),
+      },
+      { type: "comp", label: "Calendar", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Card",
+        refs: ["shadcnui"],
+        render: (
+          <Card className="w-full max-w-sm">
+            <CardHeader>
+              <CardTitle>
+                <LogInIcon /> Login to your account
+              </CardTitle>
+              <CardDescription>
+                Enter your email below to login to your account
+              </CardDescription>
+              <CardAction>
+                <Button variant="link">Sign Up</Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
+              <form>
+                <div className="flex flex-col gap-6">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <div className="flex items-center">
+                      <Label htmlFor="password">Password</Label>
+                      <a
+                        href="#"
+                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    </div>
+                    <Input id="password" type="password" required />
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter className="flex-col gap-2">
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+              <Button variant="outline" className="w-full">
+                Login with Google
+              </Button>
+            </CardFooter>
+          </Card>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Chart",
+        refs: ["shadcnui"],
+        render: "To Do",
+        variants: [
+          { label: "Area Chart", render: "-x-" },
+          { label: "Bar Chart", render: "-x-" },
+          { label: "Pie Chart", render: "-x-" },
+        ],
+      },
+      {
+        type: "comp",
+        label: "Checkbox",
+        refs: ["shadcnui"],
+        render: (
+          <FieldGroup className="max-w-sm">
+            <Field orientation="horizontal">
+              <Checkbox id="terms-checkbox" name="terms-checkbox" />
+              <Label htmlFor="terms-checkbox">
+                Accept terms and conditions
+              </Label>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
+                id="terms-checkbox-2"
+                name="terms-checkbox-2"
+                defaultChecked
+              />
+              <FieldContent>
+                <FieldLabel htmlFor="terms-checkbox-2">
+                  Accept terms and conditions
+                </FieldLabel>
+                <FieldDescription>
+                  By clicking this checkbox, you agree to the terms.
+                </FieldDescription>
+              </FieldContent>
+            </Field>
+            <Field orientation="horizontal" data-disabled>
+              <Checkbox id="toggle-checkbox" name="toggle-checkbox" disabled />
+              <FieldLabel htmlFor="toggle-checkbox">
+                Enable notifications
+              </FieldLabel>
+            </Field>
+            <FieldLabel>
+              <Field orientation="horizontal">
+                <Checkbox id="toggle-checkbox-2" name="toggle-checkbox-2" />
+                <FieldContent>
+                  <FieldTitle>Enable notifications</FieldTitle>
+                  <FieldDescription>
+                    You can enable or disable notifications at any time.
+                  </FieldDescription>
+                </FieldContent>
+              </Field>
+            </FieldLabel>
+          </FieldGroup>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Collapsible",
+        refs: ["cossui"],
+        render: (
+          <Collapsible className="flex w-87.5 flex-col gap-2">
+            <div className="flex items-center justify-between gap-4">
+              <h4 className="text-sm font-semibold">Order #4189</h4>
+              <CollapsibleTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="size-8">
+                    <ChevronsUpDownIcon />
+                    <span className="sr-only">Toggle details</span>
+                  </Button>
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between rounded-md border px-4 py-2 text-sm">
+              <span className="text-muted-foreground">Status</span>
+              <span className="font-medium">Shipped</span>
+            </div>
+            <CollapsiblePanel className="flex flex-col gap-2">
+              <div className="rounded-md border px-4 py-2 text-sm">
+                <p className="font-medium">Shipping address</p>
+                <p className="text-muted-foreground">
+                  100 Market St, San Francisco
+                </p>
+              </div>
+              <div className="rounded-md border px-4 py-2 text-sm">
+                <p className="font-medium">Items</p>
+                <p className="text-muted-foreground">2x Studio Headphones</p>
+              </div>
+            </CollapsiblePanel>
+          </Collapsible>
+        ),
+      },
+      { type: "comp", label: "Column" },
+      {
+        type: "comp",
+        label: "Combobox",
+        refs: ["cossui"],
+        render: (
+          <div className="w-full max-w-lg">
+            <ComboboxExample />
+          </div>
+        ),
+      },
+      { type: "comp", label: "Command", refs: ["cossui"] },
+      {
+        type: "comp",
+        label: "Detail List",
+        render: (
+          <div className="grid w-full max-w-sm gap-y-4">
+            <DetailList
+              data={[
+                { label: "Email", content: "example@example.ex" },
+                {
+                  label: "Status",
+                  content: (
+                    <Badge variant="outline" className="relative">
+                      <div className="bg-success size-2 rounded-full" /> Active
+                    </Badge>
+                  ),
+                },
+                {
+                  label: "Time",
+                  content: [
+                    { label: "Updated At" },
+                    { label: "Created At", content: "3 days ago." },
+                  ],
+                },
+              ]}
+            />
+          </div>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Dialog",
+        refs: ["cossui"],
+        render: (
+          <Dialog>
+            <form className="w-fit">
+              <DialogTrigger render={<Button variant="outline" />}>
+                Open Dialog
+              </DialogTrigger>
+              <DialogPopup>
+                <DialogHeader>
+                  <DialogTitle>
+                    <UserRoundIcon /> Edit profile
+                  </DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when
+                    you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogPanel>
+                  <FieldGroup>
+                    <Field>
+                      <Label htmlFor="name-1">Name</Label>
+                      <Input
+                        id="name-1"
+                        name="name"
+                        defaultValue="Pedro Duarte"
+                      />
+                    </Field>
+                    <Field>
+                      <Label htmlFor="username-1">Username</Label>
+                      <Input
+                        id="username-1"
+                        name="username"
+                        defaultValue="@peduarte"
+                      />
+                    </Field>
+                  </FieldGroup>
+                </DialogPanel>
+                <DialogFooter>
+                  <DialogClose
+                    render={<Button variant="outline">Cancel</Button>}
+                  />
+                  <Button type="submit">Save changes</Button>
+                </DialogFooter>
+              </DialogPopup>
+            </form>
+          </Dialog>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Drawer",
+        refs: ["cossui"],
+        render: (
+          <Drawer>
+            <DrawerTrigger render={<Button variant="outline" />}>
+              Open drawer
+            </DrawerTrigger>
+            <DrawerPopup showBar>
+              <DrawerHeader className="text-center">
+                <DrawerTitle>
+                  <BellIcon /> Notifications
+                </DrawerTitle>
+                <DrawerDescription>
+                  This is the description of the drawer.
+                </DrawerDescription>
+              </DrawerHeader>
+              <DrawerFooter className="justify-center sm:justify-center">
+                <DrawerClose render={<Button variant="outline" />}>
+                  Close
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerPopup>
+          </Drawer>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Empty",
+        refs: ["shadcnui", "cossui"],
+        render: (
+          <Button
+            size="icon-sm"
+            variant="link"
+            render={
+              <Link href="/404">
+                See <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
+              </Link>
+            }
+          />
+        ),
+      },
+      {
+        type: "comp",
+        label: "Fallback",
+        refs: [{ url: "/#components-alert" }],
+        render: (
+          <>
+            <LoadingFallback className="h-24 w-full max-w-lg border" />
+
+            <ErrorFallback
+              error={JSON.stringify(
+                {
+                  success: false,
+                  message: "Something is wrong!",
+                },
+                null,
+                2,
+              )}
+              className="w-full max-w-lg"
+            />
+          </>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Field",
+        refs: ["shadcnui"],
+        variants: [{ label: "Field Wrapper", render: "-x-" }],
+      },
+      {
+        type: "comp",
+        label: "Input",
+        refs: ["cossui"],
+        render: (
+          <>
+            <div className="flex gap-2">
+              <Input size="sm" placeholder="Enter " />
+              <Button size="icon-sm">
+                <SendIcon />
+              </Button>
+            </div>
+
+            <div className="flex gap-2">
+              <Input placeholder="Enter " />
+              <Button size="icon">
+                <SendIcon />
+              </Button>
+            </div>
+
+            <div className="flex gap-2">
+              <Input size="lg" placeholder="Enter " />
+              <Button size="icon-lg">
+                <SendIcon />
+              </Button>
+            </div>
+          </>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Input Group",
+        refs: ["cossui"],
+        render: (
+          <>
+            <div className="w-full max-w-sm">
+              <InputGroup>
+                <InputGroupInput size="sm" placeholder="Search..." />
+                <InputGroupAddon>
+                  <SearchIcon />
+                </InputGroupAddon>
+                <InputGroupAddon align="inline-end">
+                  <Button size="icon-xs" variant="outline">
+                    <ChevronsUpDownIcon />
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+            </div>
+
+            <div className="w-full max-w-sm">
+              <InputGroup>
+                <InputGroupInput placeholder="Search..." />
+                <InputGroupAddon>
+                  <SearchIcon />
+                </InputGroupAddon>
+                <InputGroupAddon align="inline-end">
+                  <Badge variant="outline">
+                    <ChevronsUpDownIcon />
+                  </Badge>
+                </InputGroupAddon>
+              </InputGroup>
+            </div>
+          </>
+        ),
+      },
+      { type: "comp", label: "Item", refs: ["shadcnui"] },
+      { type: "comp", label: "Kbd", refs: ["cossui"] },
+      { type: "comp", label: "Label", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Menu",
+        refs: ["cossui"],
+        render: (
+          <Menu>
+            <MenuTrigger render={<Button variant="outline" />}>
+              Open menu
+            </MenuTrigger>
+            <MenuPopup>
+              <MenuGroup>
+                <MenuGroupLabel>Playback</MenuGroupLabel>
+                <MenuItem>
+                  <PlayIcon /> Play
+                  <MenuShortcut>⌘P</MenuShortcut>
+                </MenuItem>
+                <MenuItem disabled>
+                  <PauseIcon /> Pause
+                  <MenuShortcut>⇧⌘P</MenuShortcut>
+                </MenuItem>
+                <MenuItem>
+                  <SkipBackIcon /> Previous
+                  <MenuShortcut>⌘[</MenuShortcut>
+                </MenuItem>
+                <MenuItem>
+                  <SkipForwardIcon /> Next
+                  <MenuShortcut>⌘]</MenuShortcut>
+                </MenuItem>
+              </MenuGroup>
+              <MenuSeparator />
+              <MenuCheckboxItem>Shuffle</MenuCheckboxItem>
+              <MenuCheckboxItem>Repeat</MenuCheckboxItem>
+              <MenuCheckboxItem disabled>Enhanced Audio</MenuCheckboxItem>
+              <MenuSeparator />
+              <MenuGroup>
+                <MenuGroupLabel>Sort by</MenuGroupLabel>
+                <MenuRadioGroup>
+                  <MenuRadioItem value="artist">Artist</MenuRadioItem>
+                  <MenuRadioItem value="album">Album</MenuRadioItem>
+                  <MenuRadioItem value="title">Title</MenuRadioItem>
+                </MenuRadioGroup>
+              </MenuGroup>
+              <MenuSeparator />
+              <MenuCheckboxItem variant="switch">Auto save</MenuCheckboxItem>
+              <MenuSeparator />
+              <MenuSub>
+                <MenuSubTrigger>Add to Playlist</MenuSubTrigger>
+                <MenuSubPopup>
+                  <MenuItem>Jazz</MenuItem>
+                  <MenuSub>
+                    <MenuSubTrigger>Rock</MenuSubTrigger>
+                    <MenuSubPopup>
+                      <MenuItem>Hard Rock</MenuItem>
+                      <MenuItem>Soft Rock</MenuItem>
+                      <MenuItem>Classic Rock</MenuItem>
+                      <MenuSeparator />
+                      <MenuItem>Metal</MenuItem>
+                      <MenuItem>Punk</MenuItem>
+                      <MenuItem>Grunge</MenuItem>
+                      <MenuItem>Alternative</MenuItem>
+                      <MenuItem>Indie</MenuItem>
+                      <MenuItem>Electronic</MenuItem>
+                    </MenuSubPopup>
+                  </MenuSub>
+                  <MenuItem>Pop</MenuItem>
+                </MenuSubPopup>
+              </MenuSub>
+              <MenuSeparator />
+              <MenuItem variant="destructive">
+                <TrashIcon /> Delete
+                <MenuShortcut>
+                  {formatForDisplay("Control+Delete")}
+                </MenuShortcut>
+              </MenuItem>
+            </MenuPopup>
+          </Menu>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Popover",
+        refs: ["cossui"],
+        render: (
+          <Popover>
+            <PopoverTrigger render={<Button variant="outline" />}>
+              Open Popover
+            </PopoverTrigger>
+            <PopoverPopup>
+              <div className="mb-4">
+                <PopoverTitle className="text-base">
+                  Send us feedback
+                </PopoverTitle>
+                <PopoverDescription>
+                  Let us know how we can improve.
+                </PopoverDescription>
+              </div>
+              <form>
+                <Field>
+                  <Textarea
+                    aria-label="Send feedback"
+                    id="feedback"
+                    placeholder="How can we improve?"
+                  />
+                </Field>
+                <Button type="submit">Send feedback</Button>
+              </form>
+            </PopoverPopup>
+          </Popover>
+        ),
+      },
+      { type: "comp", label: "Progress", refs: ["shadcnui"] },
+      { type: "comp", label: "Radio Group", refs: ["shadcnui"] },
+      { type: "comp", label: "Scroll Area", refs: ["cossui"] },
+      {
+        type: "comp",
+        label: "Select",
+        refs: ["cossui"],
+        render: () => {
+          const frontend = [
+            { label: "Next.js", value: "next" },
+            { label: "Vite", value: "vite" },
+            { label: "Astro", value: "astro" },
+          ];
+
+          const backend = [
+            { label: "Express", value: "express" },
+            { label: "NestJS", value: "nestjs" },
+            { label: "Fastify", value: "fastify" },
+            { label: "Django", value: "django" },
+            { label: "Flask", value: "flask" },
+            { label: "Rails", value: "rails" },
+          ];
+
+          return (
+            <div className="w-full max-w-sm">
+              <Select
+                aria-label="Select framework"
+                items={[...frontend, ...backend]}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select framework" />
+                </SelectTrigger>
+                <SelectPopup>
+                  <SelectGroup>
+                    <SelectGroupLabel>Frontend</SelectGroupLabel>
+                    {frontend.map(({ label, value }) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectGroupLabel>Backend</SelectGroupLabel>
+                    {backend.map(({ label, value }) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectPopup>
+              </Select>
+            </div>
+          );
+        },
+      },
+      { type: "comp", label: "Separator", refs: ["shadcnui"] },
+      { type: "comp", label: "Skeleton", refs: ["cossui"] },
+      { type: "comp", label: "Slider", refs: ["cossui"] },
+      { type: "comp", label: "Spinner" },
+      { type: "comp", label: "Stepper", refs: ["reui"], render: "To Do" },
+      { type: "comp", label: "Switch", refs: ["shadcnui"] },
+      { type: "comp", label: "Table", refs: ["shadcnui"] },
+      { type: "comp", label: "Tabs", refs: ["cossui"] },
+      {
+        type: "comp",
+        label: "Textarea",
+        refs: ["cossui"],
+        render: (
+          <div className="w-full max-w-sm">
+            <Textarea placeholder="Type your message here" />
+          </div>
+        ),
+      },
+      { type: "comp", label: "Timeline", refs: ["reui"], render: "To Do" },
+      {
+        type: "comp",
+        label: "Toast",
+        refs: ["cossui"],
+        render: <ToastExample />,
+      },
+      { type: "comp", label: "Toggle", refs: ["shadcnui"] },
+      { type: "comp", label: "Toggle Group", refs: ["shadcnui"] },
+      { type: "comp", label: "Tooltip", refs: ["cossui"] },
+    ],
+  },
+
+  {
+    icon: Layers2Icon,
+    section: "Providers",
+    content: [
+      { type: "comp", label: "Dynamic Breadcrumb" },
+      { type: "comp", label: "Global Shortcuts" },
+      { type: "comp", label: "Layout" },
+      { type: "comp", label: "Theme" },
+    ],
+  },
+
+  {
+    icon: WandSparklesIcon,
+    section: "Effects",
+    content: [
+      {
+        type: "comp",
+        label: "Animate On View",
+        render: (
+          <>
+            <AnimateOnView>From Bottom</AnimateOnView>
+
+            <AnimateOnView initial={{ x: 0, y: -15 }} delay={0.5}>
+              From Top
+            </AnimateOnView>
+
+            <AnimateOnView initial={{ x: 15, y: 0 }} delay={0.75}>
+              From Right
+            </AnimateOnView>
+
+            <AnimateOnView initial={{ x: -15, y: 0 }} delay={1}>
+              From Left
+            </AnimateOnView>
+          </>
+        ),
+      },
+      { type: "comp", label: "Blur Fade", refs: ["magicui"] },
+      {
+        type: "comp",
+        label: "Box Reveal",
+        refs: ["magicui"],
+        render: (
+          <BoxReveal>
+            <h1>Hello World</h1>
+          </BoxReveal>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Ping",
+        render: (
+          <div className="relative aspect-square size-8 border">
+            <Ping />
+          </div>
+        ),
+      },
+      { type: "comp", label: "Shimmer Text", refs: ["spellui"] },
+      { type: "comp", label: "Shine Border", refs: ["magicui"] },
+      { type: "comp", label: "Sticky Banner", refs: ["aceternityui"] },
+      {
+        type: "comp",
+        label: "Text Morph",
+        refs: [{ type: "external", url: "https://torph.lochie.me" }],
+      },
+    ],
+  },
+
+  {
+    icon: ShapesIcon,
+    section: "Backgrounds",
+    content: [
+      { type: "comp", label: "Grid Pattern", refs: ["magicui"] },
+      { type: "comp", label: "Scales", refs: ["aceternityui"] },
+    ],
+  },
 ];
+
+const homeContentItems: CommandPaletteGroup[] = docs.map((d) => {
+  return {
+    group: d.section,
+    items: d.content
+      .flatMap((c) => {
+        if (c.label) {
+          if (c.type === "text") console.log(c);
+          const id = toCase(`${d.section}-${c.label}`, "kebab");
+          const subContent =
+            c.type === "comp" && !!c.variants?.length
+              ? c.variants?.map((sc) => ({
+                  label: sc.label,
+                  value: `/#${toCase(`${id}-${sc.label}`, "kebab")}`,
+                  icon: <DotIcon />,
+                }))
+              : null;
+
+          const base = { label: c.label, value: `/#${id}` };
+          return subContent ? [base, ...subContent] : [base];
+        }
+
+        return null;
+      })
+      .filter((v) => !!v),
+  };
+});
 
 export default function Page() {
   return (
-    <div className="container flex flex-col gap-y-8 py-8 md:py-16">
-      <div className="flex flex-col items-center gap-y-4">
-        <R />
+    <div className="relative [--header-height:48px]">
+      <ScrollToTopButton />
 
-        <div className="animate-fade flex flex-wrap gap-2 delay-750">
-          <ThemeToggle variant="outline" />
-
-          <Button variant="outline" asChild>
-            <Link href="/dashboard">
-              Ke Dashboard <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      <Tabs
-        defaultValue={tabs[0].section}
-        className="animate-fade w-full flex-col gap-x-4 delay-1000 md:flex-row"
+      {/* Header */}
+      <DocsSection
+        containerClassName="fixed top-0 z-10 backdrop-blur-md"
+        className="flex h-(--header-height) items-center justify-between gap-x-2 px-4"
+        withIcon
       >
-        <ScrollArea className="pb-2">
-          <TabsList variant="line">
-            {tabs.map(({ section }) => (
-              <TabsTrigger key={section} value={section}>
-                {section}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        <div className="flex items-center gap-x-2">
+          {/* <Button size="icon-sm" variants="ghost" className="flex md:hidden">
+            <SidebarOpenIcon />
+          </Button> */}
 
-        <div className="w-full">
-          {tabs.map(({ section, content }) => (
-            <TabsContent key={section} value={section} className="grid gap-y-4">
-              <h3>{section}</h3>
-              {content ? (
-                content.map((key, index) => (
-                  <Fragment key={index}>{comp[key]}</Fragment>
-                ))
-              ) : (
-                <p>TODO</p>
-              )}
-            </TabsContent>
-          ))}
+          <PageTitle className="font-mono text-sm tracking-tight">
+            <Link href="/">Next Starter - RvnS</Link>
+          </PageTitle>
         </div>
-      </Tabs>
+
+        <div className="flex items-center gap-x-2">
+          <QuickSearch
+            type="group"
+            data={homeContentItems}
+            shortcuts={["Control+K", "Meta+K"]}
+          />
+
+          <Button size="sm" render={<Link href="/dashboard">Dashboard</Link>} />
+
+          <Separator orientation="vertical" className="h-4" />
+
+          <ThemeToggle align="end" size="icon-sm" />
+        </div>
+      </DocsSection>
+
+      <DocsSection className="relative z-0 mt-(--header-height) flex md:border-0">
+        {/* Sidebar */}
+        <Scrollspy
+          offset={48}
+          className="sticky top-(--header-height) hidden h-[calc(100svh-var(--header-height))] basis-1/4 flex-col gap-y-8 overflow-y-auto border-x p-4 md:flex"
+        >
+          {docs.map(({ icon: Icon, section, content }, index) => (
+            <div key={index} className="flex flex-col gap-y-3">
+              <Label
+                data-scrollspy-anchor={toCase(section, "kebab")}
+                className="flex cursor-pointer items-center gap-x-2"
+              >
+                <Icon className="size-3.5" /> {section}
+              </Label>
+
+              <div className="flex flex-col gap-y-2">
+                {content.map((c) => {
+                  if (!c.label) return;
+                  const id = toCase(`${section}-${c.label}`, "kebab");
+
+                  return (
+                    <Fragment key={id}>
+                      <Link
+                        href={`/#${id}`}
+                        data-scrollspy-anchor={id}
+                        className="group data-active:text-foreground text-muted-foreground text-sm data-active:font-medium"
+                      >
+                        <small className="link-group">{c.label}</small>
+                      </Link>
+
+                      {c.type === "comp" &&
+                        c.variants &&
+                        c.variants.map((sc) => {
+                          const cvId = toCase(`${id}-${sc.label}`, "kebab");
+
+                          return (
+                            <Link
+                              key={cvId}
+                              href={`/#${cvId}`}
+                              data-scrollspy-anchor={cvId}
+                              className="group data-active:text-foreground hover:text-foreground text-muted-foreground flex items-center gap-x-2 text-sm data-active:font-medium"
+                            >
+                              <DotIcon className="size-3.5" />
+                              <small className="link-group">{sc.label}</small>
+                            </Link>
+                          );
+                        })}
+                    </Fragment>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </Scrollspy>
+
+        {/* Content */}
+        <div className="flex flex-col md:basis-3/4 md:border-r">
+          <div className="relative flex justify-center border-b py-4">
+            <R className="size-19" />
+            <Scales />
+          </div>
+
+          {docs.map(({ icon: Icon, section, content }, index) => (
+            <Fragment key={index}>
+              {index > 0 && (
+                <ScalesWrapper
+                  containerClassName="h-8"
+                  className="h-8 border-y"
+                />
+              )}
+
+              <div
+                id={toCase(section, "kebab")}
+                className="group/home-content flex flex-col"
+              >
+                <div className="relative p-4">
+                  <PageTitle as="h2" className="flex items-center gap-x-2">
+                    <Icon /> {section}
+                  </PageTitle>
+
+                  <PlusIcon className="text-muted-foreground absolute -top-2 -right-2 hidden size-4 md:flex" />
+                  <PlusIcon className="text-muted-foreground absolute -top-2 -left-2 hidden size-4 md:flex" />
+                  <PlusIcon className="text-muted-foreground absolute -right-2 -bottom-2 hidden size-4 md:flex" />
+                  <PlusIcon className="text-muted-foreground absolute -bottom-2 -left-2 hidden size-4 md:flex" />
+                </div>
+
+                {content.map((c, i) => {
+                  const id = toCase(`${section}-${c.label ?? i}`, "kebab");
+
+                  if (c.type === "text") {
+                    return (
+                      <DocsContentWrapper
+                        key={id}
+                        id={id}
+                        data={c}
+                        className={cn(!!c.label && !!c.render && "pb-6")}
+                      >
+                        {c.render && (
+                          <div className="text-muted-foreground flex flex-col gap-4 text-sm">
+                            {typeof c.render === "function"
+                              ? c.render()
+                              : c.render}
+                          </div>
+                        )}
+                      </DocsContentWrapper>
+                    );
+                  }
+
+                  if (c.type === "docs") {
+                    return <DocsContentWrapper key={id} id={id} data={c} />;
+                  }
+
+                  if (c.type === "comp") {
+                    return (
+                      <DocsContentWrapper
+                        key={id}
+                        id={id}
+                        data={c}
+                        className={cn((c.render || c.variants) && "pb-6")}
+                      >
+                        {c.render && (
+                          <div className="flex flex-col items-center gap-4">
+                            {typeof c.render === "function"
+                              ? c.render()
+                              : c.render}
+                          </div>
+                        )}
+
+                        {c.variants && (
+                          <>
+                            <Label>Variants</Label>
+
+                            {c.variants.map((sc) => {
+                              const cvId = toCase(`${id}-${sc.label}`, "kebab");
+                              return (
+                                <Fragment key={cvId}>
+                                  <div
+                                    id={cvId}
+                                    className="flex scroll-m-12 items-center gap-x-1 text-sm"
+                                  >
+                                    <DotIcon className="size-4" /> {sc.label}
+                                  </div>
+
+                                  <div className="flex items-center justify-center">
+                                    {sc.render}
+                                  </div>
+                                </Fragment>
+                              );
+                            })}
+                          </>
+                        )}
+                      </DocsContentWrapper>
+                    );
+                  }
+                })}
+              </div>
+            </Fragment>
+          ))}
+
+          <ScalesWrapper containerClassName="h-8" className="h-8 border-y" />
+
+          <DocsSection className="flex items-center justify-center px-4 py-3 text-center">
+            <FooterNote />
+          </DocsSection>
+        </div>
+      </DocsSection>
     </div>
   );
 }

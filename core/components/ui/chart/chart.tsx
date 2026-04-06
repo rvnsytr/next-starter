@@ -21,14 +21,14 @@ export type ChartConfig = Record<
 
 const ChartContext = createContext<{ config: ChartConfig } | null>(null);
 
-function useChart() {
+export function useChart() {
   const context = useContext(ChartContext);
   if (!context)
     throw new Error("useChart must be used within a <ChartContainer />");
   return context;
 }
 
-function ChartContainer({
+export function ChartContainer({
   id,
   className,
   children,
@@ -98,9 +98,9 @@ ${colorConfig
   );
 };
 
-const ChartTooltip = RechartsPrimitive.Tooltip;
+export const ChartTooltip = RechartsPrimitive.Tooltip;
 
-function ChartTooltipContent({
+export function ChartTooltipContent({
   active,
   payload,
   className,
@@ -248,9 +248,9 @@ function ChartTooltipContent({
   );
 }
 
-const ChartLegend = RechartsPrimitive.Legend;
+export const ChartLegend = RechartsPrimitive.Legend;
 
-function ChartLegendContent({
+export function ChartLegendContent({
   className,
   hideIcon = false,
   payload,
@@ -299,7 +299,7 @@ function ChartLegendContent({
   );
 }
 
-function getPayloadConfigFromPayload(
+export function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
   key: string,
@@ -334,12 +334,3 @@ function getPayloadConfigFromPayload(
 
   return configLabelKey in config ? config[configLabelKey] : config[key];
 }
-
-export {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartStyle,
-  ChartTooltip,
-  ChartTooltipContent,
-};

@@ -4,7 +4,7 @@ import { cn } from "@/core/utils/helpers";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { useMemo } from "react";
 
-function Slider({
+export function Slider({
   className,
   defaultValue,
   value,
@@ -24,13 +24,13 @@ function Slider({
 
   return (
     <SliderPrimitive.Root
-      className={cn("data-horizontal:w-full data-vertical:h-full", className)}
       data-slot="slider"
-      defaultValue={defaultValue}
       value={value}
+      defaultValue={defaultValue}
       min={min}
       max={max}
       thumbAlignment="edge"
+      className={cn("data-horizontal:w-full data-vertical:h-full", className)}
       {...props}
     >
       <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col">
@@ -54,5 +54,3 @@ function Slider({
     </SliderPrimitive.Root>
   );
 }
-
-export { Slider };

@@ -1,64 +1,129 @@
-export function ExampleTypography() {
+import { Badge } from "@/core/components/ui/badge";
+import { Label } from "@/core/components/ui/label";
+import { toCase } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
+import { ArrowUpRightIcon, AtomIcon, HashIcon, PlusIcon } from "lucide-react";
+import Link from "next/link";
+import { Docs, docsFromMeta } from "./constants";
+
+export function DocsSection({
+  fill = false,
+  withIcon = false,
+  className,
+  containerClassName,
+  children,
+}: {
+  fill?: boolean;
+  withIcon?: boolean;
+  className?: string;
+  containerClassName?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="[&>p]:text-foreground/90 mx-auto max-w-4xl space-y-6 py-8 [&>p]:leading-7">
-      <h1>The Subtle Shift: How LLMs Are Reshaping Web Development</h1>
+    <section
+      className={cn(
+        "flex w-full justify-center not-last:border-b",
+        fill && "flex-1",
+        containerClassName,
+      )}
+    >
+      <div
+        className={cn("relative w-full md:max-w-5xl md:border-x", className)}
+      >
+        {children}
 
-      <p>
-        Large Language Models (LLMs) are no longer just a research curiosity.
-        They&apos;ve quietly slipped into the daily workflow of many developers,
-        especially in the realm of <code>frontend</code> and <code>web</code>{" "}
-        development. While some fear they might replace engineers, the reality
-        is more nuanced: LLMs often function as accelerators, not replacements.
-      </p>
+        {withIcon && (
+          <>
+            <PlusIcon className="text-muted-foreground absolute -right-2 -bottom-2 hidden size-4 md:flex" />
+            <PlusIcon className="text-muted-foreground absolute -bottom-2 -left-2 hidden size-4 md:flex" />
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
 
-      <h2>From Boilerplate to Brainstorming</h2>
-      <p>
-        Ask any web developer, and they&apos;ll tell you: boilerplate code is
-        both a blessing and a burden. With LLMs, setting up a new project
-        scaffold or generating a reusable <code>React</code> component can take
-        seconds instead of hours.
-      </p>
+export function DocsContentWrapper({
+  id,
+  data,
+  className,
+  children,
+}: {
+  id: string;
+  data: Docs["content"][number];
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  const refs = (data.refs ?? [])
+    .map((r) => {
+      if (!data.label) return null;
+      if (typeof r !== "string") {
+        const { type, ...rest } = r;
+        return { type: type ?? "internal", ...rest };
+      }
 
-      <blockquote>
-        “I don&apos;t use AI to finish my code. I use it to start faster,”{" "}
-        <small> — A Frontend Engineer on X</small>
-      </blockquote>
+      const { label, baseUrl } = docsFromMeta[r];
+      const url = `${baseUrl}/${toCase(data.label, "kebab")}`;
+      return { type: "meta" as const, url, label };
+    })
+    .filter((v) => !!v);
 
-      <p>
-        This shift means developers can spend more energy on solving real
-        product problems rather than wiring up endless configuration files.
-      </p>
+  return (
+    <div
+      id={id}
+      className={cn("flex scroll-m-12 flex-col gap-4 border-t p-4", className)}
+    >
+      {data.label && (
+        <div className="relative flex w-full justify-between gap-2">
+          <Label className="flex items-center gap-x-2">
+            <HashIcon className="text-muted-foreground size-3.5" />
+            {data.label}
+          </Label>
 
-      <h2>Documentation as Dialogue</h2>
-      <p>
-        Another overlooked area is documentation. LLMs turn static docs into
-        interactive guides. Instead of digging through a 200-page manual,
-        developers can ask natural-language questions like{" "}
-        <code>“How do I debounce an input in React?”</code> and receive concise,
-        context-aware answers.
-      </p>
+          {refs.length > 0 && (
+            <div className="flex flex-row-reverse items-center gap-x-1">
+              {refs.map((r) => {
+                const Icon =
+                  r.type === "internal" ? AtomIcon : ArrowUpRightIcon;
+                return (
+                  <Badge
+                    key={r.url}
+                    variant={
+                      r.type === "meta"
+                        ? "outline"
+                        : r.type === "internal"
+                          ? "outline"
+                          : "info"
+                    }
+                    className={cn(
+                      r.type !== "meta" && !r.label && "aspect-square",
+                    )}
+                    render={
+                      <Link
+                        href={r.url}
+                        target={r.type !== "internal" ? "_blank" : undefined}
+                      >
+                        {r.type === "meta" ? (
+                          r.label
+                        ) : (
+                          <>
+                            <Icon className="shrink-0" />
+                            <span className={cn(!r.label && "sr-only")}>
+                              {r.label ?? "References"}
+                            </span>
+                          </>
+                        )}
+                      </Link>
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
-      <h2>Not a Replacement, but a Partner</h2>
-      <p>
-        Critics often warn that AI tools will deskill developers. In practice,
-        many report the opposite. By handling routine code generation, LLMs free
-        humans to focus on design patterns, accessibility, and user experience—
-        areas where human empathy and creativity remain irreplaceable.
-      </p>
-
-      <blockquote>
-        “Think of LLMs less as interns who write code and more as senior
-        colleagues who never get tired of pair programming.”
-        <small> — Tech Blogger, 2024</small>
-      </blockquote>
-
-      <h2>Conclusion</h2>
-      <p>
-        LLMs aren&apos;t rewriting the role of web developers—they&apos;re
-        reframing it. The job shifts from writing every line by hand to guiding,
-        editing, and curating. In that sense, the craft of development remains
-        as human as ever—just faster, more collaborative, and a little more fun.
-      </p>
+      {children}
     </div>
   );
 }

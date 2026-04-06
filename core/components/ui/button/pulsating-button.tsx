@@ -1,22 +1,7 @@
-import { messages } from "@/core/constants/messages";
 import { cn } from "@/core/utils/helpers";
-import { RotateCcwIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";
 import { Button, ButtonProps } from "./button";
-
-export function ResetButton({
-  type = "reset",
-  size = "default",
-  variant = "outline",
-  ...props
-}: Omit<ButtonProps, "children">) {
-  return (
-    <Button type={type} size={size} variant={variant} {...props}>
-      <RotateCcwIcon /> {messages.actions.reset}
-    </Button>
-  );
-}
 
 export function PulsatingButton({
   href,
@@ -25,20 +10,21 @@ export function PulsatingButton({
   pulseColor = "var(--primary-pulse)",
   duration = "1.5s",
   ...props
-}: Omit<ButtonProps, "asChild"> & {
+}: ButtonProps & {
   href: Route;
   pulseColor?: string;
   duration?: string;
 }) {
   return (
     <Button
-      className={cn("relative rounded-full", className)}
+      data-slot="pulsating-button"
       style={
         {
           "--pulse-color": pulseColor,
           "--duration": duration,
         } as React.CSSProperties
       }
+      className={cn("relative rounded-full", className)}
       render={
         <Link href={href}>
           <div className="relative z-10 flex items-center gap-x-2">

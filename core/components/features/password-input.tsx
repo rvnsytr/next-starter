@@ -10,13 +10,13 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { FieldDescription } from "./field";
+import { Button } from "../ui/button";
+import { FieldDescription } from "../ui/field";
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
-} from "./input-group";
+} from "../ui/input-group";
 
 export function PasswordInput({
   icon,
@@ -49,12 +49,9 @@ export function PasswordInput({
         <InputGroupAddon>{icon ?? <LockKeyholeIcon />}</InputGroupAddon>
 
         <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            size="icon-xs"
-            onClick={() => setIsVisible((prev) => !prev)}
-          >
+          <Button size="icon-xs" onClick={() => setIsVisible((prev) => !prev)}>
             {isVisible ? <EyeIcon /> : <EyeOffIcon />}
-          </InputGroupButton>
+          </Button>
         </InputGroupAddon>
       </InputGroup>
 

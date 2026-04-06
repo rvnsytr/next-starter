@@ -2,6 +2,7 @@ import {
   LAYOUT_TOGGLE_HOTKEY,
   layoutModeMeta,
 } from "@/core/constants/registries";
+import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { useLayout } from "@/core/providers/layout";
 import { cn } from "@/core/utils/helpers";
@@ -10,7 +11,7 @@ import { Button, ButtonProps } from "./button";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
 export function LayoutToggle({
   align,
@@ -21,16 +22,27 @@ export function LayoutToggle({
   disabled,
   ...props
 }: Omit<ButtonProps, "children"> &
-  Pick<React.ComponentProps<typeof TooltipContent>, "align">) {
+  Pick<React.ComponentProps<typeof TooltipPopup>, "align">) {
+  const isMounted = useIsMounted();
   const isMobile = useIsMobile();
   const { layout, setLayout } = useLayout();
 
+  const label = "Toggle Layout";
   const { icon: Icon } = layoutModeMeta[layout];
 
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
 
   useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
+
+  if (!isMounted) {
+    const { icon: DefaultIcon } = layoutModeMeta.unset;
+    return (
+      <Button size={size} variant={variant} disabled>
+        <DefaultIcon />
+      </Button>
+    );
+  }
 
   const element = (
     <Button
@@ -45,6 +57,7 @@ export function LayoutToggle({
       {...props}
     >
       <Icon />
+      <span className="sr-only">{label}</span>
     </Button>
   );
 
@@ -53,13 +66,11 @@ export function LayoutToggle({
   return (
     <Tooltip>
       <TooltipTrigger render={element} />
-      <TooltipContent
-        align={align}
-        className="flex flex-col items-center gap-2"
-      >
-        <span>Toggle Layout</span>
-        <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
-      </TooltipContent>
+      <TooltipPopup align={align}>
+        <div className="flex items-center gap-x-1">
+          {label} <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
+        </div>
+      </TooltipPopup>
     </Tooltip>
   );
 }

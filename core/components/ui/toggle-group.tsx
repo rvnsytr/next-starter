@@ -3,7 +3,7 @@
 import { cn } from "@/core/utils/helpers";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
-import { type VariantProps } from "class-variance-authority";
+import { VariantProps } from "class-variance-authority";
 import { createContext, useContext } from "react";
 import { toggleVariants } from "./toggle";
 
@@ -19,7 +19,7 @@ const ToggleGroupContext = createContext<
   orientation: "horizontal",
 });
 
-function ToggleGroup({
+export function ToggleGroup({
   className,
   variant,
   size,
@@ -55,7 +55,7 @@ function ToggleGroup({
   );
 }
 
-function ToggleGroupItem({
+export function ToggleGroupItem({
   className,
   children,
   variant = "default",
@@ -84,5 +84,3 @@ function ToggleGroupItem({
     </TogglePrimitive>
   );
 }
-
-export { ToggleGroup, ToggleGroupItem };

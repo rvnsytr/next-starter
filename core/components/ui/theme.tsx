@@ -1,24 +1,21 @@
 "use client";
 
+import {
+  Theme,
+  THEME_TOGGLE_HOTKEY,
+  themeMeta,
+} from "@/core/constants/registries";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import { useIsMobile } from "@/core/hooks/use-media-query";
+import { formatForDisplay } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { Button, ButtonProps } from "./button";
 import { LoadingFallback } from "./fallback";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
-import { Kbd, KbdGroup } from "./kbd";
+import { Kbd } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
-
-export type Theme = (typeof allThemes)[number];
-export const allThemes = ["light", "system", "dark"] as const;
-
-export const themeMeta: Record<Theme, { icon: LucideIcon }> = {
-  light: { icon: SunIcon },
-  system: { icon: MonitorIcon },
-  dark: { icon: MoonIcon },
-};
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
 export function nextTheme(currentTheme?: string) {
   if (currentTheme === "light") return "dark";
@@ -33,49 +30,49 @@ export function ThemeToggle({
   onClick,
   ...props
 }: Omit<ButtonProps, "children"> &
-  Pick<ComponentProps<typeof TooltipContent>, "align">) {
+  Pick<ComponentProps<typeof TooltipPopup>, "align">) {
   const isMounted = useIsMounted();
+  const isMobile = useIsMobile();
   const { theme, setTheme } = useTheme();
 
+  const label = "Toggle Theme";
   const currentTheme = (theme ?? "system") as Theme;
   const { icon: Icon } = themeMeta[currentTheme];
 
   if (!isMounted) {
-    const { icon: SystemIcon } = themeMeta.system;
+    const { icon: DefaultIcon } = themeMeta.system;
     return (
       <Button size={size} variant={variant} disabled>
-        <SystemIcon />
+        <DefaultIcon />
       </Button>
     );
   }
 
+  const element = (
+    <Button
+      size={size}
+      variant={variant}
+      onClick={(e) => {
+        onClick?.(e);
+        setTheme(nextTheme);
+      }}
+      {...props}
+    >
+      <Icon />
+      <span className="sr-only">{label}</span>
+    </Button>
+  );
+
+  if (isMobile) return element;
+
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          size={size}
-          variant={variant}
-          onClick={(e) => {
-            onClick?.(e);
-            setTheme(nextTheme);
-          }}
-          {...props}
-        >
-          <Icon />
-          <span className="sr-only">Toggle Theme</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent
-        align={align}
-        className="flex flex-col items-center gap-2"
-      >
-        <span>Toggle Theme</span>
-        <KbdGroup>
-          <Kbd>Alt</Kbd>
-          <span>+</span>
-          <Kbd>T</Kbd>
-        </KbdGroup>
-      </TooltipContent>
+      <TooltipTrigger render={element} />
+      <TooltipPopup align={align}>
+        <div className="flex items-center gap-x-1">
+          {label} <Kbd>{formatForDisplay(THEME_TOGGLE_HOTKEY)}</Kbd>
+        </div>
+      </TooltipPopup>
     </Tooltip>
   );
 }

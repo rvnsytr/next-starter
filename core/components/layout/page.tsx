@@ -1,3 +1,5 @@
+// ? Sync with [Card Component](../ui/card.tsx)
+
 import { cn } from "@/core/utils/helpers";
 import { Card } from "../ui/card";
 import { Spinner } from "../ui/spinner";
@@ -6,9 +8,7 @@ export function Page({
   withLayoutLoader = true,
   className,
   ...props
-}: React.ComponentProps<"div"> & {
-  withLayoutLoader?: boolean;
-}) {
+}: React.ComponentProps<"div"> & { withLayoutLoader?: boolean }) {
   return (
     <>
       <div
@@ -60,7 +60,7 @@ export function PageTitle({
     <Comp
       data-slot="page-title"
       className={cn(
-        "text-base leading-normal font-medium **:[svg:not([class*='size-'])]:size-4",
+        "flex items-center gap-2 text-lg leading-tight font-semibold sm:text-base **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -75,7 +75,10 @@ export function PageDescription({
   return (
     <p
       data-slot="page-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(
+        "text-muted-foreground *:[a]:hover:text-foreground text-sm text-pretty *:[a]:underline *:[a]:underline-offset-3",
+        className,
+      )}
       {...props}
     />
   );
@@ -100,14 +103,11 @@ export function PageAction({
 export function PageCard({
   className,
   ...props
-}: React.ComponentProps<typeof Card>) {
+}: Omit<React.ComponentProps<typeof Card>, "size">) {
   return (
     <Card
       data-slot="page-card"
-      className={cn(
-        "scroll-m-20 rounded-none **:data-[slot=card-content]:px-4 md:rounded-lg **:data-[slot=card-content]:md:px-6 **:data-[slot=card-content]:md:group-data-[size=sm]/card:px-4",
-        className,
-      )}
+      className={cn("scroll-m-20 rounded-none md:rounded-xl", className)}
       {...props}
     />
   );

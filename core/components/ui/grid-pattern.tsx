@@ -29,7 +29,7 @@ export function GridPattern({
     <svg
       aria-hidden="true"
       className={cn(
-        "fill-accent stroke-accent pointer-events-none absolute inset-0 size-full",
+        "fill-accent stroke-accent pointer-events-none absolute inset-0 -z-50 size-full",
         className,
       )}
       {...props}

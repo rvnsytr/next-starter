@@ -47,7 +47,7 @@ import useSWR, { mutate, SWRConfiguration } from "swr";
 import z from "zod";
 import { Button } from "./button";
 import { ButtonGroup } from "./button-group";
-import { RefreshButton } from "./buttons.client";
+import { RefreshButton } from "./button/scroll-to-top-button";
 import { Checkbox } from "./checkbox";
 import {
   Command,

@@ -12,14 +12,16 @@
   },
   "iconLibrary": "lucide",
   "rtl": false,
-  "aliases": {
-    "components": "@/core/components",
-    "ui": "@/core/components/ui",
-    "hooks": "@/core/hooks",
-    "utils": "@/core/utils",
-    "lib": "@/core"
-  },
   "menuColor": "default-translucent",
   "menuAccent": "subtle",
-  "registries": {}
+  "aliases": {
+    "components": "@/core/components",
+    "utils": "@/core/utils",
+    "ui": "@/core/components/ui",
+    "lib": "@/core",
+    "hooks": "@/core/hooks"
+  },
+  "registries": {
+    "@coss": "https://coss.com/ui/r/{name}.json"
+  }
 }

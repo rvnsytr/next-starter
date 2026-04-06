@@ -22,15 +22,24 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { TextMorph } from "torph/react";
 import z from "zod";
-import { Button } from "./button";
+import { Button } from "../ui/button";
 import {
   Collapsible,
-  CollapsibleContent,
+  CollapsiblePanel,
   CollapsibleTrigger,
-} from "./collapsible";
+} from "../ui/collapsible";
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPopup,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import {
   Field,
   FieldDescription,
@@ -39,36 +48,28 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "./field";
-import { FieldWrapper } from "./field-wrapper";
-import { FileUpload } from "./file-upload";
+} from "../ui/field";
+import { FieldWrapper } from "../ui/field-wrapper";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
-} from "./input-group";
-import {
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTrigger,
-} from "./modal";
-import { Separator } from "./separator";
-import { LoadingSpinner } from "./spinner";
+} from "../ui/input-group";
+import { Separator } from "../ui/separator";
+import { LoadingSpinner } from "../ui/spinner";
+import { toast } from "../ui/toast";
+import { FileUpload } from "./file-upload";
 
 type ReadExcelSheetMode = (typeof allReadExcelSheetModes)[number];
 const allReadExcelSheetModes = ["include", "exclude"] as const;
 const defaultMode: ReadExcelSheetMode = "include";
 
-type ImportModalFormSchema = z.infer<typeof importModalSchema>;
+type ImportDialogFormSchema = z.infer<typeof importDialogSchema>;
 
-export type ImportModalProps<T, K extends string> = {
-  source: Record<K, Omit<ImportModalFormSchema["source"][number], "key">>;
-  defaultValues?: Partial<Omit<ImportModalFormSchema, "source">>;
+export type ImportDialogProps<T, K extends string> = {
+  source: Record<K, Omit<ImportDialogFormSchema["source"][number], "key">>;
+  defaultValues?: Partial<Omit<ImportDialogFormSchema, "source">>;
 
   onSubmit: (data: {
     files: z.core.File[];
@@ -85,11 +86,11 @@ export type ImportModalProps<T, K extends string> = {
   className?: string;
   multiple?: boolean;
 
-  renderTrigger?: React.ReactNode;
+  renderTrigger?: React.ReactElement;
   children?: React.ReactNode;
 };
 
-const importModalSchema = z.object({
+const importDialogSchema = z.object({
   files: sharedSchemas.files("spreadsheet", { min: 1 }),
   sheet: sharedSchemas.string({ label: "Worksheet" }),
   mode: z.enum(allReadExcelSheetModes),
@@ -104,7 +105,7 @@ const importModalSchema = z.object({
     .array(),
 });
 
-export function ImportModal<T, K extends string>({
+export function ImportDialog<T, K extends string>({
   source,
   defaultValues,
 
@@ -119,14 +120,14 @@ export function ImportModal<T, K extends string>({
 
   renderTrigger,
   children,
-}: ImportModalProps<T, K>) {
+}: ImportDialogProps<T, K>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [mode, setMode] = useState<ReadExcelSheetMode>(defaultMode);
 
   const isInclude = mode === "include";
 
-  const form = useForm<ImportModalFormSchema>({
-    resolver: zodResolver(importModalSchema),
+  const form = useForm<ImportDialogFormSchema>({
+    resolver: zodResolver(importDialogSchema),
     defaultValues: {
       files: [],
       sheet: defaultValues?.sheet ?? "",
@@ -134,7 +135,7 @@ export function ImportModal<T, K extends string>({
       rows: defaultValues?.rows ?? "",
       source: Object.entries(source).map(([k, v]) => ({
         key: k,
-        ...(v as ImportModalFormSchema["source"]),
+        ...(v as ImportDialogFormSchema["source"]),
       })),
     },
   });
@@ -147,18 +148,17 @@ export function ImportModal<T, K extends string>({
   const parse = (value: string) =>
     formatCsvRange(value, { sort: "asc", distinct: true });
 
-  const formHandler = (formData: ImportModalFormSchema) => {
+  const formHandler = (formData: ImportDialogFormSchema) => {
     setIsLoading(true);
 
     toast.promise(
-      async () =>
-        await onSubmit({
-          ...formData,
-          source: Object.fromEntries(
-            formData.source.map((v) => [v.key, v.column]),
-          ) as Record<K, number>,
-          rows: parse(formData.rows),
-        }),
+      onSubmit({
+        ...formData,
+        source: Object.fromEntries(
+          formData.source.map((v) => [v.key, v.column]),
+        ) as Record<K, number>,
+        rows: parse(formData.rows),
+      }),
       {
         loading: messages.loading,
         success: (res) => {
@@ -184,16 +184,15 @@ export function ImportModal<T, K extends string>({
   );
 
   return (
-    <Modal>
-      <ModalTrigger asChild>{trigger}</ModalTrigger>
-
-      <ModalContent className={className}>
-        <ModalHeader>
-          <ModalTitle className="flex items-center gap-x-2">
+    <Dialog>
+      <DialogTrigger render={trigger} />
+      <DialogPopup className={className}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-x-2">
             <ImportIcon /> {title}
-          </ModalTitle>
-          <ModalDescription>{description}</ModalDescription>
-        </ModalHeader>
+          </DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
 
         <form onSubmit={form.handleSubmit(formHandler)} noValidate>
           <Controller
@@ -242,7 +241,7 @@ export function ImportModal<T, K extends string>({
                 />
               </div>
 
-              <CollapsibleContent
+              <CollapsiblePanel
                 render={
                   <FieldGroup>
                     <Controller
@@ -445,7 +444,9 @@ export function ImportModal<T, K extends string>({
 
           <Separator />
 
-          <ModalFooter showCloseButton>
+          <DialogFooter>
+            <DialogClose render={<Button>{messages.actions.cancel}</Button>} />
+
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner
                 loading={isLoading}
@@ -453,9 +454,9 @@ export function ImportModal<T, K extends string>({
               />
               {messages.actions.confirm}
             </Button>
-          </ModalFooter>
+          </DialogFooter>
         </form>
-      </ModalContent>
-    </Modal>
+      </DialogPopup>
+    </Dialog>
   );
 }
