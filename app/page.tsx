@@ -58,6 +58,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/core/components/ui/carousel";
 import { Checkbox } from "@/core/components/ui/checkbox";
 import {
   Collapsible,
@@ -593,6 +600,32 @@ const docs: Docs[] = [
               </Button>
             </CardFooter>
           </Card>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Carousel",
+        refs: ["shadcnui"],
+        render: (
+          <Carousel className="w-full max-w-lg">
+            <CarouselContent>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <Card>
+                      <CardContent className="flex items-center justify-center p-6">
+                        <span className="text-4xl font-semibold">
+                          {index + 1}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         ),
       },
       {
