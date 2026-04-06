@@ -22,20 +22,6 @@ export const allRequestMetaKey = [
   "search",
 ] as const;
 
-export type FileType = (typeof allFileTypes)[number];
-export const allFileTypes = [
-  "file",
-  "image",
-  "pdf",
-  "document",
-  "spreadsheet",
-  "presentation",
-  "office",
-  "archive",
-  "audio",
-  "video",
-] as const;
-
 export type Theme = (typeof allThemes)[number];
 export const allThemes = ["light", "system", "dark"] as const;
 
