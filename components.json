@@ -15,10 +15,10 @@
   "menuColor": "default-translucent",
   "menuAccent": "subtle",
   "aliases": {
-    "components": "@/core/components",
-    "utils": "@/core/utils",
-    "ui": "@/core/components/ui",
     "lib": "@/core",
+    "utils": "@/core/utils/helpers",
+    "components": "@/core/components",
+    "ui": "@/core/components/ui",
     "hooks": "@/core/hooks"
   },
   "registries": {
