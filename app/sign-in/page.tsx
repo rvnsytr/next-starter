@@ -1,25 +1,17 @@
+import { appConfig } from "@/config/app";
 import { FooterNote } from "@/core/components/layout/footer-note";
+import { PageCard } from "@/core/components/layout/page";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/core/components/ui/tabs";
-import { appMeta } from "@/core/constants/app";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { getRouteTitle } from "@/core/route";
-import {
-  SignInForm,
-  SignOnGithubButton,
-  SignUpForm,
-} from "@/modules/auth/components.client";
+import { SignInForm } from "@/modules/auth/components.client";
+import { LogInIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -27,32 +19,31 @@ export const metadata: Metadata = { title: getRouteTitle("/sign-in") };
 
 export default function Page() {
   return (
-    <main className="container flex min-h-dvh items-center justify-center">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="mx-auto">
-            <Link href="/">
-              <h3>{appMeta.name}</h3>
-            </Link>
+    <div className="flex min-h-dvh items-center justify-center">
+      <PageCard className="w-full max-w-lg">
+        <CardHeader className="flex flex-col items-center text-center">
+          <CardTitle className="text-lg font-semibold">
+            <Link href="/">{appConfig.name}</Link>
           </CardTitle>
           <CardDescription>
-            Masuk ke Dashboard {appMeta.name} dengan aman menggunakan akun Anda.
+            Masuk ke Dashboard {appConfig.name} dengan aman menggunakan akun
+            Anda.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-y-4">
           <Tabs defaultValue="masuk">
             <TabsList className="w-full">
-              <TabsTrigger value="masuk">Masuk</TabsTrigger>
-              <TabsTrigger value="daftar">Daftar</TabsTrigger>
+              <TabsTab value="masuk">
+                <LogInIcon /> Masuk
+              </TabsTab>
+              <TabsTab value="daftar">Daftar</TabsTab>
             </TabsList>
 
-            <TabsContent value="masuk">
+            <TabsPanel value="masuk">
               <SignInForm />
-            </TabsContent>
-            <TabsContent value="daftar">
-              <SignUpForm />
-            </TabsContent>
+            </TabsPanel>
+            <TabsPanel value="daftar">{/* <SignUpForm /> */}</TabsPanel>
           </Tabs>
 
           <div className="flex items-center gap-x-4">
@@ -63,13 +54,13 @@ export default function Page() {
             <div className="grow border-t after:border-t" />
           </div>
 
-          <SignOnGithubButton />
+          {/* <SignOnGithubButton /> */}
         </CardContent>
 
         <CardFooter className="justify-center text-center">
           <FooterNote />
         </CardFooter>
-      </Card>
-    </main>
+      </PageCard>
+    </div>
   );
 }

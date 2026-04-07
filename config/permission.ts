@@ -10,18 +10,18 @@ import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 export const ac = createAccessControl({
   ...defaultStatements,
   storage: ["create", "list", "get", "delete"],
-  event_log: ["list", "list:own", "list:user"],
+  "event-log": ["list", "list:own", "list:user"],
 });
 
 export const roles: Record<Role, BetterAuthRole> = {
   user: ac.newRole({
     storage: ["create", "get", "delete"],
-    event_log: ["list:own"],
+    "event-log": ["list:own"],
   }),
 
   admin: ac.newRole({
     ...adminAc.statements,
     storage: ["create", "list", "get", "delete"],
-    event_log: ["list", "list:own", "list:user"],
+    "event-log": ["list", "list:own", "list:user"],
   }),
 };

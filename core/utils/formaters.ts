@@ -1,12 +1,11 @@
-import { appMeta } from "@/config/app";
+import { appConfig, Language, languageMeta } from "@/config/app";
 import z from "zod";
-import { Language, languageMeta } from "../constants/registries";
 import {
   ActionResponse,
   StringCase,
   TransformableStringCase,
   TransformKeys,
-} from "../constants/types";
+} from "../types";
 
 export function capitalize(string: string, mode: "all" | "first" = "all") {
   const handler = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -113,7 +112,7 @@ export function formatNumber(
   props?: { lang?: Language; options?: Intl.NumberFormatOptions },
 ) {
   const locale =
-    languageMeta[props?.lang ?? (appMeta.defaultLanguage as Language)].locale;
+    languageMeta[props?.lang ?? (appConfig.defaultLanguage as Language)].locale;
   const value = new Intl.NumberFormat(locale, props?.options).format(number);
   return value === "0" ? "0" : value;
 }

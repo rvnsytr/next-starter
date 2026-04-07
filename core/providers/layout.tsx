@@ -1,6 +1,11 @@
 "use client";
 
 import {
+  allLayoutMode,
+  defaultLayout,
+  LayoutMode,
+} from "@/core/components/ui/layout";
+import {
   createContext,
   useContext,
   useEffect,
@@ -8,11 +13,6 @@ import {
   useState,
 } from "react";
 import z from "zod";
-import {
-  allLayoutMode,
-  defaultLayout,
-  LayoutMode,
-} from "../constants/registries";
 
 type LayoutContextType = {
   layout: LayoutMode;

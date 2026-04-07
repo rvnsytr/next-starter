@@ -1,7 +1,6 @@
-import { fileMeta } from "@/config/file";
-import { messages } from "@/core/constants/messages";
-import { allGenders, FileType } from "@/core/constants/registries";
-import { toMegabytes } from "@/core/utils/formaters";
+import { FileType, fileTypeConfig } from "@/config/file-type";
+import { allGenders } from "@/config/gender";
+import { messages } from "@/core/messages";
 import z from "zod";
 
 export const sharedSchemas = {
@@ -84,36 +83,38 @@ export const sharedSchemas = {
   files: (
     type: FileType,
     options?: {
-      min?: number;
-      max?: number;
-      maxFileSize?: number;
+      minFiles?: number;
+      maxFiles?: number;
+      maxSize?: number;
     },
   ) => {
     const { mimeInvalid, tooLarge, tooFew, tooMany } = messages.files;
-    const { displayName, size, mimeTypes } = fileMeta[type];
+    const {
+      displayName,
+      maxSize: metaMaxSize,
+      mimeTypes,
+    } = fileTypeConfig[type];
 
-    const min = options?.min ?? 0;
-    const max = options?.max ?? 0;
-
-    const mFS = options?.maxFileSize;
-    const maxFileSize = mFS && mFS > 0 ? mFS : size.bytes;
-    const maxFileSizeInMB = toMegabytes(maxFileSize).toFixed(2);
+    const minFiles = options?.minFiles ?? 0;
+    const maxFiles = options?.maxFiles ?? 0;
+    const maxSize =
+      options?.maxSize && options.maxSize > 0 ? options.maxSize : metaMaxSize;
 
     let schema = z
       .file()
       .mime(mimeTypes, { error: mimeInvalid(displayName) })
       .min(1)
-      .max(maxFileSize, { error: tooLarge(displayName, maxFileSizeInMB) })
+      .max(maxSize, { error: tooLarge(displayName, maxSize) })
       .array();
 
-    if (min > 0) {
-      const message = tooFew(displayName, min);
-      schema = schema.min(min, { error: message });
+    if (minFiles > 0) {
+      const message = tooFew(displayName, minFiles);
+      schema = schema.min(minFiles, { error: message });
     }
 
-    if (max > 0) {
-      const message = tooMany(displayName, max);
-      schema = schema.max(max, { error: message });
+    if (maxFiles > 0) {
+      const message = tooMany(displayName, maxFiles);
+      schema = schema.max(maxFiles, { error: message });
     }
 
     return schema;

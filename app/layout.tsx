@@ -1,4 +1,4 @@
-import { appMeta } from "@/config/app";
+import { appConfig } from "@/config/app";
 import { GridPattern } from "@/core/components/ui/grid-pattern";
 import {
   AnchoredToastProvider,
@@ -29,9 +29,9 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: appMeta.name,
-  description: appMeta.description,
-  keywords: appMeta.keywords,
+  title: appConfig.name,
+  description: appConfig.description,
+  keywords: appConfig.keywords,
   manifest: "/manifest.json",
 };
 
@@ -45,7 +45,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={appMeta.defaultLanguage} suppressHydrationWarning>
+    <html lang={appConfig.defaultLanguage} suppressHydrationWarning>
       <body className={cn(fontSans.variable, fontMono.variable, "relative")}>
         <NuqsAdapter>
           <ThemeProvider

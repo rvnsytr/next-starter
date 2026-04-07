@@ -1,4 +1,3 @@
-import { allRequestMetaKey } from "@/core/constants/registries";
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,6 +11,15 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
 
   const headers = new Headers(req.headers);
+  const allRequestMetaKey = [
+    "basePath",
+    "href",
+    "origin",
+    "hostname",
+    "pathname",
+    "hash",
+    "search",
+  ] as const;
   allRequestMetaKey.map((k) => headers.set(`x-${k}`, req.nextUrl[k]));
 
   return NextResponse.next({ request: { headers } });

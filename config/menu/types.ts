@@ -1,7 +1,7 @@
+import { RouteRole } from "@/core/route";
 import { LucideIcon } from "lucide-react";
 import { Route } from "next";
 import { LinkProps } from "next/link";
-import { RouteRole } from "../route";
 
 export type Menu = { section: string; content: MenuContent[] };
 

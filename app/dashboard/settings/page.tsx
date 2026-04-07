@@ -1,3 +1,4 @@
+import { appConfig } from "@/config/app";
 import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
@@ -11,7 +12,6 @@ import {
 import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
 import { LayoutSettings } from "@/core/components/ui/layout";
 import { ThemeSettings } from "@/core/components/ui/theme";
-import { appMeta } from "@/core/constants/app";
 import { getRouteTitle } from "@/core/route";
 import {
   ChangePasswordForm,
@@ -40,7 +40,9 @@ export default function Page() {
           </CardTitle>
           <CardDescription>
             Sesuaikan tampilan dan nuansa{" "}
-            <span className="text-foreground font-medium">{appMeta.name}</span>{" "}
+            <span className="text-foreground font-medium">
+              {appConfig.name}
+            </span>{" "}
             sesuai preferensi Anda.
           </CardDescription>
 
@@ -65,7 +67,9 @@ export default function Page() {
           </CardTitle>
           <CardDescription>
             Atur tata letak antarmuka{" "}
-            <span className="text-foreground font-medium">{appMeta.name}</span>{" "}
+            <span className="text-foreground font-medium">
+              {appConfig.name}
+            </span>{" "}
             sesuai keinginan Anda.
           </CardDescription>
           <CardAction>

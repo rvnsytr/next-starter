@@ -1,5 +1,5 @@
-import { formatDate, formatDateDistanceToNow } from "../utils/date";
-import { capitalize } from "../utils/formaters";
+import { formatDate, formatDateDistanceToNow } from "./utils/date";
+import { capitalize, formatBytes } from "./utils/formaters";
 
 export const messages = {
   actions: {
@@ -87,8 +87,8 @@ export const messages = {
       `Silakan unggah minimal ${min} ${field}.`,
     tooMany: (field: string, max: number) =>
       `Anda hanya dapat mengunggah hingga ${max} ${field}.`,
-    tooLarge: (field: string, sizeInMb: string | number) =>
-      `${capitalize(field, "first")} melebihi batas ukuran maksimum ${sizeInMb} MB.`,
+    tooLarge: (field: string, size: number) =>
+      `${capitalize(field, "first")} melebihi batas ukuran maksimum ${formatBytes(size)}.`,
   },
 
   password: {

@@ -1,4 +1,4 @@
-import { appMeta } from "@/config/app";
+import { appConfig } from "@/config/app";
 import { cn } from "@/core/utils/helpers";
 import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
@@ -28,7 +28,7 @@ export function ErrorFallback({
     <Alert variant="destructive" className={className}>
       <TriangleAlertIcon />
       <AlertTitle>
-        {`${appMeta.name} / `}
+        {`${appConfig.name} / `}
         <code className="bg-destructive/10 text-xs tabular-nums">
           {error?.code ?? 500}
         </code>

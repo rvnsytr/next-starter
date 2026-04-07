@@ -1,6 +1,6 @@
 "use client";
 
-import { messages } from "@/core/constants/messages";
+import { messages } from "@/core/messages";
 import { cn } from "@/core/utils/helpers";
 import {
   CheckIcon,

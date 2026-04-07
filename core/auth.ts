@@ -1,4 +1,4 @@
-import { appMeta } from "@/config/app";
+import { appConfig } from "@/config/app";
 import { ac, roles } from "@/config/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -20,7 +20,7 @@ export const allRoles = ["user", "admin"] as const;
 export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
-  appName: appMeta.name,
+  appName: appConfig.name,
 
   database: drizzleAdapter(db, { provider: "pg" }),
 
@@ -30,7 +30,7 @@ export const auth = betterAuth({
     enabled: true,
     // sendResetPassword: async ({ user, token }) => {
     //   const { name, email } = user;
-    //   const url = `${appMeta.cors.origin}/reset-password?token=${token}`;
+    //   const url = `${appConfig.cors.origin}/reset-password?token=${token}`;
     //   void novu.trigger("purnaku-reset-password", {
     //     to: { subscriberId: email, email },
     //     payload: { name, url },
@@ -48,7 +48,7 @@ export const auth = betterAuth({
     // sendOnSignUp: true,
     // sendVerificationEmail: async ({ user, token }) => {
     //   const { name, email } = user;
-    //   const url = `${appMeta.cors.origin}/verify-user?token=${token}`;
+    //   const url = `${appConfig.cors.origin}/verify-user?token=${token}`;
     //   void novu.trigger("purnaku-verification", {
     //     to: { subscriberId: email, email },
     //     payload: { name, url },

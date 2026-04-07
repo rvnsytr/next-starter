@@ -1,8 +1,8 @@
 "use client";
 
-import { messages } from "@/core/constants/messages";
 import { useCopyToClipboard } from "@/core/hooks/use-copy-to-clipboard";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
+import { messages } from "@/core/messages";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,

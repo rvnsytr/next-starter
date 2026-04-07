@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  Theme,
-  THEME_TOGGLE_HOTKEY,
-  themeMeta,
-} from "@/core/constants/registries";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { formatForDisplay } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey } from "@tanstack/react-hotkeys";
+import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { Button, ButtonProps } from "./button";
@@ -16,6 +12,17 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
+
+export type Theme = (typeof allThemes)[number];
+export const allThemes = ["light", "system", "dark"] as const;
+
+export const THEME_TOGGLE_HOTKEY: Hotkey = "Alt+T";
+
+export const themeConfig: Record<Theme, { icon: LucideIcon }> = {
+  light: { icon: SunIcon },
+  system: { icon: MonitorIcon },
+  dark: { icon: MoonIcon },
+};
 
 export function nextTheme(currentTheme?: string) {
   if (currentTheme === "light") return "dark";
@@ -37,10 +44,10 @@ export function ThemeToggle({
 
   const label = "Toggle Theme";
   const currentTheme = (theme ?? "system") as Theme;
-  const { icon: Icon } = themeMeta[currentTheme];
+  const { icon: Icon } = themeConfig[currentTheme];
 
   if (!isMounted) {
-    const { icon: DefaultIcon } = themeMeta.system;
+    const { icon: DefaultIcon } = themeConfig.system;
     return (
       <Button size={size} variant={variant} disabled>
         <DefaultIcon />
@@ -91,7 +98,7 @@ export function ThemeSettings() {
       className="grid grid-cols-3"
       required
     >
-      {Object.entries(themeMeta).map(([k, { icon: Icon }]) => (
+      {Object.entries(themeConfig).map(([k, { icon: Icon }]) => (
         <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
           <Field>
             <FieldContent className="items-center">

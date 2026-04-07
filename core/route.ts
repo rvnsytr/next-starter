@@ -1,8 +1,8 @@
-import { appMeta } from "@/config/app";
+import { appConfig } from "@/config/app";
+import { Menu } from "@/config/menu/types";
 import { routesMeta } from "@/config/route";
 import { Role } from "@/modules/auth/constants";
 import { Route } from "next";
-import { Menu } from "./constants/menu";
 
 export type RouteRole = "all" | Role[];
 
@@ -20,7 +20,7 @@ export function normalizeRoute(route?: string | null): Route {
 }
 
 export function setRouteTitle(title: string) {
-  return `${title} | ${appMeta.name}`;
+  return `${title} | ${appConfig.name}`;
 }
 
 export function getRouteTitle(route: Route) {

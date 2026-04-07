@@ -15,16 +15,16 @@ import {
   useState,
 } from "react";
 import { Button, ButtonProps } from "./button";
+import {
+  Drawer,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerPopup,
+  DrawerTitle,
+} from "./drawer";
 import { Input } from "./input";
 import { Kbd } from "./kbd";
 import { Separator } from "./separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "./sheet";
 import { Skeleton } from "./skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
@@ -173,10 +173,10 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
+      <Drawer open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <DrawerPopup
           dir={dir}
-          side={side}
+          position={side}
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
@@ -185,24 +185,24 @@ function Sidebar({
             { "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties
           }
         >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>Sidebar</DrawerTitle>
+            <DrawerDescription>Displays the mobile sidebar.</DrawerDescription>
+          </DrawerHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
+        </DrawerPopup>
+      </Drawer>
     );
   }
 
   return (
     <div
-      className="group peer text-sidebar-foreground hidden md:block"
-      data-state={state}
-      data-collapsible={state === "collapsed" ? collapsible : ""}
-      data-variant={variant}
-      data-side={side}
       data-slot="sidebar"
+      data-side={side}
+      data-variant={variant}
+      data-collapsible={state === "collapsed" ? collapsible : ""}
+      data-state={state}
+      className="group peer text-sidebar-foreground hidden md:block"
     >
       {/* This is what handles the sidebar gap on desktop */}
       <div

@@ -1,4 +1,3 @@
-import { Menu, MenuContent } from "@/core/constants/menu";
 import {
   CircleHelpIcon,
   ExternalLinkIcon,
@@ -7,6 +6,7 @@ import {
   UserRoundIcon,
   UsersRoundIcon,
 } from "lucide-react";
+import { Menu, MenuContent } from "./types";
 
 export const dashboardMenu: Menu[] = [
   {

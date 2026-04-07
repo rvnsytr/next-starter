@@ -152,13 +152,16 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { ThemeToggle } from "@/core/components/ui/theme";
 import { toCase } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
-import { DocsContentWrapper, DocsSection } from "@/modules/docs/components";
+import { DocsContentWrapper } from "@/modules/docs/components/docs-content-wrapper";
+import { DocsSection } from "@/modules/docs/components/docs-section";
 import {
   AutocompleteExample,
   ComboboxExample,
+  FileDropzoneExample,
   ToastExample,
-} from "@/modules/docs/components.client";
-import { Docs } from "@/modules/docs/constants";
+  UseFileUploadExample,
+} from "@/modules/docs/components/examples";
+import { Docs } from "@/modules/docs/config";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   ArrowRightIcon,
@@ -167,6 +170,7 @@ import {
   ChevronsUpDownIcon,
   CircleDotIcon,
   CircleFadingArrowUpIcon,
+  CpuIcon,
   DotIcon,
   Layers2Icon,
   LayoutGridIcon,
@@ -184,7 +188,6 @@ import {
   TriangleAlertIcon,
   UserRoundIcon,
   WandSparklesIcon,
-  WebhookIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -206,7 +209,7 @@ const docs: Docs[] = [
   },
 
   {
-    icon: WebhookIcon,
+    icon: CpuIcon,
     section: "Core Hooks",
     content: [
       { type: "docs", label: "use-copy-to-clipboard", refs: ["cosshooks"] },
@@ -220,6 +223,7 @@ const docs: Docs[] = [
             url: "https://reui.io/docs/components/base/file-upload",
           },
         ],
+        render: <UseFileUploadExample />,
       },
       { type: "docs", label: "use-is-mounted" },
       { type: "docs", label: "use-media-query", refs: ["cosshooks"] },
@@ -243,7 +247,15 @@ const docs: Docs[] = [
         label: "Dynamic Breadcrumb",
         refs: [{ url: "/#components-breadcrumb" }],
       },
-      { type: "comp", label: "File Upload" },
+      {
+        type: "comp",
+        label: "File Dropzone",
+        render: (
+          <div className="w-full max-w-lg">
+            <FileDropzoneExample />
+          </div>
+        ),
+      },
       { type: "comp", label: "Import Dialog" },
       { type: "comp", label: "Password Input" },
       { type: "comp", label: "Scroll Spy" },
@@ -1378,29 +1390,6 @@ export default function Page() {
                 {content.map((c, i) => {
                   const id = toCase(`${section}-${c.label ?? i}`, "kebab");
 
-                  if (c.type === "text") {
-                    return (
-                      <DocsContentWrapper
-                        key={id}
-                        id={id}
-                        data={c}
-                        className={cn(!!c.label && !!c.render && "pb-6")}
-                      >
-                        {c.render && (
-                          <div className="text-muted-foreground flex flex-col gap-4 text-sm">
-                            {typeof c.render === "function"
-                              ? c.render()
-                              : c.render}
-                          </div>
-                        )}
-                      </DocsContentWrapper>
-                    );
-                  }
-
-                  if (c.type === "docs") {
-                    return <DocsContentWrapper key={id} id={id} data={c} />;
-                  }
-
                   if (c.type === "comp") {
                     return (
                       <DocsContentWrapper
@@ -1443,6 +1432,23 @@ export default function Page() {
                       </DocsContentWrapper>
                     );
                   }
+
+                  return (
+                    <DocsContentWrapper
+                      key={id}
+                      id={id}
+                      data={c}
+                      className={cn(!!c.label && !!c.render && "pb-6")}
+                    >
+                      {c.render && (
+                        <div className="text-muted-foreground flex flex-col gap-4 text-sm">
+                          {typeof c.render === "function"
+                            ? c.render()
+                            : c.render}
+                        </div>
+                      )}
+                    </DocsContentWrapper>
+                  );
                 })}
               </div>
             </Fragment>

@@ -12,8 +12,8 @@ import {
   VideoIcon,
 } from "lucide-react";
 
-export type FileMetaType = (typeof allFileMetaTypes)[number];
-export const allFileMetaTypes = [
+export type FileType = (typeof allFileTypes)[number];
+export const allFileTypes = [
   "file",
   "image",
   "pdf",
@@ -26,23 +26,23 @@ export const allFileMetaTypes = [
   "video",
 ] as const;
 
-export type FileMetaProps = Record<
-  FileMetaType,
+export type FileTypeConfig = Record<
+  FileType,
   {
     displayName: string;
     mimeTypes: string[];
     extensions: string[];
-    defaultSize: number;
+    maxSize: number;
     icon: LucideIcon;
   }
 >;
 
-const meta: Omit<FileMetaProps, "file" | "office"> = {
+const config: Omit<FileTypeConfig, "file" | "office"> = {
   image: {
     displayName: "gambar",
     mimeTypes: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
     extensions: [".png", ".jpg", ".jpeg", ".svg", ".webp"],
-    defaultSize: toBytes(2),
+    maxSize: toBytes(2),
     icon: ImageIcon,
   },
 
@@ -50,7 +50,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     displayName: "PDF",
     mimeTypes: ["application/pdf"],
     extensions: [".pdf"],
-    defaultSize: toBytes(2),
+    maxSize: toBytes(2),
     icon: FileArchiveIcon,
   },
 
@@ -61,7 +61,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ],
     extensions: [".doc", ".docx"],
-    defaultSize: toBytes(2),
+    maxSize: toBytes(2),
     icon: FileTextIcon,
   },
 
@@ -72,7 +72,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ],
     extensions: [".xls", ".xlsx"],
-    defaultSize: toBytes(2),
+    maxSize: toBytes(2),
     icon: FileSpreadsheetIcon,
   },
 
@@ -83,7 +83,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     ],
     extensions: [".ppt", ".pptx"],
-    defaultSize: toBytes(10),
+    maxSize: toBytes(10),
     icon: TableIcon,
   },
 
@@ -96,7 +96,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
       "application/x-tar",
     ],
     extensions: [".zip", ".rar", ".7z", ".tar"],
-    defaultSize: toBytes(20),
+    maxSize: toBytes(20),
     icon: FileArchiveIcon,
   },
 
@@ -104,7 +104,7 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
     displayName: "audio",
     mimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"],
     extensions: [".mp3", ".wav", ".ogg", ".flac"],
-    defaultSize: toBytes(10),
+    maxSize: toBytes(10),
     icon: HeadphonesIcon,
   },
 
@@ -118,37 +118,37 @@ const meta: Omit<FileMetaProps, "file" | "office"> = {
       "video/webm",
     ],
     extensions: [".mp4", ".avi", ".mkv", ".ogg", ".webm"],
-    defaultSize: toBytes(50),
+    maxSize: toBytes(50),
     icon: VideoIcon,
   },
 };
 
-export const fileMeta: FileMetaProps = {
+export const fileTypeConfig: FileTypeConfig = {
   file: {
     displayName: "berkas",
     mimeTypes: ["*"],
-    extensions: Object.values(meta).flatMap((item) => item.extensions),
-    defaultSize: Number.POSITIVE_INFINITY,
+    extensions: Object.values(config).flatMap((t) => t.extensions),
+    maxSize: Number.POSITIVE_INFINITY,
     icon: UploadIcon,
   },
 
   office: {
     displayName: "dokumen kantor",
     mimeTypes: [
-      ...meta.pdf.mimeTypes,
-      ...meta.document.mimeTypes,
-      ...meta.spreadsheet.mimeTypes,
-      ...meta.presentation.mimeTypes,
+      ...config.pdf.mimeTypes,
+      ...config.document.mimeTypes,
+      ...config.spreadsheet.mimeTypes,
+      ...config.presentation.mimeTypes,
     ],
     extensions: [
-      ...meta.pdf.extensions,
-      ...meta.document.extensions,
-      ...meta.spreadsheet.extensions,
-      ...meta.presentation.extensions,
+      ...config.pdf.extensions,
+      ...config.document.extensions,
+      ...config.spreadsheet.extensions,
+      ...config.presentation.extensions,
     ],
-    defaultSize: toBytes(10),
+    maxSize: toBytes(10),
     icon: FilesIcon,
   },
 
-  ...meta,
+  ...config,
 };

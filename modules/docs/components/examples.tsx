@@ -1,5 +1,6 @@
 "use client";
 
+import { fileTypeConfig } from "@/config/file-type";
 import {
   Autocomplete,
   AutocompleteEmpty,
@@ -21,7 +22,47 @@ import {
   ComboboxValue,
 } from "@/core/components/ui/combobox";
 import { toast } from "@/core/components/ui/toast";
+import { useFileUpload } from "@/core/hooks/use-file-upload";
+import { toBytes } from "@/core/utils/formaters";
 import { SearchIcon } from "lucide-react";
+
+export function UseFileUploadExample() {
+  const [
+    { files, errors },
+    { openFileDialog, getInputProps, clearFiles, clearErrors },
+  ] = useFileUpload({
+    maxSize: toBytes(1),
+    accept: fileTypeConfig.image.mimeTypes.join(","),
+    multiple: true,
+  });
+
+  return (
+    <div className="flex flex-col gap-y-4">
+      <input {...getInputProps()} className="sr-only" />
+
+      <div className="flex flex-wrap justify-center gap-x-2 gap-y-4">
+        <Button onClick={openFileDialog}>Upload Images</Button>
+        <Button onClick={clearFiles}>Clear Images</Button>
+        <Button onClick={clearErrors}>Clear Errors</Button>
+      </div>
+
+      {files.map((file) => (
+        <div key={file.id}>{file.id}</div>
+      ))}
+
+      {errors.map((error, index) => (
+        <div key={index} className="text-destructive">
+          {error}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function FileDropzoneExample() {
+  return <p>Hello World</p>;
+  // return <FileDropzone />;
+}
 
 export function AutocompleteExample({
   size,
@@ -114,7 +155,6 @@ export function ComboboxExample() {
     </Combobox>
   );
 }
-
 
 export function ToastExample() {
   return (

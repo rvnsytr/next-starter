@@ -1,17 +1,29 @@
-import {
-  LAYOUT_TOGGLE_HOTKEY,
-  layoutModeMeta,
-} from "@/core/constants/registries";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { useLayout } from "@/core/providers/layout";
 import { cn } from "@/core/utils/helpers";
-import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
 import { Button, ButtonProps } from "./button";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd } from "./kbd";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
+
+export type LayoutMode = (typeof allLayoutMode)[number];
+export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
+
+export const LAYOUT_TOGGLE_HOTKEY: Hotkey = "Alt+L";
+export const defaultLayout: LayoutMode = "centered";
+
+export const layoutModeConfig: Record<
+  LayoutMode,
+  { displayName: string; icon: LucideIcon }
+> = {
+  fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
+  centered: { displayName: "Centered", icon: MinimizeIcon },
+  unset: { displayName: "Unset", icon: FrameIcon },
+};
 
 export function LayoutToggle({
   align,
@@ -28,7 +40,7 @@ export function LayoutToggle({
   const { layout, setLayout } = useLayout();
 
   const label = "Toggle Layout";
-  const { icon: Icon } = layoutModeMeta[layout];
+  const { icon: Icon } = layoutModeConfig[layout];
 
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
@@ -36,7 +48,7 @@ export function LayoutToggle({
   useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
 
   if (!isMounted) {
-    const { icon: DefaultIcon } = layoutModeMeta.unset;
+    const { icon: DefaultIcon } = layoutModeConfig.unset;
     return (
       <Button size={size} variant={variant} disabled>
         <DefaultIcon />
@@ -86,7 +98,7 @@ export function LayoutSettings() {
       className="grid grid-cols-2"
       required
     >
-      {Object.entries(layoutModeMeta)
+      {Object.entries(layoutModeConfig)
         .filter(([k]) => k !== "unset")
         .map(([k, { displayName, icon: Icon }]) => (
           <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>

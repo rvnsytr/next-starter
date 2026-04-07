@@ -1,6 +1,6 @@
 "use client";
 
-import { messages } from "@/core/constants/messages";
+import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
 import {
   formatCsvRange,

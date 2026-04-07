@@ -1,3 +1,4 @@
+import { appConfig } from "@/config/app";
 import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
@@ -6,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
-import { appMeta } from "@/core/constants/app";
 import { getRouteTitle } from "@/core/route";
 import { ProfileBadges, ProfileForm } from "@/modules/auth/components.client";
 import { Metadata } from "next";
@@ -22,7 +22,7 @@ export default function Page() {
         <CardHeader className="border-b">
           <CardTitle>Informasi Pribadi</CardTitle>
           <CardDescription>
-            Perbarui dan kelola informasi profil {appMeta.name} Anda.
+            Perbarui dan kelola informasi profil {appConfig.name} Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
             <ProfileBadges />

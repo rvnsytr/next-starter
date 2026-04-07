@@ -4,7 +4,7 @@ import { toCase } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { ArrowUpRightIcon, AtomIcon, HashIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { Docs, docsFromMeta } from "./constants";
+import { Docs, docsFromMeta } from "../config";
 
 export function DocsSection({
   fill = false,
