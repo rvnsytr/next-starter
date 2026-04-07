@@ -94,14 +94,8 @@ import {
   DrawerTrigger,
 } from "@/core/components/ui/drawer";
 import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldTitle,
-} from "@/core/components/ui/field";
+import { Field, FieldLabel } from "@/core/components/ui/field";
+import { Fieldset } from "@/core/components/ui/fieldset";
 import { Input } from "@/core/components/ui/input";
 import {
   InputGroup,
@@ -161,11 +155,13 @@ import {
   ToastExample,
   UseFileUploadExample,
 } from "@/modules/docs/components/examples";
+import { FormExample } from "@/modules/docs/components/form-example";
 import { Docs } from "@/modules/docs/config";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   ArrowRightIcon,
   BellIcon,
+  BookSearchIcon,
   CheckIcon,
   ChevronsUpDownIcon,
   CircleDotIcon,
@@ -656,46 +652,15 @@ const docs: Docs[] = [
         label: "Checkbox",
         refs: ["shadcnui"],
         render: (
-          <FieldGroup className="max-w-sm">
-            <Field orientation="horizontal">
-              <Checkbox id="terms-checkbox" name="terms-checkbox" />
-              <Label htmlFor="terms-checkbox">
-                Accept terms and conditions
-              </Label>
-            </Field>
-            <Field orientation="horizontal">
-              <Checkbox
-                id="terms-checkbox-2"
-                name="terms-checkbox-2"
-                defaultChecked
-              />
-              <FieldContent>
-                <FieldLabel htmlFor="terms-checkbox-2">
-                  Accept terms and conditions
-                </FieldLabel>
-                <FieldDescription>
-                  By clicking this checkbox, you agree to the terms.
-                </FieldDescription>
-              </FieldContent>
-            </Field>
-            <Field orientation="horizontal" data-disabled>
-              <Checkbox id="toggle-checkbox" name="toggle-checkbox" disabled />
-              <FieldLabel htmlFor="toggle-checkbox">
-                Enable notifications
-              </FieldLabel>
-            </Field>
-            <FieldLabel>
-              <Field orientation="horizontal">
-                <Checkbox id="toggle-checkbox-2" name="toggle-checkbox-2" />
-                <FieldContent>
-                  <FieldTitle>Enable notifications</FieldTitle>
-                  <FieldDescription>
-                    You can enable or disable notifications at any time.
-                  </FieldDescription>
-                </FieldContent>
-              </Field>
-            </FieldLabel>
-          </FieldGroup>
+          <Label asCard>
+            <Checkbox defaultChecked />
+            <div className="flex flex-col gap-1">
+              <p>Enable notifications</p>
+              <p className="text-muted-foreground text-xs">
+                You can enable or disable notifications at any time.
+              </p>
+            </div>
+          </Label>
         ),
       },
       {
@@ -795,9 +760,9 @@ const docs: Docs[] = [
                   </DialogDescription>
                 </DialogHeader>
                 <DialogPanel>
-                  <FieldGroup>
+                  <Fieldset>
                     <Field>
-                      <Label htmlFor="name-1">Name</Label>
+                      <FieldLabel htmlFor="name-1">Name</FieldLabel>
                       <Input
                         id="name-1"
                         name="name"
@@ -805,14 +770,14 @@ const docs: Docs[] = [
                       />
                     </Field>
                     <Field>
-                      <Label htmlFor="username-1">Username</Label>
+                      <FieldLabel htmlFor="name-1">Name</FieldLabel>
                       <Input
                         id="username-1"
                         name="username"
                         defaultValue="@peduarte"
                       />
                     </Field>
-                  </FieldGroup>
+                  </Fieldset>
                 </DialogPanel>
                 <DialogFooter>
                   <DialogClose
@@ -890,12 +855,7 @@ const docs: Docs[] = [
           </>
         ),
       },
-      {
-        type: "comp",
-        label: "Field",
-        refs: ["shadcnui"],
-        variants: [{ label: "Field Wrapper", render: "-x-" }],
-      },
+      { type: "comp", label: "Field", refs: ["cossui"] },
       {
         type: "comp",
         label: "Input",
@@ -1235,6 +1195,12 @@ const docs: Docs[] = [
       { type: "comp", label: "Grid Pattern", refs: ["magicui"] },
       { type: "comp", label: "Scales", refs: ["aceternityui"] },
     ],
+  },
+
+  {
+    icon: BookSearchIcon,
+    section: "Examples",
+    content: [{ type: "comp", label: "Form", render: <FormExample /> }],
   },
 ];
 
