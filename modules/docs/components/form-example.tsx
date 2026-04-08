@@ -9,6 +9,15 @@ import {
 } from "@/core/components/ui/field";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+} from "@/core/components/ui/number-field";
+import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
@@ -19,10 +28,10 @@ import z from "zod";
 
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = z.object({
-  text: sharedSchemas.string({ label: "Text field", min: 10 }),
+  text: sharedSchemas.string({ label: "Text field", min: 1 }),
   textarea: sharedSchemas.string({ label: "Text Area", min: 1, max: 255 }),
 
-  // number: sharedSchemas.number("Number field", { min: 1 }),
+  number: sharedSchemas.number({ label: "Number field", min: 1 }),
   // phone: sharedSchemas.number("Phone field", { min: 1 }),
 
   // date: sharedSchemas.date("Date field"),
@@ -49,10 +58,10 @@ export function FormExample() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      text: "",
+      text: "Hello World",
       textarea: "The Brown Fox Jumping Over The Lazy Dog",
 
-      //   number: 100000,
+      number: 100000,
       //   phone: 81234567890,
 
       //   date: now,
@@ -86,15 +95,62 @@ export function FormExample() {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <Form
+      onSubmit={form.handleSubmit(formHandler)}
+      className="grid grid-cols-2"
+    >
       <Controller
         control={form.control}
         name="text"
         render={({ field, fieldState }) => (
-          <Field name="text" invalid={fieldState.invalid}>
+          <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Name</FieldLabel>
             <Input type="text" placeholder="Enter your name" {...field} />
             <FieldDescription>Visible on your profile</FieldDescription>
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="number"
+        render={({ field: { onChange, ...field }, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <NumberField
+              defaultValue={0}
+              locale={languageMeta.id.locale}
+              onValueChange={onChange}
+              {...field}
+            >
+              <NumberFieldScrubArea label="Quantity" />
+              <NumberFieldGroup>
+                <NumberFieldInput />
+                <NumberFieldDecrement />
+                <NumberFieldIncrement />
+              </NumberFieldGroup>
+            </NumberField>
+
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="textarea"
+        render={({ field, fieldState }) => (
+          <Field
+            name={field.name}
+            invalid={fieldState.invalid}
+            className="col-span-2"
+          >
+            <FieldLabel>Description</FieldLabel>
+            <Textarea placeholder="Type your message here" {...field} />
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>

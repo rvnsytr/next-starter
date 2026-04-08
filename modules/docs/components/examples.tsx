@@ -34,6 +34,11 @@ export function UseFileUploadExample() {
     maxSize: toBytes(1),
     accept: fileTypeConfig.image.mimeTypes.join(","),
     multiple: true,
+    onFilesChange: (f) => {
+      const file = f[0];
+      if (file instanceof File) console.log("file: ", file);
+      else console.log("meh: ", file);
+    },
   });
 
   return (

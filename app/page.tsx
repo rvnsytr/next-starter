@@ -119,6 +119,14 @@ import {
   MenuSubTrigger,
   MenuTrigger,
 } from "@/core/components/ui/menu";
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+} from "@/core/components/ui/number-field";
 import { Ping } from "@/core/components/ui/ping";
 import {
   Popover,
@@ -1000,6 +1008,21 @@ const docs: Docs[] = [
               </MenuItem>
             </MenuPopup>
           </Menu>
+        ),
+      },
+      {
+        type: "comp",
+        label: "Number Field",
+        refs: ["cossui"],
+        render: (
+          <NumberField defaultValue={0} className="w-full max-w-sm">
+            <NumberFieldScrubArea label="Quantity" />
+            <NumberFieldGroup>
+              <NumberFieldInput />
+              <NumberFieldDecrement />
+              <NumberFieldIncrement />
+            </NumberFieldGroup>
+          </NumberField>
         ),
       },
       {
