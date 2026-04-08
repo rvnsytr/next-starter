@@ -3,11 +3,21 @@
 import { cn } from "@/core/utils/helpers";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 
-export function Field({ className, ...props }: FieldPrimitive.Root.Props) {
+export function Field({
+  invalid,
+  className,
+  ...props
+}: FieldPrimitive.Root.Props) {
   return (
     <FieldPrimitive.Root
       data-slot="field"
-      className={cn("flex flex-col items-start gap-2", className)}
+      invalid={invalid}
+      className={cn(
+        "flex flex-col items-start gap-2",
+        invalid &&
+          "**:[[data-slot=field-label],[data-slot=label]]:text-destructive-foreground",
+        className,
+      )}
       {...props}
     />
   );

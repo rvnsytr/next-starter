@@ -110,10 +110,10 @@ export function InputGroupText({
   );
 }
 
-export function InputGroupInput({ className, ...props }: InputProps) {
-  return <Input className={className} unstyled {...props} />;
+export function InputGroupInput({ ...props }: InputProps) {
+  return <Input unstyled {...props} />;
 }
 
-export function InputGroupTextarea({ className, ...props }: TextareaProps) {
-  return <Textarea className={className} unstyled {...props} />;
+export function InputGroupTextarea({ ...props }: TextareaProps) {
+  return <Textarea unstyled {...props} />;
 }

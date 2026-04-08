@@ -16,7 +16,6 @@ export function Label({
         asCard &&
           "hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50 items-start rounded-lg border p-3",
         className,
-        className,
       )}
       {...props}
     />

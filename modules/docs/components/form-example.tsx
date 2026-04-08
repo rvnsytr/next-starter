@@ -1,5 +1,7 @@
 "use client";
 
+import { languageMeta } from "@/config/app";
+import { DatePicker } from "@/core/components/features/date-picker";
 import { Button, ResetButton } from "@/core/components/ui/button";
 import {
   Field,
@@ -34,8 +36,12 @@ const formSchema = z.object({
   number: sharedSchemas.number({ label: "Number field", min: 1 }),
   // phone: sharedSchemas.number("Phone field", { min: 1 }),
 
-  // date: sharedSchemas.date("Date field"),
-  // dateMultiple: sharedSchemas.dateMultiple("Multi date field", { min: 1 }),
+  // TODO
+  date: sharedSchemas.date({ label: "Date field", max: "now" }),
+  // dateMultiple: sharedSchemas.dateMultiple({
+  //   label: "Multi date field",
+  //   min: 1,
+  // }),
   // dateRange: sharedSchemas.dateRange,
 
   // select: z.enum(card),
@@ -55,6 +61,8 @@ const formSchema = z.object({
 });
 
 export function FormExample() {
+  const now = new Date();
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,7 +72,7 @@ export function FormExample() {
       number: 100000,
       //   phone: 81234567890,
 
-      //   date: now,
+      date: now,
       //   dateMultiple: [now],
       //   dateRange: { from: now, to: addDays(now, 6) },
 
@@ -127,7 +135,7 @@ export function FormExample() {
             >
               <NumberFieldScrubArea label="Quantity" />
               <NumberFieldGroup>
-                <NumberFieldInput />
+                <NumberFieldInput placeholder="Enter quantity" />
                 <NumberFieldDecrement />
                 <NumberFieldIncrement />
               </NumberFieldGroup>
@@ -157,6 +165,27 @@ export function FormExample() {
           </Field>
         )}
       />
+
+      <div className="col-span-2 grid gap-x-2 gap-y-4 md:grid-cols-3">
+        <Controller
+          name="date"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Date Picker with Calendar</FieldLabel>
+              <DatePicker
+                id={field.name}
+                selected={field.value}
+                onSelect={field.onChange}
+                required
+              />
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+      </div>
 
       <div className="flex gap-2">
         <Button type="submit">
