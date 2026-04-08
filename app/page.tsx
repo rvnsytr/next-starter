@@ -49,6 +49,7 @@ import {
   ScrollToTopButton,
 } from "@/core/components/ui/button";
 import { ButtonGroup } from "@/core/components/ui/button-group";
+import { Calendar } from "@/core/components/ui/calendar";
 import {
   Card,
   CardAction,
@@ -554,15 +555,18 @@ const docs: Docs[] = [
         label: "Button Group",
         refs: ["shadcnui"],
         render: (
-          <>
-            <ButtonGroup>
-              <Button variant="outline">Button 1</Button>
-              <Button variant="outline">Button 2</Button>
-            </ButtonGroup>
-          </>
+          <ButtonGroup>
+            <Button variant="outline">Button 1</Button>
+            <Button variant="outline">Button 2</Button>
+          </ButtonGroup>
         ),
       },
-      { type: "comp", label: "Calendar", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Calendar",
+        refs: ["cossui"],
+        render: <Calendar mode="single" captionLayout="dropdown" />,
+      },
       {
         type: "comp",
         label: "Card",
