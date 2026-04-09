@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { FileMetaType } from "../constants/file";
-import { formatBytes } from "../utils/formaters";
+import { messages } from "../messages";
 
 export type FileMetadata = {
   id: string;
@@ -19,7 +18,7 @@ export type FileWithPreview = {
 };
 
 export type FileUploadOptions = {
-  accept?: FileMetaType | string[];
+  accept?: string;
   maxFiles?: number;
   maxSize?: number;
   multiple?: boolean;
@@ -35,6 +34,11 @@ export type FileUploadState = {
   errors: string[];
 };
 
+type ControlledInputProps = Omit<
+  React.ComponentProps<"input">,
+  "ref" | "type" | "onChange" | "accept" | "multiple"
+>;
+
 export type FileUploadActions = {
   addFiles: (files: FileList | File[]) => void;
   removeFile: (id: string) => void;
@@ -47,28 +51,20 @@ export type FileUploadActions = {
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   openFileDialog: () => void;
   getInputProps: (
-    props?: React.InputHTMLAttributes<HTMLInputElement>,
-  ) => React.InputHTMLAttributes<HTMLInputElement> & {
-    ref: React.Ref<HTMLInputElement>;
-  };
+    props?: ControlledInputProps,
+  ) => React.ComponentProps<"input">;
 };
 
-export const useFileUpload = (options?: FileUploadOptions) => {
-  //   const {
-  //     accept = "a",
-  //     maxFiles = Number.POSITIVE_INFINITY,
-  //     maxSize = Number.POSITIVE_INFINITY,
-  //     multiple = false,
-  //     initialFiles = [],
-  //     onFilesChange,
-  //     onFilesAdded,
-  //     onError,
-  //   } = options;
-
-  const maxFiles = options?.maxFiles ?? Number.POSITIVE_INFINITY;
-  const maxSize = options?.maxSize ?? Number.POSITIVE_INFINITY;
-  const initialFiles = options?.initialFiles ?? [];
-
+export function useFileUpload({
+  maxFiles = Number.POSITIVE_INFINITY,
+  maxSize = Number.POSITIVE_INFINITY,
+  accept = "*",
+  multiple = false,
+  initialFiles = [],
+  onFilesChange,
+  onFilesAdded,
+  onError,
+}: FileUploadOptions = {}): [FileUploadState, FileUploadActions] {
   const [state, setState] = useState<FileUploadState>({
     files: initialFiles.map((file) => ({
       file,
@@ -90,15 +86,15 @@ export const useFileUpload = (options?: FileUploadOptions) => {
 
   const validateFile = useCallback(
     (file: File | FileMetadata) => {
+      const { mimeInvalid, tooLarge } = messages.files;
       const { name, type, extension, size } = getFileInfo(file);
 
-      if (size > maxSize)
-        return `File "${name}" exceeds the maximum size of ${formatBytes(maxSize)}.`;
+      const field = `File "${name}"`;
 
+      if (size > maxSize) return tooLarge(field, size);
       if (accept === "*") return null;
 
       const acceptedTypes = accept.split(",").map((t) => t.trim());
-
       const isAccepted = acceptedTypes.some((t) => {
         if (t.startsWith("."))
           return extension.toLowerCase() === t.toLowerCase();
@@ -109,7 +105,7 @@ export const useFileUpload = (options?: FileUploadOptions) => {
         return type === t;
       });
 
-      if (!isAccepted) return `File "${name}" is not an accepted file type.`;
+      if (!isAccepted) return mimeInvalid(field);
       return null;
     },
     [accept, maxSize],
@@ -122,9 +118,7 @@ export const useFileUpload = (options?: FileUploadOptions) => {
 
   const generateUniqueId = useCallback((file: File | FileMetadata) => {
     if (file instanceof File)
-      return `${file.name}-${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2, 9)}`;
+      return `${crypto.randomUUID()}-${file.name.split(".").pop()}`;
     return file.id;
   }, []);
 
@@ -299,18 +293,16 @@ export const useFileUpload = (options?: FileUploadOptions) => {
     [addFiles],
   );
 
-  const openFileDialog = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
+  const openFileDialog = useCallback(() => inputRef.current?.click(), []);
 
   const getInputProps = useCallback(
-    (props: React.InputHTMLAttributes<HTMLInputElement> = {}) => ({
+    (props: ControlledInputProps = {}): React.ComponentProps<"input"> => ({
       ...props,
-      type: "file" as const,
-      onChange: handleFileChange,
-      accept: props.accept ?? accept,
-      multiple: props.multiple ?? multiple,
       ref: inputRef,
+      type: "file",
+      accept,
+      multiple,
+      onChange: handleFileChange,
     }),
     [accept, multiple, handleFileChange],
   );
@@ -331,4 +323,4 @@ export const useFileUpload = (options?: FileUploadOptions) => {
       getInputProps,
     },
   ];
-};
+}
