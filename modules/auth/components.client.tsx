@@ -93,7 +93,7 @@ import { filterFn } from "@/core/data-filter";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { sharedSchemas } from "@/core/schema.zod";
 import { getPresignUrl, removeFiles, uploadFiles } from "@/core/storage";
-import { formatDate } from "@/core/utils/date";
+import { formatLocalizedDate } from "@/core/utils/date";
 import { capitalize } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -930,7 +930,7 @@ const getUserColumns = (
     header: (c) => (
       <ColumnHeader column={c.column}>Terakhir Diperbarui</ColumnHeader>
     ),
-    cell: (c) => formatDate(c.cell.getValue(), "PPPp"),
+    cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
     meta: {
       displayName: "Terakhir Diperbarui",
@@ -941,7 +941,7 @@ const getUserColumns = (
   createUserColumn.accessor((c) => c.createdAt, {
     id: "createdAt",
     header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
-    cell: (c) => formatDate(c.cell.getValue(), "PPPp"),
+    cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
     meta: {
       displayName: "Waktu Dibuat",

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@/core/utils/date";
+import { formatLocalizedDate } from "@/core/utils/date";
 import { cn } from "@/core/utils/helpers";
 import { id } from "date-fns/locale";
 import {
@@ -22,6 +22,7 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 export function Calendar({
   locale = id,
+  captionLayout = "dropdown",
   showOutsideDays = true,
   formatters,
   className,
@@ -89,10 +90,11 @@ export function Calendar({
     <DayPicker
       data-slot="calendar"
       locale={locale}
+      captionLayout={captionLayout}
       showOutsideDays={showOutsideDays}
       formatters={{
-        formatMonthDropdown: (date) => formatDate(date, "MMM"),
-        formatWeekdayName: (date) => formatDate(date, "EEEEEE"),
+        formatMonthDropdown: (date) => formatLocalizedDate(date, "MMM"),
+        formatWeekdayName: (date) => formatLocalizedDate(date, "EEEEEE"),
         ...formatters,
       }}
       className={cn(

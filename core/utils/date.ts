@@ -11,7 +11,7 @@ import { id } from "date-fns/locale";
 
 const locale = id;
 
-export function sanitizeDate(str: string) {
+export function sanitizeDateStr(str: string) {
   const digits = str.replace(/\D/g, "");
   if (digits.length <= 8) return digits;
   return digits.slice(0, 7) + digits[digits.length - 1];
@@ -33,14 +33,14 @@ export function formatDDMMYY(str: string) {
 }
 
 export function parseDDMMYYYY(str: string) {
-  const digits = sanitizeDate(str);
+  const digits = sanitizeDateStr(str);
   if (digits.length !== 8) return;
   const formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
   const parsed = parse(formatted, "dd/MM/yyyy", new Date());
   return isValid(parsed) ? parsed : undefined;
 }
 
-export function formatDate(date: Date, formatStr: string) {
+export function formatLocalizedDate(date: Date, formatStr: string) {
   return format(date, formatStr, { locale });
 }
 
@@ -49,12 +49,12 @@ export function formatDateRange(start: Date, end: Date) {
   const sameYear = start.getFullYear() === end.getFullYear();
 
   if (sameMonth && sameYear)
-    return `${formatDate(start, "MMM d")} - ${formatDate(end, "d, yyyy")}`;
+    return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "d, yyyy")}`;
 
   if (sameYear)
-    return `${formatDate(start, "MMM d")} - ${formatDate(end, "MMM d, yyyy")}`;
+    return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 
-  return `${formatDate(start, "MMM d, yyyy")} - ${formatDate(end, "MMM d, yyyy")}`;
+  return `${formatLocalizedDate(start, "MMM d, yyyy")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 }
 
 export function formatDateDistanceToNow(date: Date) {

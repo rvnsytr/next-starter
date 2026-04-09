@@ -7,10 +7,7 @@ import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { Button, ButtonProps } from "./button";
-import { LoadingFallback } from "./fallback";
-import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
 import { Kbd } from "./kbd";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
 export type Theme = (typeof allThemes)[number];
@@ -84,32 +81,32 @@ export function ThemeToggle({
   );
 }
 
-export function ThemeSettings() {
-  const isMounted = useIsMounted();
-  const { theme, setTheme } = useTheme();
+// export function ThemeSettings() {
+//   const isMounted = useIsMounted();
+//   const { theme, setTheme } = useTheme();
 
-  if (!isMounted) return <LoadingFallback />;
+//   if (!isMounted) return <LoadingFallback />;
 
-  return (
-    <RadioGroup
-      value={theme}
-      defaultValue="system"
-      onValueChange={setTheme}
-      className="grid grid-cols-3"
-      required
-    >
-      {Object.entries(themeConfig).map(([k, { icon: Icon }]) => (
-        <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
-          <Field>
-            <FieldContent className="items-center">
-              <FieldTitle className="flex-col capitalize md:flex-row">
-                <Icon /> {k}
-              </FieldTitle>
-            </FieldContent>
-            <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
-          </Field>
-        </FieldLabel>
-      ))}
-    </RadioGroup>
-  );
-}
+//   return (
+//     <RadioGroup
+//       value={theme}
+//       defaultValue="system"
+//       onValueChange={setTheme}
+//       className="grid grid-cols-3"
+//       required
+//     >
+//       {Object.entries(themeConfig).map(([k, { icon: Icon }]) => (
+//         <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
+//           <Field>
+//             <FieldContent className="items-center">
+//               <FieldTitle className="flex-col capitalize md:flex-row">
+//                 <Icon /> {k}
+//               </FieldTitle>
+//             </FieldContent>
+//             <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
+//           </Field>
+//         </FieldLabel>
+//       ))}
+//     </RadioGroup>
+//   );
+// }

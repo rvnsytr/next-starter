@@ -1,4 +1,4 @@
-import { formatDate, formatDateDistanceToNow } from "./utils/date";
+import { formatDateDistanceToNow, formatLocalizedDate } from "./utils/date";
 import { capitalize, formatBytes } from "./utils/formaters";
 
 export const messages = {
@@ -44,7 +44,7 @@ export const messages = {
   thingAgo: (thing: string, time: Date) =>
     `${capitalize(thing, "first")} ${formatDateDistanceToNow(time)} yang lalu.`,
   dateRelative: (time: Date, mode: "future" | "past" = "past") =>
-    `${formatDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} ${mode === "past" ? "yang lalu" : "dari sekarang"}.`,
+    `${formatLocalizedDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} ${mode === "past" ? "yang lalu" : "dari sekarang"}.`,
 
   // -- Validation
   invalid: (field: string) => `${capitalize(field, "first")} tidak valid.`,
@@ -72,9 +72,9 @@ export const messages = {
 
   date: {
     tooEarly: (field: string, min: Date) =>
-      `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatDate(min, "PPP")}.`,
+      `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatLocalizedDate(min, "PPP")}.`,
     tooLate: (field: string, max: Date) =>
-      `${capitalize(field, "first")} tidak boleh lebih lambat dari ${formatDate(max, "PPP")}.`,
+      `${capitalize(field, "first")} tidak boleh lebih lambat dari ${formatLocalizedDate(max, "PPP")}.`,
     tooFew: (field: string, min: number) =>
       `${capitalize(field, "first")} harus terdiri dari minimal ${min} tanggal.`,
     tooMany: (field: string, max: number) =>

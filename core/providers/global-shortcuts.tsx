@@ -1,9 +1,8 @@
 "use client";
 
-import { THEME_TOGGLE_HOTKEY } from "@/core/components/ui/theme";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { nextTheme } from "../components/ui/theme";
+import { nextTheme, THEME_TOGGLE_HOTKEY } from "../components/ui/theme";
 
 export function GlobalShortcuts() {
   const { setTheme } = useTheme();

@@ -21,7 +21,7 @@ import {
 } from "@/core/data-filter";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { formatDate } from "@/core/utils/date";
+import { formatLocalizedDate } from "@/core/utils/date";
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
@@ -896,12 +896,12 @@ function formatDateRange(start: Date, end: Date) {
   const sameYear = start.getFullYear() === end.getFullYear();
 
   if (sameMonth && sameYear)
-    return `${formatDate(start, "MMM d")} - ${formatDate(end, "d, yyyy")}`;
+    return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "d, yyyy")}`;
 
   if (sameYear)
-    return `${formatDate(start, "MMM d")} - ${formatDate(end, "MMM d, yyyy")}`;
+    return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 
-  return `${formatDate(start, "MMM d, yyyy")} - ${formatDate(end, "MMM d, yyyy")}`;
+  return `${formatLocalizedDate(start, "MMM d, yyyy")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 }
 
 export function FilterValueDateDisplay<TData, TValue>({
@@ -915,7 +915,7 @@ export function FilterValueDateDisplay<TData, TValue>({
   if (filter.values.length === 0) return <EllipsisIcon />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
-    const formattedDateStr = formatDate(value, "MMM d, yyyy");
+    const formattedDateStr = formatLocalizedDate(value, "MMM d, yyyy");
     return <span>{formattedDateStr}</span>;
   }
 
