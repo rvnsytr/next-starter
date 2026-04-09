@@ -6,10 +6,12 @@
 //   )
 // }
 
+import { PasswordInput } from "@/core/components/features/password-input";
 import {
   CommandPaletteGroup,
   QuickSearch,
 } from "@/core/components/features/quick-search";
+import { Scrollspy } from "@/core/components/features/scroll-spy";
 import { FooterNote } from "@/core/components/layout/footer-note";
 import { PageTitle } from "@/core/components/layout/page";
 import {
@@ -138,7 +140,6 @@ import {
 } from "@/core/components/ui/popover";
 import { R } from "@/core/components/ui/r";
 import { Scales, ScalesWrapper } from "@/core/components/ui/scales";
-import { Scrollspy } from "@/core/components/ui/scroll-spy";
 import {
   Select,
   SelectGroup,
@@ -249,7 +250,7 @@ const docs: Docs[] = [
       { type: "comp", label: "Date Picker" },
       {
         type: "comp",
-        label: "Dynamic Breadcrumb",
+        label: "Dynamic Bcreadcrumb",
         refs: [{ url: "/#components-breadcrumb" }],
       },
       {
@@ -262,8 +263,14 @@ const docs: Docs[] = [
         ),
       },
       { type: "comp", label: "Import Dialog" },
-      { type: "comp", label: "Password Input" },
-      { type: "comp", label: "Scroll Spy" },
+      {
+        type: "comp",
+        label: "Password Input",
+        render: (
+          <PasswordInput placeholder="Enter your password" withValidationList />
+        ),
+      },
+      { type: "comp", label: "Scrollspy", refs: ["reui"] },
       {
         type: "comp",
         label: "Quick Search",

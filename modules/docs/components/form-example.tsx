@@ -6,6 +6,7 @@ import {
   DatePicker,
   DateRangePicker,
 } from "@/core/components/features/date-picker";
+import { PasswordInput } from "@/core/components/features/password-input";
 import { Button, ResetButton } from "@/core/components/ui/button";
 import {
   Field,
@@ -41,13 +42,18 @@ const formSchema = z.object({
   number: sharedSchemas.number({ label: "Quantity", min: 1 }),
   // phone: sharedSchemas.number("Phone field", { min: 1 }),
 
-  date: sharedSchemas.date({ label: "Date field", max: "now" }),
+  date: sharedSchemas.date({
+    label: "Date field",
+    max: addDays(new Date(), 1),
+  }),
   dateMultiple: sharedSchemas.dateMultiple({
     label: "Available at",
     minDate: 1,
     maxDate: 2,
   }),
   dateRange: sharedSchemas.dateRange({ label: "Schedule" }),
+
+  password: sharedSchemas.password,
 
   // select: z.enum(card),
   // multiSelect: z.array(z.enum(card)).min(1),
@@ -85,6 +91,7 @@ export function FormExample() {
       //   multiSelect: ["spade"],
       //   radio: "spade",
 
+      password: "Example#123",
       //   switch: false,
       // checkbox: ["firefox"],
 
@@ -228,6 +235,29 @@ export function FormExample() {
               onSelect={field.onChange}
               className="w-full"
               required
+            />
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="password"
+        render={({ field, fieldState }) => (
+          <Field
+            name={field.name}
+            invalid={fieldState.invalid}
+            className="col-span-2"
+          >
+            <FieldLabel>Password</FieldLabel>
+            <PasswordInput
+              placeholder="Enter your password"
+              required
+              withValidationList
+              {...field}
             />
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
