@@ -13,7 +13,8 @@ export function Field({
       data-slot="field"
       invalid={invalid}
       className={cn(
-        "flex flex-col items-start gap-2",
+        "group/field flex flex-col items-start gap-2",
+        "has-required:**:[[data-slot=field-label],[data-slot=label]]:after:text-destructive-foreground has-required:**:[[data-slot=field-label],[data-slot=label]]:after:content-['*']",
         invalid &&
           "**:[[data-slot=field-label],[data-slot=label]]:text-destructive-foreground",
         className,

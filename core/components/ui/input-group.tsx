@@ -11,9 +11,9 @@ const inputGroupAddonVariants = cva(
     variants: {
       align: {
         "block-end":
-          "order-last w-full justify-start px-[calc(--spacing(3)-1px)] pb-[calc(--spacing(3)-1px)] [.border-t]:pt-[calc(--spacing(3)-1px)] [[data-size=sm]+&]:px-[calc(--spacing(2.5)-1px)]",
+          "order-last w-full justify-start px-[calc(--spacing(3)-1px)] pb-[calc(--spacing(2)-1px)] [.border-t]:pt-[calc(--spacing(2)-1px)] [[data-size=sm]+&]:px-[calc(--spacing(2.5)-1px)]",
         "block-start":
-          "order-first w-full justify-start px-[calc(--spacing(3)-1px)] pt-[calc(--spacing(3)-1px)] [.border-b]:pb-[calc(--spacing(3)-1px)] [[data-size=sm]+&]:px-[calc(--spacing(2.5)-1px)]",
+          "order-first w-full justify-start px-[calc(--spacing(3)-1px)] pt-[calc(--spacing(2)-1px)] [.border-b]:pb-[calc(--spacing(2)-1px)] [[data-size=sm]+&]:px-[calc(--spacing(2.5)-1px)]",
         "inline-end":
           "order-last pe-[calc(--spacing(3)-1px)] has-[>:last-child[data-slot=badge]]:-me-1.5 has-[>button]:-me-2 has-[>kbd:last-child]:me-[-0.35rem] [[data-size=sm]+&]:pe-[calc(--spacing(2.5)-1px)]",
         "inline-start":
@@ -48,14 +48,13 @@ export function InputGroup({
         !disableFocusStyle &&
           "has-[input:focus-visible,textarea:focus-visible]:border-ring has-[input:focus-visible,textarea:focus-visible]:ring-[3px]",
         // Invalid
-        "has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive/36 dark:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/24",
+        "has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive/50 dark:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
         // Focus Invalid
-        "has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive/64 has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/16",
+        "has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/20 dark:has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
         // Textarea
         "**:[textarea]:min-h-20.5 **:[textarea]:resize-none **:[textarea]:py-[calc(--spacing(3)-1px)]",
         // Misc
         "*:[[data-slot=input-control],[data-slot=textarea-control]]:contents *:[[data-slot=input-control],[data-slot=textarea-control]]:before:hidden",
-
         className,
       )}
       {...props}

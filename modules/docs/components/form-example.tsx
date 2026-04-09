@@ -152,11 +152,7 @@ export function FormExample() {
         control={form.control}
         name="textarea"
         render={({ field, fieldState }) => (
-          <Field
-            name={field.name}
-            invalid={fieldState.invalid}
-            className="col-span-2"
-          >
+          <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Description</FieldLabel>
             <Textarea placeholder="Type your message here" {...field} />
             <FieldError match={!!fieldState.error}>
@@ -166,26 +162,24 @@ export function FormExample() {
         )}
       />
 
-      <div className="col-span-2 grid gap-x-2 gap-y-4 md:grid-cols-3">
-        <Controller
-          name="date"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Date Picker with Calendar</FieldLabel>
-              <DatePicker
-                id={field.name}
-                selected={field.value}
-                onSelect={field.onChange}
-                required
-              />
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
-            </Field>
-          )}
-        />
-      </div>
+      <Controller
+        name="date"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>Birth Date</FieldLabel>
+            <DatePicker
+              id={field.name}
+              selected={field.value}
+              onSelect={field.onChange}
+              required
+            />
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
 
       <div className="flex gap-2">
         <Button type="submit">

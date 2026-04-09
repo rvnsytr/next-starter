@@ -59,7 +59,7 @@ export function NumberFieldDecrement({
     <NumberFieldPrimitive.Decrement
       data-slot="number-field-decrement"
       className={cn(
-        "hover:bg-accent relative flex shrink-0 cursor-pointer items-center justify-center px-[calc(--spacing(3)-1px)] transition-colors in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
+        "hover:bg-accent relative flex shrink-0 cursor-pointer items-center justify-center px-[calc(--spacing(2)-1px)] transition-colors in-data-[size=sm]:px-[calc(--spacing(1.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
         className,
       )}
       {...props}
@@ -77,7 +77,7 @@ export function NumberFieldIncrement({
     <NumberFieldPrimitive.Increment
       data-slot="number-field-increment"
       className={cn(
-        "hover:bg-accent relative flex shrink-0 cursor-pointer items-center justify-center px-[calc(--spacing(3)-1px)] transition-colors in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
+        "hover:bg-accent relative flex shrink-0 cursor-pointer items-center justify-center px-[calc(--spacing(2)-1px)] transition-colors in-data-[size=sm]:px-[calc(--spacing(1.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
         className,
       )}
       {...props}
@@ -95,7 +95,7 @@ export function NumberFieldInput({
     <NumberFieldPrimitive.Input
       data-slot="number-field-input"
       className={cn(
-        "h-7.5 w-full min-w-0 grow bg-transparent px-[calc(--spacing(3)-1px)] leading-7.5 tabular-nums outline-none [transition:background-color_5000000s_ease-in-out_0s] in-data-[size=lg]:h-8.5 in-data-[size=lg]:leading-8.5 in-data-[size=sm]:h-6.5 in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:leading-8.5",
+        "h-8 w-full min-w-0 grow bg-transparent px-[calc(--spacing(3)-1px)] leading-7.5 tabular-nums outline-none [transition:background-color_5000000s_ease-in-out_0s] in-data-[size=lg]:h-8.5 in-data-[size=lg]:leading-8.5 in-data-[size=sm]:h-6.5 in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:leading-8.5",
         className,
       )}
       {...props}

@@ -132,7 +132,7 @@ export const sharedSchemas = {
     const max = options?.max;
 
     const invalidError = label && messages.invalid(label);
-    let schema = z.coerce.date({ error: invalidError });
+    let schema = z.date({ error: invalidError });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
