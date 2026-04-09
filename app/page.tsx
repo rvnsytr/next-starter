@@ -851,7 +851,7 @@ const docs: Docs[] = [
         refs: [{ url: "/#components-alert" }],
         render: (
           <>
-            <LoadingFallback className="h-24 w-full max-w-lg border" />
+            <LoadingFallback className="h-24 w-full max-w-lg rounded-xl border" />
 
             <ErrorFallback
               error={JSON.stringify(

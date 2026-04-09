@@ -165,7 +165,7 @@ export function DateMultiPicker({
         }
       />
 
-      <PopoverPopup className="size-fit p-0">
+      <PopoverPopup align="end" className="size-fit p-0">
         <Calendar mode="multiple" selected={selected} {...props} />
       </PopoverPopup>
     </Popover>
@@ -205,7 +205,7 @@ export function DateRangePicker({
         }
       />
 
-      <PopoverPopup className="size-fit p-0">
+      <PopoverPopup align="end" className="size-fit p-0">
         <Calendar
           mode="range"
           numberOfMonths={2}
