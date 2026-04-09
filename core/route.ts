@@ -1,6 +1,6 @@
 import { appConfig } from "@/config/app";
 import { Menu } from "@/config/menu/types";
-import { routesMeta } from "@/config/route";
+import { routesConfig } from "@/config/route";
 import { Role } from "@/modules/auth/constants";
 import { Route } from "next";
 
@@ -8,7 +8,7 @@ export type RouteRole = "all" | Role[];
 
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
-  const meta = routesMeta[route];
+  const meta = routesConfig[route];
   if (!meta) return false;
   if (!meta.role) return true;
   return meta.role && (meta.role === "all" || meta.role.includes(role));
@@ -24,7 +24,7 @@ export function setRouteTitle(title: string) {
 }
 
 export function getRouteTitle(route: Route) {
-  return setRouteTitle(routesMeta[route].label);
+  return setRouteTitle(routesConfig[route].label);
 }
 
 export function getRouteHierarchy(path: string): Route[] {
@@ -33,7 +33,7 @@ export function getRouteHierarchy(path: string): Route[] {
 }
 
 export function getActiveRoute(menu: Menu[], pathname: string) {
-  const allRoutes = Object.keys(routesMeta) as Route[];
+  const allRoutes = Object.keys(routesConfig) as Route[];
   const allMenuRoutes = menu.flatMap((m) => m.content.map((c) => c.route));
 
   const parts = pathname.split("/").filter(Boolean);
@@ -59,7 +59,7 @@ export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {
   const filteredMenu = menu.map(({ section, content }) => {
     const filteredContent = content
       .filter(({ route }) => {
-        const meta = routesMeta[route];
+        const meta = routesConfig[route];
         if (!("role" in meta)) return true;
         return checkRole(meta.role);
       })

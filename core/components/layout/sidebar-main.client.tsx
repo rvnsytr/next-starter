@@ -1,6 +1,6 @@
 "use client";
 
-import { routesMeta } from "@/core/constants";
+import { routesConfig } from "@/core/constants";
 import { useIsMounted } from "@/core/hooks";
 import { getActiveRoute, getMenuByRole, toKebab } from "@/core/utils";
 import { useAuth, UserAvatar, UserVerifiedBadge } from "@/modules/auth";
@@ -103,7 +103,7 @@ export function SidebarMainContent() {
 
           <SidebarMenu>
             {content.map(({ route, icon: Icon, disabled, subMenu }) => {
-              const { displayName } = routesMeta[route];
+              const { displayName } = routesConfig[route];
 
               const isActive = route === getActiveRoute(pathname);
               const iconElement = Icon && <Icon />;

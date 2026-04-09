@@ -1,6 +1,6 @@
 "use client";
 
-import { routesMeta } from "@/config/route";
+import { routesConfig } from "@/config/route";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
 import {
@@ -36,7 +36,7 @@ export function BreadcrumbProvider({
 
   const setByPathname = useCallback(() => {
     const crumbs = getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
-      const meta = routesMeta[r];
+      const meta = routesConfig[r];
       return meta ? [{ href: r, label: meta.label }] : [];
     });
     setBreadcrumbs(crumbs);
