@@ -1,7 +1,11 @@
 "use client";
 
 import { languageMeta } from "@/config/app";
-import { DatePicker } from "@/core/components/features/date-picker";
+import {
+  DateMultiPicker,
+  DatePicker,
+  DateRangePicker,
+} from "@/core/components/features/date-picker";
 import { Button, ResetButton } from "@/core/components/ui/button";
 import {
   Field,
@@ -24,25 +28,26 @@ import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { addDays } from "date-fns";
 import { SaveIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = z.object({
-  text: sharedSchemas.string({ label: "Text field", min: 1 }),
-  textarea: sharedSchemas.string({ label: "Text Area", min: 1, max: 255 }),
+  text: sharedSchemas.string({ label: "Name", min: 1 }),
+  textarea: sharedSchemas.string({ label: "Description", min: 1, max: 255 }),
 
-  number: sharedSchemas.number({ label: "Number field", min: 1 }),
+  number: sharedSchemas.number({ label: "Quantity", min: 1 }),
   // phone: sharedSchemas.number("Phone field", { min: 1 }),
 
-  // TODO
   date: sharedSchemas.date({ label: "Date field", max: "now" }),
-  // dateMultiple: sharedSchemas.dateMultiple({
-  //   label: "Multi date field",
-  //   min: 1,
-  // }),
-  // dateRange: sharedSchemas.dateRange,
+  dateMultiple: sharedSchemas.dateMultiple({
+    label: "Available at",
+    minDate: 1,
+    maxDate: 2,
+  }),
+  dateRange: sharedSchemas.dateRange({ label: "Schedule" }),
 
   // select: z.enum(card),
   // multiSelect: z.array(z.enum(card)).min(1),
@@ -73,15 +78,15 @@ export function FormExample() {
       //   phone: 81234567890,
 
       date: now,
-      //   dateMultiple: [now],
-      //   dateRange: { from: now, to: addDays(now, 6) },
+      dateMultiple: [now],
+      dateRange: { from: now, to: addDays(now, 6) },
 
       //   select: "spade",
       //   multiSelect: ["spade"],
       //   radio: "spade",
 
       //   switch: false,
-      //   checkbox: ["firefox"],
+      // checkbox: ["firefox"],
 
       //   files: [],
     },
@@ -105,7 +110,7 @@ export function FormExample() {
   return (
     <Form
       onSubmit={form.handleSubmit(formHandler)}
-      className="grid grid-cols-2"
+      className="grid sm:grid-cols-2"
     >
       <Controller
         control={form.control}
@@ -113,7 +118,12 @@ export function FormExample() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Name</FieldLabel>
-            <Input type="text" placeholder="Enter your name" {...field} />
+            <Input
+              type="text"
+              placeholder="Enter your name"
+              required
+              {...field}
+            />
             <FieldDescription>Visible on your profile</FieldDescription>
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
@@ -131,6 +141,7 @@ export function FormExample() {
               defaultValue={0}
               locale={languageMeta.id.locale}
               onValueChange={onChange}
+              required
               {...field}
             >
               <NumberFieldScrubArea label="Quantity" />
@@ -154,7 +165,11 @@ export function FormExample() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Description</FieldLabel>
-            <Textarea placeholder="Type your message here" {...field} />
+            <Textarea
+              placeholder="Type your message here"
+              required
+              {...field}
+            />
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>
@@ -172,6 +187,46 @@ export function FormExample() {
               id={field.name}
               selected={field.value}
               onSelect={field.onChange}
+              required
+            />
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="dateMultiple"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>Available at</FieldLabel>
+            <DateMultiPicker
+              id={field.name}
+              selected={field.value}
+              onSelect={field.onChange}
+              className="w-full"
+              required
+            />
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="dateRange"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>Schedule</FieldLabel>
+            <DateRangePicker
+              id={field.name}
+              selected={field.value}
+              onSelect={field.onChange}
+              className="w-full"
               required
             />
             <FieldError match={!!fieldState.error}>

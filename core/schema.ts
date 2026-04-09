@@ -151,31 +151,31 @@ export const sharedSchemas = {
 
   dateMultiple: (options?: {
     label?: string;
-    min?: number;
-    max?: number;
-    minDate?: Date | "now";
-    maxDate?: Date | "now";
+    min?: Date | "now";
+    max?: Date | "now";
+    minDate?: number;
+    maxDate?: number;
   }) => {
     const { invalid, required } = messages;
     const { tooEarly, tooLate, tooFew, tooMany } = messages.date;
 
     const label = options?.label ?? undefined;
-    const min = options?.min;
-    const max = options?.max;
     const minDate = options?.minDate;
     const maxDate = options?.maxDate;
+    const min = options?.min;
+    const max = options?.max;
 
     const invalidError = label && invalid(label);
     let dateSchema = z.date({ error: invalidError });
 
-    if (minDate) {
-      const value = minDate === "now" ? new Date() : minDate;
+    if (min) {
+      const value = min === "now" ? new Date() : min;
       const error = label && tooEarly(label, value);
       dateSchema = dateSchema.min(value, { error });
     }
 
-    if (maxDate) {
-      const value = maxDate === "now" ? new Date() : maxDate;
+    if (max) {
+      const value = max === "now" ? new Date() : max;
       const error = label && tooLate(label, value);
       dateSchema = dateSchema.max(value, { error });
     }
@@ -185,26 +185,50 @@ export const sharedSchemas = {
       : undefined;
     let schema = z.array(dateSchema, { error: arrayInvalidError });
 
-    if (min) {
-      const error = label && (min <= 1 ? required : tooFew)(label, min);
-      schema = schema.min(min, { error });
+    if (minDate) {
+      const error = label && (minDate <= 1 ? required : tooFew)(label, minDate);
+      schema = schema.min(minDate, { error });
     }
 
-    if (max) {
-      const error = label && tooMany(label, max);
-      schema = schema.max(max, { error });
+    if (maxDate) {
+      const error = label && tooMany(label, maxDate);
+      schema = schema.max(maxDate, { error });
     }
 
     return schema;
   },
 
-  dateRange: z.object(
-    {
-      from: z.date({ error: "Pilih tanggal mulai yang valid." }),
-      to: z.date({ error: "Pilih tanggal akhir yang valid." }),
-    },
-    { error: "Pilih rentang tanggal yang valid." },
-  ),
+  dateRange: (options?: {
+    label?: string;
+    min?: Date | "now";
+    max?: Date | "now";
+  }) => {
+    const { tooEarly, tooLate } = messages.date;
+
+    const label = options?.label ?? undefined;
+    const min = options?.min;
+    const max = options?.max;
+
+    let fromSchema = z.date({ error: "Pilih tanggal mulai yang valid." });
+    let toSchema = z.date({ error: "Pilih tanggal akhir yang valid." });
+
+    if (min) {
+      const value = min === "now" ? new Date() : min;
+      const error = label && tooEarly(label, value);
+      fromSchema = fromSchema.min(value, { error });
+    }
+
+    if (max) {
+      const value = max === "now" ? new Date() : max;
+      const error = label && tooLate(label, value);
+      toSchema = toSchema.max(value, { error });
+    }
+
+    return z.object(
+      { from: fromSchema, to: toSchema },
+      { error: "Pilih rentang tanggal yang valid." },
+    );
+  },
 
   jsonString: <T>(schema: z.ZodType<T>) =>
     z

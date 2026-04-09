@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  formatDate,
   formatDDMMYY,
+  formatLocalizedDate,
   parseDDMMYYYY,
-  sanitizeDate,
+  sanitizeDateStr,
 } from "@/core/utils/date";
 import { cn } from "@/core/utils/helpers";
 import { isSameDay } from "date-fns";
@@ -23,10 +23,10 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "../ui/input-group";
+import { Label } from "../ui/label";
 import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
 
 export type DatePickerBaseProps = Omit<PropsBase, "mode"> & {
-  invalid?: boolean;
   required?: boolean;
 };
 
@@ -50,18 +50,13 @@ function RequiredBridge({ required }: { required?: boolean }) {
   return <Input className="hidden" disabled required={required} />;
 }
 
-export function DatePicker({
-  invalid = false,
-  selected,
-  onSelect,
-  ...props
-}: DatePickerProps) {
+export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [strValue, setStrValue] = useState<string>("");
 
   const onDateSelected = useEffectEvent(() => {
     if (!selected) return setStrValue("");
-    const formatted = formatDate(selected, "ddMMyyyy");
+    const formatted = formatLocalizedDate(selected, "ddMMyyyy");
     if (formatted !== strValue) setStrValue(formatted);
   });
 
@@ -70,17 +65,16 @@ export function DatePicker({
   return (
     <InputGroup>
       <InputGroupInput
-        type="text"
         id={props.id}
-        aria-invalid={invalid}
-        required={props.required}
-        placeholder="DD/MM/YYYY"
+        type="text"
+        placeholder="dd/mm/yyyy"
         inputMode="numeric"
-        value={formatDDMMYY(strValue)}
+        required={props.required}
         disabled={props.disabled === true || isPopoverOpen}
+        value={formatDDMMYY(strValue)}
         onChange={(e) => {
           const raw = e.target.value;
-          const sanitized = sanitizeDate(raw);
+          const sanitized = sanitizeDateStr(raw);
 
           setStrValue(sanitized);
           const parsed = parseDDMMYYYY(sanitized);
@@ -90,25 +84,38 @@ export function DatePicker({
         }}
       />
 
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon
+        align="block-end"
+        className="flex items-center justify-between"
+      >
+        <Label
+          data-slot="date-picker-label"
+          className="group-invalid/field:text-destructive text-muted-foreground text-xs"
+        >
+          {selected ? formatLocalizedDate(selected, "PPPP") : "-"}
+        </Label>
+
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             render={
               <Button
+                data-slot="date-picker-trigger"
                 size="icon-xs"
-                variant={invalid ? "destructive-outline" : "outline"}
+                variant="ghost"
                 disabled={props.disabled === true}
-                className={cn(
-                  !selected && "text-muted-foreground",
-                  invalid && "border-destructive text-destructive",
-                )}
+                className={cn(!selected && "text-muted-foreground")}
               >
                 <CalendarIcon />
               </Button>
             }
           />
 
-          <PopoverPopup align="end" sideOffset={12} className="size-fit p-0">
+          <PopoverPopup
+            align="end"
+            sideOffset={12}
+            alignOffset={-12}
+            className="size-fit p-0"
+          >
             <Calendar
               mode="single"
               selected={selected}
@@ -124,16 +131,16 @@ export function DatePicker({
 }
 
 export function DateMultiPicker({
-  invalid,
+  className,
   selected,
   ...props
 }: DateMultiProps) {
-  let value = null;
+  let value: string | null = null;
 
   if (selected && selected.length > 0) {
     const max = 1;
     const { length } = selected;
-    const dates = selected.map((date) => formatDate(date, "PPP"));
+    const dates = selected.map((date) => formatLocalizedDate(date, "PPP"));
 
     value = dates.slice(0, max).join(", ");
     if (length > max) value += `, dan ${length - max} lainnya`;
@@ -145,12 +152,12 @@ export function DateMultiPicker({
       <PopoverTrigger
         render={
           <Button
-            variant={invalid ? "destructive-outline" : "outline"}
+            variant="outline"
             disabled={props.disabled === true}
             className={cn(
               "justify-between",
               !selected?.length && "text-muted-foreground",
-              invalid && "border-destructive text-destructive",
+              className,
             )}
           >
             {value ?? "Pilih tanggal"} <CalendarDaysIcon />
@@ -166,18 +173,18 @@ export function DateMultiPicker({
 }
 
 export function DateRangePicker({
-  invalid,
+  className,
   selected,
   ...props
 }: DateRangeProps) {
-  let value = null;
+  let value: string | null = null;
 
   if (selected?.from) {
     const { from, to } = selected;
     value =
       to && !isSameDay(from, to)
-        ? `${formatDate(from, "PPP")} - ${formatDate(to, "PPP")}`
-        : formatDate(from, "PPP");
+        ? `${formatLocalizedDate(from, "PPP")} - ${formatLocalizedDate(to, "PPP")}`
+        : formatLocalizedDate(from, "PPP");
   }
   return (
     <Popover>
@@ -185,12 +192,12 @@ export function DateRangePicker({
       <PopoverTrigger
         render={
           <Button
-            variant={invalid ? "destructive-outline" : "outline"}
+            variant="outline"
             disabled={props.disabled === true}
             className={cn(
               "justify-between",
               !selected?.from && "text-muted-foreground",
-              invalid && "border-destructive text-destructive",
+              className,
             )}
           >
             {value ?? "Pilih rentang tanggal"} <CalendarRangeIcon />
