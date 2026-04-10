@@ -1,6 +1,6 @@
 "use client";
 
-import { languageMeta } from "@/config/app";
+import { languageConfig } from "@/config/app";
 import {
   DateMultiPicker,
   DatePicker,
@@ -184,7 +184,7 @@ export function FormExample() {
           <Field name={field.name} invalid={fieldState.invalid}>
             <NumberField
               defaultValue={0}
-              locale={languageMeta.id.locale}
+              locale={languageConfig.id.locale}
               onValueChange={onChange}
               required
               {...field}

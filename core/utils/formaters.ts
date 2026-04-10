@@ -1,4 +1,4 @@
-import { appConfig, Language, languageMeta } from "@/config/app";
+import { appConfig, Language, languageConfig } from "@/config/app";
 import z from "zod";
 import {
   ActionResponse,
@@ -112,7 +112,8 @@ export function formatNumber(
   props?: { lang?: Language; options?: Intl.NumberFormatOptions },
 ) {
   const locale =
-    languageMeta[props?.lang ?? (appConfig.defaultLanguage as Language)].locale;
+    languageConfig[props?.lang ?? (appConfig.defaultLanguage as Language)]
+      .locale;
   const value = new Intl.NumberFormat(locale, props?.options).format(number);
   return value === "0" ? "0" : value;
 }

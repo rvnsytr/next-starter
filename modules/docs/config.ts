@@ -5,7 +5,7 @@ export type Docs = {
   section: string;
   content: ({
     refs?: (
-      | keyof typeof docsFromMeta
+      | keyof typeof docsFromConfig
       | { type?: "internal" | "external"; url: string; label?: string }
     )[];
     render?: (() => React.ReactNode) | React.ReactNode;
@@ -20,7 +20,7 @@ export type Docs = {
   ))[];
 };
 
-export const docsFromMeta: Record<
+export const docsFromConfig: Record<
   | "aceternityui"
   | "cosshooks"
   | "cossui"

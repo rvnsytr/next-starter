@@ -14,7 +14,7 @@ export const appConfig = {
 export type Language = (typeof allLanguages)[number];
 export const allLanguages = ["en", "id", "es", "fr", "de", "ar"] as const;
 
-export const languageMeta: Record<
+export const languageConfig: Record<
   Language,
   { locale: string; currency: string; decimal: number; symbol: string }
 > = {

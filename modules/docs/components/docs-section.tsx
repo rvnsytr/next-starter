@@ -4,7 +4,7 @@ import { toCase } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { ArrowUpRightIcon, AtomIcon, HashIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { Docs, docsFromMeta } from "../config";
+import { Docs, docsFromConfig } from "../config";
 
 export function DocsSection({
   fill = false,
@@ -62,7 +62,7 @@ export function DocsContentWrapper({
         return { type: type ?? "internal", ...rest };
       }
 
-      const { label, baseUrl } = docsFromMeta[r];
+      const { label, baseUrl } = docsFromConfig[r];
       const url = `${baseUrl}/${toCase(data.label, "kebab")}`;
       return { type: "meta" as const, url, label };
     })
