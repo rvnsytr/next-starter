@@ -72,7 +72,7 @@ function PopoverPopup({
   );
 }
 
-function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
+function PopoverClose(props: PopoverPrimitive.Close.Props) {
   return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
 

@@ -230,9 +230,7 @@ export function AutocompleteRow({
   );
 }
 
-export function AutocompleteValue({
-  ...props
-}: AutocompletePrimitive.Value.Props) {
+export function AutocompleteValue(props: AutocompletePrimitive.Value.Props) {
   return (
     <AutocompletePrimitive.Value data-slot="autocomplete-value" {...props} />
   );
@@ -272,9 +270,9 @@ export function AutocompleteStatus({
   );
 }
 
-export function AutocompleteCollection({
-  ...props
-}: AutocompletePrimitive.Collection.Props) {
+export function AutocompleteCollection(
+  props: AutocompletePrimitive.Collection.Props,
+) {
   return (
     <AutocompletePrimitive.Collection
       data-slot="autocomplete-collection"

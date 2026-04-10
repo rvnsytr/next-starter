@@ -6,13 +6,11 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 export const AlertDialogCreateHandle: typeof AlertDialogPrimitive.createHandle =
   AlertDialogPrimitive.createHandle;
 
-export function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
+export function AlertDialog(props: AlertDialogPrimitive.Root.Props) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }
 
-export function AlertDialogPortal({
-  ...props
-}: AlertDialogPrimitive.Portal.Props) {
+export function AlertDialogPortal(props: AlertDialogPrimitive.Portal.Props) {
   return (
     <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />
   );

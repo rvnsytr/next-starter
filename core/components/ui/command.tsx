@@ -25,9 +25,7 @@ const CommandDialogPortal: typeof CommandDialogPrimitive.Portal =
 const CommandCreateHandle: typeof CommandDialogPrimitive.createHandle =
   CommandDialogPrimitive.createHandle;
 
-function CommandDialogTrigger({
-  ...props
-}: CommandDialogPrimitive.Trigger.Props) {
+function CommandDialogTrigger(props: CommandDialogPrimitive.Trigger.Props) {
   return (
     <CommandDialogPrimitive.Trigger
       data-slot="command-dialog-trigger"
@@ -195,9 +193,9 @@ function CommandGroupLabel({
   );
 }
 
-function CommandCollection({
-  ...props
-}: React.ComponentProps<typeof AutocompleteCollection>) {
+function CommandCollection(
+  props: React.ComponentProps<typeof AutocompleteCollection>,
+) {
   return <AutocompleteCollection data-slot="command-collection" {...props} />;
 }
 

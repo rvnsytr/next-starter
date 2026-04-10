@@ -3,7 +3,7 @@ import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
-export function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
+export function Breadcrumb(props: React.ComponentProps<"nav">) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
 }
 

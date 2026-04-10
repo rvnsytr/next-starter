@@ -139,7 +139,7 @@ export function ComboboxInput({
   );
 }
 
-export function ComboboxTrigger({ ...props }: ComboboxPrimitive.Trigger.Props) {
+export function ComboboxTrigger(props: ComboboxPrimitive.Trigger.Props) {
   return <ComboboxPrimitive.Trigger data-slot="combobox-trigger" {...props} />;
 }
 
@@ -270,11 +270,11 @@ export function ComboboxEmpty({
   );
 }
 
-export function ComboboxRow({ ...props }: ComboboxPrimitive.Row.Props) {
+export function ComboboxRow(props: ComboboxPrimitive.Row.Props) {
   return <ComboboxPrimitive.Row {...props} />;
 }
 
-export function ComboboxValue({ ...props }: ComboboxPrimitive.Value.Props) {
+export function ComboboxValue(props: ComboboxPrimitive.Value.Props) {
   return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />;
 }
 
@@ -323,9 +323,7 @@ export function ComboboxChips({
   children,
   startAddon,
   ...props
-}: ComboboxPrimitive.Chips.Props & {
-  startAddon?: React.ReactNode;
-}) {
+}: ComboboxPrimitive.Chips.Props & { startAddon?: React.ReactNode }) {
   const { chipsRef } = useContext(ComboboxContext);
 
   return (

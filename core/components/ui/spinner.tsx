@@ -60,9 +60,7 @@ export function LoadingSpinner({
     : (icon?.base ?? null);
 }
 
-export function LinkSpinner({
-  ...props
-}: Omit<LoadingSpinnerProps, "loading">) {
+export function LinkSpinner(props: Omit<LoadingSpinnerProps, "loading">) {
   const { pending } = useLinkStatus();
   return <LoadingSpinner loading={pending} {...props} />;
 }

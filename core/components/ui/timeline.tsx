@@ -99,7 +99,7 @@ function TimelineDate({
   );
 }
 
-function TimelineHeader({ ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function TimelineHeader(props: React.HTMLAttributes<HTMLDivElement>) {
   return <div data-slot="timeline-header" {...props} />;
 }
 

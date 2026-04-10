@@ -7,15 +7,15 @@ import { CheckIcon, ChevronRightIcon } from "lucide-react";
 export const MenuCreateHandle: typeof MenuPrimitive.createHandle =
   MenuPrimitive.createHandle;
 
-export function Menu({ ...props }: MenuPrimitive.Root.Props) {
+export function Menu(props: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="menu" {...props} />;
 }
 
-export function MenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
+export function MenuPortal(props: MenuPrimitive.Portal.Props) {
   return <MenuPrimitive.Portal data-slot="menu-portal" {...props} />;
 }
 
-export function MenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
+export function MenuTrigger(props: MenuPrimitive.Trigger.Props) {
   return <MenuPrimitive.Trigger data-slot="menu-trigger" {...props} />;
 }
 
