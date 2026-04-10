@@ -42,7 +42,7 @@ export function ComboboxChipsInput({
       size={typeof size === "number" ? size : undefined}
       className={cn(
         "min-w-12 flex-1 text-sm outline-none [[data-slot=combobox-chip]+&]:ps-0.5",
-        size === "sm" ? "ps-0.5" : "ps-1",
+        size === "sm" ? "ps-1.5" : "ps-2",
         className,
       )}
       {...props}
@@ -331,7 +331,7 @@ export function ComboboxChips({
       ref={chipsRef as React.Ref<HTMLDivElement> | null}
       data-slot="combobox-chips"
       className={cn(
-        "border-input bg-background ring-ring/24 focus-within:border-ring has-aria-invalid:border-destructive/36 has-autofill:bg-foreground/4 focus-within:has-aria-invalid:border-destructive/64 focus-within:has-aria-invalid:ring-destructive/16 dark:not-has-disabled:bg-input/32 dark:has-autofill:bg-foreground/8 dark:has-aria-invalid:ring-destructive/24 relative inline-flex min-h-8 w-full flex-wrap gap-1 rounded-lg border p-[calc(--spacing(1)-1px)] text-sm shadow-xs/5 transition-shadow outline-none *:min-h-6 not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-64 has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5 has-[:disabled,:focus-within,[aria-invalid]]:shadow-none dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+        "border-input bg-background ring-ring/24 focus-within:ring-ring/50 focus-within:border-ring has-aria-invalid:border-destructive/50 has-autofill:bg-foreground/4 focus-within:has-aria-invalid:border-destructive focus-within:has-aria-invalid:ring-destructive/20 dark:focus-within:has-aria-invalid:ring-destructive/40 dark:not-has-disabled:bg-input/32 dark:has-autofill:bg-foreground/8 dark:has-aria-invalid:ring-destructive/40 relative inline-flex min-h-8 w-full flex-wrap gap-1 rounded-lg border p-[calc(--spacing(1)-1px)] text-sm shadow-xs/5 transition-shadow outline-none *:min-h-6 not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-64 has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5 has-[:disabled,:focus-within,[aria-invalid]]:shadow-none dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/6%)]",
         className,
       )}
       {...props}
