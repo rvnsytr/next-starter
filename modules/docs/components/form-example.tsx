@@ -7,7 +7,26 @@ import {
   DateRangePicker,
 } from "@/core/components/features/date-picker";
 import { PasswordInput } from "@/core/components/features/password-input";
+import {
+  Autocomplete,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePopup,
+} from "@/core/components/ui/autocomplete";
 import { Button, ResetButton } from "@/core/components/ui/button";
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxPopup,
+  ComboboxValue,
+} from "@/core/components/ui/combobox";
 import {
   Field,
   FieldDescription,
@@ -30,9 +49,24 @@ import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
-import { SaveIcon } from "lucide-react";
+import { SaveIcon, SearchIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
+
+type Fruit = keyof typeof fruitConfig;
+const fruitConfig = {
+  apple: { label: "Apple" },
+  banana: { label: "Banana" },
+  orange: { label: "Orange" },
+  grape: { label: "Grape" },
+  strawberry: { label: "Strawberry" },
+  mango: { label: "Mango" },
+  pineapple: { label: "Pineapple" },
+  kiwi: { label: "Kiwi" },
+  peach: { label: "Peach" },
+  pear: { label: "Pear" },
+} as const;
+const fruits = Object.keys(fruitConfig) as Fruit[];
 
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = z.object({
@@ -53,9 +87,10 @@ const formSchema = z.object({
   }),
   dateRange: sharedSchemas.dateRange({ label: "Schedule" }),
 
-  password: sharedSchemas.password,
+  autocomplete: sharedSchemas.string({ label: "Search", min: 1 }),
+  combobox: z.enum(fruits).array().min(1),
 
-  // select: z.enum(card),
+  // select: z.enum(items.map((item) => item.value)),
   // multiSelect: z.array(z.enum(card)).min(1),
   // radio: z.enum(card),
 
@@ -64,6 +99,7 @@ const formSchema = z.object({
   //   error: "At least one checkbox must be selected",
   // }),
 
+  password: sharedSchemas.password,
   // files: sharedSchemas.files(fileType, {
   // min: 1,
   // max: 5,
@@ -87,6 +123,8 @@ export function FormExample() {
       dateMultiple: [now],
       dateRange: { from: now, to: addDays(now, 6) },
 
+      autocomplete: fruitConfig[fruits[0]].label,
+      combobox: [],
       //   select: "spade",
       //   multiSelect: ["spade"],
       //   radio: "spade",
@@ -252,13 +290,108 @@ export function FormExample() {
             invalid={fieldState.invalid}
             className="col-span-2"
           >
-            <FieldLabel>Password</FieldLabel>
+            <FieldLabel>New Password</FieldLabel>
             <PasswordInput
               placeholder="Enter your password"
               required
               withValidationList
               {...field}
             />
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="autocomplete"
+        render={({ field: { onChange, ...field }, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>Enter Items</FieldLabel>
+
+            <Autocomplete
+              items={fruits}
+              autoHighlight
+              onValueChange={onChange}
+              {...field}
+            >
+              <AutocompleteInput
+                placeholder="Search fruitConfig..."
+                showClear
+                showTrigger
+              />
+              <AutocompletePopup>
+                <AutocompleteEmpty>{messages.empty}</AutocompleteEmpty>
+                <AutocompleteList>
+                  {(item: Fruit) => {
+                    const { label } = fruitConfig[item];
+                    return (
+                      <AutocompleteItem key={item} value={item}>
+                        {label}
+                      </AutocompleteItem>
+                    );
+                  }}
+                </AutocompleteList>
+              </AutocompletePopup>
+            </Autocomplete>
+
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="combobox"
+        render={({ field: { onChange, ...field }, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>Search Items</FieldLabel>
+
+            <Combobox
+              items={fruits}
+              autoHighlight
+              multiple
+              onValueChange={onChange}
+              {...field}
+            >
+              <ComboboxChips startAddon={<SearchIcon />}>
+                <ComboboxValue>
+                  {(items: Fruit[]) => (
+                    <>
+                      {items.map((item) => (
+                        <ComboboxChip key={item}>
+                          {fruitConfig[item].label}
+                        </ComboboxChip>
+                      ))}
+
+                      <ComboboxChipsInput
+                        placeholder={
+                          items.length > 0 ? undefined : "Select fruits..."
+                        }
+                      />
+                    </>
+                  )}
+                </ComboboxValue>
+              </ComboboxChips>
+              <ComboboxPopup>
+                <ComboboxEmpty>{messages.empty}</ComboboxEmpty>
+                <ComboboxList>
+                  {(item: Fruit) => {
+                    const { label } = fruitConfig[item];
+                    return (
+                      <ComboboxItem key={item} value={item}>
+                        {label}
+                      </ComboboxItem>
+                    );
+                  }}
+                </ComboboxList>
+              </ComboboxPopup>
+            </Combobox>
+
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>

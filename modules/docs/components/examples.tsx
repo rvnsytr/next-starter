@@ -69,22 +69,22 @@ export function FileDropzoneExample() {
   // return <FileDropzone />;
 }
 
+const items = [
+  { label: "Apple", value: "apple" },
+  { label: "Banana", value: "banana" },
+  { label: "Orange", value: "orange" },
+  { label: "Grape", value: "grape" },
+  { label: "Strawberry", value: "strawberry" },
+  { label: "Mango", value: "mango" },
+  { label: "Pineapple", value: "pineapple" },
+  { label: "Kiwi", value: "kiwi" },
+  { label: "Peach", value: "peach" },
+  { label: "Pear", value: "pear" },
+];
+
 export function AutocompleteExample({
   size,
 }: Pick<React.ComponentProps<typeof AutocompleteInput>, "size">) {
-  const items = [
-    { label: "Apple", value: "apple" },
-    { label: "Banana", value: "banana" },
-    { label: "Orange", value: "orange" },
-    { label: "Grape", value: "grape" },
-    { label: "Strawberry", value: "strawberry" },
-    { label: "Mango", value: "mango" },
-    { label: "Pineapple", value: "pineapple" },
-    { label: "Kiwi", value: "kiwi" },
-    { label: "Peach", value: "peach" },
-    { label: "Pear", value: "pear" },
-  ];
-
   return (
     <Autocomplete items={items}>
       <AutocompleteInput
@@ -110,19 +110,6 @@ export function AutocompleteExample({
 }
 
 export function ComboboxExample() {
-  const items = [
-    { label: "Apple", value: "apple" },
-    { label: "Banana", value: "banana" },
-    { label: "Orange", value: "orange" },
-    { label: "Grape", value: "grape" },
-    { label: "Strawberry", value: "strawberry" },
-    { label: "Mango", value: "mango" },
-    { label: "Pineapple", value: "pineapple" },
-    { label: "Kiwi", value: "kiwi" },
-    { label: "Peach", value: "peach" },
-    { label: "Pear", value: "pear" },
-  ];
-
   return (
     <Combobox
       defaultValue={[items[0], items[3]]}
