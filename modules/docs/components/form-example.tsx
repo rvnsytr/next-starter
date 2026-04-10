@@ -43,6 +43,13 @@ import {
   NumberFieldInput,
   NumberFieldScrubArea,
 } from "@/core/components/ui/number-field";
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/components/ui/select";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
@@ -53,20 +60,19 @@ import { SaveIcon, SearchIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 
-type Fruit = keyof typeof fruitConfig;
-const fruitConfig = {
-  apple: { label: "Apple" },
-  banana: { label: "Banana" },
-  orange: { label: "Orange" },
-  grape: { label: "Grape" },
-  strawberry: { label: "Strawberry" },
-  mango: { label: "Mango" },
-  pineapple: { label: "Pineapple" },
-  kiwi: { label: "Kiwi" },
-  peach: { label: "Peach" },
-  pear: { label: "Pear" },
-} as const;
-const fruits = Object.keys(fruitConfig) as Fruit[];
+const fruits = [
+  { label: "Apple", value: "apple" },
+  { label: "Banana", value: "banana" },
+  { label: "Orange", value: "orange" },
+  { label: "Grape", value: "grape" },
+  { label: "Strawberry", value: "strawberry" },
+  { label: "Mango", value: "mango" },
+  { label: "Pineapple", value: "pineapple" },
+  { label: "Kiwi", value: "kiwi" },
+  { label: "Peach", value: "peach" },
+  { label: "Pear", value: "pear" },
+] as const;
+const fruitsArr = fruits.map((f) => f.value);
 
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = z.object({
@@ -88,11 +94,16 @@ const formSchema = z.object({
   dateRange: sharedSchemas.dateRange({ label: "Schedule" }),
 
   autocomplete: sharedSchemas.string({ label: "Search", min: 1 }),
-  combobox: z.enum(fruits).array().min(1),
-
-  // select: z.enum(items.map((item) => item.value)),
-  // multiSelect: z.array(z.enum(card)).min(1),
-  // radio: z.enum(card),
+  combobox: z
+    .object({ label: z.string(), value: z.enum(fruitsArr) })
+    .array()
+    .min(1),
+  select: z
+    .object({ label: z.string(), value: z.enum(fruitsArr) })
+    .array()
+    .min(1),
+  // select: z.enum(fruitsArr).array().min(1),
+  // radio: z.enum(fruitsArr),
 
   // switch: z.boolean(),
   // checkbox: z.array(z.enum(checkboxData)).refine((v) => v.some((i) => i), {
@@ -123,10 +134,9 @@ export function FormExample() {
       dateMultiple: [now],
       dateRange: { from: now, to: addDays(now, 6) },
 
-      autocomplete: fruitConfig[fruits[0]].label,
-      combobox: [],
-      //   select: "spade",
-      //   multiSelect: ["spade"],
+      autocomplete: fruits[0].label,
+      combobox: [fruits[0]],
+      select: [fruits[0]],
       //   radio: "spade",
 
       password: "Example#123",
@@ -155,141 +165,264 @@ export function FormExample() {
   return (
     <Form
       onSubmit={form.handleSubmit(formHandler)}
-      className="grid sm:grid-cols-2"
+      className="*:gap-x-2 *:gap-y-4"
     >
-      <Controller
-        control={form.control}
-        name="text"
-        render={({ field, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Name</FieldLabel>
-            <Input
-              type="text"
-              placeholder="Enter your name"
-              required
-              {...field}
-            />
-            <FieldDescription>Visible on your profile</FieldDescription>
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
+      <div className="grid sm:grid-cols-2">
+        <Controller
+          name="text"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Name</FieldLabel>
+              <Input
+                type="text"
+                placeholder="Enter your name"
+                required
+                {...field}
+              />
+              <FieldDescription>Visible on your profile</FieldDescription>
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="number"
+          control={form.control}
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <NumberField
+                defaultValue={0}
+                locale={languageConfig.id.locale}
+                onValueChange={onChange}
+                required
+                {...field}
+              >
+                <NumberFieldScrubArea label="Quantity" />
+                <NumberFieldGroup>
+                  <NumberFieldInput placeholder="Enter quantity" />
+                  <NumberFieldDecrement />
+                  <NumberFieldIncrement />
+                </NumberFieldGroup>
+              </NumberField>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="textarea"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Description</FieldLabel>
+              <Textarea
+                placeholder="Type your message here"
+                required
+                {...field}
+              />
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="date"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Birth Date</FieldLabel>
+              <DatePicker
+                id={field.name}
+                selected={field.value}
+                onSelect={field.onChange}
+                required
+              />
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="dateMultiple"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Available at</FieldLabel>
+              <DateMultiPicker
+                id={field.name}
+                selected={field.value}
+                onSelect={field.onChange}
+                className="w-full"
+                required
+              />
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="dateRange"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Schedule</FieldLabel>
+              <DateRangePicker
+                id={field.name}
+                selected={field.value}
+                onSelect={field.onChange}
+                className="w-full"
+                required
+              />
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-3">
+        <Controller
+          name="autocomplete"
+          control={form.control}
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Enter Items</FieldLabel>
+
+              <Autocomplete
+                items={fruits}
+                autoHighlight
+                onValueChange={onChange}
+                {...field}
+              >
+                <AutocompleteInput
+                  placeholder="Search fruitConfig..."
+                  showClear
+                  showTrigger
+                />
+                <AutocompletePopup>
+                  <AutocompleteEmpty>{messages.empty}</AutocompleteEmpty>
+                  <AutocompleteList>
+                    {(item: (typeof fruits)[number]) => (
+                      <AutocompleteItem key={item.value} value={item}>
+                        {item.label}
+                      </AutocompleteItem>
+                    )}
+                  </AutocompleteList>
+                </AutocompletePopup>
+              </Autocomplete>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="combobox"
+          control={form.control}
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Search Items</FieldLabel>
+
+              <Combobox
+                items={fruits}
+                onValueChange={onChange}
+                isItemEqualToValue={(a, b) => a.value === b.value}
+                autoHighlight
+                multiple
+                {...field}
+              >
+                <ComboboxChips startAddon={<SearchIcon />}>
+                  <ComboboxValue>
+                    {(items: typeof fruits) => (
+                      <>
+                        {items.map((item) => (
+                          <ComboboxChip key={item.value}>
+                            {item.label}
+                          </ComboboxChip>
+                        ))}
+
+                        <ComboboxChipsInput
+                          placeholder={
+                            items.length > 0 ? undefined : "Select fruits..."
+                          }
+                        />
+                      </>
+                    )}
+                  </ComboboxValue>
+                </ComboboxChips>
+                <ComboboxPopup>
+                  <ComboboxEmpty>{messages.empty}</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item: (typeof fruits)[number]) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxPopup>
+              </Combobox>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          control={form.control}
+          name="select"
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Select Items</FieldLabel>
+
+              <Select
+                items={fruits}
+                onValueChange={onChange}
+                isItemEqualToValue={(a, b) => a.value === b.value}
+                multiple
+                {...field}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select framework" />
+                </SelectTrigger>
+                <SelectPopup>
+                  {fruits.map((item) => (
+                    <SelectItem key={item.value} value={item}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+      </div>
 
       <Controller
-        control={form.control}
-        name="number"
-        render={({ field: { onChange, ...field }, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <NumberField
-              defaultValue={0}
-              locale={languageConfig.id.locale}
-              onValueChange={onChange}
-              required
-              {...field}
-            >
-              <NumberFieldScrubArea label="Quantity" />
-              <NumberFieldGroup>
-                <NumberFieldInput placeholder="Enter quantity" />
-                <NumberFieldDecrement />
-                <NumberFieldIncrement />
-              </NumberFieldGroup>
-            </NumberField>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        control={form.control}
-        name="textarea"
-        render={({ field, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Description</FieldLabel>
-            <Textarea
-              placeholder="Type your message here"
-              required
-              {...field}
-            />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        name="date"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Birth Date</FieldLabel>
-            <DatePicker
-              id={field.name}
-              selected={field.value}
-              onSelect={field.onChange}
-              required
-            />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        name="dateMultiple"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Available at</FieldLabel>
-            <DateMultiPicker
-              id={field.name}
-              selected={field.value}
-              onSelect={field.onChange}
-              className="w-full"
-              required
-            />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        name="dateRange"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Schedule</FieldLabel>
-            <DateRangePicker
-              id={field.name}
-              selected={field.value}
-              onSelect={field.onChange}
-              className="w-full"
-              required
-            />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        control={form.control}
         name="password"
+        control={form.control}
         render={({ field, fieldState }) => (
-          <Field
-            name={field.name}
-            invalid={fieldState.invalid}
-            className="col-span-2"
-          >
+          <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>New Password</FieldLabel>
             <PasswordInput
               placeholder="Enter your password"
@@ -297,101 +430,6 @@ export function FormExample() {
               withValidationList
               {...field}
             />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        control={form.control}
-        name="autocomplete"
-        render={({ field: { onChange, ...field }, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Enter Items</FieldLabel>
-
-            <Autocomplete
-              items={fruits}
-              autoHighlight
-              onValueChange={onChange}
-              {...field}
-            >
-              <AutocompleteInput
-                placeholder="Search fruitConfig..."
-                showClear
-                showTrigger
-              />
-              <AutocompletePopup>
-                <AutocompleteEmpty>{messages.empty}</AutocompleteEmpty>
-                <AutocompleteList>
-                  {(item: Fruit) => {
-                    const { label } = fruitConfig[item];
-                    return (
-                      <AutocompleteItem key={item} value={item}>
-                        {label}
-                      </AutocompleteItem>
-                    );
-                  }}
-                </AutocompleteList>
-              </AutocompletePopup>
-            </Autocomplete>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
-          </Field>
-        )}
-      />
-
-      <Controller
-        control={form.control}
-        name="combobox"
-        render={({ field: { onChange, ...field }, fieldState }) => (
-          <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Search Items</FieldLabel>
-
-            <Combobox
-              items={fruits}
-              autoHighlight
-              multiple
-              onValueChange={onChange}
-              {...field}
-            >
-              <ComboboxChips startAddon={<SearchIcon />}>
-                <ComboboxValue>
-                  {(items: Fruit[]) => (
-                    <>
-                      {items.map((item) => (
-                        <ComboboxChip key={item}>
-                          {fruitConfig[item].label}
-                        </ComboboxChip>
-                      ))}
-
-                      <ComboboxChipsInput
-                        placeholder={
-                          items.length > 0 ? undefined : "Select fruits..."
-                        }
-                      />
-                    </>
-                  )}
-                </ComboboxValue>
-              </ComboboxChips>
-              <ComboboxPopup>
-                <ComboboxEmpty>{messages.empty}</ComboboxEmpty>
-                <ComboboxList>
-                  {(item: Fruit) => {
-                    const { label } = fruitConfig[item];
-                    return (
-                      <ComboboxItem key={item} value={item}>
-                        {label}
-                      </ComboboxItem>
-                    );
-                  }}
-                </ComboboxList>
-              </ComboboxPopup>
-            </Combobox>
-
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>
