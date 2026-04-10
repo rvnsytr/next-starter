@@ -4,7 +4,7 @@
 
   "js/ts.preferences.autoImportFileExcludePatterns": [
     "next/router",
-    "radix-ui"
+    "@base-ui/react"
   ],
 
   "js/ts.preferences.importModuleSpecifier": "shortest"
