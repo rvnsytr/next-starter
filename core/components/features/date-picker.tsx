@@ -186,6 +186,7 @@ export function DateRangePicker({
         ? `${formatLocalizedDate(from, "PPP")} - ${formatLocalizedDate(to, "PPP")}`
         : formatLocalizedDate(from, "PPP");
   }
+
   return (
     <Popover>
       <RequiredBridge required={props.required} />

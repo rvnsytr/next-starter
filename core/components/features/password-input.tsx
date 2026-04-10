@@ -41,7 +41,7 @@ export function PasswordInput({
   ];
 
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className="flex w-full flex-col items-start gap-2">
       <InputGroup data-slot="password-input">
         <InputGroupInput
           type={isVisible ? "text" : "password"}

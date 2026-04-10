@@ -310,10 +310,6 @@
   code {
     @apply bg-muted relative rounded px-1.5 py-0.5 font-mono text-sm font-medium;
   }
-
-  form {
-    @apply flex w-full flex-col gap-x-2 gap-y-4 in-data-[slot=drawer-content]:overflow-y-auto in-data-[slot=drawer-content]:px-4 in-data-[slot=drawer-content]:py-2 has-data-[slot=card-content]:gap-y-6 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4;
-  }
 }
 
 @layer base {
