@@ -16,6 +16,8 @@ import {
   AutocompletePopup,
 } from "@/core/components/ui/autocomplete";
 import { Button, ResetButton } from "@/core/components/ui/button";
+import { Checkbox } from "@/core/components/ui/checkbox";
+import { CheckboxGroup } from "@/core/components/ui/checkbox-group";
 import {
   Combobox,
   ComboboxChip,
@@ -35,6 +37,7 @@ import {
 } from "@/core/components/ui/field";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import { Label } from "@/core/components/ui/label";
 import {
   NumberField,
   NumberFieldDecrement,
@@ -43,6 +46,7 @@ import {
   NumberFieldInput,
   NumberFieldScrubArea,
 } from "@/core/components/ui/number-field";
+import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import {
   Select,
   SelectItem,
@@ -50,6 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select";
+import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
@@ -102,13 +107,10 @@ const formSchema = z.object({
     .object({ label: z.string(), value: z.enum(fruitsArr) })
     .array()
     .min(1),
-  // select: z.enum(fruitsArr).array().min(1),
-  // radio: z.enum(fruitsArr),
 
-  // switch: z.boolean(),
-  // checkbox: z.array(z.enum(checkboxData)).refine((v) => v.some((i) => i), {
-  //   error: "At least one checkbox must be selected",
-  // }),
+  radio: z.enum(fruitsArr),
+  checkbox: z.array(z.enum(fruitsArr)).refine((v) => v.some((i) => i)),
+  switch: z.boolean(),
 
   password: sharedSchemas.password,
   // files: sharedSchemas.files(fileType, {
@@ -137,12 +139,12 @@ export function FormExample() {
       autocomplete: fruits[0].label,
       combobox: [fruits[0]],
       select: [fruits[0]],
-      //   radio: "spade",
+
+      radio: fruits[0].value,
+      checkbox: [fruitsArr[0]],
+      switch: false,
 
       password: "Example#123",
-      //   switch: false,
-      // checkbox: ["firefox"],
-
       //   files: [],
     },
   });
@@ -238,7 +240,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Birth Date</FieldLabel>
+              <FieldLabel>Birth date</FieldLabel>
               <DatePicker
                 id={field.name}
                 selected={field.value}
@@ -303,12 +305,12 @@ export function FormExample() {
 
               <Autocomplete
                 items={fruits}
-                autoHighlight
                 onValueChange={onChange}
+                autoHighlight
                 {...field}
               >
                 <AutocompleteInput
-                  placeholder="Search fruitConfig..."
+                  placeholder="Search fruits..."
                   showClear
                   showTrigger
                 />
@@ -409,6 +411,68 @@ export function FormExample() {
                   ))}
                 </SelectPopup>
               </Select>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-3">
+        <Controller
+          control={form.control}
+          name="radio"
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Pick a fruit</FieldLabel>
+
+              <RadioGroup onValueChange={onChange} {...field}>
+                {fruits.map((item) => (
+                  <Label key={item.value}>
+                    <RadioGroupItem value={item.value} /> {item.label}
+                  </Label>
+                ))}
+              </RadioGroup>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          control={form.control}
+          name="checkbox"
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Pick some fruits</FieldLabel>
+
+              <CheckboxGroup onValueChange={onChange} {...field}>
+                {fruits.map((item) => (
+                  <Label key={item.value}>
+                    <Checkbox value={item.value} /> {item.label}
+                  </Label>
+                ))}
+              </CheckboxGroup>
+
+              <FieldError match={!!fieldState.error}>
+                {fieldState.error?.message}
+              </FieldError>
+            </Field>
+          )}
+        />
+
+        <Controller
+          control={form.control}
+          name="switch"
+          render={({ field: { value, onChange, ...field }, fieldState }) => (
+            <Field name={field.name} invalid={fieldState.invalid}>
+              <FieldLabel>Enable Option</FieldLabel>
+
+              <Switch checked={value} onCheckedChange={onChange} {...field} />
 
               <FieldError match={!!fieldState.error}>
                 {fieldState.error?.message}
