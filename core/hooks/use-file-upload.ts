@@ -19,8 +19,8 @@ export type FileWithPreview = {
 
 export type FileUploadOptions = {
   accept?: string;
-  maxFiles?: number;
   maxSize?: number;
+  maxFiles?: number;
   multiple?: boolean;
   initialFiles?: FileMetadata[];
   onFilesChange?: (files: FileWithPreview[]) => void;
@@ -44,11 +44,15 @@ export type FileUploadActions = {
   removeFile: (id: string) => void;
   clearFiles: () => void;
   clearErrors: () => void;
+  moveUp: (id: string) => void;
+  moveDown: (id: string) => void;
+
   handleDragEnter: (e: React.DragEvent<HTMLElement>) => void;
   handleDragLeave: (e: React.DragEvent<HTMLElement>) => void;
   handleDragOver: (e: React.DragEvent<HTMLElement>) => void;
   handleDrop: (e: React.DragEvent<HTMLElement>) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
   openFileDialog: () => void;
   getInputProps: (
     props?: ControlledInputProps,
@@ -56,8 +60,8 @@ export type FileUploadActions = {
 };
 
 export function useFileUpload({
-  maxFiles = Number.POSITIVE_INFINITY,
   maxSize = Number.POSITIVE_INFINITY,
+  maxFiles = Number.POSITIVE_INFINITY,
   accept = "*",
   multiple = false,
   initialFiles = [],
@@ -118,7 +122,7 @@ export function useFileUpload({
 
   const generateUniqueId = useCallback((file: File | FileMetadata) => {
     if (file instanceof File)
-      return `${crypto.randomUUID()}-${file.name.split(".").pop()}`;
+      return `${crypto.randomUUID()}.${file.name.split(".").pop()}`;
     return file.id;
   }, []);
 
@@ -250,6 +254,44 @@ export function useFileUpload({
     setState((prev) => ({ ...prev, errors: [] }));
   }, []);
 
+  const moveUp = useCallback(
+    (id: string) => {
+      setState((prev) => {
+        const index = prev.files.findIndex((file) => file.id === id);
+        if (index === -1) return prev;
+
+        const newFiles = [...prev.files];
+        const targetIndex = index === 0 ? newFiles.length - 1 : index - 1;
+        [newFiles[targetIndex], newFiles[index]] = [
+          newFiles[index],
+          newFiles[targetIndex],
+        ];
+        onFilesChange?.(newFiles);
+        return { ...prev, files: newFiles };
+      });
+    },
+    [onFilesChange],
+  );
+
+  const moveDown = useCallback(
+    (id: string) => {
+      setState((prev) => {
+        const index = prev.files.findIndex((file) => file.id === id);
+        if (index === -1) return prev;
+
+        const newFiles = [...prev.files];
+        const targetIndex = index === newFiles.length - 1 ? 0 : index + 1;
+        [newFiles[targetIndex], newFiles[index]] = [
+          newFiles[index],
+          newFiles[targetIndex],
+        ];
+        onFilesChange?.(newFiles);
+        return { ...prev, files: newFiles };
+      });
+    },
+    [onFilesChange],
+  );
+
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -314,6 +356,8 @@ export function useFileUpload({
       removeFile,
       clearFiles,
       clearErrors,
+      moveUp,
+      moveDown,
       handleDragEnter,
       handleDragLeave,
       handleDragOver,

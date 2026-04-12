@@ -88,7 +88,7 @@ export const messages = {
     tooMany: (field: string, max: number) =>
       `Anda hanya dapat mengunggah hingga ${max} ${field}.`,
     tooLarge: (field: string, size: number) =>
-      `${capitalize(field, "first")} melebihi batas ukuran maksimum ${formatBytes(size)}.`,
+      `${capitalize(field, "first")} melebihi batas ukuran maksimum (${formatBytes(size)}).`,
   },
 
   password: {

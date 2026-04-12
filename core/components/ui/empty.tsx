@@ -40,10 +40,12 @@ const emptyMediaVariants = cva(
 
 // ? based on: coss/ui
 function EmptyMedia({
+  stacked = true,
   className,
   variant = "default",
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
+}: React.ComponentProps<"div"> &
+  VariantProps<typeof emptyMediaVariants> & { stacked?: boolean }) {
   return (
     <div
       data-slot="empty-media"
@@ -51,7 +53,7 @@ function EmptyMedia({
       className={cn("relative mb-4", className)}
       {...props}
     >
-      {variant === "icon" && (
+      {variant === "icon" && stacked && (
         <>
           <div
             aria-hidden="true"

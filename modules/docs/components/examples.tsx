@@ -23,7 +23,6 @@ import {
 } from "@/core/components/ui/combobox";
 import { toast } from "@/core/components/ui/toast";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
-import { toBytes } from "@/core/utils/formaters";
 import { SearchIcon } from "lucide-react";
 
 export function UseFileUploadExample() {
@@ -31,8 +30,7 @@ export function UseFileUploadExample() {
     { files, errors },
     { openFileDialog, getInputProps, clearFiles, clearErrors },
   ] = useFileUpload({
-    maxSize: toBytes(1),
-    accept: fileTypeConfig.image.mimeTypes.join(","),
+    ...fileTypeConfig,
     multiple: true,
     onFilesChange: (f) => {
       const file = f[0];

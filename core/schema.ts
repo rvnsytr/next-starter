@@ -89,12 +89,9 @@ export const sharedSchemas = {
     },
   ) => {
     const { mimeInvalid, tooLarge, tooFew, tooMany } = messages.files;
-    const {
-      displayName,
-      maxSize: metaMaxSize,
-      mimeTypes,
-    } = fileTypeConfig[type];
+    const { displayName, accept, maxSize: metaMaxSize } = fileTypeConfig[type];
 
+    const mimeTypes = accept.split(",").map((t) => t.trim());
     const minFiles = options?.minFiles ?? 0;
     const maxFiles = options?.maxFiles ?? 0;
     const maxSize =

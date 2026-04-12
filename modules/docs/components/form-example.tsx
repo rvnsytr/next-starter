@@ -6,6 +6,7 @@ import {
   DatePicker,
   DateRangePicker,
 } from "@/core/components/features/date-picker";
+import { FileUpload } from "@/core/components/features/file-upload";
 import { PasswordInput } from "@/core/components/features/password-input";
 import {
   Autocomplete,
@@ -59,6 +60,7 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
+import { toBytes } from "@/core/utils/formaters";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { SaveIcon, SearchIcon } from "lucide-react";
@@ -175,7 +177,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Name</FieldLabel>
+              <FieldLabel>Input Field</FieldLabel>
               <Input
                 type="text"
                 placeholder="Enter your name"
@@ -202,7 +204,7 @@ export function FormExample() {
                 required
                 {...field}
               >
-                <NumberFieldScrubArea label="Quantity" />
+                <NumberFieldScrubArea label="Number Field" />
                 <NumberFieldGroup>
                   <NumberFieldInput placeholder="Enter quantity" />
                   <NumberFieldDecrement />
@@ -222,7 +224,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Description</FieldLabel>
+              <FieldLabel>Textarea</FieldLabel>
               <Textarea
                 placeholder="Type your message here"
                 required
@@ -240,7 +242,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Birth date</FieldLabel>
+              <FieldLabel>Date Picker</FieldLabel>
               <DatePicker
                 id={field.name}
                 selected={field.value}
@@ -259,7 +261,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Available at</FieldLabel>
+              <FieldLabel>Multi Date</FieldLabel>
               <DateMultiPicker
                 id={field.name}
                 selected={field.value}
@@ -279,7 +281,7 @@ export function FormExample() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Schedule</FieldLabel>
+              <FieldLabel>Date Range</FieldLabel>
               <DateRangePicker
                 id={field.name}
                 selected={field.value}
@@ -301,7 +303,7 @@ export function FormExample() {
           control={form.control}
           render={({ field: { onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Enter Items</FieldLabel>
+              <FieldLabel>Autocomplete</FieldLabel>
 
               <Autocomplete
                 items={fruits}
@@ -338,7 +340,7 @@ export function FormExample() {
           control={form.control}
           render={({ field: { onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Search Items</FieldLabel>
+              <FieldLabel>Combobox</FieldLabel>
 
               <Combobox
                 items={fruits}
@@ -391,7 +393,7 @@ export function FormExample() {
           name="select"
           render={({ field: { onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Select Items</FieldLabel>
+              <FieldLabel>Select</FieldLabel>
 
               <Select
                 items={fruits}
@@ -420,13 +422,13 @@ export function FormExample() {
         />
       </div>
 
-      <div className="grid sm:grid-cols-3">
+      <div className="grid grid-cols-3">
         <Controller
           control={form.control}
           name="radio"
           render={({ field: { onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Pick a fruit</FieldLabel>
+              <FieldLabel>Radio Group</FieldLabel>
 
               <RadioGroup onValueChange={onChange} {...field}>
                 {fruits.map((item) => (
@@ -448,7 +450,7 @@ export function FormExample() {
           name="checkbox"
           render={({ field: { onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Pick some fruits</FieldLabel>
+              <FieldLabel>Checkbox Group</FieldLabel>
 
               <CheckboxGroup onValueChange={onChange} {...field}>
                 {fruits.map((item) => (
@@ -470,7 +472,7 @@ export function FormExample() {
           name="switch"
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Enable Option</FieldLabel>
+              <FieldLabel>Switch</FieldLabel>
 
               <Switch checked={value} onCheckedChange={onChange} {...field} />
 
@@ -487,7 +489,7 @@ export function FormExample() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>New Password</FieldLabel>
+            <FieldLabel>Password Input</FieldLabel>
             <PasswordInput
               placeholder="Enter your password"
               required
@@ -500,6 +502,12 @@ export function FormExample() {
           </Field>
         )}
       />
+
+      <Field>
+        <FieldLabel>File Upload</FieldLabel>
+        {/* <FileUpload {...fileTypeConfig.audio} maxFiles={2} /> */}
+        <FileUpload maxSize={toBytes(1)} multiple sortable />
+      </Field>
 
       <div className="flex gap-2">
         <Button type="submit">

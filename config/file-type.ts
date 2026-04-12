@@ -1,6 +1,7 @@
 import { toBytes } from "@/core/utils/formaters";
 import {
   FileArchiveIcon,
+  FileIcon,
   FilesIcon,
   FileSpreadsheetIcon,
   FileTextIcon,
@@ -8,7 +9,6 @@ import {
   ImageIcon,
   LucideIcon,
   TableIcon,
-  UploadIcon,
   VideoIcon,
 } from "lucide-react";
 
@@ -26,128 +26,125 @@ export const allFileTypes = [
   "video",
 ] as const;
 
-export type FileTypeConfig = Record<
-  FileType,
-  {
-    displayName: string;
-    mimeTypes: string[];
-    extensions: string[];
-    maxSize: number;
-    icon: LucideIcon;
-  }
->;
+export type FileTypeConfig = {
+  displayName: string;
+  icon: LucideIcon;
+  maxSize: number;
+  accept: string;
+  extensions: string[];
+};
 
-const config: Omit<FileTypeConfig, "file" | "office"> = {
+const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   image: {
     displayName: "gambar",
-    mimeTypes: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
-    extensions: [".png", ".jpg", ".jpeg", ".svg", ".webp"],
-    maxSize: toBytes(2),
     icon: ImageIcon,
+    maxSize: toBytes(2),
+    accept: "image/png, image/jpeg, image/svg+xml, image/webp",
+    extensions: [".png", ".jpg", ".jpeg", ".svg", ".webp"],
   },
 
   pdf: {
     displayName: "PDF",
-    mimeTypes: ["application/pdf"],
-    extensions: [".pdf"],
-    maxSize: toBytes(2),
     icon: FileArchiveIcon,
+    maxSize: toBytes(2),
+    accept: "application/pdf",
+    extensions: [".pdf"],
   },
 
   document: {
     displayName: "dokumen",
-    mimeTypes: [
+    icon: FileTextIcon,
+    maxSize: toBytes(2),
+    accept: [
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ],
+    ].join(", "),
     extensions: [".doc", ".docx"],
-    maxSize: toBytes(2),
-    icon: FileTextIcon,
   },
 
   spreadsheet: {
     displayName: "lembar kerja (spreadsheet)",
-    mimeTypes: [
+    icon: FileSpreadsheetIcon,
+    maxSize: toBytes(2),
+    accept: [
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ],
+    ].join(", "),
     extensions: [".xls", ".xlsx"],
-    maxSize: toBytes(2),
-    icon: FileSpreadsheetIcon,
   },
 
   presentation: {
     displayName: "presentasi (ppt)",
-    mimeTypes: [
+    icon: TableIcon,
+    maxSize: toBytes(10),
+    accept: [
       "application/vnd.ms-powerpoint",
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ],
+    ].join(", "),
     extensions: [".ppt", ".pptx"],
-    maxSize: toBytes(10),
-    icon: TableIcon,
   },
 
   archive: {
     displayName: "arsip",
-    mimeTypes: [
+    icon: FileArchiveIcon,
+    maxSize: toBytes(20),
+    accept: [
       "application/zip",
       "application/x-rar-compressed",
       "application/x-7z-compressed",
       "application/x-tar",
-    ],
+    ].join(", "),
     extensions: [".zip", ".rar", ".7z", ".tar"],
-    maxSize: toBytes(20),
-    icon: FileArchiveIcon,
   },
 
   audio: {
     displayName: "audio",
-    mimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"],
-    extensions: [".mp3", ".wav", ".ogg", ".flac"],
-    maxSize: toBytes(10),
     icon: HeadphonesIcon,
+    maxSize: toBytes(10),
+    accept: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"].join(", "),
+    extensions: [".mp3", ".wav", ".ogg", ".flac"],
   },
 
   video: {
     displayName: "video",
-    mimeTypes: [
+    icon: VideoIcon,
+    maxSize: toBytes(50),
+    accept: [
       "video/mp4",
       "video/x-msvideo",
       "video/x-matroska",
       "video/ogg",
       "video/webm",
-    ],
+    ].join(", "),
     extensions: [".mp4", ".avi", ".mkv", ".ogg", ".webm"],
-    maxSize: toBytes(50),
-    icon: VideoIcon,
   },
 };
 
-export const fileTypeConfig: FileTypeConfig = {
+export const fileTypeConfig: Record<FileType, FileTypeConfig> = {
   file: {
     displayName: "berkas",
-    mimeTypes: ["*"],
-    extensions: Object.values(config).flatMap((t) => t.extensions),
+    icon: FileIcon,
     maxSize: Number.POSITIVE_INFINITY,
-    icon: UploadIcon,
+    accept: "*/*",
+    extensions: Object.values(config).flatMap((t) => t.extensions),
   },
 
   office: {
     displayName: "dokumen kantor",
-    mimeTypes: [
-      ...config.pdf.mimeTypes,
-      ...config.document.mimeTypes,
-      ...config.spreadsheet.mimeTypes,
-      ...config.presentation.mimeTypes,
-    ],
+    icon: FilesIcon,
+    maxSize: toBytes(10),
+    accept: [
+      ...config.pdf.accept,
+      ...config.document.accept,
+      ...config.spreadsheet.accept,
+      ...config.presentation.accept,
+    ].join(", "),
     extensions: [
       ...config.pdf.extensions,
       ...config.document.extensions,
       ...config.spreadsheet.extensions,
       ...config.presentation.extensions,
     ],
-    maxSize: toBytes(10),
-    icon: FilesIcon,
   },
 
   ...config,
