@@ -168,29 +168,15 @@ function CommandPanel({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function CommandGroup({
-  className,
   ...props
 }: React.ComponentProps<typeof AutocompleteGroup>) {
-  return (
-    <AutocompleteGroup
-      data-slot="command-group"
-      className={className}
-      {...props}
-    />
-  );
+  return <AutocompleteGroup data-slot="command-group" {...props} />;
 }
 
 function CommandGroupLabel({
-  className,
   ...props
 }: React.ComponentProps<typeof AutocompleteGroupLabel>) {
-  return (
-    <AutocompleteGroupLabel
-      data-slot="command-group-label"
-      className={className}
-      {...props}
-    />
-  );
+  return <AutocompleteGroupLabel data-slot="command-group-label" {...props} />;
 }
 
 function CommandCollection(

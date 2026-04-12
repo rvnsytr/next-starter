@@ -230,7 +230,6 @@ export function MenuSubTrigger({
 }
 
 export function MenuSubPopup({
-  className,
   sideOffset = 0,
   alignOffset,
   align = "start",
@@ -249,7 +248,6 @@ export function MenuSubPopup({
       sideOffset={sideOffset}
       align={align}
       alignOffset={alignOffset ?? defaultAlignOffset}
-      className={className}
       {...props}
     />
   );

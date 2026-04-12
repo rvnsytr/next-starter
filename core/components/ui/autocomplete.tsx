@@ -217,17 +217,8 @@ export function AutocompleteEmpty({
   );
 }
 
-export function AutocompleteRow({
-  className,
-  ...props
-}: AutocompletePrimitive.Row.Props) {
-  return (
-    <AutocompletePrimitive.Row
-      data-slot="autocomplete-row"
-      className={className}
-      {...props}
-    />
-  );
+export function AutocompleteRow({ ...props }: AutocompletePrimitive.Row.Props) {
+  return <AutocompletePrimitive.Row data-slot="autocomplete-row" {...props} />;
 }
 
 export function AutocompleteValue(props: AutocompletePrimitive.Value.Props) {

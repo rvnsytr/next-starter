@@ -48,13 +48,12 @@ export function Scales({
 }
 
 export function ScalesWrapper({
-  className,
   containerClassName,
   ...props
 }: React.ComponentProps<typeof Scales> & { containerClassName?: string }) {
   return (
     <div className={cn("relative", containerClassName)}>
-      <Scales className={className} {...props} />
+      <Scales {...props} />
     </div>
   );
 }

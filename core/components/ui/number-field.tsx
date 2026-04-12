@@ -121,7 +121,7 @@ export function NumberFieldScrubArea({
       className={cn("flex cursor-ew-resize", className)}
       {...props}
     >
-      <Label htmlFor={context.fieldId} className="cursor-ew-resize">
+      <Label htmlFor={context.fieldId} className="cursor-ew-resize text-sm/4">
         {label}
       </Label>
       <NumberFieldPrimitive.ScrubAreaCursor className="cursor-nesw-resize drop-shadow-[0_1px_1px_#0008] filter">
