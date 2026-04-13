@@ -25,7 +25,7 @@ export function Spinner({
   className,
   ...props
 }: SpinnerProps) {
-  const allIcon: Record<SpinnerVariant, LucideIcon> = {
+  const iconMap: Record<SpinnerVariant, LucideIcon> = {
     default: Loader2Icon,
     loader: LoaderIcon,
     refresh: RefreshCcwIcon,
@@ -34,7 +34,7 @@ export function Spinner({
   };
 
   const reverseArr: SpinnerVariant[] = ["orbit"];
-  const Icon = allIcon[variant];
+  const Icon = iconMap[variant];
 
   return (
     <Icon

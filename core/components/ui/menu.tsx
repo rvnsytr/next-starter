@@ -231,8 +231,8 @@ export function MenuSubTrigger({
 
 export function MenuSubPopup({
   sideOffset = 0,
-  alignOffset,
   align = "start",
+  alignOffset,
   ...props
 }: MenuPrimitive.Popup.Props &
   Pick<
