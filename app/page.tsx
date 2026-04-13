@@ -161,7 +161,6 @@ import { DocsSection } from "@/modules/docs/components/docs-section";
 import {
   AutocompleteExample,
   ComboboxExample,
-  FileDropzoneExample,
   ToastExample,
   UseFileUploadExample,
 } from "@/modules/docs/components/examples";
@@ -169,6 +168,7 @@ import { FormExample } from "@/modules/docs/components/form-example";
 import { Docs } from "@/modules/docs/config";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
+  ArrowDownIcon,
   ArrowRightIcon,
   BellIcon,
   BookSearchIcon,
@@ -255,13 +255,21 @@ const docs: Docs[] = [
       },
       {
         type: "comp",
-        label: "File Dropzone",
+        label: "File Upload",
         render: (
-          <div className="w-full max-w-lg">
-            <FileDropzoneExample />
-          </div>
+          <Button
+            size="sm"
+            variant="link"
+            render={
+              <Link href="/#examples-form">
+                <small>Go to Form example below</small>
+                <ArrowDownIcon className="size-4" />
+              </Link>
+            }
+          />
         ),
       },
+      { type: "comp", label: "Filters", refs: ["reui"] },
       { type: "comp", label: "Import Dialog" },
       {
         type: "comp",

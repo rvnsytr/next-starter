@@ -62,7 +62,7 @@ export function UseFileUploadExample() {
   );
 }
 
-export function FileDropzoneExample() {
+export function FileUploadExample() {
   return <p>Hello World</p>;
   // return <FileDropzone />;
 }
