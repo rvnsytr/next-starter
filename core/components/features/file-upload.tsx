@@ -33,19 +33,23 @@ import { Separator } from "../ui/separator";
 
 export type FileUploadProps = Pick<
   React.ComponentProps<"input">,
-  "id" | "name" | "className" | "required"
+  "id" | "name" | "required"
 > &
   Partial<Pick<FileTypeConfig, "displayName" | "icon" | "extensions">> &
   FileUploadOptions & {
+    classNames?: {
+      container?: string;
+      dropzone?: string;
+      files?: string;
+      file?: string;
+    };
     sortable?: boolean;
-    classNames?: { container?: string; dropzone?: string; files?: string };
   };
 
 export function FileUpload({
   id,
   name,
   required,
-  className,
 
   displayName = fileTypeConfig.file.displayName,
   icon: Icon = fileTypeConfig.file.icon,
@@ -190,7 +194,10 @@ export function FileUpload({
       {isFiles && (
         <div
           data-slot="file-upload-files"
-          className={cn("grid grid-cols-2 gap-2 sm:grid-cols-4", className)}
+          className={cn(
+            "grid grid-cols-2 gap-2 sm:grid-cols-4",
+            classNames?.files,
+          )}
         >
           {files.map((file, index) => {
             const isImage = file.file.type.startsWith("image/");
@@ -199,7 +206,7 @@ export function FileUpload({
             //   .files(accept, { maxFileSize: fileSize.bytes })
             //   .safeParse([file]);
 
-            const Preview = (
+            const Comp = (
               <div
                 tabIndex={0}
                 data-slot="file"
@@ -209,6 +216,8 @@ export function FileUpload({
 
                   isImage ? "bg-black text-white" : "bg-card text-foreground",
                   isImage && file.preview && "cursor-pointer",
+
+                  classNames?.file,
                 )}
                 onClick={() => {
                   if (isImage && file.preview) setSelectedImage(file.preview);
@@ -293,10 +302,10 @@ export function FileUpload({
               <div key={index} data-slot="file-container" className="relative">
                 {!isImage && !!file.preview ? (
                   <Link href={file.preview} target="_blank">
-                    {Preview}
+                    {Comp}
                   </Link>
                 ) : (
-                  Preview
+                  Comp
                 )}
 
                 <Button
