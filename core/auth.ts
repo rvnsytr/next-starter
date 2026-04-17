@@ -1,10 +1,11 @@
 import { appConfig } from "@/shared/config";
+import { user } from "@/shared/db/schema";
 import { ac, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin as adminPlugin } from "better-auth/plugins";
+import { admin as adminPlugin, openAPI } from "better-auth/plugins";
 import { db } from "./db";
 import { deleteFiles } from "./s3";
 
@@ -15,16 +16,16 @@ export type Permissions = {
 
 export type AuthSession = typeof auth.$Infer.Session;
 
-export type Role = (typeof allRoles)[number];
-export const allRoles = ["user", "admin"] as const;
+export type Role = (typeof user.$inferSelect)["role"];
 export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
   appName: appConfig.name,
 
   database: drizzleAdapter(db, { provider: "pg" }),
+  experimental: { joins: true },
 
-  plugins: [nextCookies(), adminPlugin({ ac, roles, defaultRole })],
+  plugins: [nextCookies(), openAPI(), adminPlugin({ ac, roles, defaultRole })],
 
   emailAndPassword: {
     enabled: true,
@@ -71,7 +72,11 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      role: { type: [...allRoles], input: false, defaultValue: defaultRole },
+      role: {
+        type: ["user", "admin"],
+        input: false,
+        defaultValue: defaultRole,
+      },
     },
   },
 

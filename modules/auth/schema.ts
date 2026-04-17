@@ -1,10 +1,7 @@
 import { sharedSchemas } from "@/core/schema";
-import {
-  sessionSchema as betterAuthSessionSchema,
-  userSchema as betterAuthUserSchema,
-} from "better-auth";
+import { user } from "@/shared/db/schema";
+import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
-import { allRoles } from "./constants";
 
 export const passwordSchema = z.object({
   password: sharedSchemas.string({ label: "Kata sandi", min: 1 }),
@@ -19,16 +16,7 @@ export const passwordSchema = z.object({
   }),
 });
 
-export const userSchema = betterAuthUserSchema.extend({
+export const userSchema = createSelectSchema(user, {
   email: sharedSchemas.email,
   name: sharedSchemas.string({ label: "Nama", min: 1 }),
-  image: z.string().optional().nullable(),
-  role: z.enum(allRoles),
-  banned: z.boolean().default(false),
-  banReason: z.string().optional().nullable(),
-  banExpires: z.date().optional().nullable(),
-});
-
-export const sessionSchema = betterAuthSessionSchema.extend({
-  impersonatedBy: z.string().nullable().optional(),
 });
