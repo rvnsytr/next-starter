@@ -21,8 +21,8 @@ import {
   ComboboxValue,
 } from "@/core/components/ui/combobox";
 import { toast } from "@/core/components/ui/toast";
+import { fileTypeConfig } from "@/core/config/file-type";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
-import { fileTypeConfig } from "@/core/modules/file-upload/config";
 import { SearchIcon } from "lucide-react";
 
 export function UseFileUploadExample() {

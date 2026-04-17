@@ -1,7 +1,7 @@
-import { messages } from "@/core/messages";
-import { FileType, fileTypeConfig } from "@/core/modules/file-upload/config";
 import { allGenders } from "@/shared/config";
 import z from "zod";
+import { FileType, fileTypeConfig } from "./config/file-type";
+import { messages } from "./messages";
 
 export const sharedSchemas = {
   string: (options?: {

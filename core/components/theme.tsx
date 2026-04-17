@@ -1,11 +1,11 @@
 "use client";
 
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { useIsMobile } from "@/core/hooks/use-media-query";
 import { formatForDisplay, Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
+import { useIsMounted } from "../hooks/use-is-mounted";
+import { useIsMobile } from "../hooks/use-media-query";
 import { Button, ButtonProps } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
