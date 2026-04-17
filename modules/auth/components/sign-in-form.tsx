@@ -4,6 +4,7 @@ import { authClient } from "@/core/auth-client";
 import { Button } from "@/core/components/ui/button";
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/core/components/ui/field";
+import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
@@ -64,7 +65,7 @@ export function SignInForm() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
+    <Form onSubmit={form.handleSubmit(formHandler)}>
       <Controller
         name="email"
         control={form.control}
@@ -128,7 +129,7 @@ export function SignInForm() {
         {/* <ResetPasswordDialog /> */}
       </div>
 
-      <Button type="submit" className="relative" disabled={isLoading}>
+      <Button type="submit" size="lg" className="relative" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
         Masuk ke Dashboard
         {/* {wasLastUsed && (
@@ -137,6 +138,6 @@ export function SignInForm() {
           </Badge>
         )} */}
       </Button>
-    </form>
+    </Form>
   );
 }

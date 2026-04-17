@@ -10,7 +10,7 @@ export function Tabs({ className, ...props }: TabsPrimitive.Root.Props) {
     <TabsPrimitive.Root
       data-slot="tabs"
       className={cn(
-        "flex flex-col gap-2 data-[orientation=vertical]:flex-row",
+        "flex flex-col gap-4 data-[orientation=vertical]:flex-row",
         className,
       )}
       {...props}
