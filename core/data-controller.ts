@@ -21,7 +21,7 @@ import {
   or,
 } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import { DataTableState } from "./components/ui/data-table";
+import { DataTableState } from "./components/data-table";
 import { FilterOperators } from "./data-filter";
 
 type ConfigParserValue = string | number | Date;

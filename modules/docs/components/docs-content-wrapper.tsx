@@ -1,7 +1,6 @@
 import { Badge } from "@/core/components/ui/badge";
 import { Label } from "@/core/components/ui/label";
-import { toCase } from "@/core/utils/formaters";
-import { cn } from "@/core/utils/helpers";
+import { cn, toCase } from "@/core/utils";
 import { ArrowUpRightIcon, AtomIcon, HashIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { Docs, docsFromConfig } from "../config";

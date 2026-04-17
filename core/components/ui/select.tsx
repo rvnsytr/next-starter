@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { useRender } from "@base-ui/react/use-render";

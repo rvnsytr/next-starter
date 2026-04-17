@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 
 export function Collapsible(props: CollapsiblePrimitive.Root.Props) {

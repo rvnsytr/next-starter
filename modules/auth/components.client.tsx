@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/core/auth.client";
+import { DataTable } from "@/core/components/data-table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,6 @@ import {
   ColumnHeader,
   ColumnHeaderCheckbox,
 } from "@/core/components/ui/column";
-import { DataTable } from "@/core/components/ui/data-table";
 import { DatePicker } from "@/core/components/ui/date-picker";
 import { DetailList, DetailListData } from "@/core/components/ui/detail-list";
 import {
@@ -91,11 +91,9 @@ import { fileMeta } from "@/core/constants/file";
 import { messages } from "@/core/constants/messages";
 import { filterFn } from "@/core/data-filter";
 import { useIsMobile } from "@/core/hooks/use-media-query";
+import { getPresignUrl, removeFiles, uploadFiles } from "@/core/s3";
 import { sharedSchemas } from "@/core/schema.zod";
-import { getPresignUrl, removeFiles, uploadFiles } from "@/core/storage";
-import { formatLocalizedDate } from "@/core/utils/date";
-import { capitalize } from "@/core/utils/formaters";
-import { cn } from "@/core/utils/helpers";
+import { capitalize, cn, formatLocalizedDate } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { differenceInSeconds, endOfDay } from "date-fns";
@@ -116,7 +114,6 @@ import {
   Layers2Icon,
   LockKeyholeIcon,
   LockKeyholeOpenIcon,
-  LogInIcon,
   LogOutIcon,
   MailIcon,
   MonitorIcon,
@@ -189,124 +186,6 @@ function getUserStatus(
 }
 
 // #region SIGN
-
-export function SignInForm() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const wasLastUsed = authClient.isLastUsedLoginMethod("email");
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema.pick({ email: true }).extend({
-    password: passwordSchema.shape.password,
-    rememberMe: z.boolean(),
-  });
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "", rememberMe: false },
-  });
-
-  const formHandler = (formData: FormSchema) => {
-    setIsLoading(true);
-    toast.promise(
-      async () => {
-        const res = await authClient.signIn.email({
-          ...formData,
-          callbackURL: "/dashboard",
-        });
-
-        if (res.error) throw res.error;
-        return res;
-      },
-      {
-        success: (res) => sharedText.signIn(res.data?.user.name),
-        error: (e) => {
-          setIsLoading(false);
-          return e.message;
-        },
-      },
-    );
-  };
-
-  return (
-    <form onSubmit={form.handleSubmit(formHandler)} noValidate>
-      <Controller
-        name="email"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <FieldWrapper
-            label="Alamat email"
-            htmlFor={field.name}
-            errors={fieldState.error}
-          >
-            <InputGroup>
-              <InputGroupInput
-                type="email"
-                id={field.name}
-                aria-invalid={!!fieldState.error}
-                placeholder="Masukan email anda"
-                required
-                {...field}
-              />
-              <InputGroupAddon>
-                <MailIcon />
-              </InputGroupAddon>
-            </InputGroup>
-          </FieldWrapper>
-        )}
-      />
-
-      <Controller
-        name="password"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <FieldWrapper
-            label="Kata sandi"
-            htmlFor={field.name}
-            errors={fieldState.error}
-          >
-            <PasswordInput
-              id={field.name}
-              aria-invalid={!!fieldState.error}
-              placeholder="Masukan kata sandi anda"
-              required
-              {...field}
-            />
-          </FieldWrapper>
-        )}
-      />
-
-      <div className="flex items-center justify-between gap-x-2">
-        <Controller
-          name="rememberMe"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field orientation="horizontal" data-invalid={!!fieldState.error}>
-              <Checkbox
-                id={field.name}
-                name={field.name}
-                aria-invalid={!!fieldState.error}
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor={field.name}>Ingat Saya</Label>
-            </Field>
-          )}
-        />
-        <ResetPasswordDialog />
-      </div>
-
-      <Button type="submit" className="relative" disabled={isLoading}>
-        <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
-        Masuk ke Dashboard
-        {/* {wasLastUsed && (
-          <Badge className="bg-primary absolute -top-3 right-1 border border-transparent shadow">
-            {sharedText.lastUsed}
-          </Badge>
-        )} */}
-      </Button>
-    </form>
-  );
-}
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -1,11 +1,11 @@
-import { appConfig } from "@/config/app";
 import { GridPattern } from "@/core/components/ui/grid-pattern";
 import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
+import { appConfig } from "@/shared/config";
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";
 
 export function Fieldset({

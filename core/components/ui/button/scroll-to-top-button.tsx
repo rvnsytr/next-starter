@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { ArrowUpIcon } from "lucide-react";
 import { Button, ButtonProps } from "./button";
 

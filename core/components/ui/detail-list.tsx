@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Label } from "./label";
 
 export type DetailListData = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { cva, VariantProps } from "class-variance-authority";
 import { Input, InputProps } from "./input";
 import { Textarea, TextareaProps } from "./textarea";

@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Route } from "next";
 import Link from "next/link";
 import { Button, ButtonProps } from "./button";

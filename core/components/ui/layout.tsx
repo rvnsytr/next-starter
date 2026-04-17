@@ -1,7 +1,7 @@
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { useLayout } from "@/core/providers/layout";
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
 import { Button, ButtonProps } from "./button";

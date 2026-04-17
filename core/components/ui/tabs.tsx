@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 
 export type TabsVariant = "default" | "line";

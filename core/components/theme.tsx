@@ -6,9 +6,9 @@ import { formatForDisplay, Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
-import { Button, ButtonProps } from "./button";
-import { Kbd } from "./kbd";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
+import { Button, ButtonProps } from "./ui/button";
+import { Kbd } from "./ui/kbd";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export type Theme = (typeof allThemes)[number];
 export const allThemes = ["light", "system", "dark"] as const;

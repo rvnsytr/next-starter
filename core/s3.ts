@@ -36,6 +36,8 @@ export async function uploadFiles(
     Omit<PutObjectCommandInput, "Body" | "ContentType">
   >,
 ): Promise<{ key: string; res: PutObjectCommandOutput }[]> {
+  const { Bucket = defaultBucket, ...rest } = options ?? {};
+
   return Promise.all(
     files.map(async (item) => {
       let key: string;
@@ -53,8 +55,8 @@ export async function uploadFiles(
         Key: key,
         Body: Buffer.from(await file.arrayBuffer()),
         ContentType: file.type,
-        ...options,
-        Bucket: options?.Bucket ?? defaultBucket,
+        Bucket,
+        ...rest,
       });
 
       return { key, res: await s3.send(command) };
@@ -62,14 +64,11 @@ export async function uploadFiles(
   );
 }
 
-export async function getAllFiles(
+export async function listFiles(
   options?: Override<ListObjectsV2CommandInput, { Bucket?: string }>,
 ) {
-  const command = new ListObjectsV2Command({
-    ...options,
-    Bucket: options?.Bucket ?? defaultBucket,
-  });
-
+  const { Bucket = defaultBucket, ...rest } = options ?? {};
+  const command = new ListObjectsV2Command({ Bucket, ...rest });
   return await s3.send(command);
 }
 
@@ -77,12 +76,8 @@ export async function getPresignUrl(
   Key: string,
   options?: ControlledS3Options<GetObjectCommandInput>,
 ) {
-  const command = new GetObjectCommand({
-    Key,
-    ...options,
-    Bucket: options?.Bucket ?? defaultBucket,
-  });
-
+  const { Bucket = defaultBucket, ...rest } = options ?? {};
+  const command = new GetObjectCommand({ Key, Bucket, ...rest });
   return await getSignedUrl(s3, command);
 }
 
@@ -97,18 +92,14 @@ export async function getPresignUrl(
 //   return decodeURIComponent(keyParts.join("/"));
 // }
 
-export async function removeFiles(
+export async function deleteFiles(
   keys: string[],
   options?: ControlledS3Options<DeleteObjectCommandInput>,
 ) {
+  const { Bucket = defaultBucket, ...rest } = options ?? {};
   return Promise.all(
     keys.map(async (Key) => {
-      const command = new DeleteObjectCommand({
-        Key,
-        ...options,
-        Bucket: options?.Bucket ?? defaultBucket,
-      });
-
+      const command = new DeleteObjectCommand({ Key, Bucket, ...rest });
       return await s3.send(command);
     }),
   );

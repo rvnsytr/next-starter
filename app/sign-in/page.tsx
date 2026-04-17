@@ -1,4 +1,3 @@
-import { appConfig } from "@/config/app";
 import { FooterNote } from "@/core/components/layout/footer-note";
 import { PageCard } from "@/core/components/layout/page";
 import {
@@ -10,7 +9,8 @@ import {
 } from "@/core/components/ui/card";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { getRouteTitle } from "@/core/route";
-import { SignInForm } from "@/modules/auth/components.client";
+import { SignInForm } from "@/modules/auth/components/sign-in-form";
+import { appConfig } from "@/shared/config";
 import { LogInIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";

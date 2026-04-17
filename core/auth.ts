@@ -1,12 +1,12 @@
-import { appConfig } from "@/config/app";
-import { ac, roles } from "@/config/permission";
+import { appConfig } from "@/shared/config";
+import { ac, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin } from "better-auth/plugins";
 import { db } from "./db";
-import { removeFiles } from "./storage";
+import { deleteFiles } from "./s3";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -83,7 +83,7 @@ export const auth = betterAuth({
         const oldImageId = session?.user.image;
         const newImageId = newSession?.user.image;
 
-        if (oldImageId && oldImageId !== newImageId) removeFiles([oldImageId]);
+        if (oldImageId && oldImageId !== newImageId) deleteFiles([oldImageId]);
       }
     }),
   },

@@ -9,7 +9,7 @@ import {
   withDataTable,
 } from "@/core/data-table";
 import { db } from "@/core/db";
-import { removeFiles } from "@/core/storage";
+import { removeFiles } from "@/core/s3";
 import { sql } from "drizzle-orm";
 import { headers as nextHeaders } from "next/headers";
 import { AuthSession, Role } from "./constants";

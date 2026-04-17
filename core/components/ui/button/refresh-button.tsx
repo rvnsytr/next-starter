@@ -1,6 +1,6 @@
 "use client";
 
-import { delay } from "@/core/utils/helpers";
+import { delay } from "@/core/utils";
 import { RefreshCcwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

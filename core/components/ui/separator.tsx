@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 
 export function Separator({

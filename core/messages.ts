@@ -1,5 +1,9 @@
-import { formatDateDistanceToNow, formatLocalizedDate } from "./utils/date";
-import { capitalize, formatBytes } from "./utils/formaters";
+import {
+  capitalize,
+  formatBytes,
+  formatDateDistanceToNow,
+  formatLocalizedDate,
+} from "./utils";
 
 export const messages = {
   actions: {
@@ -24,7 +28,10 @@ export const messages = {
     next: "Selanjutnya",
   },
 
-  loading: "Mohon tunggu sebentar...",
+  loading: {
+    title: "Mohon tunggu sebentar...",
+    description: "Permintaan Anda sedang diproses.",
+  },
   empty: "Tidak ada hasil yang ditemukan.",
   notFound: "Sumber daya yang diminta tidak ditemukan.",
 

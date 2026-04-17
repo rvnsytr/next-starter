@@ -1,10 +1,5 @@
 "use client";
 
-import { fileTypeConfig, FileTypeConfig } from "@/config/file-type";
-import { FileUploadOptions, useFileUpload } from "@/core/hooks/use-file-upload";
-import { messages } from "@/core/messages";
-import { formatBytes } from "@/core/utils/formaters";
-import { cn } from "@/core/utils/helpers";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -16,20 +11,24 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button, ResetButton } from "../ui/button";
-import { ButtonGroup } from "../ui/button-group";
-import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "../ui/dialog";
+import { fileTypeConfig, FileTypeConfig } from "../config/file-type";
+import { FileUploadOptions, useFileUpload } from "../hooks/use-file-upload";
+import { messages } from "../messages";
+import { cn, formatBytes } from "../utils";
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "./ui/alert";
+import { Button, ResetButton } from "./ui/button";
+import { ButtonGroup } from "./ui/button-group";
+import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "./ui/dialog";
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "../ui/empty";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
+} from "./ui/empty";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Separator } from "./ui/separator";
 
 export type FileUploadProps = Pick<
   React.ComponentProps<"input">,

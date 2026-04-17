@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { CellContext, HeaderContext } from "@tanstack/react-table";
 import {
   ArrowLeftIcon,
@@ -10,12 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./dropdown-menu";
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from "./menu";
 
 export function ColumnHeader<TData, TValue>({
   column,
@@ -52,8 +47,8 @@ export function ColumnHeader<TData, TValue>({
         )}
 
         {column.getCanPin() && (
-          <DropdownMenu>
-            <DropdownMenuTrigger
+          <Menu>
+            <MenuTrigger
               render={
                 <Button size="icon-xs" variant="ghost" disabled={disabled}>
                   <ColumnPinIcon />
@@ -61,28 +56,28 @@ export function ColumnHeader<TData, TValue>({
               }
             />
 
-            <DropdownMenuContent className="flex min-w-fit flex-row *:size-5 *:items-center *:justify-center *:p-0">
-              <DropdownMenuItem
+            <MenuPopup className="flex min-w-fit flex-row *:size-5 *:items-center *:justify-center *:p-0">
+              <MenuItem
                 onClick={() => column.pin("left")}
                 disabled={columnPinned === "left"}
               >
                 <ArrowLeftIcon />
-              </DropdownMenuItem>
-              <DropdownMenuItem
+              </MenuItem>
+              <MenuItem
                 variant="destructive"
                 onClick={() => column.pin(false)}
                 disabled={columnPinned === false}
               >
                 <XIcon />
-              </DropdownMenuItem>
-              <DropdownMenuItem
+              </MenuItem>
+              <MenuItem
                 onClick={() => column.pin("right")}
                 disabled={columnPinned === "right"}
               >
                 <ArrowRightIcon />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </MenuItem>
+            </MenuPopup>
+          </Menu>
         )}
       </div>
     </div>

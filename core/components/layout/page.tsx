@@ -1,6 +1,6 @@
 // ? Sync with [Card Component](../ui/card.tsx)
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Card } from "../ui/card";
 import { Spinner } from "../ui/spinner";
 

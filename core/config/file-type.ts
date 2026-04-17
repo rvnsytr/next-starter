@@ -1,4 +1,3 @@
-import { toBytes } from "@/core/utils/formaters";
 import {
   FileArchiveIcon,
   FileIcon,
@@ -11,6 +10,7 @@ import {
   TableIcon,
   VideoIcon,
 } from "lucide-react";
+import { toBytes } from "../utils";
 
 export type FileType = (typeof allFileTypes)[number];
 export const allFileTypes = [

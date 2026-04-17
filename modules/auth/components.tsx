@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { AuthSession, Role } from "@/modules/auth/constants";
 import { BadgeCheckIcon } from "lucide-react";
 import { rolesMeta, UserStatus, userStatusMeta } from "./constants";

@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
 import { useRender } from "@base-ui/react/use-render";
 import { cva } from "class-variance-authority";
 import { AlertCircleIcon, CheckIcon, XIcon } from "lucide-react";
@@ -15,16 +14,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { Button } from "../ui/button";
-import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
-import { Input } from "../ui/input";
+import { cn } from "../utils";
+import { Button } from "./ui/button";
+import { ButtonGroup, ButtonGroupText } from "./ui/button-group";
+import { Input } from "./ui/input";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
-} from "../ui/input-group";
-import { Kbd } from "../ui/kbd";
+} from "./ui/input-group";
+import { Kbd } from "./ui/kbd";
 import {
   Menu,
   MenuCheckboxItem,
@@ -36,9 +36,9 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
   MenuTrigger,
-} from "../ui/menu";
-import { ScrollArea } from "../ui/scroll-area";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+} from "./ui/menu";
+import { ScrollArea } from "./ui/scroll-area";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 // i18n Configuration Type
 export type FilterI18nConfig = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 
 export function Switch({

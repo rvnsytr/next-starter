@@ -1,7 +1,7 @@
 "use client";
 
 import { useCopyToClipboard } from "@/core/hooks/use-copy-to-clipboard";
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { Button, ButtonIconSize, ButtonProps } from "./button";
 

@@ -1,14 +1,5 @@
 "use client";
 
-import { messages } from "@/core/messages";
-import { sharedSchemas } from "@/core/schema";
-import {
-  formatCsvRange,
-  formatNumber,
-  formatNumberRange,
-  sanitizeNumber,
-} from "@/core/utils/formaters";
-import { cn, getExcelColumnKey } from "@/core/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChevronsUpDown,
@@ -24,12 +15,24 @@ import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { TextMorph } from "torph/react";
 import z from "zod";
-import { Button } from "../ui/button";
+import { messages } from "../messages";
+import { sharedSchemas } from "../schema";
+import { FieldWrapper } from "../ui/field-wrapper";
+import {
+  cn,
+  formatCsvRange,
+  formatNumber,
+  formatNumberRange,
+  getExcelColumnKey,
+  sanitizeNumber,
+} from "../utils";
+import { FileUpload } from "./file-upload";
+import { Button } from "./ui/button";
 import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
-} from "../ui/collapsible";
+} from "./ui/collapsible";
 import {
   Dialog,
   DialogClose,
@@ -39,7 +42,7 @@ import {
   DialogPopup,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "./ui/dialog";
 import {
   Field,
   FieldDescription,
@@ -48,18 +51,16 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "../ui/field";
-import { FieldWrapper } from "../ui/field-wrapper";
+} from "./ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
-} from "../ui/input-group";
-import { Separator } from "../ui/separator";
-import { LoadingSpinner } from "../ui/spinner";
-import { toast } from "../ui/toast";
-import { FileUpload } from "./file-upload";
+} from "./ui/input-group";
+import { Separator } from "./ui/separator";
+import { LoadingSpinner } from "./ui/spinner";
+import { toast } from "./ui/toast";
 
 type ReadExcelSheetMode = (typeof allReadExcelSheetModes)[number];
 const allReadExcelSheetModes = ["include", "exclude"] as const;

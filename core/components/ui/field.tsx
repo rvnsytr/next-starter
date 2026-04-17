@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 
 export function Field({

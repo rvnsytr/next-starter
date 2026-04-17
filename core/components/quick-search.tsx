@@ -1,8 +1,5 @@
 "use client";
 
-import { useCopyToClipboard } from "@/core/hooks/use-copy-to-clipboard";
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { messages } from "@/core/messages";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,
@@ -12,7 +9,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { Fragment, useCallback, useState, useTransition } from "react";
-import { Button, ButtonProps } from "../ui/button";
+import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
+import { useIsMounted } from "../hooks/use-is-mounted";
+import { messages } from "../messages";
+import { Button, ButtonProps } from "./ui/button";
 import {
   Command,
   CommandCollection,
@@ -29,10 +29,10 @@ import {
   CommandPanel,
   CommandSeparator,
   CommandShortcut,
-} from "../ui/command";
-import { Kbd, KbdGroup } from "../ui/kbd";
-import { LoadingSpinner } from "../ui/spinner";
-import { toast } from "../ui/toast";
+} from "./ui/command";
+import { Kbd, KbdGroup } from "./ui/kbd";
+import { LoadingSpinner } from "./ui/spinner";
+import { toast } from "./ui/toast";
 
 export type CommandPaletteItem = {
   type?: "nav" | "copy";

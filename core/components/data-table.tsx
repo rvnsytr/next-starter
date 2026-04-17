@@ -1,12 +1,5 @@
 "use client";
 
-import { messages } from "@/core/constants/messages";
-import { ActionResponse } from "@/core/constants/types";
-import { columnFiltersSchema, DataTableState } from "@/core/data-table";
-import { useDebounce } from "@/core/hooks/use-debounce";
-import { useIsMobile } from "@/core/hooks/use-media-query";
-import { formatNumber } from "@/core/utils/formaters";
-import { cn } from "@/core/utils/helpers";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -45,37 +38,42 @@ import {
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import z from "zod";
-import { Button } from "./button";
-import { ButtonGroup } from "./button-group";
-import { RefreshButton } from "./button/scroll-to-top-button";
-import { Checkbox } from "./checkbox";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "./command";
+import { useDebounce } from "../hooks/use-debounce";
+import { useIsMobile } from "../hooks/use-media-query";
+import { messages } from "../messages";
+import { ActionResponse } from "../types";
+import { cn, formatNumber } from "../utils";
 import {
   ActiveFilters,
   ActiveFiltersMobileContainer,
   FilterActions,
   FilterSelector,
 } from "./data-table-filter";
-import { ErrorFallback } from "./fallback";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "./input-group";
-import { Kbd } from "./kbd";
-import { Label } from "./label";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Button } from "./ui/button";
+import { ButtonGroup } from "./ui/button-group";
+import { RefreshButton } from "./ui/button/scroll-to-top-button";
+import { Checkbox } from "./ui/checkbox";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
+import { ErrorFallback } from "./ui/fallback";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import { Kbd } from "./ui/kbd";
+import { Label } from "./ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./select";
-import { Separator } from "./separator";
-import { Skeleton } from "./skeleton";
+} from "./ui/select";
+import { Separator } from "./ui/separator";
+import { Skeleton } from "./ui/skeleton";
 import {
   Table,
   TableBody,
@@ -83,7 +81,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./table";
+} from "./ui/table";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DataTableColumnDef<TData> = ColumnDef<TData, any>[];

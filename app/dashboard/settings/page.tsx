@@ -1,5 +1,5 @@
-import { appConfig } from "@/config/app";
 import { DashboardMain } from "@/core/components/layout/dashboard";
+import { ThemeSettings } from "@/core/components/theme";
 import {
   Card,
   CardAction,
@@ -11,13 +11,13 @@ import {
 } from "@/core/components/ui/card";
 import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
 import { LayoutSettings } from "@/core/components/ui/layout";
-import { ThemeSettings } from "@/core/components/ui/theme";
 import { getRouteTitle } from "@/core/route";
 import {
   ChangePasswordForm,
   RevokeOtherSessionsButton,
   SessionList,
 } from "@/modules/auth/components.client";
+import { appConfig } from "@/shared/config";
 import {
   FrameIcon,
   LockKeyholeIcon,

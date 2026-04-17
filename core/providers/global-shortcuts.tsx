@@ -2,7 +2,7 @@
 
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { nextTheme, THEME_TOGGLE_HOTKEY } from "../components/ui/theme";
+import { nextTheme, THEME_TOGGLE_HOTKEY } from "../components/theme";
 
 export function GlobalShortcuts() {
   const { setTheme } = useTheme();

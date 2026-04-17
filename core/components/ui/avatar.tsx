@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 
 export function Avatar({

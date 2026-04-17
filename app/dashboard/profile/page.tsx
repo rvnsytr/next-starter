@@ -1,4 +1,3 @@
-import { appConfig } from "@/config/app";
 import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
@@ -9,6 +8,7 @@ import {
 } from "@/core/components/ui/card";
 import { getRouteTitle } from "@/core/route";
 import { ProfileBadges, ProfileForm } from "@/modules/auth/components.client";
+import { appConfig } from "@/shared/config";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

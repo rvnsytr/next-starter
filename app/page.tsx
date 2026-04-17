@@ -6,14 +6,15 @@
 //   )
 // }
 
-import { PasswordInput } from "@/core/components/features/password-input";
+import { FooterNote } from "@/core/components/layout/footer-note";
+import { PageTitle } from "@/core/components/layout/page";
+import { PasswordInput } from "@/core/components/password-input";
 import {
   CommandPaletteGroup,
   QuickSearch,
-} from "@/core/components/features/quick-search";
-import { Scrollspy } from "@/core/components/features/scroll-spy";
-import { FooterNote } from "@/core/components/layout/footer-note";
-import { PageTitle } from "@/core/components/layout/page";
+} from "@/core/components/quick-search";
+import { Scrollspy } from "@/core/components/scroll-spy";
+import { ThemeToggle } from "@/core/components/theme";
 import {
   Accordion,
   AccordionItem,
@@ -152,10 +153,18 @@ import {
 } from "@/core/components/ui/select";
 import { Separator } from "@/core/components/ui/separator";
 import { LinkSpinner } from "@/core/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
-import { ThemeToggle } from "@/core/components/ui/theme";
-import { toCase } from "@/core/utils/formaters";
-import { cn } from "@/core/utils/helpers";
+import { cn, toCase } from "@/core/utils";
 import { DocsContentWrapper } from "@/modules/docs/components/docs-content-wrapper";
 import { DocsSection } from "@/modules/docs/components/docs-section";
 import {
@@ -1138,7 +1147,122 @@ const docs: Docs[] = [
       { type: "comp", label: "Spinner" },
       { type: "comp", label: "Stepper", refs: ["reui"], render: "To Do" },
       { type: "comp", label: "Switch", refs: ["shadcnui"] },
-      { type: "comp", label: "Table", refs: ["shadcnui"] },
+      {
+        type: "comp",
+        label: "Table",
+        refs: ["cossui"],
+        render: () => {
+          return (
+            <Table>
+              <TableCaption>A list of current projects.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Project</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Team</TableHead>
+                  <TableHead className="text-right">Budget</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">
+                    Website Redesign
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-emerald-500"
+                      />
+                      Paid
+                    </Badge>
+                  </TableCell>
+                  <TableCell>Frontend Team</TableCell>
+                  <TableCell className="text-right">$12,500</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Mobile App</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="bg-muted-foreground/64 size-1.5 rounded-full"
+                      />
+                      Unpaid
+                    </Badge>
+                  </TableCell>
+                  <TableCell>Mobile Team</TableCell>
+                  <TableCell className="text-right">$8,750</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">API Integration</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-amber-500"
+                      />
+                      Pending
+                    </Badge>
+                  </TableCell>
+                  <TableCell>Backend Team</TableCell>
+                  <TableCell className="text-right">$5,200</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">
+                    Database Migration
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-emerald-500"
+                      />
+                      Paid
+                    </Badge>
+                  </TableCell>
+                  <TableCell>DevOps Team</TableCell>
+                  <TableCell className="text-right">$3,800</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">User Dashboard</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-emerald-500"
+                      />
+                      Paid
+                    </Badge>
+                  </TableCell>
+                  <TableCell>UX Team</TableCell>
+                  <TableCell className="text-right">$7,200</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Security Audit</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-red-500"
+                      />
+                      Failed
+                    </Badge>
+                  </TableCell>
+                  <TableCell>Security Team</TableCell>
+                  <TableCell className="text-right">$2,100</TableCell>
+                </TableRow>
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={3}>Total Budget</TableCell>
+                  <TableCell className="text-right">$39,550</TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          );
+        },
+      },
       { type: "comp", label: "Tabs", refs: ["cossui"] },
       {
         type: "comp",

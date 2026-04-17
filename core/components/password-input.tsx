@@ -1,7 +1,5 @@
 "use client";
 
-import { messages } from "@/core/messages";
-import { cn } from "@/core/utils/helpers";
 import {
   CheckIcon,
   EyeIcon,
@@ -10,12 +8,10 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "../ui/input-group";
+import { messages } from "../messages";
+import { cn } from "../utils";
+import { Button } from "./ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 
 export function PasswordInput({
   startAddon = <LockKeyholeIcon />,

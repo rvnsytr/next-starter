@@ -1,6 +1,6 @@
 "use client";
 
-import { mutateDataTable } from "@/core/components/ui/data-table";
+import { mutateDataTable } from "@/core/components/data-table";
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import { getSession, listSessions, listUserSessions } from "./actions";
 

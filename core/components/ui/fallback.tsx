@@ -1,5 +1,5 @@
-import { appConfig } from "@/config/app";
-import { cn } from "@/core/utils/helpers";
+import { cn } from "@/core/utils";
+import { appConfig } from "@/shared/config";
 import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 
