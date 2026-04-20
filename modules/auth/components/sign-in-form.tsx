@@ -1,16 +1,21 @@
 "use client";
 
 import { authClient } from "@/core/auth-client";
+import { PasswordInput } from "@/core/components/password-input";
 import { Button } from "@/core/components/ui/button";
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/core/components/ui/field";
 import { Form } from "@/core/components/ui/form";
-import { Input } from "@/core/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/core/components/ui/input-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogInIcon } from "lucide-react";
+import { LogInIcon, MailIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
@@ -43,23 +48,16 @@ export function SignInForm() {
         return res;
       })(),
       {
-        loading: messages.loading,
+        loading: { title: messages.loading },
         success: (res) => ({
           type: "success",
           title: "Berhasil masuk!",
           description: `Selamat datang${res.data.user.name ? ` ${res.data.user.name}` : ""}!`,
         }),
-        error: () => {
-          return {
-            title: "Something went wrong",
-            description: "Please try again.",
-          };
+        error: (e) => {
+          setIsLoading(false);
+          return { type: "error", title: e.message };
         },
-
-        // error: (e) => {
-        //   setIsLoading(false);
-        //   return e.message;
-        // },
       },
     );
   };
@@ -72,12 +70,20 @@ export function SignInForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Alamat email</FieldLabel>
-            <Input
-              type="email"
-              placeholder="Masukan email anda"
-              required
-              {...field}
-            />
+
+            <InputGroup>
+              <InputGroupInput
+                type="email"
+                placeholder="Masukan email anda"
+                required
+                {...field}
+              />
+
+              <InputGroupAddon>
+                <MailIcon />
+              </InputGroupAddon>
+            </InputGroup>
+
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>
@@ -91,12 +97,13 @@ export function SignInForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Kata sandi</FieldLabel>
-            <Input
-              type="email"
+
+            <PasswordInput
               placeholder="Masukan kata sandi anda"
               required
               {...field}
             />
+
             <FieldError match={!!fieldState.error}>
               {fieldState.error?.message}
             </FieldError>
@@ -129,7 +136,7 @@ export function SignInForm() {
         {/* <ResetPasswordDialog /> */}
       </div>
 
-      <Button type="submit" size="lg" className="relative" disabled={isLoading}>
+      <Button type="submit" className="relative" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
         Masuk ke Dashboard
         {/* {wasLastUsed && (

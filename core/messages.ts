@@ -28,15 +28,12 @@ export const messages = {
     next: "Selanjutnya",
   },
 
-  loading: {
-    title: "Mohon tunggu sebentar...",
-    description: "Permintaan Anda sedang diproses.",
-  },
+  loading: "Mohon tunggu sebentar...",
   empty: "Tidak ada hasil yang ditemukan.",
   notFound: "Sumber daya yang diminta tidak ditemukan.",
 
   success: "Sukses",
-  error: "Terjadi kesalahan. Silakan coba lagi nanti.",
+  error: "Terjadi kesalahan. Silakan coba lagi.",
 
   unauthorized: "Tindakan tidak terautentikasi",
   forbidden: "Tidak memiliki izin untuk melakukan tindakan ini.",

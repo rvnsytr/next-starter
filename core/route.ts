@@ -1,7 +1,7 @@
-import { Role } from "@/modules/auth/constants";
 import { appConfig } from "@/shared/config";
 import { routesConfig } from "@/shared/route";
 import { Route } from "next";
+import { Role } from "./auth";
 import { Menu } from "./types";
 
 export type RouteRole = "all" | Role[];

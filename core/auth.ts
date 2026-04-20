@@ -29,6 +29,7 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
     // sendResetPassword: async ({ user, token }) => {
     //   const { name, email } = user;
     //   const url = `${appConfig.cors.origin}/reset-password?token=${token}`;

@@ -1425,7 +1425,14 @@ export default function Page() {
             shortcuts={["Control+K", "Meta+K"]}
           />
 
-          <Button size="sm" render={<Link href="/dashboard">Dashboard</Link>} />
+          <Button
+            size="sm"
+            render={
+              <Link href="/dashboard">
+                <LinkSpinner /> Dashboard
+              </Link>
+            }
+          />
 
           <Separator orientation="vertical" className="h-4" />
 

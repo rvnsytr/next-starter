@@ -1,7 +1,6 @@
 // ? Sync with [Card Component](../ui/card.tsx)
 
 import { cn } from "@/core/utils";
-import { Card } from "../ui/card";
 import { Spinner } from "../ui/spinner";
 
 export function Page({
@@ -12,12 +11,17 @@ export function Page({
   return (
     <>
       <div
+        data-slot="page-loader"
         className={cn(
           "hidden size-full items-center justify-center",
           withLayoutLoader && "group-data-[layout-mode=unset]/layout-mode:flex",
         )}
       >
-        <Spinner data-slot="page-loader" variant="frame" className="size-5" />
+        <Spinner
+          data-slot="page-loader-icon"
+          variant="frame"
+          className="size-5"
+        />
       </div>
 
       <div
@@ -95,19 +99,6 @@ export function PageAction({
         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
         className,
       )}
-      {...props}
-    />
-  );
-}
-
-export function PageCard({
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof Card>, "size">) {
-  return (
-    <Card
-      data-slot="page-card"
-      className={cn("scroll-m-20 rounded-none md:rounded-xl", className)}
       {...props}
     />
   );
