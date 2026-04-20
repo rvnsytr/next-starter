@@ -1,14 +1,19 @@
 "use client";
 
+import { DynamicBreadcrumb } from "@/core/components/dynamic-breadcrumb";
+import { ThemeToggle } from "@/core/components/theme";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarImage,
+} from "@/core/components/ui/avatar";
+import { Separator } from "@/core/components/ui/separator";
+import { ShimmerText } from "@/core/components/ui/shimmer-text";
+import { SidebarToggle } from "@/core/components/ui/sidebar";
 import { useAuth } from "@/modules/auth/provider";
 import { appConfig } from "@/shared/config";
 import Link from "next/link";
-import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
-import { ThemeToggle } from "../theme";
-import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Separator } from "../ui/separator";
-import { ShimmerText } from "../ui/shimmer-text";
-import { SidebarToggle } from "../ui/sidebar";
 
 export function SidebarAppSiteHeader() {
   const { user } = useAuth();

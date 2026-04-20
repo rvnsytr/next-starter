@@ -1,16 +1,21 @@
 "use client";
 
-import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
-import { useAuth } from "@/modules/auth/provider";
-import Link from "next/link";
-import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarImage,
+} from "@/core/components/ui/avatar";
 import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "../ui/sidebar";
+} from "@/core/components/ui/sidebar";
+import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
+import { useAuth } from "@/modules/auth/provider";
+import Link from "next/link";
 
 export function SidebarAppHeader() {
   const { user } = useAuth();

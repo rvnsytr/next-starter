@@ -1,7 +1,7 @@
 import { Sidebar, SidebarRail } from "@/core/components/ui/sidebar";
-import { SidebarAppContent } from "./sidebar-app-content";
-import { SidebarAppFooter } from "./sidebar-app-footer";
-import { SidebarAppHeader } from "./sidebar-app-header";
+import { SidebarAppContent } from "./content";
+import { SidebarAppFooter } from "./footer";
+import { SidebarAppHeader } from "./header";
 
 export function SidebarApp() {
   return (

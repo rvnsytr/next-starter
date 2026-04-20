@@ -1,6 +1,8 @@
 import { FooterNote } from "@/core/components/layout/footer-note";
-import { SidebarApp } from "@/core/components/layout/sidebar-app";
-import { SidebarAppSiteHeader } from "@/core/components/layout/sidebar-app-site-header";
+import {
+  SidebarApp,
+  SidebarAppSiteHeader,
+} from "@/core/components/layout/sidebar";
 import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";

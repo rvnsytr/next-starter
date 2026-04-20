@@ -1,5 +1,24 @@
 "use client";
 
+import {
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+} from "@/core/components/ui/collapsible";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  useSidebar,
+} from "@/core/components/ui/sidebar";
+import { LinkSpinner } from "@/core/components/ui/spinner";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { getActiveRoute, getMenuByRole } from "@/core/route";
 import { toCase } from "@/core/utils";
@@ -16,25 +35,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import {
-  Collapsible,
-  CollapsiblePanel,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import {
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  useSidebar,
-} from "../ui/sidebar";
-import { LinkSpinner } from "../ui/spinner";
 
 export function SidebarAppContent() {
   const { user } = useAuth();
