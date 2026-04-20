@@ -164,12 +164,23 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineDate,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/core/components/ui/timeline";
 import { cn, toCase } from "@/core/utils";
 import { DocsContentWrapper } from "@/modules/docs/components/docs-content-wrapper";
 import { DocsSection } from "@/modules/docs/components/docs-section";
 import {
   AutocompleteExample,
   ComboboxExample,
+  StepperExample,
   ToastExample,
   UseFileUploadExample,
 } from "@/modules/docs/components/examples";
@@ -1145,7 +1156,12 @@ const docs: Docs[] = [
       { type: "comp", label: "Skeleton", refs: ["cossui"] },
       { type: "comp", label: "Slider", refs: ["cossui"] },
       { type: "comp", label: "Spinner" },
-      { type: "comp", label: "Stepper", refs: ["reui"], render: "To Do" },
+      {
+        type: "comp",
+        label: "Stepper",
+        refs: ["reui"],
+        render: <StepperExample />,
+      },
       { type: "comp", label: "Switch", refs: ["shadcnui"] },
       {
         type: "comp",
@@ -1274,7 +1290,51 @@ const docs: Docs[] = [
           </div>
         ),
       },
-      { type: "comp", label: "Timeline", refs: ["reui"], render: "To Do" },
+      {
+        type: "comp",
+        label: "Timeline",
+        refs: ["reui"],
+        render: (
+          <Timeline defaultValue={2} className="w-full max-w-md">
+            <TimelineItem step={1}>
+              <TimelineHeader>
+                <TimelineDate>March 2024</TimelineDate>
+                <TimelineTitle>Project Initialized</TimelineTitle>
+              </TimelineHeader>
+              <TimelineIndicator />
+              <TimelineSeparator />
+              <TimelineContent>
+                Successfully set up the project repository and initial
+                architecture.
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem step={2}>
+              <TimelineHeader>
+                <TimelineDate>April 2024</TimelineDate>
+                <TimelineTitle>Beta Release</TimelineTitle>
+              </TimelineHeader>
+              <TimelineIndicator />
+              <TimelineSeparator />
+              <TimelineContent>
+                Launched the beta version for early testers and feedback.
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem step={3}>
+              <TimelineHeader>
+                <TimelineDate>June 2024</TimelineDate>
+                <TimelineTitle>Official Launch</TimelineTitle>
+              </TimelineHeader>
+              <TimelineIndicator />
+              <TimelineSeparator />
+              <TimelineContent>
+                The platform is now live for all users worldwide.
+              </TimelineContent>
+            </TimelineItem>
+          </Timeline>
+        ),
+      },
       {
         type: "comp",
         label: "Toast",
