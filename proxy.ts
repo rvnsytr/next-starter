@@ -11,7 +11,7 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
 
   const headers = new Headers(req.headers);
-  const allRequestMetaKey = [
+  const nextUrlKeys = [
     "basePath",
     "href",
     "origin",
@@ -20,7 +20,7 @@ export function proxy(req: NextRequest) {
     "hash",
     "search",
   ] as const;
-  allRequestMetaKey.map((k) => headers.set(`x-${k}`, req.nextUrl[k]));
+  nextUrlKeys.map((k) => headers.set(`x-${k}`, req.nextUrl[k]));
 
   return NextResponse.next({ request: { headers } });
 }
