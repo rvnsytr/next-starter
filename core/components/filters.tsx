@@ -1,6 +1,7 @@
 "use client";
 
 import { useRender } from "@base-ui/react/use-render";
+import { Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { cva } from "class-variance-authority";
 import { AlertCircleIcon, CheckIcon, XIcon } from "lucide-react";
 import {
@@ -1088,7 +1089,7 @@ type FiltersProps<T = unknown> = {
   menuPopupClassName?: string;
   collapseAddButton?: boolean;
   enableShortcut?: boolean;
-  shortcutKey?: string;
+  shortcutKey?: Hotkey;
   shortcutLabel?: string;
 };
 
@@ -1329,7 +1330,7 @@ export function Filters<T = unknown>({
   allowMultiple = true,
   menuPopupClassName,
   enableShortcut = false,
-  shortcutKey = "f",
+  shortcutKey = "F",
   shortcutLabel = "F",
 }: FiltersProps<T>) {
   const [addFilterOpen, setAddFilterOpen] = useState(false);
@@ -1343,31 +1344,18 @@ export function Filters<T = unknown>({
   const rootInputRef = useRef<HTMLInputElement>(null);
   const rootId = useId();
 
-  useEffect(() => {
-    if (!enableShortcut) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.key.toLowerCase() === shortcutKey.toLowerCase() &&
-        !addFilterOpen &&
-        !(
-          document.activeElement instanceof HTMLInputElement ||
-          document.activeElement instanceof HTMLTextAreaElement
-        )
-      ) {
-        e.preventDefault();
-        setAddFilterOpen(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [enableShortcut, shortcutKey, addFilterOpen]);
+  useHotkey(shortcutKey, () => setAddFilterOpen(true), {
+    enabled:
+      enableShortcut &&
+      !addFilterOpen &&
+      !(
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement
+      ),
+  });
 
   useEffect(() => {
-    if (addFilterOpen && activeMenu === "root") {
-      rootInputRef.current?.focus();
-    }
+    if (addFilterOpen && activeMenu === "root") rootInputRef.current?.focus();
   }, [addFilterOpen, activeMenu]);
 
   const onHighlightIndex = useEffectEvent((index: number) =>
