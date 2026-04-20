@@ -8,7 +8,13 @@ export function GlobalShortcuts() {
   const { setTheme } = useTheme();
 
   useHotkeys([
-    { hotkey: THEME_TOGGLE_HOTKEY, callback: () => setTheme(nextTheme) },
+    {
+      hotkey: THEME_TOGGLE_HOTKEY,
+      callback: () => {
+        if (!document.startViewTransition) return setTheme(nextTheme);
+        document.startViewTransition(() => setTheme(nextTheme));
+      },
+    },
   ]);
 
   return null;

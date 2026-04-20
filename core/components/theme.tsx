@@ -58,7 +58,8 @@ export function ThemeToggle({
       variant={variant}
       onClick={(e) => {
         onClick?.(e);
-        setTheme(nextTheme);
+        if (!document.startViewTransition) return setTheme(nextTheme);
+        document.startViewTransition(() => setTheme(nextTheme));
       }}
       {...props}
     >
