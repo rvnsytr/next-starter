@@ -122,9 +122,9 @@ const formSchema = z.object({
   // }),
 });
 
-export function FormExample() {
-  const now = new Date();
+const now = new Date();
 
+export function FormExample() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {

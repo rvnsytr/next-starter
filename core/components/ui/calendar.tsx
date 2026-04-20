@@ -7,6 +7,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react";
+import { Suspense } from "react";
 import { DayPicker } from "react-day-picker";
 import { buttonVariants } from "./button";
 import {
@@ -19,7 +20,7 @@ import {
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-export function Calendar({
+function CalendarContent({
   locale = id,
   captionLayout = "dropdown",
   showOutsideDays = true,
@@ -167,5 +168,13 @@ export function Calendar({
       }}
       {...props}
     />
+  );
+}
+
+export function Calendar(props: CalendarProps) {
+  return (
+    <Suspense>
+      <CalendarContent {...props} />
+    </Suspense>
   );
 }
