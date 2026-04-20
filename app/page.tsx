@@ -613,7 +613,8 @@ const docs: Docs[] = [
           <Card className="w-full max-w-sm">
             <CardHeader>
               <CardTitle>
-                <LogInIcon /> Login to your account
+                <LogInIcon /> Login to your account Lorem ipsum dolor, sit amet
+                consectetur adipisicing elit.
               </CardTitle>
               <CardDescription>
                 Enter your email below to login to your account

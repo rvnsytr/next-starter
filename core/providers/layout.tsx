@@ -1,18 +1,8 @@
 "use client";
 
-import {
-  allLayoutMode,
-  defaultLayout,
-  LayoutMode,
-} from "@/core/components/ui/layout";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useEffectEvent,
-  useState,
-} from "react";
-import z from "zod";
+import { LayoutMode } from "@/core/components/layout";
+import { createContext, useContext, useEffect, useState } from "react";
+import { cn } from "../utils";
 
 type LayoutContextType = {
   layout: LayoutMode;
@@ -21,30 +11,26 @@ type LayoutContextType = {
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
-export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [layout, setLayout] = useState<LayoutMode>("unset");
-
-  const onMount = useEffectEvent(() => {
-    const stored = localStorage.getItem("layout-preference");
-    const zodRes = z.enum(allLayoutMode).safeParse(stored);
-    if (zodRes.success && zodRes.data !== "unset") setLayout(zodRes.data);
-    else {
-      setLayout(defaultLayout);
-      localStorage.setItem("layout-preference", defaultLayout);
-    }
-  });
-
-  useEffect(() => onMount(), []);
+export function LayoutProvider({
+  layout: fallbackLayout,
+  className,
+  children,
+}: {
+  layout: LayoutMode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [layout, setLayout] = useState<LayoutMode>(fallbackLayout);
 
   useEffect(() => {
-    if (layout !== "unset") localStorage.setItem("layout-preference", layout);
+    document.cookie = `layout-preference=${encodeURIComponent(layout)}; path=/; max-age=31536000; samesite=lax`;
   }, [layout]);
 
   return (
     <LayoutContext.Provider value={{ layout, setLayout }}>
       <div
         data-layout-mode={layout}
-        className="group/layout-mode flex flex-1 flex-col"
+        className={cn("group/layout-mode flex h-full flex-col", className)}
       >
         {children}
       </div>

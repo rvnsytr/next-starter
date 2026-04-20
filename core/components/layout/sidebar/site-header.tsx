@@ -1,6 +1,7 @@
 "use client";
 
 import { DynamicBreadcrumb } from "@/core/components/dynamic-breadcrumb";
+import { LayoutToggle } from "@/core/components/layout";
 import { ThemeToggle } from "@/core/components/theme";
 import {
   Avatar,
@@ -38,7 +39,7 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           {/* <ImpersonateUserBadge /> */}
-          {/* <LayoutToggle /> */}
+          <LayoutToggle />
           <ThemeToggle align="end" />
 
           <Separator orientation="vertical" className="mr-2 h-4" />

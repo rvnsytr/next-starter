@@ -1,3 +1,4 @@
+import { allLayoutMode } from "@/core/components/layout";
 import { FooterNote } from "@/core/components/layout/footer-note";
 import {
   SidebarApp,
@@ -6,13 +7,15 @@ import {
 import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
+import { LayoutProvider } from "@/core/providers/layout";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { getSession } from "@/modules/auth/actions";
 import { AuthProvider } from "@/modules/auth/provider";
 import { Metadata } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import z from "zod";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
 
@@ -31,7 +34,7 @@ export default async function DashboardLayout({
     >
       <DashboardAuth>
         <DynamicBreadcrumbProvider>
-          <div className="[--header-height:calc(--spacing(14))]">
+          <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
             <SidebarProvider className="flex flex-col">
               <SidebarAppSiteHeader />
 
@@ -46,7 +49,7 @@ export default async function DashboardLayout({
                 </SidebarInset>
               </div>
             </SidebarProvider>
-          </div>
+          </DashboardLayoutMode>
         </DynamicBreadcrumbProvider>
       </DashboardAuth>
     </Suspense>
@@ -62,4 +65,24 @@ async function DashboardAuth({ children }: { children?: React.ReactNode }) {
     return notFound();
 
   return <AuthProvider session={session}>{children}</AuthProvider>;
+}
+
+async function DashboardLayoutMode({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const layoutPreference = z
+    .enum(allLayoutMode)
+    .catch("centered")
+    .parse(cookieStore.get("layout-preference")?.value);
+
+  return (
+    <LayoutProvider layout={layoutPreference} className={className}>
+      {children}
+    </LayoutProvider>
+  );
 }

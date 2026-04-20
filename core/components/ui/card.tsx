@@ -47,7 +47,7 @@ export function CardTitle({
     <div
       data-slot="card-title"
       className={cn(
-        "flex items-center gap-2 text-base leading-snug font-medium group-data-[size=sm]/card:text-sm **:[svg:not([class*='size-'])]:size-4",
+        "flex items-center gap-2 text-base leading-tight font-semibold group-data-[size=sm]/card:text-sm **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

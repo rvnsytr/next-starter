@@ -1,17 +1,17 @@
+"use client";
+
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { useLayout } from "@/core/providers/layout";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
-import { Button, ButtonProps } from "./button";
-import { Field, FieldContent, FieldLabel, FieldTitle } from "./field";
-import { Kbd } from "./kbd";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
+import { Button, ButtonProps } from "./ui/button";
+import { Kbd } from "./ui/kbd";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export type LayoutMode = (typeof allLayoutMode)[number];
-export const allLayoutMode = ["fullwidth", "centered", "unset"] as const;
+export const allLayoutMode = ["fullwidth", "centered"] as const;
 
 export const LAYOUT_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 export const defaultLayout: LayoutMode = "centered";
@@ -22,7 +22,6 @@ export const layoutModeConfig: Record<
 > = {
   fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
   centered: { displayName: "Centered", icon: MinimizeIcon },
-  unset: { displayName: "Unset", icon: FrameIcon },
 };
 
 export function LayoutToggle({
@@ -31,7 +30,6 @@ export function LayoutToggle({
   variant = "ghost",
   onClick,
   className,
-  disabled,
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<React.ComponentProps<typeof TooltipPopup>, "align">) {
@@ -48,10 +46,9 @@ export function LayoutToggle({
   useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
 
   if (!isMounted) {
-    const { icon: DefaultIcon } = layoutModeConfig.unset;
     return (
       <Button size={size} variant={variant} disabled>
-        <DefaultIcon />
+        <FrameIcon />
       </Button>
     );
   }
@@ -65,7 +62,6 @@ export function LayoutToggle({
         toggleLayout();
       }}
       className={cn("hidden 2xl:inline-flex", className)}
-      disabled={disabled ?? layout === "unset"}
       {...props}
     >
       <Icon />
@@ -87,31 +83,31 @@ export function LayoutToggle({
   );
 }
 
-export function LayoutSettings() {
-  const { layout, setLayout } = useLayout();
+// export function LayoutSettings() {
+//   const { layout, setLayout } = useLayout();
 
-  return (
-    <RadioGroup
-      value={layout}
-      defaultValue="default"
-      onValueChange={setLayout}
-      className="grid grid-cols-2"
-      required
-    >
-      {Object.entries(layoutModeConfig)
-        .filter(([k]) => k !== "unset")
-        .map(([k, { displayName, icon: Icon }]) => (
-          <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
-            <Field>
-              <FieldContent className="items-center">
-                <FieldTitle className="flex-col md:flex-row">
-                  <Icon /> {displayName}
-                </FieldTitle>
-              </FieldContent>
-              <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
-            </Field>
-          </FieldLabel>
-        ))}
-    </RadioGroup>
-  );
-}
+//   return (
+//     <RadioGroup
+//       value={layout}
+//       defaultValue="default"
+//       onValueChange={setLayout}
+//       className="grid grid-cols-2"
+//       required
+//     >
+//       {Object.entries(layoutModeConfig)
+//         .filter(([k]) => k !== "unset")
+//         .map(([k, { displayName, icon: Icon }]) => (
+//           <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
+//             <Field>
+//               <FieldContent className="items-center">
+//                 <FieldTitle className="flex-col md:flex-row">
+//                   <Icon /> {displayName}
+//                 </FieldTitle>
+//               </FieldContent>
+//               <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
+//             </Field>
+//           </FieldLabel>
+//         ))}
+//     </RadioGroup>
+//   );
+// }
