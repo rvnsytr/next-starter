@@ -14,25 +14,29 @@ import {
 } from "react";
 import { getRouteHierarchy, normalizeRoute } from "../route";
 
-type BreadcrumbContent = { href: Route; label: string };
+type DynamicBreadcrumbContent = { href: Route; label: string };
 
-type BreadcrumbContextType = {
-  breadcrumbs: BreadcrumbContent[];
-  setBreadcrumbs: React.Dispatch<React.SetStateAction<BreadcrumbContent[]>>;
+type DynamicBreadcrumbContextType = {
+  breadcrumbs: DynamicBreadcrumbContent[];
+  setBreadcrumbs: React.Dispatch<
+    React.SetStateAction<DynamicBreadcrumbContent[]>
+  >;
   resetBreadcrumbs: () => void;
 };
 
-const BreadcrumbContext = createContext<BreadcrumbContextType | undefined>(
-  undefined,
-);
+const DynamicBreadcrumbContext = createContext<
+  DynamicBreadcrumbContextType | undefined
+>(undefined);
 
-export function BreadcrumbProvider({
+export function DynamicBreadcrumbProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbContent[]>([]);
+  const [breadcrumbs, setBreadcrumbs] = useState<DynamicBreadcrumbContent[]>(
+    [],
+  );
 
   const setByPathname = useCallback(() => {
     const crumbs = getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
@@ -63,14 +67,18 @@ export function BreadcrumbProvider({
   );
 
   return (
-    <BreadcrumbContext.Provider value={value}>
+    <DynamicBreadcrumbContext.Provider value={value}>
       {children}
-    </BreadcrumbContext.Provider>
+    </DynamicBreadcrumbContext.Provider>
   );
 }
 
-export function useBreadcrumb() {
-  const ctx = useContext(BreadcrumbContext);
-  if (!ctx) throw new Error("useBreadcrumb must be used in BreadcrumbProvider");
+export function useDynamicBreadcrumb() {
+  const ctx = useContext(DynamicBreadcrumbContext);
+  if (!ctx) {
+    const error =
+      "useDynamicBreadcrumb must be used in DynamicBreadcrumbProvider";
+    throw new Error(error);
+  }
   return ctx;
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Fragment } from "react";
-import { useBreadcrumb } from "../providers/breadcrumb";
+import { useDynamicBreadcrumb } from "../providers/dynamic-breadcrumb";
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -18,7 +18,7 @@ import { Skeleton } from "./ui/skeleton";
 // type DynamicBreadcrumbData = Route | DynamicBreadcrumbContent;
 
 export function DynamicBreadcrumb({ className }: { className?: string }) {
-  const { breadcrumbs } = useBreadcrumb();
+  const { breadcrumbs } = useDynamicBreadcrumb();
 
   if (!breadcrumbs.length) return <Skeleton className="h-4 w-48" />;
 

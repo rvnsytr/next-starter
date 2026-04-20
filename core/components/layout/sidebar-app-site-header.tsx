@@ -3,6 +3,7 @@
 import { useAuth } from "@/modules/auth/provider";
 import { appConfig } from "@/shared/config";
 import Link from "next/link";
+import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
 import { ThemeToggle } from "../theme";
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
@@ -26,10 +27,11 @@ export function SidebarAppSiteHeader() {
               {appConfig.name}
             </ShimmerText>
           </Link>
-          {/* <DynamicBreadcrumb className="hidden md:flex" /> */}
+
+          <DynamicBreadcrumb className="hidden md:flex" />
         </div>
 
-        <div className="flex items-center gap-x-2">
+        <div className="sgap-x-2 flex items-center">
           {/* <ImpersonateUserBadge /> */}
           {/* <LayoutToggle /> */}
           <ThemeToggle align="end" />
@@ -46,9 +48,9 @@ export function SidebarAppSiteHeader() {
         </div>
       </div>
 
-      {/* <div className="overflow-x-auto border-b px-4 py-2 **:text-xs md:hidden">
+      <div className="overflow-x-auto border-b px-4 py-2 **:text-xs md:hidden">
         <DynamicBreadcrumb />
-      </div> */}
+      </div>
     </header>
   );
 }
