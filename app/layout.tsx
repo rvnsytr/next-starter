@@ -45,7 +45,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={appConfig.defaultLanguage} suppressHydrationWarning>
+    <html
+      lang={appConfig.defaultLanguage}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body className={cn(fontSans.variable, fontMono.variable, "relative")}>
         <NuqsAdapter>
           <ThemeProvider

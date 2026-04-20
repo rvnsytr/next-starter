@@ -1,4 +1,4 @@
-import { auth } from "@/core/auth";
+import { Role } from "@/core/auth";
 import {
   BanIcon,
   CircleCheckIcon,
@@ -9,14 +9,7 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 
-export type AuthSession = typeof auth.$Infer.Session;
-
-export type Role = (typeof allRoles)[number];
-export const allRoles = ["user", "admin"] as const;
-
-export const defaultRole: Role = "user";
-
-export const rolesMeta: Record<
+export const roleConfig: Record<
   Role,
   { displayName: string; description: string; icon: LucideIcon; color: string }
 > = {
@@ -42,7 +35,7 @@ export const allUserStatus = [
   "nonactive",
   "banned",
 ] as const;
-export const userStatusMeta: Record<
+export const userStatusConfig: Record<
   UserStatus,
   { displayName: string; description: string; icon: LucideIcon; color: string }
 > = {

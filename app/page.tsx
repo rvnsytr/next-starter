@@ -506,11 +506,14 @@ const docs: Docs[] = [
                   Muted Foreground
                 </CustomColorBadge>
 
-                <CustomColorBadge color="orange">Orange</CustomColorBadge>
-
                 <CustomColorBadge color="black" darkColor="white">
                   Black and White
                 </CustomColorBadge>
+
+                <CustomColorBadge
+                  color="orange"
+                  render={<Link href="/">Orange with Link</Link>}
+                />
               </div>
             ),
           },
@@ -886,7 +889,10 @@ const docs: Docs[] = [
         refs: [{ url: "/#components-alert" }],
         render: (
           <>
-            <LoadingFallback className="h-24 w-full max-w-lg rounded-xl border" />
+            <LoadingFallback
+              variant="frame"
+              containerClassName="h-24 w-full max-w-lg rounded-xl border"
+            />
 
             <ErrorFallback
               error={JSON.stringify(

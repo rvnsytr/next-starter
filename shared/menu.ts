@@ -23,7 +23,7 @@ export const menuConfig = {
         {
           route: "/dashboard/profile",
           icon: UserRoundIcon,
-          subMenu: [{ label: "Informasi Pribadi" }],
+          subMenu: [{ label: "Informasi Pribadi", variant: "destructive" }],
         },
         {
           route: "/dashboard/settings",

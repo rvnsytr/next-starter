@@ -1,12 +1,18 @@
 import { cn } from "@/core/utils";
 import { appConfig } from "@/shared/config";
-import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { TriangleAlertIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
+import { Spinner, SpinnerProps } from "./spinner";
 
-export function LoadingFallback({ className }: { className?: string }) {
+export function LoadingFallback({
+  containerClassName,
+  ...props
+}: SpinnerProps & { containerClassName?: string }) {
   return (
-    <div className={cn("flex items-center justify-center p-4", className)}>
-      <LoaderIcon className="text-foreground size-4 animate-spin" />
+    <div
+      className={cn("flex items-center justify-center p-4", containerClassName)}
+    >
+      <Spinner {...props} />
     </div>
   );
 }

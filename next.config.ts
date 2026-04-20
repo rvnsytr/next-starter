@@ -1,6 +1,7 @@
 import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
   // images: { remotePatterns: [new URL(`${process.env.S3_ENDPOINT}/**`)] },
   // experimental: {
   //   serverActions: {

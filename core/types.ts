@@ -71,11 +71,5 @@ export type MenuContent = {
   disabled?: boolean;
 
   // if href is not defined, the Link href prop will be `/{route}/#${toCase(label, "kebab")}`
-  subMenu?: {
-    label: string;
-    href?: LinkProps["href"];
-    variant?: "default" | "destructive";
-    disabled?: boolean;
-    role?: RouteRole;
-  }[];
+  subMenu?: { label: string; href?: LinkProps["href"]; role?: RouteRole }[];
 };
