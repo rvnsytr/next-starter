@@ -31,7 +31,7 @@ export function SidebarAppSiteHeader() {
           <DynamicBreadcrumb className="hidden md:flex" />
         </div>
 
-        <div className="sgap-x-2 flex items-center">
+        <div className="flex items-center gap-x-2">
           {/* <ImpersonateUserBadge /> */}
           {/* <LayoutToggle /> */}
           <ThemeToggle align="end" />

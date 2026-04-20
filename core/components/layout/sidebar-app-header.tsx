@@ -1,6 +1,6 @@
 "use client";
 
-import { UserVerifiedBadge } from "@/modules/auth/components";
+import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useAuth } from "@/modules/auth/provider";
 import Link from "next/link";
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
