@@ -8,6 +8,8 @@ import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { Kbd } from "./ui/kbd";
+import { Label } from "./ui/label";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export type LayoutMode = (typeof allLayoutMode)[number];
@@ -18,10 +20,10 @@ export const defaultLayout: LayoutMode = "centered";
 
 export const layoutModeConfig: Record<
   LayoutMode,
-  { displayName: string; icon: LucideIcon }
+  { label: string; icon: LucideIcon }
 > = {
-  fullwidth: { displayName: "Fullwidth", icon: ScanIcon },
-  centered: { displayName: "Centered", icon: MinimizeIcon },
+  fullwidth: { label: "Fullwidth", icon: ScanIcon },
+  centered: { label: "Centered", icon: MinimizeIcon },
 };
 
 export function LayoutToggle({
@@ -83,31 +85,25 @@ export function LayoutToggle({
   );
 }
 
-// export function LayoutSettings() {
-//   const { layout, setLayout } = useLayout();
+export function LayoutSettings() {
+  const { layout, setLayout } = useLayout();
 
-//   return (
-//     <RadioGroup
-//       value={layout}
-//       defaultValue="default"
-//       onValueChange={setLayout}
-//       className="grid grid-cols-2"
-//       required
-//     >
-//       {Object.entries(layoutModeConfig)
-//         .filter(([k]) => k !== "unset")
-//         .map(([k, { displayName, icon: Icon }]) => (
-//           <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
-//             <Field>
-//               <FieldContent className="items-center">
-//                 <FieldTitle className="flex-col md:flex-row">
-//                   <Icon /> {displayName}
-//                 </FieldTitle>
-//               </FieldContent>
-//               <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
-//             </Field>
-//           </FieldLabel>
-//         ))}
-//     </RadioGroup>
-//   );
-// }
+  return (
+    <RadioGroup
+      value={layout}
+      defaultValue="default"
+      onValueChange={setLayout}
+      className="grid grid-cols-2"
+      required
+    >
+      {Object.entries(layoutModeConfig)
+        .filter(([k]) => k !== "unset")
+        .map(([k, { label, icon: Icon }]) => (
+          <Label key={k} className="justify-center" asCard>
+            <RadioGroupItem value={k} hidden />
+            <Icon /> {label}
+          </Label>
+        ))}
+    </RadioGroup>
+  );
+}

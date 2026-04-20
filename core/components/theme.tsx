@@ -6,8 +6,12 @@ import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
+import { useViewTransition } from "../hooks/use-view-transition";
 import { Button, ButtonProps } from "./ui/button";
+import { LoadingFallback } from "./ui/fallback";
 import { Kbd } from "./ui/kbd";
+import { Label } from "./ui/label";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export type Theme = (typeof allThemes)[number];
@@ -32,12 +36,14 @@ export function ThemeToggle({
   size = "icon",
   variant = "ghost",
   onClick,
+  disabled,
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<ComponentProps<typeof TooltipPopup>, "align">) {
-  const isMounted = useIsMounted();
   const isMobile = useIsMobile();
+  const isMounted = useIsMounted();
   const { theme, setTheme } = useTheme();
+  const { isTransitioning, startTransition } = useViewTransition();
 
   const label = "Toggle Theme";
   const currentTheme = (theme ?? "system") as Theme;
@@ -58,9 +64,9 @@ export function ThemeToggle({
       variant={variant}
       onClick={(e) => {
         onClick?.(e);
-        if (!document.startViewTransition) return setTheme(nextTheme);
-        document.startViewTransition(() => setTheme(nextTheme));
+        startTransition(() => setTheme(nextTheme));
       }}
+      disabled={disabled || isTransitioning}
       {...props}
     >
       <Icon />
@@ -82,32 +88,27 @@ export function ThemeToggle({
   );
 }
 
-// export function ThemeSettings() {
-//   const isMounted = useIsMounted();
-//   const { theme, setTheme } = useTheme();
+export function ThemeSettings() {
+  const isMounted = useIsMounted();
+  const { theme, setTheme } = useTheme();
+  const { isTransitioning, startTransition } = useViewTransition();
 
-//   if (!isMounted) return <LoadingFallback />;
+  if (!isMounted) return <LoadingFallback />;
 
-//   return (
-//     <RadioGroup
-//       value={theme}
-//       defaultValue="system"
-//       onValueChange={setTheme}
-//       className="grid grid-cols-3"
-//       required
-//     >
-//       {Object.entries(themeConfig).map(([k, { icon: Icon }]) => (
-//         <FieldLabel key={k} htmlFor={`rd-theme-${k}`}>
-//           <Field>
-//             <FieldContent className="items-center">
-//               <FieldTitle className="flex-col capitalize md:flex-row">
-//                 <Icon /> {k}
-//               </FieldTitle>
-//             </FieldContent>
-//             <RadioGroupItem id={`rd-theme-${k}`} value={k} hidden />
-//           </Field>
-//         </FieldLabel>
-//       ))}
-//     </RadioGroup>
-//   );
-// }
+  return (
+    <RadioGroup
+      value={theme}
+      defaultValue="system"
+      onValueChange={(v) => startTransition(() => setTheme(v))}
+      className="grid grid-cols-3"
+      disabled={isTransitioning}
+    >
+      {Object.entries(themeConfig).map(([k, { icon: Icon }]) => (
+        <Label key={k} className="justify-center capitalize" asCard>
+          <RadioGroupItem value={k} hidden />
+          <Icon /> {k}
+        </Label>
+      ))}
+    </RadioGroup>
+  );
+}
