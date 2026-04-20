@@ -33,7 +33,7 @@ export function FieldLabel({
     <FieldPrimitive.Label
       data-slot="field-label"
       className={cn(
-        "text-foreground inline-flex items-center gap-2 text-sm/4 font-medium data-disabled:opacity-64",
+        "text-foreground inline-flex items-center gap-2 text-sm/4 font-medium data-disabled:opacity-64 **:[svg]:size-4",
         asCard &&
           "hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50 items-start rounded-lg border p-3",
         className,

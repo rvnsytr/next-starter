@@ -1,3 +1,5 @@
+"use client";
+
 import useSWR, { SWRConfiguration, SWRResponse } from "swr";
 import { ZodType } from "zod";
 import { fetcher, FetcherConfig } from "../fetcher";
