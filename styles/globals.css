@@ -96,13 +96,13 @@
 
 .dark {
   --success: var(--color-green-600);
-  --success-foreground: var(--color-green-400);
+  --success-foreground: var(--color-green-500);
   --warning: var(--color-yellow-600);
-  --warning-foreground: var(--color-yellow-400);
+  --warning-foreground: var(--color-yellow-500);
   --info: var(--color-blue-600);
-  --info-foreground: var(--color-blue-400);
+  --info-foreground: var(--color-blue-500);
   --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-red-400);
+  --destructive-foreground: var(--color-red-500);
 
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

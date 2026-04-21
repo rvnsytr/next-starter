@@ -1,14 +1,13 @@
 "use client";
 
+import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, VariantProps } from "class-variance-authority";
 
 export const buttonVariants = cva(
-  // ? based on: coss/ui
   "group/button relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent font-medium text-sm outline-none transition-shadow active:not-aria-[haspopup]:translate-y-px before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 **:[svg:not([class*='opacity-'])]:opacity-80 **:[svg:not([class*='size-'])]:size-4 **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg]:shrink-0",
   {
-    // ? based on: shadcn/ui
     variants: {
       size: {
         xl: "h-10 px-[calc(--spacing(4)-1px)] text-base **:[svg:not([class*='size-'])]:size-4.5",
@@ -26,46 +25,38 @@ export const buttonVariants = cva(
       },
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 data-pressed:bg-secondary/90 *:data-[slot=button-loading-indicator]:text-secondary-foreground [:active,[data-pressed]]:bg-secondary/80",
+        outline:
+          "border-input bg-popover not-dark:bg-clip-padding text-foreground shadow-xs/5 not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:bg-accent/50 data-pressed:bg-accent/50 *:data-[slot=button-loading-indicator]:text-foreground dark:bg-input/32 dark:data-pressed:bg-input/64 dark:hover:bg-input/64 dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/2%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [:disabled,:active,[data-pressed]]:shadow-none",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "border-transparent text-foreground hover:bg-accent data-pressed:bg-accent *:data-[slot=button-loading-indicator]:text-foreground",
         link: "relative text-primary no-underline after:bg-primary after:absolute after:bottom-px after:h-px after:w-2/4 after:origin-bottom-right after:scale-x-0 after:transition-transform after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100",
 
         success:
-          "bg-success text-white hover:bg-success/80 focus-visible:border-success/40 focus-visible:ring-success/20 dark:focus-visible:ring-success/40",
-        "success-soft":
-          "bg-success/10 text-success hover:bg-success/20 focus-visible:border-success/40 focus-visible:ring-success/20 dark:bg-success/20 dark:hover:bg-success/30 dark:focus-visible:ring-success/40",
+          "not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] border-success bg-success text-white shadow-success/24 shadow-xs hover:bg-success/90 data-pressed:bg-success/90 [:active,[data-pressed]]:inset-shadow-[0_1px_--theme(--color-black/8%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "success-outline":
-          "text-success border-success/30 bg-background shadow-xs hover:border-success/50 dark:bg-success/5 hover:bg-success/5 dark:hover:border-success/60 dark:hover:bg-success/15 aria-expanded:border-success aria-expanded:bg-success/5 dark:aria-expanded:bg-success/15 focus-visible:border-success/40 focus-visible:bg-success/5 dark:focus-visible:bg-success/15 focus-visible:ring-success/20 dark:focus-visible:ring-success/40",
+          "border-input bg-popover not-dark:bg-clip-padding text-success-foreground shadow-xs/5 not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:border-success/32 hover:bg-success/4 data-pressed:border-success/32 data-pressed:bg-success/4 dark:bg-input/32 dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/2%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "success-ghost":
           "text-success hover:bg-success/5 dark:hover:bg-success/15 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 focus-visible:border-success/40",
 
         warning:
-          "bg-warning text-white hover:bg-warning/80 focus-visible:border-warning/40 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40",
-        "warning-soft":
-          "bg-warning/10 text-warning hover:bg-warning/20 focus-visible:border-warning/40 focus-visible:ring-warning/20 dark:bg-warning/20 dark:hover:bg-warning/30 dark:focus-visible:ring-warning/40",
+          "not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] border-warning bg-warning text-white shadow-warning/24 shadow-xs hover:bg-warning/90 data-pressed:bg-warning/90 [:active,[data-pressed]]:inset-shadow-[0_1px_--theme(--color-black/8%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "warning-outline":
-          "text-warning border-warning/30 bg-background shadow-xs hover:border-warning/50 dark:bg-warning/5 hover:bg-warning/5 dark:hover:border-warning/60 dark:hover:bg-warning/15 aria-expanded:border-warning aria-expanded:bg-warning/5 dark:aria-expanded:bg-warning/15 focus-visible:border-warning/40 focus-visible:bg-warning/5 dark:focus-visible:bg-warning/15 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40",
+          "border-input bg-popover not-dark:bg-clip-padding text-warning-foreground shadow-xs/5 not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:border-warning/32 hover:bg-warning/4 data-pressed:border-warning/32 data-pressed:bg-warning/4 dark:bg-input/32 dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/2%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "warning-ghost":
           "text-warning hover:bg-warning/5 dark:hover:bg-warning/15 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 focus-visible:border-warning/40",
 
-        info: "bg-info text-white hover:bg-info/80 focus-visible:border-info/40 focus-visible:ring-info/20 dark:focus-visible:ring-info/40",
-        "info-soft":
-          "bg-info/10 text-info hover:bg-info/20 focus-visible:border-info/40 focus-visible:ring-info/20 dark:bg-info/20 dark:hover:bg-info/30 dark:focus-visible:ring-info/40",
+        info: "not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] border-info bg-info text-white shadow-info/24 shadow-xs hover:bg-info/90 data-pressed:bg-info/90 [:active,[data-pressed]]:inset-shadow-[0_1px_--theme(--color-black/8%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "info-outline":
-          "text-info border-info/30 bg-background shadow-xs hover:border-info/50 dark:bg-info/5 hover:bg-info/5 dark:hover:border-info/60 dark:hover:bg-info/15 aria-expanded:border-info aria-expanded:bg-info/5 dark:aria-expanded:bg-info/15 focus-visible:border-info/40 focus-visible:bg-info/5 dark:focus-visible:bg-info/15 focus-visible:ring-info/20 dark:focus-visible:ring-info/40",
+          "border-input bg-popover not-dark:bg-clip-padding text-info-foreground shadow-xs/5 not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:border-info/32 hover:bg-info/4 data-pressed:border-info/32 data-pressed:bg-info/4 dark:bg-input/32 dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/2%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "info-ghost":
           "text-info hover:bg-info/5 dark:hover:bg-info/15 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 focus-visible:border-info/40",
 
         destructive:
-          "bg-destructive text-white hover:bg-destructive/80 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
-        "destructive-soft":
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+          "not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] border-destructive bg-destructive text-white shadow-destructive/24 shadow-xs hover:bg-destructive/90 data-pressed:bg-destructive/90 [:active,[data-pressed]]:inset-shadow-[0_1px_--theme(--color-black/8%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "destructive-outline":
-          "text-destructive border-destructive/30 bg-background shadow-xs hover:border-destructive/50 dark:bg-destructive/5 hover:bg-destructive/5 dark:hover:border-destructive/60 dark:hover:bg-destructive/15 aria-expanded:border-destructive aria-expanded:bg-destructive/5 dark:aria-expanded:bg-destructive/15 focus-visible:border-destructive/40 focus-visible:bg-destructive/5 dark:focus-visible:bg-destructive/15 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "border-input bg-popover not-dark:bg-clip-padding text-destructive-foreground shadow-xs/5 not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:border-destructive/32 hover:bg-destructive/4 data-pressed:border-destructive/32 data-pressed:bg-destructive/4 dark:bg-input/32 dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/2%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [:disabled,:active,[data-pressed]]:shadow-none",
         "destructive-ghost":
           "text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/15 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 focus-visible:border-destructive/40",
       },
@@ -84,7 +75,6 @@ export type ButtonIconSize =
   | "icon-sm"
   | "icon-xs";
 
-// ? based on: coss/ui (without loading)
 export function Button({
   type = "button",
   size = "default",
@@ -96,7 +86,7 @@ export function Button({
   return useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
-      { type, className: buttonVariants({ className, size, variant }) },
+      { type, className: cn(buttonVariants({ size, variant }), className) },
       props,
     ),
     render,

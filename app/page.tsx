@@ -528,7 +528,7 @@ const docs: Docs[] = [
       {
         type: "comp",
         label: "Button",
-        refs: ["shadcnui", "cossui"],
+        refs: ["cossui"],
         render: (
           <div className="flex flex-col items-center gap-y-2 *:flex *:flex-wrap *:items-center *:justify-center *:gap-2 **:capitalize">
             <div>
@@ -541,28 +541,24 @@ const docs: Docs[] = [
 
             <div>
               <Button variant="success">success</Button>
-              <Button variant="success-soft">success</Button>
               <Button variant="success-outline">success</Button>
               <Button variant="success-ghost">success</Button>
             </div>
 
             <div>
               <Button variant="warning">warning</Button>
-              <Button variant="warning-soft">warning</Button>
               <Button variant="warning-outline">warning</Button>
               <Button variant="warning-ghost">warning</Button>
             </div>
 
             <div>
               <Button variant="info">info</Button>
-              <Button variant="info-soft">info</Button>
               <Button variant="info-outline">info</Button>
               <Button variant="info-ghost">info</Button>
             </div>
 
             <div>
               <Button variant="destructive">destructive</Button>
-              <Button variant="destructive-soft">destructive</Button>
               <Button variant="destructive-outline">destructive</Button>
               <Button variant="destructive-ghost">destructive</Button>
             </div>
