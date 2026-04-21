@@ -124,23 +124,21 @@ export function useFileUpload({
   }, []);
 
   const clearFiles = useCallback(() => {
-    setState((prev) => {
-      for (const file of prev.files) {
-        if (
-          file.preview &&
-          file.file instanceof File &&
-          file.file.type.startsWith("image/")
-        )
-          URL.revokeObjectURL(file.preview);
-      }
+    for (const file of state.files) {
+      if (
+        file.preview &&
+        file.file instanceof File &&
+        file.file.type.startsWith("image/")
+      )
+        URL.revokeObjectURL(file.preview);
+    }
 
-      if (inputRef.current) inputRef.current.value = "";
+    if (inputRef.current) inputRef.current.value = "";
 
-      const newState = { ...prev, files: [], errors: [] };
-      onFilesChange?.(newState.files);
-      return newState;
-    });
-  }, [onFilesChange]);
+    onFilesChange?.([]);
+
+    setState({ ...state, files: [], errors: [] });
+  }, [state, onFilesChange]);
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
@@ -190,15 +188,14 @@ export function useFileUpload({
       }
 
       if (validFiles.length > 0) {
-        onFilesAdded?.(validFiles);
+        const newFiles = !multiple
+          ? validFiles
+          : [...state.files, ...validFiles];
 
-        setState((prev) => {
-          const newFiles = !multiple
-            ? validFiles
-            : [...prev.files, ...validFiles];
-          onFilesChange?.(newFiles);
-          return { ...prev, files: newFiles, errors };
-        });
+        onFilesAdded?.(validFiles);
+        onFilesChange?.(newFiles);
+
+        setState((prev) => ({ ...prev, files: newFiles, errors }));
       } else if (errors.length > 0) {
         onError?.(errors);
         setState((prev) => ({ ...prev, errors }));
@@ -214,8 +211,8 @@ export function useFileUpload({
       createPreview,
       generateUniqueId,
       clearFiles,
-      onFilesChange,
       onFilesAdded,
+      onFilesChange,
       onError,
     ],
   );
