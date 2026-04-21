@@ -5,9 +5,9 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { roleConfig } from "../constants";
+import { roleConfig } from "../config";
 
-export function RoleBadge({
+export function UserRoleBadge({
   value,
   withText = true,
   className,

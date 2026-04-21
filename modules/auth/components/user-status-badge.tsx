@@ -4,7 +4,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { UserStatus, userStatusConfig } from "../constants";
+import { UserStatus, userStatusConfig } from "../config";
 
 export function UserStatusBadge({
   value,
