@@ -13,6 +13,7 @@ export function Card({
     <div
       data-slot="card"
       data-size={size}
+      data-as-page-card={asPageCard}
       className={cn(
         "group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-4 overflow-hidden rounded-xl py-4 text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         asPageCard && "scroll-m-20 rounded-none md:rounded-xl",
@@ -108,7 +109,7 @@ export function CardFooter({
     <div
       data-slot="card-footer"
       className={cn(
-        "bg-muted/50 flex items-center rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3",
+        "bg-muted/50 flex items-center gap-2 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3",
         className,
       )}
       {...props}

@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, VariantProps } from "class-variance-authority";
@@ -97,7 +96,7 @@ export function Button({
   return useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
-      { type, className: cn(buttonVariants({ className, size, variant })) },
+      { type, className: buttonVariants({ className, size, variant }) },
       props,
     ),
     render,

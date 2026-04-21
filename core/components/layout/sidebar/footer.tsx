@@ -8,6 +8,7 @@ import {
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { dashboardfooterMenu } from "@/shared/menu";
 import Link from "next/link";
+import { LinkSpinner } from "../../ui/spinner";
 
 export function SidebarAppFooter() {
   return (
@@ -27,7 +28,7 @@ export function SidebarAppFooter() {
                   tooltip={label}
                   render={
                     <Link href={route}>
-                      {iconElement} {label}
+                      <LinkSpinner icon={{ base: iconElement }} /> {label}
                     </Link>
                   }
                 />

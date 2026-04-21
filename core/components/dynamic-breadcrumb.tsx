@@ -20,7 +20,7 @@ import { Skeleton } from "./ui/skeleton";
 export function DynamicBreadcrumb({ className }: { className?: string }) {
   const { breadcrumbs } = useDynamicBreadcrumb();
 
-  if (!breadcrumbs.length) return <Skeleton className="h-4 w-48" />;
+  if (!breadcrumbs.length) return <Skeleton className="h-5 w-48" />;
 
   const isCompact = breadcrumbs.length > 3;
   const lastPart = breadcrumbs[breadcrumbs.length - 1];
