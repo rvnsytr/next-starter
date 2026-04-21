@@ -34,7 +34,7 @@ export function getRouteHierarchy(path: string): Route[] {
 
 export function getActiveRoute(menu: Menu[], pathname: string) {
   const allRoutes = Object.keys(routesConfig) as Route[];
-  const allMenuRoutes = menu.flatMap((m) => m.content.map((c) => c.route));
+  const allMenuRoutes = menu.flatMap((m) => m.items.map((c) => c.route));
 
   const parts = pathname.split("/").filter(Boolean);
   const paths: string[] = [];
@@ -56,22 +56,24 @@ export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {
     return role === "all" || role?.includes(currentRole);
   };
 
-  const filteredMenu = menu.map(({ section, content }) => {
-    const filteredContent = content
+  const filteredMenu = menu.map(({ group, items }) => {
+    const filteredItems = items
       .filter(({ route }) => {
         const meta = routesConfig[route];
         if (!("role" in meta)) return true;
         return checkRole(meta.role);
       })
       .map((item) => {
-        if (!item.subMenu) return item;
-        const filteredSubMenu = item.subMenu.filter((sm) => checkRole(sm.role));
-        if (filteredSubMenu.length <= 0) return null;
-        else return { ...item, subMenu: filteredSubMenu };
+        if (!item.subItems) return item;
+        const filteredSubItems = item.subItems.filter((si) =>
+          checkRole(si.role),
+        );
+        if (filteredSubItems.length <= 0) return null;
+        else return { ...item, subItems: filteredSubItems };
       });
 
-    if (filteredContent.length <= 0) return null;
-    else return { section, content: filteredContent } as Menu;
+    if (filteredItems.length <= 0) return null;
+    else return { group, items: filteredItems } as Menu;
   });
 
   return filteredMenu.filter((item) => item !== null);

@@ -52,12 +52,12 @@ export function SidebarAppContent() {
 
   return (
     <SidebarContent>
-      {menu.map(({ section, content }, index) => (
+      {menu.map(({ group, items }, index) => (
         <SidebarGroup key={index}>
-          <SidebarGroupLabel>{section}</SidebarGroupLabel>
+          <SidebarGroupLabel>{group}</SidebarGroupLabel>
 
           <SidebarMenu>
-            {content.map(({ route, icon: Icon, disabled, subMenu }) => {
+            {items.map(({ route, icon: Icon, disabled, subItems }) => {
               const { label } = routesConfig[route];
 
               const isActive = route === activeRoute;
@@ -90,7 +90,7 @@ export function SidebarAppContent() {
                     <span className="line-clamp-1">{label}</span>
                   </SidebarMenuButton>
 
-                  {subMenu &&
+                  {subItems &&
                     (isMounted ? (
                       <>
                         <CollapsibleTrigger
@@ -103,7 +103,7 @@ export function SidebarAppContent() {
 
                         <CollapsiblePanel>
                           <SidebarMenuSub>
-                            {subMenu.map((itm, idx) => (
+                            {subItems.map((itm, idx) => (
                               <SidebarMenuSubItem key={idx}>
                                 <SidebarMenuSubButton
                                   className="flex justify-between"
@@ -111,7 +111,7 @@ export function SidebarAppContent() {
                                     <Link
                                       href={
                                         itm.href ??
-                                        `${route}/#${toCase(itm.label, "kebab")}`
+                                        `${route}#${toCase(itm.label, "kebab")}`
                                       }
                                     >
                                       <span className="line-clamp-1">

@@ -1,4 +1,4 @@
-import { Menu, MenuContent } from "@/core/types";
+import { Menu, MenuItem } from "@/core/types";
 import {
   CircleHelpIcon,
   ExternalLinkIcon,
@@ -11,24 +11,24 @@ import {
 export const menuConfig = {
   dashboard: [
     {
-      section: "Umum",
-      content: [
+      group: "Umum",
+      items: [
         { route: "/dashboard", icon: LayoutDashboardIcon },
         { route: "/dashboard/users", icon: UsersRoundIcon },
       ],
     },
     {
-      section: "Lainnya",
-      content: [
+      group: "Lainnya",
+      items: [
         {
           route: "/dashboard/profile",
           icon: UserRoundIcon,
-          subMenu: [{ label: "Informasi Pribadi", variant: "destructive" }],
+          subItems: [{ label: "Informasi Pribadi" }],
         },
         {
           route: "/dashboard/settings",
           icon: SettingsIcon,
-          subMenu: [
+          subItems: [
             { label: "Tema" },
             { label: "Layout" },
             { label: "Sesi Aktif" },
@@ -40,7 +40,7 @@ export const menuConfig = {
   ],
 } satisfies Record<string, Menu[]>;
 
-export const dashboardfooterMenu: (MenuContent & { label: string })[] = [
+export const dashboardfooterMenu: (MenuItem & { label: string })[] = [
   { route: "/", label: "Beranda", icon: ExternalLinkIcon },
   {
     route: "/help",

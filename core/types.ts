@@ -1,6 +1,6 @@
+import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon } from "lucide-react";
 import { Route } from "next";
-import { LinkProps } from "next/link";
 import { RouteRole } from "./route";
 
 export type Override<T, U> = Omit<T, keyof U> & U;
@@ -63,13 +63,14 @@ export type TransformKeys<
         }
       : T;
 
-export type Menu = { section: string; content: MenuContent[] };
+export type Menu = { group: string; items: MenuItem[] };
 
-export type MenuContent = {
+export type MenuItem = {
   route: Route;
   icon?: LucideIcon;
   disabled?: boolean;
+  shortcut?: Hotkey;
 
-  // if href is not defined, the Link href prop will be `/{route}/#${toCase(label, "kebab")}`
-  subMenu?: { label: string; href?: LinkProps["href"]; role?: RouteRole }[];
+  // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
+  subItems?: { label: string; href?: Route | string; role?: RouteRole }[];
 };
