@@ -9,10 +9,7 @@
 import { FooterNote } from "@/core/components/layout/footer-note";
 import { PageTitle } from "@/core/components/layout/page";
 import { PasswordInput } from "@/core/components/password-input";
-import {
-  CommandPaletteGroup,
-  QuickSearch,
-} from "@/core/components/quick-search";
+import { QuickSearch, QuickSearchGroup } from "@/core/components/quick-search";
 import { Scrollspy } from "@/core/components/scroll-spy";
 import { ThemeToggle } from "@/core/components/theme";
 import {
@@ -49,7 +46,6 @@ import {
   PulsatingButton,
   RefreshButton,
   ResetButton,
-  ScrollToTopButton,
 } from "@/core/components/ui/button";
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Calendar } from "@/core/components/ui/calendar";
@@ -1437,7 +1433,7 @@ const docs: Docs[] = [
   },
 ];
 
-const homeContentItems: CommandPaletteGroup[] = docs.map((d) => {
+const homeQuickSearch: QuickSearchGroup[] = docs.map((d) => {
   return {
     group: d.section,
     items: d.content
@@ -1448,9 +1444,9 @@ const homeContentItems: CommandPaletteGroup[] = docs.map((d) => {
           const subContent =
             c.type === "comp" && !!c.variants?.length
               ? c.variants?.map((sc) => ({
-                  label: sc.label,
+                  label: `${c.label} / ${sc.label}`,
                   value: `/#${toCase(`${id}-${sc.label}`, "kebab")}`,
-                  icon: <DotIcon />,
+                  icon: <DotIcon className="text-muted-foreground" />,
                 }))
               : null;
 
@@ -1467,7 +1463,7 @@ const homeContentItems: CommandPaletteGroup[] = docs.map((d) => {
 export default function Page() {
   return (
     <div className="relative [--header-height:48px]">
-      <ScrollToTopButton />
+      {/* <ScrollToTopButton /> */}
 
       {/* Header */}
       <DocsSection
@@ -1488,7 +1484,13 @@ export default function Page() {
         <div className="flex items-center gap-x-2">
           <QuickSearch
             type="group"
-            data={homeContentItems}
+            data={[
+              {
+                group: "Navigate",
+                items: [{ label: "Dashboard", value: "/dashboard" }],
+              },
+              ...homeQuickSearch,
+            ]}
             shortcuts={["Control+K", "Meta+K"]}
           />
 

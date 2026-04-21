@@ -1,17 +1,21 @@
 "use client";
 
+import { routesConfig } from "@/shared/route";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   CornerDownLeftIcon,
+  DotIcon,
   SearchIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { Fragment, useCallback, useState, useTransition } from "react";
+import { Fragment, useCallback, useMemo, useState, useTransition } from "react";
 import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { messages } from "../messages";
+import { Menu, Override } from "../types";
+import { cn, toCase } from "../utils";
 import { Button, ButtonProps } from "./ui/button";
 import {
   Command,
@@ -34,7 +38,7 @@ import { Kbd, KbdGroup } from "./ui/kbd";
 import { LoadingSpinner } from "./ui/spinner";
 import { toast } from "./ui/toast";
 
-export type CommandPaletteItem = {
+export type QuickSearchItem = {
   type?: "nav" | "copy";
   label: string;
   value: string;
@@ -42,42 +46,78 @@ export type CommandPaletteItem = {
   shortcut?: Hotkey;
 };
 
-export type CommandPaletteGroup = {
+export type QuickSearchGroup = {
   group: string;
-  items: CommandPaletteItem[];
+  items: QuickSearchItem[];
 };
 
-export type CommandPalleteData =
-  | { type: "group"; data: CommandPaletteGroup[] }
-  | { type: "list"; data: CommandPaletteItem[] };
-// | { type: "group-menu"; data: Menu[] }
-// | { type: "list-menu"; data: MenuContent[] };
+export type QuickSearchData =
+  | { type: "group"; data: QuickSearchGroup[] }
+  | { type: "list"; data: QuickSearchItem[] }
+  | { type: "group-menu"; data: Menu[] };
+// | { type: "list-menu"; data: MenuItem[] };
 
-export type CommandPalleteProps = CommandPalleteData &
-  Pick<ButtonProps, "size"> & { shortcuts?: Hotkey[]; placeholder?: string };
+export type QuickSearchProps = QuickSearchData &
+  Pick<ButtonProps, "size" | "className"> & {
+    shortcuts?: Hotkey[];
+    placeholder?: string;
+  };
 
 export function QuickSearch({
-  size = "default",
   type,
-  data,
+  data: propData,
   shortcuts = [],
-  placeholder: plch,
-}: CommandPalleteProps) {
+  placeholder = "Pencarian cepat",
+  size = "default",
+  className,
+}: QuickSearchProps) {
   const router = useRouter();
   const isMounted = useIsMounted();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isTransitioning, startTransition] = useTransition();
   const { copy } = useCopyToClipboard();
 
-  const placeholder = plch ?? "Pencarian cepat";
+  const isGroup = type === "group" || type === "group-menu";
 
-  const items = type === "group" ? data.flatMap((v) => v.items) : data;
-  const itemShortcuts = items
-    .map((v) => (v.shortcut ? { ...v, shortcut: v.shortcut } : null))
-    .filter((v) => !!v);
+  const data: QuickSearchGroup[] | QuickSearchItem[] = useMemo(() => {
+    if (!isGroup) return propData;
+    return propData.map((v) => {
+      const items: QuickSearchItem[] = v.items.flatMap((it) => {
+        if ("label" in it) return it;
+        const config = routesConfig[it.route];
+
+        const item: QuickSearchItem = {
+          label: config.label,
+          value: it.route,
+          shortcut: it.shortcut,
+          icon: it.icon ? <it.icon /> : undefined,
+        };
+
+        const subItems: QuickSearchItem[] = (it.subItems ?? []).map((sub) => ({
+          label: `${item.label} / ${sub.label}`,
+          value: sub.href ?? `${it.route}#${toCase(sub.label, "kebab")}`,
+          icon: <DotIcon className="text-muted-foreground" />,
+        }));
+
+        return [item, ...subItems];
+      });
+      return { group: v.group, items };
+    });
+  }, [isGroup, propData]);
+
+  const itemShortcuts: Override<QuickSearchItem, { shortcut: Hotkey }>[] =
+    useMemo(() => {
+      const handler = (item: QuickSearchItem) =>
+        item.shortcut ? { ...item, shortcut: item.shortcut } : null;
+      return data
+        .flatMap((v) => {
+          return "label" in v ? handler(v) : v.items.map((it) => handler(it));
+        })
+        .filter((v) => !!v);
+    }, [data]);
 
   const actionHandler = useCallback(
-    (item: CommandPaletteItem) => {
+    (item: QuickSearchItem) => {
       const type = item.type ?? "nav";
 
       if (type === "copy") {
@@ -111,26 +151,42 @@ export function QuickSearch({
       <Button
         size={size}
         variant="outline"
-        className="hidden md:inline-flex"
+        className={cn(className, "hidden justify-start md:inline-flex")}
         disabled
       >
         <SearchIcon /> {placeholder}
-        <Kbd>{formatForDisplay("Control+K")}</Kbd>
+        <Kbd className="ml-auto">{formatForDisplay("Control+K")}</Kbd>
       </Button>
     );
 
-  const Item = ({ data }: { data: CommandPaletteItem }) => (
-    <CommandItem
-      value={data.value}
-      onClick={() => actionHandler(data)}
-      className="flex cursor-pointer items-center gap-x-2 **:[svg]:size-4"
-    >
-      {data.icon} {data.label}
-      {data.shortcut && (
-        <CommandShortcut>{formatForDisplay(data.shortcut)}</CommandShortcut>
-      )}
-    </CommandItem>
-  );
+  const Item = ({ item }: { item: QuickSearchItem }) => {
+    const splitedLabel = item.label.split("/");
+    return (
+      <CommandItem
+        value={item.value}
+        onClick={() => actionHandler(item)}
+        className="flex cursor-pointer items-center gap-x-2 **:[svg]:size-4"
+      >
+        {item.icon}
+
+        {splitedLabel.map((s, i) => {
+          const isLast = i + 1 === splitedLabel.length;
+          return (
+            <Fragment key={i}>
+              <span className={cn(!isLast && "text-muted-foreground")}>
+                {s.trim()}
+              </span>
+              {!isLast && <span className="text-muted-foreground">/</span>}
+            </Fragment>
+          );
+        })}
+
+        {item.shortcut && (
+          <CommandShortcut>{formatForDisplay(item.shortcut)}</CommandShortcut>
+        )}
+      </CommandItem>
+    );
+  };
 
   return (
     <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -139,7 +195,7 @@ export function QuickSearch({
           <Button
             size={size}
             variant="outline"
-            className="text-muted-foreground hidden md:inline-flex"
+            className={cn("hidden justify-start md:inline-flex", className)}
           >
             <LoadingSpinner
               icon={{ base: <SearchIcon /> }}
@@ -149,11 +205,13 @@ export function QuickSearch({
             {placeholder}
 
             {shortcuts.length > 0 && (
-              <Kbd>{formatForDisplay(shortcuts[0])}</Kbd>
+              <Kbd className="ml-auto">{formatForDisplay(shortcuts[0])}</Kbd>
             )}
           </Button>
         }
       />
+
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
 
       <CommandDialogPopup>
         <Command items={data}>
@@ -162,15 +220,15 @@ export function QuickSearch({
           <CommandPanel>
             <CommandEmpty>{messages.empty}</CommandEmpty>
 
-            {type === "group" && (
+            {isGroup ? (
               <CommandList>
-                {(group: CommandPaletteGroup) => (
+                {(group: QuickSearchGroup) => (
                   <Fragment key={group.group}>
                     <CommandGroup items={group.items}>
                       <CommandGroupLabel>{group.group}</CommandGroupLabel>
                       <CommandCollection>
-                        {(item: CommandPaletteItem) => (
-                          <Item key={item.value} data={item} />
+                        {(item: QuickSearchItem) => (
+                          <Item key={item.value} item={item} />
                         )}
                       </CommandCollection>
                     </CommandGroup>
@@ -179,12 +237,10 @@ export function QuickSearch({
                   </Fragment>
                 )}
               </CommandList>
-            )}
-
-            {type === "list" && (
+            ) : (
               <CommandList>
-                {(item: CommandPaletteItem) => (
-                  <Item key={item.value} data={item} />
+                {(item: QuickSearchItem) => (
+                  <Item key={item.value} item={item} />
                 )}
               </CommandList>
             )}

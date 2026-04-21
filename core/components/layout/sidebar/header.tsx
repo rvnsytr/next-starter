@@ -13,16 +13,20 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/core/components/ui/sidebar";
+import { getMenuByRole } from "@/core/route";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useAuth } from "@/modules/auth/provider";
+import { menuConfig } from "@/shared/menu";
 import Link from "next/link";
+import { useMemo } from "react";
+import { QuickSearch } from "../../quick-search";
 
 export function SidebarAppHeader() {
   const { user } = useAuth();
-  // const menu = useMemo(
-  //   () => getMenuByRole(menuConfig.dashboard, user.role),
-  //   [user.role],
-  // );
+  const menu = useMemo(
+    () => getMenuByRole(menuConfig.dashboard, user.role),
+    [user.role],
+  );
 
   return (
     <SidebarHeader>
@@ -60,7 +64,12 @@ export function SidebarAppHeader() {
 
       <SidebarSeparator className="flex lg:hidden" />
 
-      {/* <CommandPalette data={menu} className="mt-0 lg:mt-2" /> */}
+      <QuickSearch
+        type="group-menu"
+        data={menu}
+        className="mt-2"
+        shortcuts={["Control+K"]}
+      />
     </SidebarHeader>
   );
 }

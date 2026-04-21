@@ -1,4 +1,3 @@
-import { DashboardMain } from "@/core/components/layout/dashboard";
 import {
   Card,
   CardAction,
@@ -7,7 +6,6 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { getRouteTitle } from "@/core/route";
-import { ProfileBadges, ProfileForm } from "@/modules/auth/components.client";
 import { appConfig } from "@/shared/config";
 import { Metadata } from "next";
 
@@ -17,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <DashboardMain className="items-center" withLayoutLoader={false}>
+    <div className="items-center">
       <Card id="informasi-pribadi" className="w-full scroll-m-20 lg:max-w-2xl">
         <CardHeader className="border-b">
           <CardTitle>Informasi Pribadi</CardTitle>
@@ -25,12 +23,12 @@ export default function Page() {
             Perbarui dan kelola informasi profil {appConfig.name} Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
-            <ProfileBadges />
+            {/* <ProfileBadges /> */}
           </CardAction>
         </CardHeader>
 
-        <ProfileForm />
+        {/* <ProfileForm /> */}
       </Card>
-    </DashboardMain>
+    </div>
   );
 }

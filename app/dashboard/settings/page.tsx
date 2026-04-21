@@ -12,6 +12,7 @@ import {
 } from "@/core/components/ui/card";
 import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
 import { getRouteTitle } from "@/core/route";
+import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { appConfig } from "@/shared/config";
 import {
   FrameIcon,
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <PageContainer className="items-center px-0">
-      <Card id="tema" className="w-full scroll-m-20 lg:max-w-2xl" asPageCard>
+      <Card id="tema" className="w-full lg:max-w-2xl" asPageCard>
         <CardHeader>
           <CardTitle className="flex items-center gap-x-2">
             <SunMoonIcon /> Tema
@@ -55,7 +56,7 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Card id="layout" className="w-full scroll-m-20 lg:max-w-2xl" asPageCard>
+      <Card id="layout" className="w-full lg:max-w-2xl" asPageCard>
         <CardHeader>
           <CardTitle className="flex items-center gap-x-2">
             <FrameIcon /> Layout
@@ -82,11 +83,7 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Card
-        id="sesi-aktif"
-        className="w-full scroll-m-20 lg:max-w-2xl"
-        asPageCard
-      >
+      <Card id="sesi-aktif" className="w-full lg:max-w-2xl" asPageCard>
         <CardHeader>
           <CardTitle className="flex items-center gap-x-2">
             <ShieldIcon /> Sesi Aktif
@@ -103,11 +100,7 @@ export default function Page() {
         </CardFooter>
       </Card>
 
-      <Card
-        id="ubah-kata-sandi"
-        className="w-full scroll-m-20 lg:max-w-2xl"
-        asPageCard
-      >
+      <Card id="ubah-kata-sandi" className="w-full lg:max-w-2xl" asPageCard>
         <CardHeader>
           <CardTitle className="flex items-center gap-x-2">
             <LockKeyholeIcon /> Ubah Kata Sandi
@@ -117,7 +110,7 @@ export default function Page() {
           </CardDescription>
         </CardHeader>
 
-        {/* <ChangePasswordForm /> */}
+        <ChangePasswordForm />
       </Card>
     </PageContainer>
   );
