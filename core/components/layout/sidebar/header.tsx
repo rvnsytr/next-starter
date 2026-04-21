@@ -1,5 +1,6 @@
 "use client";
 
+import { QuickSearch } from "@/core/components/quick-search";
 import {
   Avatar,
   AvatarBadge,
@@ -19,14 +20,17 @@ import { useAuth } from "@/modules/auth/provider";
 import { menuConfig } from "@/shared/menu";
 import Link from "next/link";
 import { useMemo } from "react";
-import { QuickSearch } from "../../quick-search";
 
 export function SidebarAppHeader() {
   const { user } = useAuth();
-  const menu = useMemo(
-    () => getMenuByRole(menuConfig.dashboard, user.role),
-    [user.role],
-  );
+
+  const menu = useMemo(() => {
+    const menuByRole = getMenuByRole(menuConfig.dashboard, user.role);
+    return [
+      ...menuByRole,
+      { group: "Navigasi", items: menuConfig["dashboard-footer"] },
+    ];
+  }, [user.role]);
 
   return (
     <SidebarHeader>

@@ -61,6 +61,7 @@ export type QuickSearchProps = QuickSearchData &
   Pick<ButtonProps, "size" | "className"> & {
     shortcuts?: Hotkey[];
     placeholder?: string;
+    shortcutsOnlyWhenOpen?: boolean;
   };
 
 export function QuickSearch({
@@ -68,13 +69,14 @@ export function QuickSearch({
   data: propData,
   shortcuts = [],
   placeholder = "Pencarian cepat",
+  shortcutsOnlyWhenOpen = false,
   size = "default",
   className,
 }: QuickSearchProps) {
   const router = useRouter();
-  const isMounted = useIsMounted();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isTransitioning, startTransition] = useTransition();
+  const isMounted = useIsMounted();
   const { copy } = useCopyToClipboard();
 
   const isGroup = type === "group" || type === "group-menu";
@@ -143,7 +145,7 @@ export function QuickSearch({
       hotkey: item.shortcut,
       callback: () => actionHandler(item),
     })),
-    { enabled: isOpen },
+    { enabled: shortcutsOnlyWhenOpen ? isOpen : true },
   );
 
   if (!isMounted)
@@ -155,7 +157,9 @@ export function QuickSearch({
         disabled
       >
         <SearchIcon /> {placeholder}
-        <Kbd className="ml-auto">{formatForDisplay("Control+K")}</Kbd>
+        {shortcuts.length > 0 && (
+          <Kbd className="ml-auto">{formatForDisplay(shortcuts[0])}</Kbd>
+        )}
       </Button>
     );
 

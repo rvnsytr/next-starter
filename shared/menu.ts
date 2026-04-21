@@ -1,6 +1,5 @@
 import { Menu, MenuItem } from "@/core/types";
 import {
-  CircleHelpIcon,
   ExternalLinkIcon,
   LayoutDashboardIcon,
   SettingsIcon,
@@ -37,15 +36,10 @@ export const menuConfig = {
         },
       ],
     },
-  ],
-} satisfies Record<string, Menu[]>;
+  ] as Menu[],
 
-export const dashboardfooterMenu: (MenuItem & { label: string })[] = [
-  { route: "/", label: "Beranda", icon: ExternalLinkIcon },
-  {
-    route: "/help",
-    label: "Bantuan",
-    icon: CircleHelpIcon,
-    disabled: true,
-  },
-];
+  "dashboard-footer": [
+    { route: "/", icon: ExternalLinkIcon },
+    // { route: "/about", icon: ExternalLinkIcon }
+  ] as Omit<MenuItem, "subItems">[],
+} satisfies Record<string, Menu[] | MenuItem[]>;

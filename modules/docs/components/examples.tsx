@@ -50,11 +50,11 @@ export function UseFileUploadExample() {
     { files, errors },
     { openFileDialog, getInputProps, clearFiles, clearErrors },
   ] = useFileUpload({
-    ...fileTypeConfig,
+    ...fileTypeConfig.file,
     multiple: true,
     onFilesChange: (f) => {
       const file = f[0];
-      if (file instanceof File) console.log("file: ", file);
+      if (file.file instanceof File) console.log("file: ", file);
       else console.log("meh: ", file);
     },
   });

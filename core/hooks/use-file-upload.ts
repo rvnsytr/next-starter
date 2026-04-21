@@ -102,10 +102,7 @@ export function useFileUpload({
       const isAccepted = acceptedTypes.some((t) => {
         if (t.startsWith("."))
           return extension.toLowerCase() === t.toLowerCase();
-        if (t.endsWith("/*")) {
-          const base = t.split("/")[0];
-          return type.startsWith(`${base}/`);
-        }
+        if (t.endsWith("/*")) return type.startsWith(`${t.split("/")[0]}/`);
         return type === t;
       });
 

@@ -43,7 +43,7 @@ export default function Page() {
           </CardDescription>
 
           <CardAction>
-            <KbdGroup>
+            <KbdGroup className="hidden lg:inline-flex">
               <Kbd>Alt</Kbd>
               <span className="font-light">+</span>
               <Kbd>T</Kbd>
@@ -70,7 +70,7 @@ export default function Page() {
             lebar lebih dari <code>1024px</code>.
           </CardDescription>
           <CardAction>
-            <KbdGroup>
+            <KbdGroup className="hidden lg:inline-flex">
               <Kbd>Alt</Kbd>
               <span className="font-light">+</span>
               <Kbd>L</Kbd>
