@@ -1437,17 +1437,24 @@ const homeQuickSearch: QuickSearchGroup[] = docs.map((d) => {
         if (c.label) {
           if (c.type === "text") console.log(c);
           const id = toCase(`${d.section}-${c.label}`, "kebab");
+
+          const item = {
+            type: "nav" as const,
+            label: c.label,
+            value: `/#${id}`,
+          };
+
           const subContent =
             c.type === "comp" && !!c.variants?.length
               ? c.variants?.map((sc) => ({
+                  type: "nav" as const,
                   label: `${c.label} / ${sc.label}`,
                   value: `/#${toCase(`${id}-${sc.label}`, "kebab")}`,
                   icon: <DotIcon className="text-muted-foreground" />,
                 }))
               : null;
 
-          const base = { label: c.label, value: `/#${id}` };
-          return subContent ? [base, ...subContent] : [base];
+          return subContent ? [item, ...subContent] : [item];
         }
 
         return null;
@@ -1483,7 +1490,9 @@ export default function Page() {
             data={[
               {
                 group: "Navigate",
-                items: [{ label: "Dashboard", value: "/dashboard" }],
+                items: [
+                  { type: "nav", label: "Dashboard", value: "/dashboard" },
+                ],
               },
               ...homeQuickSearch,
             ]}

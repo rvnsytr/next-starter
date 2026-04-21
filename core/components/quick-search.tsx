@@ -14,7 +14,7 @@ import { Fragment, useCallback, useMemo, useState, useTransition } from "react";
 import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { messages } from "../messages";
-import { Menu, Override } from "../types";
+import { Menu, MenuItem } from "../types";
 import { cn, toCase } from "../utils";
 import { Button, ButtonProps } from "./ui/button";
 import {
@@ -38,10 +38,12 @@ import { Kbd, KbdGroup } from "./ui/kbd";
 import { LoadingSpinner } from "./ui/spinner";
 import { toast } from "./ui/toast";
 
-export type QuickSearchItem = {
-  type?: "nav" | "copy";
+export type QuickSearchItemType =
+  | { type: "nav" | "copy"; value: string }
+  | { type: "action"; callback: () => void };
+
+export type QuickSearchItem = QuickSearchItemType & {
   label: string;
-  value: string;
   icon?: React.ReactNode;
   shortcut?: Hotkey;
 };
@@ -51,18 +53,42 @@ export type QuickSearchGroup = {
   items: QuickSearchItem[];
 };
 
-export type QuickSearchData =
-  | { type: "group"; data: QuickSearchGroup[] }
-  | { type: "list"; data: QuickSearchItem[] }
-  | { type: "group-menu"; data: Menu[] };
-// | { type: "list-menu"; data: MenuItem[] };
+export type QuickSearchDataGroup = (QuickSearchGroup | Menu)[];
+export type QuickSearchDataList = (QuickSearchItem | MenuItem)[];
 
-export type QuickSearchProps = QuickSearchData &
+export type QuickSearchProps = (
+  | { type: "group"; data: QuickSearchDataGroup }
+  | { type: "list"; data: QuickSearchDataList }
+) &
   Pick<ButtonProps, "size" | "className"> & {
     shortcuts?: Hotkey[];
     placeholder?: string;
     shortcutsOnlyWhenOpen?: boolean;
   };
+
+function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
+  return items.flatMap((item) => {
+    if ("label" in item) return item;
+    const config = routesConfig[item.route];
+
+    const baseItem: QuickSearchItem = {
+      type: "nav",
+      label: config.label,
+      value: item.route,
+      shortcut: item.shortcut,
+      icon: item.icon ? <item.icon /> : undefined,
+    };
+
+    const subItems: QuickSearchItem[] = (item.subItems ?? []).map((sub) => ({
+      type: "nav",
+      label: `${baseItem.label} / ${sub.label}`,
+      value: sub.href ?? `${item.route}#${toCase(sub.label, "kebab")}`,
+      icon: <DotIcon className="text-muted-foreground" />,
+    }));
+
+    return [baseItem, ...subItems];
+  });
+}
 
 export function QuickSearch({
   type,
@@ -79,53 +105,34 @@ export function QuickSearch({
   const isMounted = useIsMounted();
   const { copy } = useCopyToClipboard();
 
-  const isGroup = type === "group" || type === "group-menu";
-
   const data: QuickSearchGroup[] | QuickSearchItem[] = useMemo(() => {
-    if (!isGroup) return propData;
-    return propData.map((v) => {
-      const items: QuickSearchItem[] = v.items.flatMap((it) => {
-        if ("label" in it) return it;
-        const config = routesConfig[it.route];
+    if (type !== "group") return handleDataItems(propData);
+    return propData.map((v) => ({
+      group: v.group,
+      items: handleDataItems(v.items),
+    }));
+  }, [type, propData]);
 
-        const item: QuickSearchItem = {
-          label: config.label,
-          value: it.route,
-          shortcut: it.shortcut,
-          icon: it.icon ? <it.icon /> : undefined,
-        };
-
-        const subItems: QuickSearchItem[] = (it.subItems ?? []).map((sub) => ({
-          label: `${item.label} / ${sub.label}`,
-          value: sub.href ?? `${it.route}#${toCase(sub.label, "kebab")}`,
-          icon: <DotIcon className="text-muted-foreground" />,
-        }));
-
-        return [item, ...subItems];
-      });
-      return { group: v.group, items };
-    });
-  }, [isGroup, propData]);
-
-  const itemShortcuts: Override<QuickSearchItem, { shortcut: Hotkey }>[] =
-    useMemo(() => {
-      const handler = (item: QuickSearchItem) =>
-        item.shortcut ? { ...item, shortcut: item.shortcut } : null;
-      return data
-        .flatMap((v) => {
-          return "label" in v ? handler(v) : v.items.map((it) => handler(it));
-        })
-        .filter((v) => !!v);
-    }, [data]);
+  const itemShortcuts: QuickSearchItem[] = useMemo(() => {
+    const handler = (item: QuickSearchItem) =>
+      item.shortcut ? { ...item, shortcut: item.shortcut } : null;
+    return data
+      .flatMap((v) =>
+        "label" in v ? handler(v) : v.items.map((it) => handler(it)),
+      )
+      .filter((v) => !!v);
+  }, [data]);
 
   const actionHandler = useCallback(
     (item: QuickSearchItem) => {
-      const type = item.type ?? "nav";
+      if (item.type === "nav") startTransition(() => router.push(item.value));
 
-      if (type === "copy") {
+      if (item.type === "copy") {
         copy(item.value);
         toast.add({ type: "info", title: "Disalin ke clipboard" });
-      } else startTransition(() => router.push(item.value));
+      }
+
+      if (item.type === "action") item.callback();
 
       setIsOpen(false);
     },
@@ -141,10 +148,13 @@ export function QuickSearch({
   );
 
   useHotkeys(
-    itemShortcuts.map((item) => ({
-      hotkey: item.shortcut,
-      callback: () => actionHandler(item),
-    })),
+    itemShortcuts
+      .map((it) =>
+        it.shortcut
+          ? { hotkey: it.shortcut, callback: () => actionHandler(it) }
+          : null,
+      )
+      .filter((v) => !!v),
     { enabled: shortcutsOnlyWhenOpen ? isOpen : true },
   );
 
@@ -153,7 +163,10 @@ export function QuickSearch({
       <Button
         size={size}
         variant="outline"
-        className={cn(className, "hidden justify-start md:inline-flex")}
+        className={cn(
+          className,
+          "text-muted-foreground hidden justify-start md:inline-flex",
+        )}
         disabled
       >
         <SearchIcon /> {placeholder}
@@ -167,7 +180,7 @@ export function QuickSearch({
     const splitedLabel = item.label.split("/");
     return (
       <CommandItem
-        value={item.value}
+        value={item.type !== "action" ? item.value : undefined}
         onClick={() => actionHandler(item)}
         className="flex cursor-pointer items-center gap-x-2 **:[svg]:size-4"
       >
@@ -200,7 +213,7 @@ export function QuickSearch({
             size={size}
             variant="outline"
             className={cn(
-              "hidden justify-start transition *:transition md:inline-flex",
+              "text-muted-foreground hidden justify-start transition *:transition md:inline-flex",
               "group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:*:not-[svg]:hidden",
               className,
             )}
@@ -226,7 +239,7 @@ export function QuickSearch({
           <CommandPanel>
             <CommandEmpty>{messages.empty}</CommandEmpty>
 
-            {isGroup ? (
+            {type === "group" ? (
               <CommandList>
                 {(group: QuickSearchGroup) => (
                   <Fragment key={group.group}>
@@ -234,7 +247,7 @@ export function QuickSearch({
                       <CommandGroupLabel>{group.group}</CommandGroupLabel>
                       <CommandCollection>
                         {(item: QuickSearchItem) => (
-                          <Item key={item.value} item={item} />
+                          <Item key={item.label} item={item} />
                         )}
                       </CommandCollection>
                     </CommandGroup>
@@ -246,7 +259,7 @@ export function QuickSearch({
             ) : (
               <CommandList>
                 {(item: QuickSearchItem) => (
-                  <Item key={item.value} item={item} />
+                  <Item key={item.label} item={item} />
                 )}
               </CommandList>
             )}

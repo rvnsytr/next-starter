@@ -1,6 +1,9 @@
 "use client";
 
-import { QuickSearch } from "@/core/components/quick-search";
+import {
+  QuickSearch,
+  QuickSearchDataGroup,
+} from "@/core/components/quick-search";
 import {
   Avatar,
   AvatarBadge,
@@ -15,22 +18,38 @@ import {
   SidebarSeparator,
 } from "@/core/components/ui/sidebar";
 import { getMenuByRole } from "@/core/route";
+import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useAuth } from "@/modules/auth/provider";
 import { menuConfig } from "@/shared/menu";
+import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 export function SidebarAppHeader() {
+  const router = useRouter();
   const { user } = useAuth();
 
-  const menu = useMemo(() => {
-    const menuByRole = getMenuByRole(menuConfig.dashboard, user.role);
+  const data: QuickSearchDataGroup = useMemo(() => {
     return [
-      ...menuByRole,
+      ...getMenuByRole(menuConfig.dashboard, user.role),
       { group: "Navigasi", items: menuConfig["dashboard-footer"] },
+      {
+        group: "Aksi",
+        items: [
+          {
+            type: "action",
+            label: "Keluar",
+            // TODO: variant: "destructive",
+            icon: <LogOutIcon />,
+            callback: () =>
+              signOutClient({ onSuccess: () => router.push("/sign-in") }),
+          },
+        ],
+      },
     ];
-  }, [user.role]);
+  }, [router, user.role]);
 
   return (
     <SidebarHeader>
@@ -69,8 +88,8 @@ export function SidebarAppHeader() {
       <SidebarSeparator className="flex lg:hidden" />
 
       <QuickSearch
-        type="group-menu"
-        data={menu}
+        type="group"
+        data={data}
         shortcuts={["Control+K"]}
         className="mt-2"
       />
