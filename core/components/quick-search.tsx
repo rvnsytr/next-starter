@@ -195,14 +195,18 @@ export function QuickSearch({
           <Button
             size={size}
             variant="outline"
-            className={cn("hidden justify-start md:inline-flex", className)}
+            className={cn(
+              "hidden justify-start transition *:transition md:inline-flex",
+              "group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:*:not-[svg]:hidden",
+              className,
+            )}
           >
             <LoadingSpinner
               icon={{ base: <SearchIcon /> }}
               loading={isTransitioning}
             />
 
-            {placeholder}
+            <span>{placeholder}</span>
 
             {shortcuts.length > 0 && (
               <Kbd className="ml-auto">{formatForDisplay(shortcuts[0])}</Kbd>
@@ -210,8 +214,6 @@ export function QuickSearch({
           </Button>
         }
       />
-
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
 
       <CommandDialogPopup>
         <Command items={data}>
