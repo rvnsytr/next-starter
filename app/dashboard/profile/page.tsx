@@ -1,3 +1,4 @@
+import { PageContainer } from "@/core/components/layout/page";
 import {
   Card,
   CardAction,
@@ -6,7 +7,10 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { getRouteTitle } from "@/core/route";
+import { ProfileBadges } from "@/modules/auth/components/profile-badges";
+import { ProfileForm } from "@/modules/auth/components/profile-form";
 import { appConfig } from "@/shared/config";
+import { UserRoundIcon } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,20 +19,22 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="items-center">
-      <Card id="informasi-pribadi" className="w-full scroll-m-20 lg:max-w-2xl">
+    <PageContainer className="items-center px-0">
+      <Card id="informasi-pribadi" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader className="border-b">
-          <CardTitle>Informasi Pribadi</CardTitle>
+          <CardTitle>
+            <UserRoundIcon /> Informasi Pribadi
+          </CardTitle>
           <CardDescription>
             Perbarui dan kelola informasi profil {appConfig.name} Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
-            {/* <ProfileBadges /> */}
+            <ProfileBadges />
           </CardAction>
         </CardHeader>
 
-        {/* <ProfileForm /> */}
+        <ProfileForm />
       </Card>
-    </div>
+    </PageContainer>
   );
 }

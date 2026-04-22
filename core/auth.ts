@@ -1,13 +1,14 @@
 import { appConfig } from "@/shared/config";
-import { user } from "@/shared/db/schema";
+import { files, user } from "@/shared/db/schema";
 import { ac, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, openAPI } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { deleteFiles } from "./s3";
+import { createSignedUrl, deleteFiles } from "./s3";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -85,9 +86,29 @@ export const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       const { session, newSession } = ctx.context;
 
+      if (ctx.path === "/get-session") {
+        if (!session) return ctx.json(null);
+
+        const { session: sessionData, user: userData } = session;
+        if (!userData.image) return ctx.json(session);
+
+        const data = await db
+          .select({ filePath: files.file_path })
+          .from(files)
+          .where(eq(files.id, userData.image));
+
+        if (!data.length) return ctx.json(session);
+
+        const image = await createSignedUrl(data[0].filePath);
+        return ctx.json({ session: sessionData, user: { ...userData, image } });
+      }
+
       if (ctx.path === "/update-user") {
         const oldImageId = session?.user.image;
         const newImageId = newSession?.user.image;
+
+        console.log("oldImageId: ", oldImageId);
+        console.log("newImageId: ", newImageId);
 
         if (oldImageId && oldImageId !== newImageId) deleteFiles([oldImageId]);
       }

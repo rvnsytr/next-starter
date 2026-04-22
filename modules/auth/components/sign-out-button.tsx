@@ -25,7 +25,7 @@ export function signOutClient({
       loading: { title: messages.loading },
       success: () => {
         onSuccess?.();
-        return { title: "Berhasil keluar - Sampai jumpa!" };
+        return { type: "success", title: "Berhasil keluar - Sampai jumpa!" };
       },
       error: (e) => {
         onError?.(e);
