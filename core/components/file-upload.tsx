@@ -60,24 +60,24 @@ export function FileUpload({
 }: FileUploadProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const [
-    { files, errors },
-    {
-      removeFile,
-      clearErrors,
-      clearFiles,
-      moveUp,
-      moveDown,
+  const {
+    files,
+    errors,
 
-      handleDragEnter,
-      handleDragLeave,
-      handleDragOver,
-      handleDrop,
+    removeFile,
+    clearErrors,
+    clearFiles,
+    moveUp,
+    moveDown,
 
-      openFileDialog,
-      getInputProps,
-    },
-  ] = useFileUpload(options);
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
+
+    openFileDialog,
+    getInputProps,
+  } = useFileUpload(options);
 
   const { maxSize, maxFiles, multiple = false } = options;
   const isFiles = files.length > 0;
