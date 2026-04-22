@@ -208,7 +208,6 @@ export function ImportDialog<T, K extends string>({
                 <FileUpload
                   id={field.name}
                   accept="spreadsheet"
-                  className="md:grid-cols-3"
                   multiple={multiple}
                   required
                   {...field}

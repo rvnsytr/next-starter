@@ -90,13 +90,18 @@ function DialogPopup({
 
           {showCloseButton && (
             <DialogPrimitive.Close
-              aria-label="Close"
-              className="absolute inset-e-2 top-2"
-              render={<Button size="icon" variant="ghost" />}
               {...closeProps}
-            >
-              <XIcon />
-            </DialogPrimitive.Close>
+              render={
+                <Button
+                  aria-label="Close"
+                  size="icon"
+                  variant="ghost"
+                  className="absolute inset-e-2 top-2"
+                >
+                  <XIcon />
+                </Button>
+              }
+            />
           )}
         </DialogPrimitive.Popup>
       </DialogViewport>

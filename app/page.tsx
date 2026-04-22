@@ -405,10 +405,10 @@ const docs: Docs[] = [
         render: (
           <AlertDialog>
             <AlertDialogTrigger
-              render={<Button variant="destructive-outline" />}
-            >
-              Delete Account
-            </AlertDialogTrigger>
+              render={
+                <Button variant="destructive-outline">Delete Account</Button>
+              }
+            />
             <AlertDialogPopup>
               <AlertDialogHeader>
                 <AlertDialogTitle>
@@ -420,12 +420,12 @@ const docs: Docs[] = [
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogClose render={<Button variant="ghost" />}>
-                  Cancel
-                </AlertDialogClose>
-                <AlertDialogClose render={<Button variant="destructive" />}>
-                  Delete Account
-                </AlertDialogClose>
+                <AlertDialogClose
+                  render={<Button variant="ghost">Cancel</Button>}
+                />
+                <AlertDialogClose
+                  render={<Button variant="destructive">Delete Account</Button>}
+                />
               </AlertDialogFooter>
             </AlertDialogPopup>
           </AlertDialog>
@@ -789,9 +789,9 @@ const docs: Docs[] = [
         render: (
           <Dialog>
             <form className="w-fit">
-              <DialogTrigger render={<Button variant="outline" />}>
-                Open Dialog
-              </DialogTrigger>
+              <DialogTrigger
+                render={<Button variant="outline">Open Dialog</Button>}
+              />
               <DialogPopup>
                 <DialogHeader>
                   <DialogTitle>
@@ -839,9 +839,9 @@ const docs: Docs[] = [
         refs: ["cossui"],
         render: (
           <Drawer>
-            <DrawerTrigger render={<Button variant="outline" />}>
-              Open drawer
-            </DrawerTrigger>
+            <DrawerTrigger
+              render={<Button variant="outline">Open drawer</Button>}
+            />
             <DrawerPopup showBar>
               <DrawerHeader className="text-center">
                 <DrawerTitle>
@@ -852,9 +852,9 @@ const docs: Docs[] = [
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter className="justify-center sm:justify-center">
-                <DrawerClose render={<Button variant="outline" />}>
-                  Close
-                </DrawerClose>
+                <DrawerClose
+                  render={<Button variant="outline">Close</Button>}
+                />
               </DrawerFooter>
             </DrawerPopup>
           </Drawer>
@@ -976,9 +976,9 @@ const docs: Docs[] = [
         refs: ["cossui"],
         render: (
           <Menu>
-            <MenuTrigger render={<Button variant="outline" />}>
-              Open menu
-            </MenuTrigger>
+            <MenuTrigger
+              render={<Button variant="outline">Open menu</Button>}
+            />
             <MenuPopup>
               <MenuGroup>
                 <MenuGroupLabel>Playback</MenuGroupLabel>
@@ -1069,9 +1069,9 @@ const docs: Docs[] = [
         refs: ["cossui"],
         render: (
           <Popover>
-            <PopoverTrigger render={<Button variant="outline" />}>
-              Open Popover
-            </PopoverTrigger>
+            <PopoverTrigger
+              render={<Button variant="outline">Open Popover</Button>}
+            />
             <PopoverPopup>
               <div className="mb-4">
                 <PopoverTitle className="text-base">
