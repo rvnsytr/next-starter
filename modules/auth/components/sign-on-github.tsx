@@ -15,16 +15,16 @@ export function SignOnGithubButton() {
   const clickHandler = () => {
     setIsLoading(true);
     toast.promise(
-      (async () => {
-        const res = await authClient.signIn.social({
+      authClient.signIn
+        .social({
           provider: "github",
           callbackURL: "/dashboard",
           errorCallbackURL: "/sign-in",
-        });
-
-        if (res.error) throw res.error;
-        return res;
-      })(),
+        })
+        .then((res) => {
+          if (res.error) throw res.error;
+          return res;
+        }),
       {
         loading: { title: messages.loading },
         success: (res) => {

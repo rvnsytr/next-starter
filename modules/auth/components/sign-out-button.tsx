@@ -9,30 +9,42 @@ import { LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+export function signOutClient({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: () => void;
+  onError?: (e: Error) => void;
+} = {}) {
+  toast.promise(
+    authClient.signOut().then((res) => {
+      if (res.error) throw res.error;
+      return res;
+    }),
+    {
+      loading: { title: messages.loading },
+      success: () => {
+        onSuccess?.();
+        return { title: "Berhasil keluar - Sampai jumpa!" };
+      },
+      error: (e) => {
+        onError?.(e);
+        return { type: "error", title: e.message };
+      },
+    },
+  );
+}
+
 export function SignOutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickHandler = () => {
     setIsLoading(true);
-    toast.promise(
-      (async () => {
-        const res = await authClient.signOut();
-        if (res.error) throw res.error;
-        return res;
-      })(),
-      {
-        loading: { title: messages.loading },
-        success: () => {
-          router.push("/sign-in");
-          return { title: "Berhasil keluar", description: "Sampai jumpa!" };
-        },
-        error: (e) => {
-          setIsLoading(false);
-          return { type: "error", title: e.message };
-        },
-      },
-    );
+    signOutClient({
+      onSuccess: () => router.push("/sign-in"),
+      onError: () => setIsLoading(false),
+    });
   };
 
   return (

@@ -60,12 +60,10 @@ export function SignUpForm() {
   const formHandler = ({ newPassword: password, ...rest }: FormSchema) => {
     setIsLoading(true);
     toast.promise(
-      (async () => {
-        const res = await authClient.signUp.email({ password, ...rest });
-        console.log(res);
+      authClient.signUp.email({ password, ...rest }).then((res) => {
         if (res.error) throw res.error;
         return res;
-      })(),
+      }),
       {
         loading: { title: messages.loading },
         success: () => {

@@ -38,15 +38,12 @@ export function SignInForm() {
   const formHandler = (formData: FormSchema) => {
     setIsLoading(true);
     toast.promise(
-      (async () => {
-        const res = await authClient.signIn.email({
-          ...formData,
-          callbackURL: "/dashboard",
-        });
-
-        if (res.error) throw res.error;
-        return res;
-      })(),
+      authClient.signIn
+        .email({ ...formData, callbackURL: "/dashboard" })
+        .then((res) => {
+          if (res.error) throw res.error;
+          return res;
+        }),
       {
         loading: { title: messages.loading },
         success: (res) => ({
