@@ -46,10 +46,14 @@ import {
 import { useState } from "react";
 
 export function UseFileUploadExample() {
-  const [
-    { files, errors },
-    { openFileDialog, getInputProps, clearFiles, clearErrors },
-  ] = useFileUpload({
+  const {
+    files,
+    errors,
+    openFileDialog,
+    getInputProps,
+    clearFiles,
+    clearErrors,
+  } = useFileUpload({
     ...fileTypeConfig.file,
     multiple: true,
     onFilesChange: (f) => {

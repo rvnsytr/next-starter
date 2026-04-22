@@ -68,7 +68,7 @@ export function useFileUpload({
   onFilesChange,
   onFilesAdded,
   onError,
-}: FileUploadOptions = {}): [FileUploadState, FileUploadActions] {
+}: FileUploadOptions = {}): FileUploadState & FileUploadActions {
   const [state, setState] = useState<FileUploadState>({
     files: initialFiles.map((file) => ({
       file,
@@ -343,22 +343,20 @@ export function useFileUpload({
     [accept, multiple, handleFileChange],
   );
 
-  return [
-    state,
-    {
-      addFiles,
-      removeFile,
-      clearFiles,
-      clearErrors,
-      moveUp,
-      moveDown,
-      handleDragEnter,
-      handleDragLeave,
-      handleDragOver,
-      handleDrop,
-      handleFileChange,
-      openFileDialog,
-      getInputProps,
-    },
-  ];
+  return {
+    ...state,
+    addFiles,
+    removeFile,
+    clearFiles,
+    clearErrors,
+    moveUp,
+    moveDown,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
+    handleFileChange,
+    openFileDialog,
+    getInputProps,
+  };
 }
