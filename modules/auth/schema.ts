@@ -1,6 +1,6 @@
 import { sharedSchemas } from "@/core/schema";
 import { user } from "@/shared/db/schema";
-import { createSelectSchema } from "drizzle-zod";
+import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
 
 export const passwordSchema = z.object({

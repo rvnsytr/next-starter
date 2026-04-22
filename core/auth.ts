@@ -23,7 +23,7 @@ export const auth = betterAuth({
   appName: appConfig.name,
 
   database: drizzleAdapter(db, { provider: "pg" }),
-  experimental: { joins: true },
+  // experimental: { joins: true },
 
   plugins: [nextCookies(), openAPI(), adminPlugin({ ac, roles, defaultRole })],
 
