@@ -14,6 +14,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { inArray } from "drizzle-orm";
 import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import { PgAsyncTransaction } from "drizzle-orm/pg-core";
 import { db } from "./db";
@@ -90,11 +91,11 @@ export async function listFiles(
 }
 
 export async function createSignedUrl(
-  path: string,
+  filePath: string,
   options?: ControlledS3Options<GetObjectCommandInput>,
 ) {
   const { Bucket = defaultBucket, ...rest } = options ?? {};
-  const command = new GetObjectCommand({ Key: path, Bucket, ...rest });
+  const command = new GetObjectCommand({ Key: filePath, Bucket, ...rest });
   return await getSignedUrl(s3, command);
 }
 
@@ -110,14 +111,27 @@ export async function createSignedUrl(
 // }
 
 export async function deleteFiles(
-  paths: string[],
+  filePaths: string[],
   options?: DeleteFilesOptions,
 ) {
+  if (!filePaths.length) return [];
+
   const { Bucket = defaultBucket, ...rest } = options ?? {};
-  return Promise.all(
-    paths.map(async (Key) => {
+
+  const res = await Promise.allSettled(
+    filePaths.map(async (Key) => {
       const command = new DeleteObjectCommand({ Key, Bucket, ...rest });
-      return await s3.send(command);
+      await s3.send(command);
+      return Key;
     }),
   );
+
+  const fulfilled = res
+    .filter((r) => r.status === "fulfilled")
+    .map((r) => r.value);
+
+  if (fulfilled.length)
+    await db.delete(files).where(inArray(files.id, fulfilled));
+
+  return res;
 }
