@@ -17,7 +17,7 @@ export async function updateProfileName(name: string) {
     headers: await nextHeaders(),
     body: { name },
   });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
   return res;
 }
 
@@ -27,7 +27,7 @@ export async function updateProfilePicture(file: File, userId: string) {
     headers: await nextHeaders(),
     body: { image: uploadRes.file.id },
   });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
   return res;
 }
 
@@ -43,7 +43,7 @@ export async function deleteProfilePicture(userId: string) {
   });
 
   if (dbRes.length && dbRes[0].image) await deleteFiles([userId]);
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
   return res;
 }
 
