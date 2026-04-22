@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Fragment } from "react";
 import { useDynamicBreadcrumb } from "../providers/dynamic-breadcrumb";
