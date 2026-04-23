@@ -16,9 +16,10 @@ export function Field({
       invalid={invalid}
       className={cn(
         "group/field flex flex-col items-start gap-2",
-        "has-required:**:[[data-slot=field-label],[data-slot=label]]:after:text-destructive-foreground has-required:**:[[data-slot=field-label],[data-slot=label]]:after:content-['*']",
+        "has-required:*:[[data-slot=field-label],[data-slot=label]]:after:text-destructive-foreground has-required:*:[[data-slot=field-label],[data-slot=label]]:after:content-['*']",
+        "has-aria-required:*:[[data-slot=field-label],[data-slot=label]]:after:text-destructive-foreground has-aria-required:*:[[data-slot=field-label],[data-slot=label]]:after:content-['*']",
         invalid &&
-          "**:[[data-slot=field-label],[data-slot=label]]:text-destructive-foreground",
+          "*:[[data-slot=field-label],[data-slot=label]]:text-destructive-foreground",
         className,
       )}
       {...props}

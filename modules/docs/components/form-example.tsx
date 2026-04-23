@@ -289,6 +289,7 @@ export function FormExample() {
                 items={fruits}
                 onValueChange={onChange}
                 autoHighlight
+                required
                 {...field}
               >
                 <AutocompleteInput
@@ -326,6 +327,7 @@ export function FormExample() {
                 isItemEqualToValue={(a, b) => a.value === b.value}
                 autoHighlight
                 multiple
+                required
                 {...field}
               >
                 <ComboboxChips startAddon={<SearchIcon />}>
@@ -376,6 +378,7 @@ export function FormExample() {
                 onValueChange={onChange}
                 isItemEqualToValue={(a, b) => a.value === b.value}
                 multiple
+                required
                 {...field}
               >
                 <SelectTrigger>
@@ -404,7 +407,7 @@ export function FormExample() {
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Radio Group</FieldLabel>
 
-              <RadioGroup onValueChange={onChange} {...field}>
+              <RadioGroup onValueChange={onChange} {...field} required>
                 {fruits.map((item) => (
                   <Label key={item.value}>
                     <RadioGroupItem value={item.value} /> {item.label}
@@ -424,7 +427,7 @@ export function FormExample() {
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Checkbox Group</FieldLabel>
 
-              <CheckboxGroup onValueChange={onChange} {...field}>
+              <CheckboxGroup onValueChange={onChange} {...field} aria-required>
                 {fruits.map((item) => (
                   <Label key={item.value}>
                     <Checkbox value={item.value} /> {item.label}
@@ -444,7 +447,12 @@ export function FormExample() {
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Switch</FieldLabel>
 
-              <Switch checked={value} onCheckedChange={onChange} {...field} />
+              <Switch
+                checked={value}
+                onCheckedChange={onChange}
+                required
+                {...field}
+              />
 
               <FieldError error={fieldState.error} />
             </Field>
@@ -479,6 +487,7 @@ export function FormExample() {
               {...fileTypeConfig.image}
               files={value}
               onFilesChange={onChange}
+              required
               multiple
               sortable
               {...field}
