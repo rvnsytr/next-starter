@@ -217,10 +217,11 @@ export type StepperTriggerProps =
   };
 
 export function StepperTrigger({
-  asChild = false,
+  type = "button",
   className,
   children,
   tabIndex,
+  asChild = false,
   ...props
 }: StepperTriggerProps) {
   const { state, isLoading } = useStepItem();
@@ -298,6 +299,7 @@ export function StepperTrigger({
       ref={btnRef}
       role="tab"
       id={id}
+      type={type}
       aria-selected={isSelected}
       aria-controls={panelId}
       tabIndex={typeof tabIndex === "number" ? tabIndex : isSelected ? 0 : -1}

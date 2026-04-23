@@ -67,7 +67,6 @@ export function ProfileForm() {
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
                 <FieldLabel>Alamat email</FieldLabel>
-
                 <InputGroup>
                   <InputGroupInput
                     type="email"
@@ -75,15 +74,11 @@ export function ProfileForm() {
                     required
                     {...field}
                   />
-
                   <InputGroupAddon>
                     <MailIcon />
                   </InputGroupAddon>
                 </InputGroup>
-
-                <FieldError match={!!fieldState.error}>
-                  {fieldState.error?.message}
-                </FieldError>
+                <FieldError error={fieldState.error} />
               </Field>
             )}
           />
@@ -94,7 +89,6 @@ export function ProfileForm() {
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
                 <FieldLabel>Nama</FieldLabel>
-
                 <InputGroup>
                   <InputGroupInput
                     type="text"
@@ -102,15 +96,11 @@ export function ProfileForm() {
                     required
                     {...field}
                   />
-
                   <InputGroupAddon>
                     <UserRoundIcon />
                   </InputGroupAddon>
                 </InputGroup>
-
-                <FieldError match={!!fieldState.error}>
-                  {fieldState.error?.message}
-                </FieldError>
+                <FieldError error={fieldState.error} />
               </Field>
             )}
           />

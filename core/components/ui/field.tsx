@@ -2,6 +2,8 @@
 
 import { cn } from "@/core/utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
+import { useMemo } from "react";
+import { FieldError as FieldErrorType } from "react-hook-form";
 
 export function Field({
   invalid,
@@ -67,15 +69,34 @@ export function FieldDescription({
 }
 
 export function FieldError({
+  error,
+  match,
   className,
+  children,
   ...props
-}: FieldPrimitive.Error.Props) {
+}: FieldPrimitive.Error.Props & { error?: FieldErrorType }) {
+  const content = useMemo(() => {
+    if (children) return children;
+    if (!Array.isArray(error)) return error?.message;
+    if (!error.filter(Boolean).length) return null;
+    if (error.length === 1 && error[0]?.message)
+      return error[0].message as string;
+    return (
+      <ul className="ml-4 flex list-disc flex-col gap-1">
+        {error.map((e, i) => e?.message && <li key={i}>{e.message}</li>)}
+      </ul>
+    );
+  }, [children, error]);
+
   return (
     <FieldPrimitive.Error
       data-slot="field-error"
+      match={match ?? !!content}
       className={cn("text-destructive-foreground text-xs", className)}
       {...props}
-    />
+    >
+      {content ?? children}
+    </FieldPrimitive.Error>
   );
 }
 

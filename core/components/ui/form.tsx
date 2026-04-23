@@ -1,15 +1,14 @@
 "use client";
 
 import { cn } from "@/core/utils";
-import { Form as FormPrimitive } from "@base-ui/react/form";
 
 export function Form({
   className,
   noValidate = true,
   ...props
-}: FormPrimitive.Props) {
+}: React.ComponentProps<"form">) {
   return (
-    <FormPrimitive
+    <form
       data-slot="form"
       className={cn(
         "flex w-full flex-col gap-x-2 gap-y-4",
@@ -28,5 +27,3 @@ export function Form({
     />
   );
 }
-
-export { FormPrimitive };

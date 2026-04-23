@@ -67,7 +67,6 @@ export function SignInForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Alamat email</FieldLabel>
-
             <InputGroup>
               <InputGroupInput
                 type="email"
@@ -75,15 +74,11 @@ export function SignInForm() {
                 required
                 {...field}
               />
-
               <InputGroupAddon>
                 <MailIcon />
               </InputGroupAddon>
             </InputGroup>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -94,16 +89,12 @@ export function SignInForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Kata sandi</FieldLabel>
-
             <PasswordInput
               placeholder="Masukan kata sandi anda"
               required
               {...field}
             />
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -122,10 +113,7 @@ export function SignInForm() {
                 />
                 Ingat saya
               </FieldLabel>
-
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />

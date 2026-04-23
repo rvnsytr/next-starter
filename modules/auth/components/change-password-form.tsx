@@ -78,17 +78,13 @@ export function ChangePasswordForm() {
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Kata sandi saat ini</FieldLabel>
-
               <PasswordInput
                 startAddon={<LockKeyholeOpenIcon />}
                 placeholder="Masukan kata sandi saat ini"
                 required
                 {...field}
               />
-
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -99,16 +95,12 @@ export function ChangePasswordForm() {
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Kata sandi baru</FieldLabel>
-
               <PasswordInput
                 placeholder="Masukan kata sandi baru"
                 required
                 {...field}
               />
-
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -119,16 +111,12 @@ export function ChangePasswordForm() {
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Konfirmasi kata sandi</FieldLabel>
-
               <PasswordInput
                 placeholder="Konfirmasi kata sandi baru anda"
                 required
                 {...field}
               />
-
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -146,10 +134,7 @@ export function ChangePasswordForm() {
                 />
                 Keluar dari perangkat lainnya
               </FieldLabel>
-
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />

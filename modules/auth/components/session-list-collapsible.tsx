@@ -198,7 +198,7 @@ export function SessionListCollapsible({
                         <AlertDialogTrigger
                           render={
                             <Button
-                              size="icon"
+                              size="icon-sm"
                               variant="outline"
                               disabled={isLoading}
                               className="grow lg:grow-0"
@@ -242,7 +242,7 @@ export function SessionListCollapsible({
 
                     <CollapsibleTrigger
                       render={
-                        <Button size="icon" variant="outline">
+                        <Button size="icon-sm" variant="outline">
                           <ChevronsUpDownIcon />
                         </Button>
                       }

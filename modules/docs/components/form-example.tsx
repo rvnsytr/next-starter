@@ -185,9 +185,7 @@ export function FormExample() {
                 {...field}
               />
               <FieldDescription>Visible on your profile</FieldDescription>
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -212,9 +210,7 @@ export function FormExample() {
                 </NumberFieldGroup>
               </NumberField>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -230,9 +226,7 @@ export function FormExample() {
                 required
                 {...field}
               />
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -249,9 +243,7 @@ export function FormExample() {
                 onSelect={field.onChange}
                 required
               />
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -269,9 +261,7 @@ export function FormExample() {
                 className="w-full"
                 required
               />
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -289,9 +279,7 @@ export function FormExample() {
                 className="w-full"
                 required
               />
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -328,9 +316,7 @@ export function FormExample() {
                 </AutocompletePopup>
               </Autocomplete>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -381,9 +367,7 @@ export function FormExample() {
                 </ComboboxPopup>
               </Combobox>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -414,9 +398,7 @@ export function FormExample() {
                 </SelectPopup>
               </Select>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -438,9 +420,7 @@ export function FormExample() {
                 ))}
               </RadioGroup>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -460,9 +440,7 @@ export function FormExample() {
                 ))}
               </CheckboxGroup>
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -476,9 +454,7 @@ export function FormExample() {
 
               <Switch checked={value} onCheckedChange={onChange} {...field} />
 
-              <FieldError match={!!fieldState.error}>
-                {fieldState.error?.message}
-              </FieldError>
+              <FieldError error={fieldState.error} />
             </Field>
           )}
         />
@@ -496,9 +472,7 @@ export function FormExample() {
               withValidationList
               {...field}
             />
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -509,7 +483,6 @@ export function FormExample() {
         render={({ field: { value, onChange, ...field }, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>File Upload</FieldLabel>
-
             <FileUpload
               {...fileTypeConfig.image}
               files={value}
@@ -518,14 +491,7 @@ export function FormExample() {
               sortable
               {...field}
             />
-
-            <pre className="text-xs">{JSON.stringify(value, null, 2)}</pre>
-
-            <pre className="text-xs">{JSON.stringify(fieldState, null, 2)}</pre>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />

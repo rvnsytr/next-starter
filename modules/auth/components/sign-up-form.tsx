@@ -90,7 +90,6 @@ export function SignUpForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Nama</FieldLabel>
-
             <InputGroup>
               <InputGroupInput
                 type="text"
@@ -98,15 +97,11 @@ export function SignUpForm() {
                 required
                 {...field}
               />
-
               <InputGroupAddon>
                 <UserRoundIcon />
               </InputGroupAddon>
             </InputGroup>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -117,7 +112,6 @@ export function SignUpForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Alamat email</FieldLabel>
-
             <InputGroup>
               <InputGroupInput
                 type="email"
@@ -125,15 +119,11 @@ export function SignUpForm() {
                 required
                 {...field}
               />
-
               <InputGroupAddon>
                 <MailIcon />
               </InputGroupAddon>
             </InputGroup>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -151,9 +141,7 @@ export function SignUpForm() {
               {...field}
             />
 
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -164,16 +152,12 @@ export function SignUpForm() {
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>Konfirmasi Kata sandi</FieldLabel>
-
             <PasswordInput
               placeholder="Konfirmasi kata sandi anda"
               required
               {...field}
             />
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
@@ -187,7 +171,6 @@ export function SignUpForm() {
               <Checkbox checked={value} onCheckedChange={onChange} {...field} />
               Setujui syarat dan ketentuan
             </FieldLabel>
-
             <FieldDescription>
               Saya menyetujui{" "}
               <span className="text-foreground">
@@ -195,10 +178,7 @@ export function SignUpForm() {
               </span>{" "}
               {appConfig.name}.
             </FieldDescription>
-
-            <FieldError match={!!fieldState.error}>
-              {fieldState.error?.message}
-            </FieldError>
+            <FieldError error={fieldState.error} />
           </Field>
         )}
       />
