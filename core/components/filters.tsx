@@ -958,7 +958,6 @@ function FilterValueSelector<T = unknown>({
   if (field.type === "text")
     return (
       <FilterInput
-        type="text"
         value={(values[0] as string) || ""}
         onChange={(e) => onChange([e.target.value] as T[])}
         placeholder={field.placeholder}

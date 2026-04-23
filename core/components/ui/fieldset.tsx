@@ -22,7 +22,10 @@ export function FieldsetLegend({
   return (
     <FieldsetPrimitive.Legend
       data-slot="fieldset-legend"
-      className={cn("text-foreground font-semibold", className)}
+      className={cn(
+        "text-foreground flex items-center gap-2 leading-tight font-semibold **:[svg:not([class*='size-'])]:size-4",
+        className,
+      )}
       {...props}
     />
   );

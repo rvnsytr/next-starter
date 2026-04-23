@@ -556,7 +556,6 @@ export function CreateUserDialog({
               >
                 <InputGroup>
                   <InputGroupInput
-                    type="text"
                     id={field.name}
                     aria-invalid={!!fieldState.error}
                     placeholder="Masukan nama anda"
@@ -1537,7 +1536,6 @@ function RemoveUserDialog({
                 htmlFor={field.name}
               >
                 <Input
-                  type="text"
                   id={field.name}
                   aria-invalid={!!fieldState.error}
                   placeholder={data.name}
@@ -1654,7 +1652,6 @@ function ActionRemoveUsersDialog({
                 htmlFor={field.name}
               >
                 <Input
-                  type="text"
                   id={field.name}
                   aria-invalid={!!fieldState.error}
                   placeholder={inputValue}

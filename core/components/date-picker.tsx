@@ -62,7 +62,6 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
     <InputGroup>
       <InputGroupInput
         id={props.id}
-        type="text"
         placeholder="dd/mm/yyyy"
         inputMode="numeric"
         required={props.required}

@@ -92,7 +92,6 @@ export function SignUpForm() {
             <FieldLabel>Nama</FieldLabel>
             <InputGroup>
               <InputGroupInput
-                type="text"
                 placeholder="Masukan nama anda"
                 required
                 {...field}
