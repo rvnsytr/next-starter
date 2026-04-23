@@ -57,9 +57,9 @@ import {
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
+import { fileTypeConfig } from "@/core/config/file-type";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
-import { toBytes } from "@/core/utils";
 import { languageConfig } from "@/shared/config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
@@ -115,11 +115,10 @@ const formSchema = z.object({
   switch: z.boolean(),
 
   password: sharedSchemas.password,
-  // files: sharedSchemas.files(fileType, {
-  // min: 1,
-  // max: 5,
-  // maxFileSize: toBytes(1),
-  // }),
+  files: sharedSchemas
+    .fileWithPreview("file", { minFiles: 1, maxFiles: 5 })
+    .array()
+    .min(1),
 });
 
 const now = new Date();
@@ -147,7 +146,8 @@ export function FormExample() {
       switch: false,
 
       password: "Example#123",
-      //   files: [],
+      // make dummy data
+      files: [],
     },
   });
 
@@ -503,11 +503,32 @@ export function FormExample() {
         )}
       />
 
-      <Field>
-        <FieldLabel>File Upload</FieldLabel>
-        {/* <FileUpload {...fileTypeConfig.audio} maxFiles={2} /> */}
-        <FileUpload maxSize={toBytes(1)} multiple sortable />
-      </Field>
+      <Controller
+        name="files"
+        control={form.control}
+        render={({ field: { value, onChange, ...field }, fieldState }) => (
+          <Field name={field.name} invalid={fieldState.invalid}>
+            <FieldLabel>File Upload</FieldLabel>
+
+            <FileUpload
+              {...fileTypeConfig.image}
+              files={value}
+              onFilesChange={onChange}
+              multiple
+              sortable
+              {...field}
+            />
+
+            <pre className="text-xs">{JSON.stringify(value, null, 2)}</pre>
+
+            <pre className="text-xs">{JSON.stringify(fieldState, null, 2)}</pre>
+
+            <FieldError match={!!fieldState.error}>
+              {fieldState.error?.message}
+            </FieldError>
+          </Field>
+        )}
+      />
 
       <div className="flex gap-2">
         <Button type="submit">

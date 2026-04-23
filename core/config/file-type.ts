@@ -120,13 +120,17 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 };
 
+export const maxFileSize = Math.max(
+  ...Object.values(config).map((c) => c.maxSize),
+);
+
 export const fileTypeConfig: Record<FileType, FileTypeConfig> = {
   file: {
     displayName: "berkas",
     icon: FileIcon,
-    maxSize: Number.POSITIVE_INFINITY,
-    accept: "*/*",
-    extensions: Object.values(config).flatMap((t) => t.extensions),
+    maxSize: maxFileSize,
+    accept: "*",
+    extensions: [],
   },
 
   office: {

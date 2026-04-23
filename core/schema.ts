@@ -3,6 +3,12 @@ import z from "zod";
 import { FileType, fileTypeConfig } from "./config/file-type";
 import { messages } from "./messages";
 
+type FileSchemaOptions = {
+  minFiles?: number;
+  maxFiles?: number;
+  maxSize?: number;
+};
+
 export const sharedSchemas = {
   string: (options?: {
     label?: string;
@@ -80,29 +86,36 @@ export const sharedSchemas = {
       );
   },
 
-  files: (
-    type: FileType,
-    options?: {
-      minFiles?: number;
-      maxFiles?: number;
-      maxSize?: number;
-    },
-  ) => {
-    const { mimeInvalid, tooLarge, tooFew, tooMany } = messages.files;
+  file: (type: FileType, options?: FileSchemaOptions) => {
+    const { mimeInvalid, tooLarge } = messages.files;
     const { displayName, accept, maxSize: metaMaxSize } = fileTypeConfig[type];
 
-    const mimeTypes = accept.split(",").map((t) => t.trim());
-    const minFiles = options?.minFiles ?? 0;
-    const maxFiles = options?.maxFiles ?? 0;
+    const mimeTypes =
+      accept === "*" ? [] : accept.split(",").map((t) => t.trim());
     const maxSize =
       options?.maxSize && options.maxSize > 0 ? options.maxSize : metaMaxSize;
 
     let schema = z
       .file()
-      .mime(mimeTypes, { error: mimeInvalid(displayName) })
       .min(1)
-      .max(maxSize, { error: tooLarge(displayName, maxSize) })
-      .array();
+      .max(maxSize, { error: tooLarge(displayName, maxSize) });
+
+    if (mimeTypes.length) {
+      const error = mimeInvalid(displayName);
+      schema = schema.mime(mimeTypes, { error });
+    }
+
+    return schema;
+  },
+
+  files(type: FileType, options?: FileSchemaOptions) {
+    const { tooFew, tooMany } = messages.files;
+    const { displayName } = fileTypeConfig[type];
+
+    const minFiles = options?.minFiles ?? 0;
+    const maxFiles = options?.maxFiles ?? 0;
+
+    let schema = z.array(this.file(type, options));
 
     if (minFiles > 0) {
       const message = tooFew(displayName, minFiles);
@@ -115,6 +128,23 @@ export const sharedSchemas = {
     }
 
     return schema;
+  },
+
+  fileMetadata: z.object({
+    id: z.string(),
+    name: z.string(),
+    type: z.string(),
+    size: z.number(),
+    url: z.string(),
+  }),
+
+  fileWithPreview(type: FileType, options?: FileSchemaOptions) {
+    const fileSchema = this.file(type, options);
+    return z.object({
+      id: z.string(),
+      file: z.union([fileSchema, this.fileMetadata]),
+      preview: z.string().optional(),
+    });
   },
 
   date: (options?: {

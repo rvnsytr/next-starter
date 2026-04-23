@@ -6,12 +6,9 @@ import { messages } from "../messages";
 import { sharedSchemas } from "../schema";
 
 export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
-
-export type FileWithPreview = {
-  id: string;
-  file: File | FileMetadata;
-  preview?: string;
-};
+export type FileWithPreview = z.infer<
+  ReturnType<typeof sharedSchemas.fileWithPreview>
+>;
 
 export type FileUploadOptions = {
   accept?: string;
@@ -334,40 +331,32 @@ export function useStatelessFileUpload(
     files,
     isDragging,
     errors,
+
     addFiles,
     removeFile,
     clearFiles,
     clearErrors,
+
     moveUp,
     moveDown,
+
     handleDragEnter,
     handleDragLeave,
     handleDragOver,
     handleDrop,
     handleFileChange,
+
     openFileDialog,
     getInputProps,
   };
 }
 
-// export function useFileUpload({
-//   initialFiles = [],
-//   ...options
-// }: FileUploadOptions & { initialFiles?: FileMetadata[] } = {}) {
-//   const init = initialFiles.map((file) => ({
-//     file,
-//     id: file.id,
-//     preview: file.url,
-//   }));
-
-//   // const filesState = useState<{ files: init });
-//   const isDraggingState = useState<boolean>(false);
-//   const errorsState = useState<string[]>([]);
-
-//   return useStatelessFileUpload(
-//     filesState,
-//     isDraggingState,
-//     errorsState,
-//     options,
-//   );
-// }
+export function useFileUpload({
+  initialFiles = [],
+  ...options
+}: FileUploadOptions & { initialFiles?: FileMetadata[] } = {}) {
+  const state = useState<FileWithPreview[]>(
+    initialFiles.map((file) => ({ file, id: file.id, preview: file.url })),
+  );
+  return useStatelessFileUpload(state, options);
+}

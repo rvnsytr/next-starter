@@ -12,7 +12,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { fileTypeConfig, FileTypeConfig } from "../config/file-type";
-import { FileUploadOptions, useFileUpload } from "../hooks/use-file-upload";
+import {
+  FileMetadata,
+  FileUploadOptions,
+  FileWithPreview,
+  useStatelessFileUpload,
+} from "../hooks/use-file-upload";
 import { messages } from "../messages";
 import { cn, formatBytes } from "../utils";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "./ui/alert";
@@ -27,38 +32,45 @@ import {
   EmptyTitle,
 } from "./ui/empty";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 
 export type FileUploadProps = Pick<
   React.ComponentProps<"input">,
-  "id" | "name" | "required"
+  "id" | "name" | "required" | "disabled"
 > &
   Partial<Pick<FileTypeConfig, "displayName" | "icon" | "extensions">> &
   FileUploadOptions & {
+    initialFiles?: FileMetadata[];
+    files?: FileWithPreview[];
+    sortable?: boolean;
     classNames?: {
       container?: string;
       dropzone?: string;
       files?: string;
       file?: string;
     };
-    sortable?: boolean;
   };
 
 export function FileUpload({
   id,
   name,
-  required,
+  required = false,
+  disabled = false,
 
   displayName = fileTypeConfig.file.displayName,
   icon: Icon = fileTypeConfig.file.icon,
   extensions = [],
 
-  classNames,
+  initialFiles = [],
+  files: filesProp,
   sortable = false,
+  classNames,
   ...options
 }: FileUploadProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [filesHook, setFiles] = useState<FileWithPreview[]>(
+    initialFiles.map((file) => ({ file, id: file.id, preview: file.url })),
+  );
 
   const {
     files,
@@ -77,7 +89,7 @@ export function FileUpload({
 
     openFileDialog,
     getInputProps,
-  } = useFileUpload(options);
+  } = useStatelessFileUpload([filesProp ?? filesHook, setFiles], options);
 
   const { maxSize, maxFiles, multiple = false } = options;
   const isFiles = files.length > 0;
@@ -88,6 +100,7 @@ export function FileUpload({
       data-slot="file-upload"
       className={cn(
         "group/file-upload relative flex w-full flex-col gap-y-4",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         classNames?.container,
       )}
     >
@@ -95,7 +108,7 @@ export function FileUpload({
         tabIndex={-1}
         className="sr-only hidden"
         aria-label="file-upload-input"
-        {...getInputProps({ id, name, required })}
+        {...getInputProps({ id, name, required, disabled })}
       />
 
       {/* Dropzone */}
@@ -170,9 +183,9 @@ export function FileUpload({
           className="flex flex-row items-center justify-between gap-4"
         >
           <div className="flex items-center gap-x-2 tabular-nums">
-            <Label className="font-normal capitalize">
+            <small className="font-normal capitalize">
               {`${displayName} (${maxFiles ? `${files.length}/${maxFiles}` : files.length})`}
-            </Label>
+            </small>
             <Separator orientation="vertical" className="h-3.5" />
             <small className="text-muted-foreground text-xs">
               {formatBytes(files.reduce((acc, f) => acc + f.file.size, 0))}
@@ -200,11 +213,6 @@ export function FileUpload({
         >
           {files.map((file, index) => {
             const isImage = file.file.type.startsWith("image/");
-
-            // const res = sharedSchemas
-            //   .files(accept, { maxFileSize: fileSize.bytes })
-            //   .safeParse([file]);
-
             const Comp = (
               <div
                 tabIndex={0}
@@ -311,7 +319,7 @@ export function FileUpload({
                   data-slot="remove-file"
                   type="button"
                   size="icon-sm"
-                  variant="destructive"
+                  variant={isImage ? "destructive" : "destructive-outline"}
                   className="absolute top-2 left-2 z-10"
                   onClick={() => removeFile(file.id)}
                 >
@@ -324,7 +332,7 @@ export function FileUpload({
                       data-slot="file-move-up"
                       type="button"
                       size="icon-sm"
-                      className="border-border bg-white text-black/80"
+                      variant={isImage ? "default" : "outline"}
                       onClick={() => moveUp(file.id)}
                       disabled={files.length === 1}
                     >
@@ -335,7 +343,7 @@ export function FileUpload({
                       data-slot="file-move-down"
                       type="button"
                       size="icon-sm"
-                      className="border-border bg-white text-black/80"
+                      variant={isImage ? "default" : "outline"}
                       onClick={() => moveDown(file.id)}
                       disabled={files.length === 1}
                     >
@@ -378,7 +386,7 @@ export function FileUpload({
         open={!!selectedImage}
         onOpenChange={(open) => !open && setSelectedImage(null)}
       >
-        <DialogPopup>
+        <DialogPopup className="border-none">
           <DialogHeader className="sr-only">
             <DialogTitle>{displayName} Preview</DialogTitle>
           </DialogHeader>
