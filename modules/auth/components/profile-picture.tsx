@@ -146,15 +146,18 @@ export function ProfilePicture({
               </AlertDialogHeader>
 
               <AlertDialogFooter>
-                <AlertDialogClose render={<Button variant="ghost" />}>
-                  {messages.actions.cancel}
-                </AlertDialogClose>
                 <AlertDialogClose
-                  onClick={deleteHandler}
-                  render={<Button variant="destructive" />}
-                >
-                  {messages.actions.confirm}
-                </AlertDialogClose>
+                  render={
+                    <Button variant="ghost">{messages.actions.cancel}</Button>
+                  }
+                />
+                <AlertDialogClose
+                  render={
+                    <Button variant="destructive" onClick={deleteHandler}>
+                      {messages.actions.confirm}
+                    </Button>
+                  }
+                />
               </AlertDialogFooter>
             </AlertDialogPopup>
           </AlertDialog>

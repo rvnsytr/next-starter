@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/core/components/ui/alert-dialog";
 import { Badge } from "@/core/components/ui/badge";
-import { Button, ButtonProps } from "@/core/components/ui/button";
+import { Button } from "@/core/components/ui/button";
 import { ResetButton } from "@/core/components/ui/buttons";
 import { CardContent, CardFooter } from "@/core/components/ui/card";
 import {
@@ -39,13 +39,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/core/components/ui/dropdown-menu";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-  FieldTitle,
-} from "@/core/components/ui/field";
 import { FieldWrapper } from "@/core/components/ui/field-wrapper";
 import { Input } from "@/core/components/ui/input";
 import {
@@ -60,7 +53,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { Separator } from "@/core/components/ui/separator";
 import { SheetDescription, SheetTitle } from "@/core/components/ui/sheet";
 import {
@@ -106,7 +98,6 @@ import {
   Trash2Icon,
   TriangleAlertIcon,
   UserRoundIcon,
-  UserRoundPlusIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -465,242 +456,6 @@ export function UserDetailDialog({
 
           <DialogFooter showCloseButton closeButtonText="back" />
         </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-export function CreateUserDialog({
-  size,
-  variant,
-  className,
-}: Pick<ButtonProps, "size" | "variant" | "className">) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema
-    .pick({ name: true, email: true, role: true })
-    .extend({
-      newPassword: passwordSchema.shape.newPassword,
-      confirmPassword: passwordSchema.shape.confirmPassword,
-    })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: sharedText.passwordNotMatch,
-      path: ["confirmPassword"],
-    });
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      newPassword: "",
-      confirmPassword: "",
-      role: defaultRole,
-    },
-  });
-
-  const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
-    setIsLoading(true);
-    toast.promise(
-      async () => {
-        const res = await authClient.admin.createUser({
-          password: newPassword,
-          role: newRole ?? defaultRole,
-          ...rest,
-        });
-
-        if (res.error) throw res.error;
-        return res;
-      },
-      {
-        success: () => {
-          setIsLoading(false);
-          mutateListUsers();
-          form.reset();
-          return `Akun atas nama ${rest.name} berhasil dibuat.`;
-        },
-        error: (e) => {
-          setIsLoading(false);
-          return e.message;
-        },
-      },
-    );
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size={size} variant={variant} className={className}>
-          <UserRoundPlusIcon /> Tambah Pengguna
-        </Button>
-      </DialogTrigger>
-
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Tambah Pengguna</DialogTitle>
-          <DialogDescription>
-            Pastikan semua informasi sudah benar sebelum mengkonfirmasi.
-          </DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={form.handleSubmit(formHandler)} noValidate>
-          <Controller
-            name="name"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Nama"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <InputGroup>
-                  <InputGroupInput
-                    id={field.name}
-                    aria-invalid={!!fieldState.error}
-                    placeholder="Masukan nama anda"
-                    required
-                    {...field}
-                  />
-                  <InputGroupAddon>
-                    <UserRoundIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-              </FieldWrapper>
-            )}
-          />
-
-          <Controller
-            name="email"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Alamat email"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <InputGroup>
-                  <InputGroupInput
-                    type="email"
-                    id={field.name}
-                    aria-invalid={!!fieldState.error}
-                    placeholder="Masukan email anda"
-                    required
-                    {...field}
-                  />
-                  <InputGroupAddon>
-                    <MailIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-              </FieldWrapper>
-            )}
-          />
-
-          <Controller
-            name="newPassword"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Kata sandi"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <PasswordInput
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Masukan kata sandi anda"
-                  required
-                  withList
-                  {...field}
-                />
-              </FieldWrapper>
-            )}
-          />
-
-          <Controller
-            name="confirmPassword"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Konfirmasi kata sandi"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <PasswordInput
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  placeholder="Konfirmasi kata sandi anda"
-                  required
-                  {...field}
-                />
-              </FieldWrapper>
-            )}
-          />
-
-          <Controller
-            name="role"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Role"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <RadioGroup
-                  name={field.name}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="flex-col"
-                  required
-                >
-                  {allRoles.map((value) => {
-                    const { icon: Icon, ...meta } = roleConfig[value];
-                    return (
-                      <FieldLabel
-                        key={value}
-                        htmlFor={value}
-                        color={meta.color}
-                        className="border-(--field-color)/40"
-                      >
-                        <Field
-                          orientation="horizontal"
-                          data-invalid={!!fieldState.error}
-                        >
-                          <FieldContent>
-                            <FieldTitle className="text-(--field-color)">
-                              <Icon /> {meta.displayName}
-                            </FieldTitle>
-                            <FieldDescription className="text-(--field-color)/80">
-                              {meta.description}
-                            </FieldDescription>
-                          </FieldContent>
-                          <RadioGroupItem
-                            value={value}
-                            id={value}
-                            classNames={{ circle: "fill-[var(--field-color)]" }}
-                            aria-invalid={!!fieldState.error}
-                          />
-                        </Field>
-                      </FieldLabel>
-                    );
-                  })}
-                </RadioGroup>
-              </FieldWrapper>
-            )}
-          />
-
-          <Separator />
-
-          <DialogFooter showCloseButton>
-            <Button type="submit" disabled={isLoading}>
-              <LoadingSpinner
-                loading={isLoading}
-                icon={{ base: <UserRoundPlusIcon /> }}
-              />
-              {messages.actions.add}
-            </Button>
-          </DialogFooter>
-        </form>
       </DialogContent>
     </Dialog>
   );

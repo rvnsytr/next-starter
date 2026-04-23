@@ -224,17 +224,23 @@ export function SessionListCollapsible({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogClose
-                              render={<Button variant="ghost" />}
-                            >
-                              {messages.actions.cancel}
-                            </AlertDialogClose>
+                              render={
+                                <Button variant="ghost">
+                                  {messages.actions.cancel}
+                                </Button>
+                              }
+                            />
                             <AlertDialogClose
-                              onClick={() => clickHandler(s)}
-                              autoFocus
-                              render={<Button variant="destructive" />}
-                            >
-                              {messages.actions.confirm}
-                            </AlertDialogClose>
+                              render={
+                                <Button
+                                  variant="destructive"
+                                  onClick={() => clickHandler(s)}
+                                  autoFocus
+                                >
+                                  {messages.actions.confirm}
+                                </Button>
+                              }
+                            />
                           </AlertDialogFooter>
                         </AlertDialogPopup>
                       </AlertDialog>

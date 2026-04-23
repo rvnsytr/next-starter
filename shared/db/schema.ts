@@ -7,6 +7,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { allRoles } from "../permission";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -19,9 +20,7 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
-  role: text("role", { enum: ["user", "admin"] })
-    .default("user")
-    .notNull(),
+  role: text("role", { enum: allRoles }).default("user").notNull(),
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),

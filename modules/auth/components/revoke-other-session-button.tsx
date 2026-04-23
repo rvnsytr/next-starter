@@ -68,16 +68,16 @@ export function RevokeOtherSessionsButton() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogClose render={<Button variant="ghost" />}>
-            {messages.actions.cancel}
-          </AlertDialogClose>
           <AlertDialogClose
-            onClick={clickHandler}
-            autoFocus
-            render={<Button variant="destructive" />}
-          >
-            {messages.actions.confirm}
-          </AlertDialogClose>
+            render={<Button variant="ghost">{messages.actions.cancel}</Button>}
+          />
+          <AlertDialogClose
+            render={
+              <Button variant="destructive" onClick={clickHandler} autoFocus>
+                {messages.actions.confirm}
+              </Button>
+            }
+          />
         </AlertDialogFooter>
       </AlertDialogPopup>
     </AlertDialog>

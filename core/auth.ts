@@ -1,6 +1,6 @@
 import { appConfig } from "@/shared/config";
-import { files, user } from "@/shared/db/schema";
-import { ac, roles } from "@/shared/permission";
+import { files } from "@/shared/db/schema";
+import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
@@ -17,9 +17,6 @@ export type Permissions = {
 };
 
 export type AuthSession = typeof auth.$Infer.Session;
-
-export type Role = (typeof user.$inferSelect)["role"];
-export const defaultRole: Role = "user";
 
 export const auth = betterAuth({
   appName: appConfig.name,
@@ -76,7 +73,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        type: ["user", "admin"],
+        type: [...allRoles],
         input: false,
         defaultValue: defaultRole,
       },
