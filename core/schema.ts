@@ -3,11 +3,13 @@ import z from "zod";
 import { FileType, fileTypeConfig } from "./config/file-type";
 import { messages } from "./messages";
 
-type FileSchemaOptions = {
+type FilesSchemaOptions = {
   minFiles?: number;
   maxFiles?: number;
   maxSize?: number;
 };
+
+type FileSchemaOptions = Pick<FilesSchemaOptions, "maxSize">;
 
 export const sharedSchemas = {
   string: (options?: {
@@ -88,12 +90,18 @@ export const sharedSchemas = {
 
   file: (type: FileType, options?: FileSchemaOptions) => {
     const { mimeInvalid, tooLarge } = messages.files;
-    const { displayName, accept, maxSize: metaMaxSize } = fileTypeConfig[type];
+    const {
+      displayName,
+      accept,
+      maxSize: defaultMaxSize,
+    } = fileTypeConfig[type];
 
     const mimeTypes =
       accept === "*" ? [] : accept.split(",").map((t) => t.trim());
     const maxSize =
-      options?.maxSize && options.maxSize > 0 ? options.maxSize : metaMaxSize;
+      options?.maxSize && options.maxSize > 0
+        ? options.maxSize
+        : defaultMaxSize;
 
     let schema = z
       .file()
@@ -108,7 +116,7 @@ export const sharedSchemas = {
     return schema;
   },
 
-  files(type: FileType, options?: FileSchemaOptions) {
+  files(type: FileType, options?: FilesSchemaOptions) {
     const { tooFew, tooMany } = messages.files;
     const { displayName } = fileTypeConfig[type];
 
@@ -145,6 +153,28 @@ export const sharedSchemas = {
       file: z.union([fileSchema, this.fileMetadata]),
       preview: z.string().optional(),
     });
+  },
+
+  filesWithPreview(type: FileType, options?: FilesSchemaOptions) {
+    const { tooFew, tooMany } = messages.files;
+    const { displayName } = fileTypeConfig[type];
+
+    const minFiles = options?.minFiles ?? 0;
+    const maxFiles = options?.maxFiles ?? 0;
+
+    let schema = z.array(this.fileWithPreview(type, options));
+
+    if (minFiles > 0) {
+      const message = tooFew(displayName, minFiles);
+      schema = schema.min(minFiles, { error: message });
+    }
+
+    if (maxFiles > 0) {
+      const message = tooMany(displayName, maxFiles);
+      schema = schema.max(maxFiles, { error: message });
+    }
+
+    return schema;
   },
 
   date: (options?: {

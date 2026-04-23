@@ -115,10 +115,7 @@ const formSchema = z.object({
   switch: z.boolean(),
 
   password: sharedSchemas.password,
-  files: sharedSchemas
-    .fileWithPreview("file", { minFiles: 1, maxFiles: 5 })
-    .array()
-    .min(1),
+  files: sharedSchemas.filesWithPreview("file", { minFiles: 1, maxFiles: 5 }),
 });
 
 const now = new Date();
@@ -178,12 +175,7 @@ export function FormExample() {
           render={({ field, fieldState }) => (
             <Field name={field.name} invalid={fieldState.invalid}>
               <FieldLabel>Input Field</FieldLabel>
-              <Input
-                type="text"
-                placeholder="Enter your name"
-                required
-                {...field}
-              />
+              <Input placeholder="Enter your name" required {...field} />
               <FieldDescription>Visible on your profile</FieldDescription>
               <FieldError error={fieldState.error} />
             </Field>

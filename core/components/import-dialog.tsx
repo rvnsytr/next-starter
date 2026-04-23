@@ -15,9 +15,10 @@ import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { TextMorph } from "torph/react";
 import z from "zod";
+import { fileTypeConfig } from "../config/file-type";
+import { FileWithPreview } from "../hooks/use-file-upload";
 import { messages } from "../messages";
 import { sharedSchemas } from "../schema";
-import { FieldWrapper } from "../ui/field-wrapper";
 import {
   cn,
   formatCsvRange,
@@ -43,15 +44,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "./ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "./ui/field";
+import { Fieldset, FieldsetLegend } from "./ui/fieldset";
 import {
   InputGroup,
   InputGroupAddon,
@@ -73,7 +67,7 @@ export type ImportDialogProps<T, K extends string> = {
   defaultValues?: Partial<Omit<ImportDialogFormSchema, "source">>;
 
   onSubmit: (data: {
-    files: z.core.File[];
+    files: FileWithPreview[];
     sheet: string;
     mode: ReadExcelSheetMode;
     rows: number[];
@@ -92,7 +86,7 @@ export type ImportDialogProps<T, K extends string> = {
 };
 
 const importDialogSchema = z.object({
-  files: sharedSchemas.files("spreadsheet", { min: 1 }),
+  files: sharedSchemas.filesWithPreview("spreadsheet", { minFiles: 1 }),
   sheet: sharedSchemas.string({ label: "Worksheet" }),
   mode: z.enum(allReadExcelSheetModes),
   rows: sharedSchemas.string({ label: "Lewati baris" }),
@@ -199,32 +193,34 @@ export function ImportDialog<T, K extends string>({
           <Controller
             name="files"
             control={form.control}
-            render={({ field, fieldState }) => (
-              <FieldWrapper
-                label="Spreadsheet Purnakarya"
-                htmlFor={field.name}
-                errors={fieldState.error}
-              >
-                <FileUpload
-                  id={field.name}
-                  accept="spreadsheet"
-                  multiple={multiple}
-                  required
-                  {...field}
-                />
-              </FieldWrapper>
-            )}
+            render={({ field: { value, onChange, ...field }, fieldState }) => {
+              const config = fileTypeConfig.spreadsheet;
+              return (
+                <Field name={field.name} invalid={fieldState.invalid}>
+                  <FieldLabel>{config.displayName}</FieldLabel>
+                  <FileUpload
+                    {...config}
+                    files={value}
+                    onFilesChange={onChange}
+                    multiple={multiple}
+                    sortable
+                    {...field}
+                  />
+                  <FieldError error={fieldState.error} />
+                </Field>
+              );
+            }}
           />
 
           <Separator />
 
           <Collapsible>
-            <FieldSet>
+            <Fieldset>
               <div className="flex justify-between gap-x-2">
                 <div>
-                  <FieldLegend className="flex items-center gap-x-2">
+                  <FieldsetLegend>
                     <Settings2Icon /> Konfigurasi
-                  </FieldLegend>
+                  </FieldsetLegend>
 
                   <FieldDescription>
                     Atur dan konfigurasi spreadsheet sesuai dengan data yang
@@ -241,198 +237,182 @@ export function ImportDialog<T, K extends string>({
                 />
               </div>
 
-              <CollapsiblePanel
-                render={
-                  <FieldGroup>
-                    <Controller
-                      name="sheet"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FieldWrapper
-                          label="Worksheet"
-                          htmlFor={field.name}
-                          errors={fieldState.error}
-                        >
-                          <InputGroup>
-                            <InputGroupInput
-                              type="text"
-                              id={field.name}
-                              aria-invalid={!!fieldState.error}
-                              placeholder="Sheet1"
-                              {...field}
-                            />
-                            <InputGroupAddon>
-                              <FileSpreadsheetIcon />
-                            </InputGroupAddon>
-                          </InputGroup>
-                        </FieldWrapper>
-                      )}
-                    />
+              <CollapsiblePanel>
+                <Controller
+                  name="sheet"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field name={field.name} invalid={fieldState.invalid}>
+                      <FieldLabel>Worksheet</FieldLabel>
+                      <InputGroup>
+                        <InputGroupInput
+                          placeholder="Sheet1"
+                          required
+                          {...field}
+                        />
+                        <InputGroupAddon>
+                          <FileSpreadsheetIcon />
+                        </InputGroupAddon>
+                      </InputGroup>
+                      <FieldError error={fieldState.error} />
+                    </Field>
+                  )}
+                />
 
-                    <Controller
-                      name="rows"
-                      control={form.control}
-                      render={({ field, fieldState }) => {
-                        const rows = formatNumberRange(parse(field.value));
-                        return (
-                          <FieldWrapper
-                            htmlFor={field.name}
-                            errors={fieldState.error}
+                <Controller
+                  name="rows"
+                  control={form.control}
+                  render={({ field, fieldState }) => {
+                    const rows = formatNumberRange(parse(field.value));
+                    return (
+                      <Field name={field.name} invalid={fieldState.invalid}>
+                        <InputGroup>
+                          <InputGroupAddon
+                            align="block-start"
+                            className="justify-between"
                           >
-                            <InputGroup>
-                              <InputGroupAddon
-                                align="block-start"
-                                className="justify-between"
-                              >
-                                <div
-                                  className={cn(
-                                    "relative flex items-center gap-x-1 *:transition",
-                                    !isInclude && "text-destructive",
-                                  )}
-                                >
-                                  <XIcon
-                                    className={cn(
-                                      "size-4",
-                                      isInclude ? "scale-0" : "scale-100",
-                                    )}
-                                  />
-                                  <PlusIcon
-                                    className={cn(
-                                      "absolute size-4",
-                                      isInclude ? "scale-100" : "scale-0",
-                                    )}
-                                  />
-
-                                  <TextMorph>
-                                    {isInclude ? "Muat baris" : "Lewati baris"}
-                                  </TextMorph>
-                                </div>
-
-                                <Button
-                                  type="button"
-                                  size="icon-xs"
-                                  variant="outline"
-                                  className="z-10"
-                                  onClick={() =>
-                                    setMode((prev) => {
-                                      const newMode =
-                                        prev === "include"
-                                          ? "exclude"
-                                          : "include";
-                                      form.setValue("mode", newMode);
-                                      return newMode;
-                                    })
-                                  }
-                                >
-                                  <RefreshCcwDot />
-                                </Button>
-                              </InputGroupAddon>
-
-                              <InputGroupInput
-                                type="text"
-                                id={field.name}
-                                aria-invalid={!!fieldState.error}
-                                placeholder="e.g. 1-29, 4, 19, 12, 3"
-                                {...field}
+                            <div
+                              className={cn(
+                                "relative flex items-center gap-x-1 *:transition",
+                                !isInclude && "text-destructive",
+                              )}
+                            >
+                              <XIcon
+                                className={cn(
+                                  "size-4",
+                                  isInclude ? "scale-0" : "scale-100",
+                                )}
+                              />
+                              <PlusIcon
+                                className={cn(
+                                  "absolute size-4",
+                                  isInclude ? "scale-100" : "scale-0",
+                                )}
                               />
 
-                              <InputGroupAddon
-                                align="block-end"
-                                className="border-t"
-                              >
-                                <InputGroupText
-                                  className={cn(
-                                    "gap-1 overflow-x-auto *:text-xs *:transition",
-                                    isInclude
-                                      ? "*:text-foreground *:bg-foreground/10 dark:*:bg-foreground/20"
-                                      : "*:text-destructive *:bg-destructive/10 dark:*:bg-destructive/20",
-                                  )}
+                              <TextMorph>
+                                {isInclude ? "Muat baris" : "Lewati baris"}
+                              </TextMorph>
+                            </div>
+
+                            <Button
+                              type="button"
+                              size="icon-xs"
+                              variant="outline"
+                              className="z-10"
+                              onClick={() =>
+                                setMode((prev) => {
+                                  const newMode =
+                                    prev === "include" ? "exclude" : "include";
+                                  form.setValue("mode", newMode);
+                                  return newMode;
+                                })
+                              }
+                            >
+                              <RefreshCcwDot />
+                            </Button>
+                          </InputGroupAddon>
+
+                          <InputGroupInput
+                            id={field.name}
+                            aria-invalid={!!fieldState.error}
+                            placeholder="e.g. 1-29, 4, 19, 12, 3"
+                            {...field}
+                          />
+
+                          <InputGroupAddon
+                            align="block-end"
+                            className="border-t"
+                          >
+                            <InputGroupText
+                              className={cn(
+                                "gap-1 overflow-x-auto *:text-xs *:transition",
+                                isInclude
+                                  ? "*:text-foreground *:bg-foreground/10 dark:*:bg-foreground/20"
+                                  : "*:text-destructive *:bg-destructive/10 dark:*:bg-destructive/20",
+                              )}
+                            >
+                              {rows.length
+                                ? rows.map((v) => <code key={v}>{v}</code>)
+                                : "Tidak ada"}
+                            </InputGroupText>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <FieldError error={fieldState.error} />
+                      </Field>
+                    );
+                  }}
+                />
+
+                <div className="grid gap-y-2">
+                  <div className="grid grid-cols-4 gap-x-4 border-b pb-2 *:font-medium">
+                    <p className="col-span-2">Data</p>
+                    <p>Kolom ke</p>
+                    <p>Atau</p>
+                  </div>
+
+                  {sourceFields.map((item, index) => (
+                    <Controller
+                      key={item.id}
+                      name={`source.${index}.column`}
+                      control={form.control}
+                      render={({
+                        field: { value, onChange, ...field },
+                        fieldState,
+                      }) => (
+                        <Field
+                          data-invalid={!!fieldState.error}
+                          className="gap-1"
+                        >
+                          <div className="grid grid-cols-4 gap-x-4">
+                            <FieldLabel
+                              htmlFor={field.name}
+                              className={cn(
+                                "col-span-2",
+                                item.required && "label-required",
+                              )}
+                            >
+                              {item.label}
+                            </FieldLabel>
+
+                            <InputGroup className="h-6">
+                              <InputGroupInput
+                                id={field.name}
+                                aria-invalid={!!fieldState.error}
+                                inputMode="numeric"
+                                value={formatNumber(value)}
+                                onChange={(e) =>
+                                  onChange(sanitizeNumber(e.target.value))
+                                }
+                                placeholder={item.key}
+                                {...field}
+                              />
+                              <InputGroupAddon align="inline-end">
+                                <Button
+                                  type="reset"
+                                  size="icon-xs"
+                                  variant="ghost"
+                                  className="size-4"
+                                  onClick={() =>
+                                    form.resetField(`source.${index}.column`)
+                                  }
                                 >
-                                  {rows.length
-                                    ? rows.map((v) => <code key={v}>{v}</code>)
-                                    : "Tidak ada"}
-                                </InputGroupText>
+                                  <RotateCcwIcon className="size-3.5" />
+                                </Button>
                               </InputGroupAddon>
                             </InputGroup>
-                          </FieldWrapper>
-                        );
-                      }}
+
+                            <p>{getExcelColumnKey(value)}</p>
+                          </div>
+
+                          <FieldError error={fieldState.error} />
+                        </Field>
+                      )}
                     />
-
-                    <div className="grid gap-y-2">
-                      <div className="grid grid-cols-4 gap-x-4 border-b pb-2 *:font-medium">
-                        <p className="col-span-2">Data</p>
-                        <p>Kolom ke</p>
-                        <p>Atau</p>
-                      </div>
-
-                      {sourceFields.map((item, index) => (
-                        <Controller
-                          key={item.id}
-                          name={`source.${index}.column`}
-                          control={form.control}
-                          render={({
-                            field: { value, onChange, ...field },
-                            fieldState,
-                          }) => (
-                            <Field
-                              data-invalid={!!fieldState.error}
-                              className="gap-y-1"
-                            >
-                              <div className="grid grid-cols-4 gap-x-4">
-                                <FieldLabel
-                                  htmlFor={field.name}
-                                  className={cn(
-                                    "col-span-2",
-                                    item.required && "label-required",
-                                  )}
-                                >
-                                  {item.label}
-                                </FieldLabel>
-
-                                <InputGroup className="h-6">
-                                  <InputGroupInput
-                                    type="text"
-                                    id={field.name}
-                                    aria-invalid={!!fieldState.error}
-                                    inputMode="numeric"
-                                    value={formatNumber(value)}
-                                    onChange={(e) =>
-                                      onChange(sanitizeNumber(e.target.value))
-                                    }
-                                    placeholder={item.key}
-                                    {...field}
-                                  />
-                                  <InputGroupAddon align="inline-end">
-                                    <Button
-                                      type="reset"
-                                      size="icon-xs"
-                                      variant="ghost"
-                                      className="size-4"
-                                      onClick={() =>
-                                        form.resetField(
-                                          `source.${index}.column`,
-                                        )
-                                      }
-                                    >
-                                      <RotateCcwIcon className="size-3.5" />
-                                    </Button>
-                                  </InputGroupAddon>
-                                </InputGroup>
-
-                                <p>{getExcelColumnKey(value)}</p>
-                              </div>
-
-                              <FieldError errors={fieldState.error} />
-                            </Field>
-                          )}
-                        />
-                      ))}
-                    </div>
-                  </FieldGroup>
-                }
-              />
-            </FieldSet>
+                  ))}
+                </div>
+              </CollapsiblePanel>
+            </Fieldset>
           </Collapsible>
 
           {children && (
@@ -446,7 +426,6 @@ export function ImportDialog<T, K extends string>({
 
           <DialogFooter>
             <DialogClose render={<Button>{messages.actions.cancel}</Button>} />
-
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner
                 loading={isLoading}
