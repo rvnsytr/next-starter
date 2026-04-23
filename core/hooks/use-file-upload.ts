@@ -1,15 +1,11 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import z from "zod";
 import { messages } from "../messages";
+import { sharedSchemas } from "../schema";
 
-export type FileMetadata = {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  url: string;
-};
+export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
 
 export type FileWithPreview = {
   id: string;
@@ -17,21 +13,20 @@ export type FileWithPreview = {
   preview?: string;
 };
 
+export type FileUploadState = {
+  files: FileWithPreview[];
+  isDragging: boolean;
+  errors: string[];
+};
+
 export type FileUploadOptions = {
   accept?: string;
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
-  initialFiles?: FileMetadata[];
   onFilesChange?: (files: FileWithPreview[]) => void;
   onFilesAdded?: (addedFiles: FileWithPreview[]) => void;
   onError?: (errors: string[]) => void;
-};
-
-export type FileUploadState = {
-  files: FileWithPreview[];
-  isDragging: boolean;
-  errors: string[];
 };
 
 type ControlledInputProps = Omit<
@@ -59,26 +54,21 @@ export type FileUploadActions = {
   ) => React.ComponentProps<"input">;
 };
 
-export function useFileUpload({
-  maxSize = Number.POSITIVE_INFINITY,
-  maxFiles = Number.POSITIVE_INFINITY,
-  accept = "*",
-  multiple = false,
-  initialFiles = [],
-  onFilesChange,
-  onFilesAdded,
-  onError,
-}: FileUploadOptions = {}): FileUploadState & FileUploadActions {
-  const [state, setState] = useState<FileUploadState>({
-    files: initialFiles.map((file) => ({
-      file,
-      id: file.id,
-      preview: file.url,
-    })),
-    isDragging: false,
-    errors: [],
-  });
-
+export function useStatelessFileUpload(
+  [state, setState]: [
+    FileUploadState,
+    React.Dispatch<React.SetStateAction<FileUploadState>>,
+  ],
+  {
+    maxSize = Number.POSITIVE_INFINITY,
+    maxFiles = Number.POSITIVE_INFINITY,
+    accept = "*",
+    multiple = false,
+    onFilesChange,
+    onFilesAdded,
+    onError,
+  }: FileUploadOptions = {},
+): FileUploadState & FileUploadActions {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const getFileInfo = (file: File | FileMetadata) => ({
@@ -138,7 +128,7 @@ export function useFileUpload({
     onFilesChange?.([]);
 
     setState({ ...state, files: [], errors: [] });
-  }, [state, onFilesChange]);
+  }, [state, setState, onFilesChange]);
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
@@ -205,6 +195,7 @@ export function useFileUpload({
     },
     [
       state.files,
+      setState,
       maxFiles,
       multiple,
       validateFile,
@@ -241,12 +232,13 @@ export function useFileUpload({
         };
       });
     },
-    [onFilesChange],
+    [setState, onFilesChange],
   );
 
-  const clearErrors = useCallback(() => {
-    setState((prev) => ({ ...prev, errors: [] }));
-  }, []);
+  const clearErrors = useCallback(
+    () => setState((prev) => ({ ...prev, errors: [] })),
+    [setState],
+  );
 
   const moveUp = useCallback(
     (id: string) => {
@@ -264,7 +256,7 @@ export function useFileUpload({
         return { ...prev, files: newFiles };
       });
     },
-    [onFilesChange],
+    [setState, onFilesChange],
   );
 
   const moveDown = useCallback(
@@ -283,23 +275,29 @@ export function useFileUpload({
         return { ...prev, files: newFiles };
       });
     },
-    [onFilesChange],
+    [setState, onFilesChange],
   );
 
-  const handleDragEnter = useCallback((e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setState((prev) => ({ ...prev, isDragging: true }));
-  }, []);
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setState((prev) => ({ ...prev, isDragging: true }));
+    },
+    [setState],
+  );
 
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent<HTMLElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+      if (e.currentTarget.contains(e.relatedTarget as Node)) return;
 
-    setState((prev) => ({ ...prev, isDragging: false }));
-  }, []);
+      setState((prev) => ({ ...prev, isDragging: false }));
+    },
+    [setState],
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
@@ -319,7 +317,7 @@ export function useFileUpload({
         else addFiles(e.dataTransfer.files);
       }
     },
-    [addFiles, multiple],
+    [addFiles, setState, multiple],
   );
 
   const handleFileChange = useCallback(
@@ -359,4 +357,20 @@ export function useFileUpload({
     openFileDialog,
     getInputProps,
   };
+}
+
+export function useFileUpload({
+  initialFiles = [],
+  ...options
+}: FileUploadOptions & { initialFiles?: FileMetadata[] } = {}) {
+  const state = useState<FileUploadState>({
+    files: initialFiles.map((file) => ({
+      file,
+      id: file.id,
+      preview: file.url,
+    })),
+    isDragging: false,
+    errors: [],
+  });
+  return useStatelessFileUpload(state, options);
 }
