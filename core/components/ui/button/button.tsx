@@ -1,8 +1,5 @@
-"use client";
-
 import { cn } from "@/core/utils";
-import { mergeProps } from "@base-ui/react/merge-props";
-import { useRender } from "@base-ui/react/use-render";
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, VariantProps } from "class-variance-authority";
 
 export const buttonVariants = cva(
@@ -65,7 +62,7 @@ export const buttonVariants = cva(
   },
 );
 
-export type ButtonProps = useRender.ComponentProps<"button"> &
+export type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants>;
 
 export type ButtonIconSize =
@@ -76,20 +73,16 @@ export type ButtonIconSize =
   | "icon-xs";
 
 export function Button({
-  type = "button",
   size = "default",
   variant = "default",
   className,
-  render,
   ...props
 }: ButtonProps) {
-  return useRender({
-    defaultTagName: "button",
-    props: mergeProps<"button">(
-      { type, className: cn(buttonVariants({ size, variant }), className) },
-      props,
-    ),
-    render,
-    state: { slot: "button" },
-  });
+  return (
+    <ButtonPrimitive
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
 }
