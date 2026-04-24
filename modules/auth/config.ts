@@ -1,4 +1,4 @@
-import { Role } from "@/core/auth";
+import { Role } from "@/shared/permission";
 import {
   BanIcon,
   CircleCheckIcon,

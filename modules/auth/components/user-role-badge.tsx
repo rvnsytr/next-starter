@@ -1,10 +1,10 @@
-import { Role } from "@/core/auth";
 import { CustomColorBadge } from "@/core/components/ui/badge";
 import {
   Tooltip,
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
+import { Role } from "@/shared/permission";
 import { roleConfig } from "../config";
 
 export function UserRoleBadge({

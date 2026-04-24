@@ -1,7 +1,7 @@
 import { appConfig } from "@/shared/config";
+import { Role } from "@/shared/permission";
 import { routesConfig } from "@/shared/route";
 import { Route } from "next";
-import { Role } from "./auth";
 import { Menu } from "./types";
 
 export type RouteRole = "all" | Role[];
