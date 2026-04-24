@@ -13,6 +13,7 @@ import {
 } from "@/core/components/ui/popover";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/route";
+import { CreateUserDialog } from "@/modules/auth/components/create-user-dialog";
 import { EllipsisIcon } from "lucide-react";
 import { Metadata } from "next";
 
@@ -38,17 +39,17 @@ export default function Page() {
             />
 
             <PopoverPopup align="end" className="grid gap-y-1 p-1">
-              {/* <CreateUserDialog
+              <CreateUserDialog
                 size="sm"
                 variant="ghost"
                 className="justify-start"
-              /> */}
+              />
             </PopoverPopup>
           </Popover>
         </CardAction>
 
         <CardAction className="hidden lg:flex">
-          {/* <CreateUserDialog /> */}
+          <CreateUserDialog />
         </CardAction>
       </PageHeader>
 
