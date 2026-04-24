@@ -123,12 +123,11 @@ export function SessionListCollapsible({
         success: () => {
           setRevokingSession(null);
           mutateListSessions();
-          // mutateListUserSessions(s.userId);
-          return { type: "success", title: "Sesi berhasil diakhiri." };
+          return { title: "Sesi berhasil diakhiri." };
         },
         error: (e) => {
           setRevokingSession(null);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );

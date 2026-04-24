@@ -56,14 +56,11 @@ export function ChangePasswordForm() {
         success: () => {
           setIsLoading(false);
           form.reset();
-          return {
-            type: "success",
-            title: "Kata sandi Anda berhasil diperbarui.",
-          };
+          return { title: "Kata sandi Anda berhasil diperbarui." };
         },
         error: (e) => {
           setIsLoading(false);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );

@@ -34,11 +34,11 @@ export function RevokeOtherSessionsButton() {
         success: () => {
           setIsLoading(false);
           mutateListSessions();
-          return "Semua sesi aktif lainnya berhasil diakhiri.";
+          return { title: "Semua sesi aktif lainnya berhasil diakhiri." };
         },
         error: (e) => {
           setIsLoading(false);
-          return e.message;
+          return { title: e.message };
         },
       },
     );

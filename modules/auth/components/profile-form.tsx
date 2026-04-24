@@ -46,11 +46,11 @@ export function ProfileForm() {
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);
-        return { type: "success", title: "Profil Anda berhasil diperbarui." };
+        return { title: "Profil Anda berhasil diperbarui." };
       },
       error: (e) => {
         setIsLoading(false);
-        return { type: "error", title: e.message };
+        return { title: e.message };
       },
     });
   };

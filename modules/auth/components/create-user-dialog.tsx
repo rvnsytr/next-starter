@@ -86,14 +86,11 @@ export function CreateUserDialog() {
         success: () => {
           setIsLoading(false);
           form.reset();
-          return {
-            type: "success",
-            title: `Akun atas nama ${rest.name} berhasil dibuat.`,
-          };
+          return { title: `Akun atas nama ${rest.name} berhasil dibuat.` };
         },
         error: (e) => {
           setIsLoading(false);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );

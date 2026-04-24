@@ -25,11 +25,11 @@ export function signOutClient({
       loading: { title: messages.loading },
       success: () => {
         onSuccess?.();
-        return { type: "success", title: "Berhasil keluar - Sampai jumpa!" };
+        return { title: "Berhasil keluar - Sampai jumpa!" };
       },
       error: (e) => {
         onError?.(e);
-        return { type: "error", title: e.message };
+        return { title: e.message };
       },
     },
   );

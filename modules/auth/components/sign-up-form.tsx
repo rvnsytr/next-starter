@@ -76,7 +76,7 @@ export function SignUpForm() {
         },
         error: (e) => {
           setIsLoading(false);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );

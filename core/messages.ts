@@ -28,13 +28,12 @@ export const messages = {
     next: "Selanjutnya",
   },
 
-  loading: "Mohon tunggu sebentar...",
+  loading: "Sedang memuat...",
+  success: "Sukses",
+  error: "Terjadi kesalahan. Silakan coba lagi nanti.",
+
   empty: "Tidak ada hasil yang ditemukan.",
   notFound: "Sumber daya yang diminta tidak ditemukan.",
-
-  success: "Sukses",
-  error: "Terjadi kesalahan. Silakan coba lagi.",
-
   unauthorized: "Tindakan tidak terautentikasi",
   forbidden: "Tidak memiliki izin untuk melakukan tindakan ini.",
 

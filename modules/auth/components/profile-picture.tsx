@@ -58,14 +58,11 @@ export function ProfilePicture({
             loading: { title: messages.loading },
             success: () => {
               setIsChange(false);
-              return {
-                type: "success",
-                title: "Foto profil Anda berhasil diperbarui.",
-              };
+              return { title: "Foto profil Anda berhasil diperbarui." };
             },
             error: (e) => {
               setIsChange(false);
-              return { type: "error", title: e.message };
+              return { title: e.message };
             },
           },
         );
@@ -90,14 +87,11 @@ export function ProfilePicture({
         loading: { title: messages.loading },
         success: () => {
           setIsRemoved(false);
-          return {
-            type: "success",
-            title: "Foto profil Anda berhasil dihapus.",
-          };
+          return { title: "Foto profil Anda berhasil dihapus." };
         },
         error: (e) => {
           setIsRemoved(false);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );

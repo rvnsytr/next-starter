@@ -155,18 +155,18 @@ export function ImportDialog<T, K extends string>({
         rows: parse(formData.rows),
       }),
       {
-        loading: messages.loading,
+        loading: { title: messages.loading },
         success: (res) => {
           setMode(defaultMode);
           setIsLoading(false);
           form.reset();
           const message = onSuccess?.(res);
-          return message ?? messages.success;
+          return { title: message ?? messages.success };
         },
         error: (e) => {
           setIsLoading(false);
           const message = onError?.(e);
-          return message ?? e.message;
+          return { title: message ?? e.message };
         },
       },
     );

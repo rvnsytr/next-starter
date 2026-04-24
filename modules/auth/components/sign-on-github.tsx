@@ -30,14 +30,13 @@ export function SignOnGithubButton() {
         success: (res) => {
           const name = "user" in res.data ? res.data.user.name : undefined;
           return {
-            type: "success",
             title: "Berhasil masuk!",
             description: `Selamat datang${name ? ` ${name}` : ""}!`,
           };
         },
         error: (e) => {
           setIsLoading(false);
-          return { type: "error", title: e.message };
+          return { title: e.message };
         },
       },
     );
