@@ -3,7 +3,8 @@
 import { auth, AuthSession } from "@/core/auth";
 import { db } from "@/core/db";
 import { deleteFiles, uploadFiles } from "@/core/s3";
-import { user } from "@/shared/db/schema";
+import { ActionResponse } from "@/core/types";
+import { files, user } from "@/shared/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
@@ -21,30 +22,65 @@ export async function updateProfileName(name: string) {
   return res;
 }
 
-export async function updateProfilePicture(file: File, userId: string) {
-  const [uploadRes] = await uploadFiles([{ file, path: `avatar/${userId}` }]);
-  const res = await auth.api.updateUser({
-    headers: await nextHeaders(),
-    body: { image: uploadRes.file.id },
+export async function updateProfilePicture(
+  file: File,
+  userId: string,
+): Promise<ActionResponse> {
+  const res = await db.transaction(async (tx) => {
+    const [{ fileId }] = await tx
+      .select({ fileId: user.image })
+      .from(user)
+      .where(eq(user.id, userId));
+
+    if (fileId) {
+      const [{ filePath }] = await tx
+        .delete(files)
+        .where(eq(files.id, fileId))
+        .returning({ filePath: files.file_path });
+      if (filePath) await deleteFiles([filePath]);
+    }
+
+    const [uploadRes] = await uploadFiles([{ file, path: `avatar/${userId}` }]);
+    const [insertRes] = await tx
+      .insert(files)
+      .values(uploadRes.file)
+      .returning();
+
+    return await auth.api.updateUser({
+      headers: await nextHeaders(),
+      body: { image: insertRes.id },
+    });
   });
+
   revalidatePath("/dashboard/profile");
-  return res;
+  return { success: res.status };
 }
 
-export async function deleteProfilePicture(userId: string) {
-  const dbRes = await db
-    .select({ image: user.image })
-    .from(user)
-    .where(eq(user.id, userId));
+export async function deleteProfilePicture(
+  userId: string,
+): Promise<ActionResponse> {
+  const res = await db.transaction(async (tx) => {
+    const [{ fileId }] = await tx
+      .select({ fileId: user.image })
+      .from(user)
+      .where(eq(user.id, userId));
 
-  const res = await auth.api.updateUser({
-    headers: await nextHeaders(),
-    body: { image: null },
+    if (fileId) {
+      const [{ filePath }] = await tx
+        .delete(files)
+        .where(eq(files.id, fileId))
+        .returning({ filePath: files.file_path });
+      if (filePath) await deleteFiles([filePath]);
+    }
+
+    return await auth.api.updateUser({
+      headers: await nextHeaders(),
+      body: { image: null },
+    });
   });
 
-  if (dbRes.length && dbRes[0].image) await deleteFiles([userId]);
   revalidatePath("/dashboard/profile");
-  return res;
+  return { success: res.status };
 }
 
 // export async function listUsers(

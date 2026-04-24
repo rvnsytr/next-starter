@@ -9,11 +9,11 @@ export type OmitByType<T, V> = {
   [K in keyof T as T[K] extends V ? never : K]: T[K];
 };
 
-export type ActionResponse<T = null> = {
+export type ActionResponse<T = unknown> = {
   count?: ({ total: number } & Record<string, number>) | undefined;
 } & (
-  | { success: true; data: T }
-  | { success: false; message: string; error?: unknown }
+  | { success: true; data?: T }
+  | { success: false; message?: string; error?: unknown }
 );
 
 export type StringCase =

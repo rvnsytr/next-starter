@@ -28,9 +28,9 @@ import { useState } from "react";
 import { deleteProfilePicture, updateProfilePicture } from "../actions";
 
 export function ProfilePicture({
-  data,
+  user,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name" | "image">;
+  user: Pick<AuthSession["user"], "id" | "name" | "image">;
 }) {
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
@@ -49,42 +49,58 @@ export function ProfilePicture({
 
       if (file instanceof File && !isChange) {
         setIsChange(true);
-        toast.promise(updateProfilePicture(file, data.id), {
-          loading: { title: messages.loading },
-          success: () => {
-            setIsChange(false);
-            return {
-              type: "success",
-              title: "Foto profil Anda berhasil diperbarui.",
-            };
+        toast.promise(
+          updateProfilePicture(file, user.id).then((res) => {
+            if (!res.success) throw res;
+            return res;
+          }),
+          {
+            loading: { title: messages.loading },
+            success: () => {
+              setIsChange(false);
+              return {
+                type: "success",
+                title: "Foto profil Anda berhasil diperbarui.",
+              };
+            },
+            error: (e) => {
+              setIsChange(false);
+              return { type: "error", title: e.message };
+            },
           },
-          error: (e) => {
-            setIsChange(false);
-            return { type: "error", title: e.message };
-          },
-        });
+        );
       }
     },
   });
 
   const deleteHandler = () => {
-    if (!data.image)
+    if (!user.image)
       return toast.add({
         type: "info",
         title: messages.noChanges("foto profil Anda"),
       });
 
-    toast.promise(deleteProfilePicture(data.id), {
-      loading: { title: messages.loading },
-      success: () => {
-        setIsRemoved(false);
-        return { type: "success", title: "Foto profil Anda berhasil dihapus." };
+    setIsRemoved(true);
+    toast.promise(
+      deleteProfilePicture(user.id).then((res) => {
+        if (!res.success) throw res;
+        return res;
+      }),
+      {
+        loading: { title: messages.loading },
+        success: () => {
+          setIsRemoved(false);
+          return {
+            type: "success",
+            title: "Foto profil Anda berhasil dihapus.",
+          };
+        },
+        error: (e) => {
+          setIsRemoved(false);
+          return { type: "error", title: e.message };
+        },
       },
-      error: (e) => {
-        setIsRemoved(false);
-        return { type: "error", title: e.message };
-      },
-    });
+    );
   };
 
   return (
@@ -100,8 +116,8 @@ export function ProfilePicture({
         onClick={openFileDialog}
         className="size-20 cursor-pointer rounded-lg *:rounded-lg after:rounded-lg"
       >
-        <AvatarImage src={data.image ?? undefined} />
-        <AvatarFallback>{data.name.slice(0, 2)}</AvatarFallback>
+        <AvatarImage src={user.image ?? undefined} />
+        <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col gap-y-2">
@@ -126,7 +142,7 @@ export function ProfilePicture({
                 <Button
                   size="sm"
                   variant="destructive-outline"
-                  disabled={!data.image || isChange || isRemoved}
+                  disabled={!user.image || isChange || isRemoved}
                 >
                   <LoadingSpinner loading={isRemoved} />
                   {messages.actions.remove}

@@ -9,7 +9,7 @@ import { admin as adminPlugin, openAPI } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "./db";
-import { createSignedUrl, deleteFiles } from "./s3";
+import { createSignedUrl } from "./s3";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -82,7 +82,7 @@ export const auth = betterAuth({
 
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
-      const { session, newSession } = ctx.context;
+      const { session } = ctx.context;
 
       if (ctx.path === "/get-session") {
         if (!session) return ctx.json(null);
@@ -101,16 +101,6 @@ export const auth = betterAuth({
 
         const image = await createSignedUrl(data[0].filePath);
         return ctx.json({ session: sessionData, user: { ...userData, image } });
-      }
-
-      if (ctx.path === "/update-user") {
-        const oldImageId = session?.user.image;
-        const newImageId = newSession?.user.image;
-
-        console.log("oldImageId: ", oldImageId);
-        console.log("newImageId: ", newImageId);
-
-        if (oldImageId && oldImageId !== newImageId) deleteFiles([oldImageId]);
       }
     }),
   },

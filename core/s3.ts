@@ -14,10 +14,6 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { inArray } from "drizzle-orm";
-import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
-import { PgAsyncTransaction } from "drizzle-orm/pg-core";
-import { db } from "./db";
 import { Override } from "./types";
 
 const endpoint = process.env.S3_ENDPOINT!;
@@ -35,51 +31,41 @@ const s3 = new S3Client({
 });
 
 type ControlledS3Options<T> = Override<Omit<T, "Key">, { Bucket?: string }>;
-
 type UploadFilesOptions = ControlledS3Options<
   Omit<PutObjectCommandInput, "Body" | "ContentType">
 >;
-
 type DeleteFilesOptions = ControlledS3Options<DeleteObjectCommandInput>;
 
 export type UploadFilesPayload = { file: File; path?: string };
 
 export async function uploadFiles(
   payload: UploadFilesPayload[],
-  options?: UploadFilesOptions & {
-    tx?: PgAsyncTransaction<NodePgQueryResultHKT>;
-  },
+  options?: UploadFilesOptions,
 ): Promise<
-  {
-    file: typeof files.$inferSelect;
-    output: PutObjectCommandOutput;
-  }[]
+  { file: typeof files.$inferInsert; output: PutObjectCommandOutput }[]
 > {
-  const { tx = db, Bucket = defaultBucket, ...rest } = options ?? {};
-
-  const uploadRes = await Promise.all(
+  const { Bucket = defaultBucket, ...rest } = options ?? {};
+  return await Promise.all(
     payload.map(async ({ file, path }) => {
-      const key = path ?? `${defaultDir}/${file.name}`;
+      const Key = path ?? `${defaultDir}/${file.name}`;
       const command = new PutObjectCommand({
-        Key: key,
+        Key,
         Body: Buffer.from(await file.arrayBuffer()),
         ContentType: file.type,
         Bucket,
         ...rest,
       });
-      return { key, file, output: await s3.send(command) };
+      return {
+        file: {
+          file_path: Key,
+          file_name: file.name,
+          file_type: file.type,
+          file_size: file.size,
+        },
+        output: await s3.send(command),
+      };
     }),
   );
-
-  const filesPayload: (typeof files.$inferInsert)[] = uploadRes.map((f) => ({
-    file_path: f.key,
-    file_name: f.file.name,
-    file_type: f.file.type,
-    file_size: f.file.size,
-  }));
-
-  const dbRes = await tx.insert(files).values(filesPayload).returning();
-  return dbRes.map((file, i) => ({ file, output: uploadRes[i].output }));
 }
 
 export async function listFiles(
@@ -115,23 +101,12 @@ export async function deleteFiles(
   options?: DeleteFilesOptions,
 ) {
   if (!filePaths.length) return [];
-
   const { Bucket = defaultBucket, ...rest } = options ?? {};
-
-  const res = await Promise.allSettled(
+  return await Promise.all(
     filePaths.map(async (Key) => {
       const command = new DeleteObjectCommand({ Key, Bucket, ...rest });
       await s3.send(command);
       return Key;
     }),
   );
-
-  const fulfilled = res
-    .filter((r) => r.status === "fulfilled")
-    .map((r) => r.value);
-
-  if (fulfilled.length)
-    await db.delete(files).where(inArray(files.id, fulfilled));
-
-  return res;
 }
