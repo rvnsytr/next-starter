@@ -31,6 +31,7 @@ export function LayoutToggle({
   size = "icon-sm",
   variant = "ghost",
   onClick,
+  disabled = false,
   className,
   ...props
 }: Omit<ButtonProps, "children"> &
@@ -49,7 +50,12 @@ export function LayoutToggle({
 
   if (!isMounted) {
     return (
-      <Button size={size} variant={variant} disabled>
+      <Button
+        size={size}
+        variant={variant}
+        className={cn("hidden 2xl:inline-flex", className)}
+        disabled
+      >
         <FrameIcon />
       </Button>
     );
@@ -64,6 +70,7 @@ export function LayoutToggle({
         toggleLayout();
       }}
       className={cn("hidden 2xl:inline-flex", className)}
+      disabled={disabled}
       {...props}
     >
       <Icon />

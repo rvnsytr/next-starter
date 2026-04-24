@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import { useDynamicBreadcrumb } from "../providers/dynamic-breadcrumb";
+import { cn } from "../utils";
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -22,7 +23,8 @@ import { Skeleton } from "./ui/skeleton";
 export function DynamicBreadcrumb({ className }: { className?: string }) {
   const { breadcrumbs } = useDynamicBreadcrumb();
 
-  if (!breadcrumbs.length) return <Skeleton className="h-5 w-48" />;
+  if (!breadcrumbs.length)
+    return <Skeleton className={cn("h-5 w-48", className)} />;
 
   const isCompact = breadcrumbs.length > 3;
   const lastPart = breadcrumbs[breadcrumbs.length - 1];

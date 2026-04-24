@@ -36,7 +36,7 @@ export function ThemeToggle({
   size = "icon",
   variant = "ghost",
   onClick,
-  disabled,
+  disabled = false,
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<ComponentProps<typeof TooltipPopup>, "align">) {
