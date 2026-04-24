@@ -2,7 +2,7 @@
 
 import { authClient } from "@/core/auth-client";
 import { PasswordInput } from "@/core/components/password-input";
-import { Button, ButtonProps } from "@/core/components/ui/button";
+import { Button } from "@/core/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -26,10 +26,11 @@ import { Label } from "@/core/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { messages } from "@/core/messages";
 import { allRoles, defaultRole } from "@/shared/permission";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -37,15 +38,16 @@ import { z } from "zod";
 import { roleConfig } from "../config";
 import { passwordSchema, userSchema } from "../schema";
 
-export function CreateUserDialog({
-  size,
-  variant = "outline",
-  className,
-}: Pick<ButtonProps, "size" | "variant" | "className">) {
+const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
+
+export function CreateUserDialog() {
+  const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useHotkey("Alt+N", () => setIsOpen(true), { enabled: !isOpen });
+  useHotkey(CREATE_USER_DIALOG_HOTKEY, () => setIsOpen(true), {
+    enabled: !isOpen,
+  });
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema
@@ -101,16 +103,21 @@ export function CreateUserDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger
         render={
-          <Button size={size} variant={variant} className={className}>
-            <UserRoundPlusIcon /> Tambah Pengguna{" "}
-            <Kbd>{formatForDisplay("Alt+N")}</Kbd>
+          <Button size={isMobile ? "icon" : "default"} variant="outline">
+            <UserRoundPlusIcon />
+            <span className="hidden lg:inline-flex">Tambah Pengguna</span>
+            <Kbd className="hidden lg:inline-flex">
+              {formatForDisplay(CREATE_USER_DIALOG_HOTKEY)}
+            </Kbd>
           </Button>
         }
       />
 
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle>Tambah Pengguna</DialogTitle>
+          <DialogTitle>
+            <UserRoundPlusIcon /> Tambah Pengguna
+          </DialogTitle>
           <DialogDescription>
             Pastikan semua informasi sudah benar sebelum mengkonfirmasi.
           </DialogDescription>
@@ -226,10 +233,7 @@ export function CreateUserDialog({
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
             <Button type="submit" disabled={isLoading}>
-              <LoadingSpinner
-                loading={isLoading}
-                icon={{ base: <UserRoundPlusIcon /> }}
-              />
+              <LoadingSpinner loading={isLoading} />
               {messages.actions.add}
             </Button>
           </DialogFooter>
