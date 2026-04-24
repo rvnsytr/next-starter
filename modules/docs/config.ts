@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-export type Docs = {
+export type DocProps = {
   icon: LucideIcon;
   section: string;
   content: ({

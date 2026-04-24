@@ -3,7 +3,7 @@ import { Label } from "@/core/components/ui/label";
 import { cn, toCase } from "@/core/utils";
 import { ArrowUpRightIcon, AtomIcon, HashIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { Docs, docsFromConfig } from "../config";
+import { DocProps, docsFromConfig } from "../config";
 
 export function DocsSection({
   fill = false,
@@ -49,7 +49,7 @@ export function DocsContentWrapper({
   children,
 }: {
   id: string;
-  data: Docs["content"][number];
+  data: DocProps["content"][number];
   className?: string;
   children?: React.ReactNode;
 }) {
