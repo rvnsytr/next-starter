@@ -8,6 +8,7 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
   SearchIcon,
+  ViewIcon,
 } from "lucide-react";
 import { useRef } from "react";
 import { defaultPageSize, pageSizes } from "../hooks/use-data-controller";
@@ -16,6 +17,7 @@ import { Button, ButtonProps } from "./ui/button";
 import { ButtonGroup } from "./ui/button-group";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { Kbd } from "./ui/kbd";
+import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from "./ui/menu";
 import {
   Select,
   SelectItem,
@@ -23,6 +25,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+
+export function DataControllerVisibility<TData>({
+  table,
+  align,
+  size = "default",
+  variant = "outline",
+  className,
+  ...props
+}: ButtonProps & {
+  table: Table<TData>;
+  align?: React.ComponentProps<typeof MenuPopup>["align"];
+}) {
+  return (
+    <Menu>
+      <MenuTrigger
+        render={
+          <Button size={size} variant={variant} {...props}>
+            <ViewIcon /> {!size?.startsWith("icon") && "Lihat"}
+          </Button>
+        }
+      />
+
+      <MenuPopup align={align} className={cn(className)}>
+        {table
+          .getAllColumns()
+          .filter((column) => column.getCanHide())
+          .map((column) => {
+            const cbId = `data-controller-visibility-cb-${column.id}`;
+            const isVisible = column.getIsVisible();
+            const Icon = column.columnDef.meta?.icon;
+            return (
+              <MenuCheckboxItem
+                key={cbId}
+                variant="switch"
+                checked={isVisible}
+                onCheckedChange={(v) => column.toggleVisibility(v)}
+              >
+                <div className="flex items-center gap-x-2">
+                  {Icon && <Icon />}
+                  {column.columnDef.meta?.label ?? column.id}
+                </div>
+              </MenuCheckboxItem>
+            );
+          })}
+      </MenuPopup>
+    </Menu>
+  );
+}
 
 export function DataControllerSearch<TData>({
   table,

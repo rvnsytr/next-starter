@@ -2,6 +2,7 @@
 
 import {
   ColumnDef as ColumnDefType,
+  ColumnPinningState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -10,9 +11,12 @@ import {
   getSortedRowModel,
   OnChangeFn,
   PaginationState,
+  RowSelectionState,
   SortingState,
   Table,
+  TableOptions,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import useSWR, { mutate, SWRConfiguration, SWRResponse } from "swr";
@@ -22,8 +26,16 @@ import { useDebounce } from "./use-debounce";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ColumnDef<TData> = ColumnDefType<TData, any>;
+type AllDataControllerState = DataControllerState & {
+  columnPinning: ColumnPinningState;
+  columnVisibility: VisibilityState;
+  rowSelection: RowSelectionState;
+};
 
-type DataControllerProps<TData> = {
+type DataControllerProps<TData> = Pick<
+  TableOptions<TData>,
+  "getRowId" | "enableRowSelection"
+> & {
   mode?: "auto" | "manual";
   columns:
     | ColumnDef<TData>[]
@@ -34,14 +46,14 @@ type DataControllerProps<TData> = {
     config?: SWRConfiguration;
   } & ({ immutable: true } | { immutable?: false; revalidate?: boolean });
 
-  defaultState?: DataControllerState;
+  defaultState?: AllDataControllerState;
 };
 
 type StatelessDataControllerOptions<TData> = DataControllerProps<TData> & {
   state: {
-    [K in keyof DataControllerState]: [
-      DataControllerState[K],
-      OnChangeFn<DataControllerState[K]>,
+    [K in keyof AllDataControllerState]: [
+      AllDataControllerState[K],
+      OnChangeFn<AllDataControllerState[K]>,
     ];
   };
 };
@@ -60,20 +72,27 @@ export function useStatelessDataController<TData>({
   query,
 
   state: {
-    globalFilter: [globalFilterState, setSearchState],
-    pagination: [paginationState, setPaginationState],
-    sorting: [sortingState, setSortingState],
+    globalFilter: [globalFilter, setGlobalFilter],
+    pagination: [pagination, setPagination],
+    sorting: [sorting, setSorting],
+    columnPinning: [columnPinning, setColumnPinning],
+    columnVisibility: [columnVisibility, setColumnVisibility],
+    rowSelection: [rowSelection, setRowSelection],
   },
+
+  getRowId,
+  enableRowSelection,
 }: StatelessDataControllerOptions<TData>): DataControllerResponse<TData> {
-  const debouncedSearch = useDebounce(globalFilterState);
+  const debouncedSearch = useDebounce(globalFilter);
 
   const queryState: DataControllerState = useMemo(
     () => ({
       globalFilter: debouncedSearch,
-      pagination: paginationState,
-      sorting: sortingState,
+      pagination: pagination,
+      sorting: sorting,
+      columnPinning: columnPinning,
     }),
-    [debouncedSearch, paginationState, sortingState],
+    [debouncedSearch, pagination, sorting, columnPinning],
   );
 
   const shouldRevalidate = !query.immutable && (query.revalidate ?? true);
@@ -102,51 +121,53 @@ export function useStatelessDataController<TData>({
     data: result.data?.success ? result.data.data : [],
 
     state: {
-      globalFilter: globalFilterState,
-      pagination: paginationState,
-      sorting: sortingState,
+      globalFilter,
+      pagination,
+      sorting,
       // columnFilters,
-      // columnVisibility,
-      // rowSelection,
-      // columnPinning,
+      columnPinning,
+      columnVisibility,
+      rowSelection,
     },
 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: mode === "auto" ? getFilteredRowModel() : undefined,
 
-    // ? Column Faceting
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-
     // * Global Searching
     manualFiltering: mode === "manual",
     globalFilterFn: "includesString",
-    onGlobalFilterChange: setSearchState,
+    onGlobalFilterChange: setGlobalFilter,
 
     // * Pagination
     manualPagination: mode === "manual",
     rowCount: mode === "manual" ? (result.data?.count?.total ?? 0) : undefined,
-    onPaginationChange: setPaginationState,
+    onPaginationChange: setPagination,
     getPaginationRowModel:
       mode === "auto" ? getPaginationRowModel() : undefined,
 
     // * Column Sorting
     manualSorting: mode === "manual",
-    onSortingChange: setSortingState,
+    onSortingChange: setSorting,
     getSortedRowModel: mode === "auto" ? getSortedRowModel() : undefined,
-
-    // ? Column Pinning
-    // onColumnPinningChange: setColumnPinning,
-    // onColumnVisibilityChange: setColumnVisibility,
-
-    // ? Row Selection
-    // getRowId,
-    // enableRowSelection,
-    // onRowSelectionChange: setRowSelection,
 
     // * Column Filtering
     // onColumnFiltersChange: setColumnFilters,
     // getFilteredRowModel: !isManual ? getFilteredRowModel() : undefined,
+
+    // ? Column Faceting
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+
+    // ? Column Pinning
+    onColumnPinningChange: setColumnPinning,
+
+    // ? Column Visibility
+    onColumnVisibilityChange: setColumnVisibility,
+
+    // ? Row Selection
+    getRowId,
+    enableRowSelection,
+    onRowSelectionChange: setRowSelection,
   });
 
   return { result, table };
@@ -165,9 +186,29 @@ export function useDataController<TData>({
 
   const sorting = useState<SortingState>(defaultState?.sorting ?? []);
 
+  const columnPinning = useState<ColumnPinningState>({
+    left: defaultState?.columnPinning.left ?? [],
+    right: defaultState?.columnPinning.right ?? [],
+  });
+
+  const columnVisibility = useState<VisibilityState>(
+    defaultState?.columnVisibility ?? {},
+  );
+
+  const rowSelection = useState<RowSelectionState>(
+    defaultState?.rowSelection ?? {},
+  );
+
   return useStatelessDataController({
     ...props,
-    state: { globalFilter, pagination, sorting },
+    state: {
+      globalFilter,
+      pagination,
+      sorting,
+      columnPinning,
+      columnVisibility,
+      rowSelection,
+    },
   });
 }
 
