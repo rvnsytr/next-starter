@@ -7,7 +7,6 @@
 // }
 
 import { LinkSpinner } from "@/core/components/ui/spinner";
-import { ToastExample } from "@/modules/docs/components/examples";
 import Link from "next/link";
 
 export default function Page() {
@@ -16,8 +15,6 @@ export default function Page() {
       <Link href="/dashboard" className="link">
         <LinkSpinner icon={{ base: "Dashboard" }} />
       </Link>
-
-      <ToastExample />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { db } from "@/core/db";
 import { deleteFiles, uploadFiles } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
 import { files, user } from "@/shared/db/schema";
+import { Role } from "@/shared/permission";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
@@ -83,56 +84,16 @@ export async function deleteProfilePicture(
   return { success: res.status };
 }
 
-// export async function listUsers(
-//   role: Role,
-//   state: DataTableState,
-// ): Promise<ActionResponse<AuthSession["user"][]>> {
-//   const hasPermission = await auth.api.userHasPermission({
-//     headers: await nextHeaders(),
-//     body: { permissions: { user: ["list"] }, role },
-//   });
-
-//   if (!hasPermission.success)
-//     return { success: false, error: messages.forbidden };
-
-//   const countQb = db
-//     .select({
-//       total: db.$count(userTable),
-//       user: sql<number>`COUNT(*) FILTER (WHERE ${userTable.role} = 'user')`,
-//       admin: sql<number>`COUNT(*) FILTER (WHERE ${userTable.role} = 'admin')`,
-//       banned: sql<number>`COUNT(*) FILTER (WHERE ${userTable.banned} = true)`,
-//       active: sql<number>`COUNT(*) FILTER (WHERE ${userTable.banned} = false)`,
-//     })
-//     .from(userTable)
-//     .$dynamic();
-
-//   const dataQb = db.select().from(userTable).$dynamic();
-
-//   const config = defineWDTConfig({
-//     columns: {
-//       name: { column: userTable.name, type: "string" },
-//       email: { column: userTable.email, type: "string" },
-//       status: {
-//         column: userTable.banned,
-//         type: "boolean",
-//         parser: (v) => typeof v === "string" && v === "banned",
-//       },
-//       role: { column: userTable.role, type: "string" },
-//       updatedAt: { column: userTable.updatedAt, type: "date" },
-//       createdAt: { column: userTable.createdAt, type: "date" },
-//     },
-//     defaultOrderBy: { id: "createdAt", desc: true },
-//   });
-
-//   const [count] = await withDataTable(countQb, state, {
-//     ...config,
-//     disabled: ["sorting", "pagination"],
-//   }).execute();
-
-//   const data = await withDataTable(dataQb, state, config).execute();
-
-//   return { success: true, count, data: data as AuthSession["user"][] };
-// }
+export async function createUser(body: {
+  email: string;
+  password: string;
+  name: string;
+  role: Role;
+}) {
+  const res = await auth.api.createUser({ headers: await nextHeaders(), body });
+  revalidatePath("/dashboard/users");
+  return res;
+}
 
 export async function listSessions() {
   return await auth.api.listSessions({ headers: await nextHeaders() });

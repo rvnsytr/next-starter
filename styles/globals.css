@@ -444,9 +444,7 @@
   .link-underline {
     @apply text-foreground underline underline-offset-3;
   }
-}
 
-@layer base {
   ::view-transition-group(root) {
     animation-duration: 0.7s;
     animation-timing-function: var(--expo-out);
