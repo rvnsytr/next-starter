@@ -95,6 +95,57 @@ export async function createUser(body: {
   return res;
 }
 
+export async function listUsers(): Promise<AuthSession["user"][]> {
+  "use cache";
+
+  // const hasPermission = await auth.api.userHasPermission({
+  //   headers: await nextHeaders(),
+  //   body: { permissions: { user: ["list"] }, role },
+  // });
+
+  // if (!hasPermission.success)
+  //   return { success: false, error: messages.forbidden };
+
+  return await db.select().from(user);
+
+  // const countQb = db
+  //   .select({
+  //     total: db.$count(user),
+  //     user: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'user')`,
+  //     admin: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'admin')`,
+  //     banned: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = true)`,
+  //     active: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = false)`,
+  //   })
+  //   .from(user).$dynamic();
+
+  // const dataQb = db.select().from(user).$dynamic();
+
+  // const config = defineWDTConfig({
+  //   columns: {
+  //     name: { column: userTable.name, type: "string" },
+  //     email: { column: userTable.email, type: "string" },
+  //     status: {
+  //       column: userTable.banned,
+  //       type: "boolean",
+  //       parser: (v) => typeof v === "string" && v === "banned",
+  //     },
+  //     role: { column: userTable.role, type: "string" },
+  //     updatedAt: { column: userTable.updatedAt, type: "date" },
+  //     createdAt: { column: userTable.createdAt, type: "date" },
+  //   },
+  //   defaultOrderBy: { id: "createdAt", desc: true },
+  // });
+
+  // const [count] = await withDataTable(countQb, state, {
+  //   ...config,
+  //   disabled: ["sorting", "pagination"],
+  // }).execute();
+
+  // const data = await withDataTable(dataQb, state, config).execute();
+
+  // return { success: true, count, data: data as AuthSession["user"][] };
+}
+
 export async function listSessions() {
   return await auth.api.listSessions({ headers: await nextHeaders() });
 }
