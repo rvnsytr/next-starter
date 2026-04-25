@@ -10,9 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   OnChangeFn,
-  PaginationState,
   RowSelectionState,
-  SortingState,
   Table,
   TableOptions,
   useReactTable,
@@ -75,6 +73,7 @@ export function useStatelessDataController<TData>({
     globalFilter: [globalFilter, setGlobalFilter],
     pagination: [pagination, setPagination],
     sorting: [sorting, setSorting],
+    columnFilters: [columnFilters, setColumnFilters],
     columnPinning: [columnPinning, setColumnPinning],
     columnVisibility: [columnVisibility, setColumnVisibility],
     rowSelection: [rowSelection, setRowSelection],
@@ -90,9 +89,9 @@ export function useStatelessDataController<TData>({
       globalFilter: debouncedSearch,
       pagination: pagination,
       sorting: sorting,
-      columnPinning: columnPinning,
+      columnFilters: columnFilters,
     }),
-    [debouncedSearch, pagination, sorting, columnPinning],
+    [debouncedSearch, pagination, sorting, columnFilters],
   );
 
   const shouldRevalidate = !query.immutable && (query.revalidate ?? true);
@@ -124,7 +123,7 @@ export function useStatelessDataController<TData>({
       globalFilter,
       pagination,
       sorting,
-      // columnFilters,
+      columnFilters,
       columnPinning,
       columnVisibility,
       rowSelection,
@@ -151,8 +150,7 @@ export function useStatelessDataController<TData>({
     getSortedRowModel: mode === "auto" ? getSortedRowModel() : undefined,
 
     // * Column Filtering
-    // onColumnFiltersChange: setColumnFilters,
-    // getFilteredRowModel: !isManual ? getFilteredRowModel() : undefined,
+    onColumnFiltersChange: setColumnFilters,
 
     // ? Column Faceting
     getFacetedRowModel: getFacetedRowModel(),
@@ -179,12 +177,18 @@ export function useDataController<TData>({
 }: DataControllerProps<TData>) {
   const globalFilter = useState<string>(defaultState?.globalFilter ?? "");
 
-  const pagination = useState<PaginationState>({
+  const pagination = useState<DataControllerState["pagination"]>({
     pageIndex: defaultState?.pagination.pageIndex ?? 0,
     pageSize: defaultState?.pagination.pageSize ?? defaultPageSize,
   });
 
-  const sorting = useState<SortingState>(defaultState?.sorting ?? []);
+  const sorting = useState<DataControllerState["sorting"]>(
+    defaultState?.sorting ?? [],
+  );
+
+  const columnFilters = useState<DataControllerState["columnFilters"]>(
+    defaultState?.columnFilters ?? [],
+  );
 
   const columnPinning = useState<ColumnPinningState>({
     left: defaultState?.columnPinning.left ?? [],
@@ -205,6 +209,7 @@ export function useDataController<TData>({
       globalFilter,
       pagination,
       sorting,
+      columnFilters,
       columnPinning,
       columnVisibility,
       rowSelection,

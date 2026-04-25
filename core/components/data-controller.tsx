@@ -7,8 +7,8 @@ import {
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  EyeIcon,
   SearchIcon,
-  ViewIcon,
 } from "lucide-react";
 import { useRef } from "react";
 import { defaultPageSize, pageSizes } from "../hooks/use-data-controller";
@@ -42,7 +42,7 @@ export function DataControllerVisibility<TData>({
       <MenuTrigger
         render={
           <Button size={size} variant={variant} {...props}>
-            <ViewIcon /> {!size?.startsWith("icon") && "Lihat"}
+            <EyeIcon /> {!size?.startsWith("icon") && "Lihat"}
           </Button>
         }
       />
@@ -58,12 +58,11 @@ export function DataControllerVisibility<TData>({
             return (
               <MenuCheckboxItem
                 key={cbId}
-                variant="switch"
                 checked={isVisible}
                 onCheckedChange={(v) => column.toggleVisibility(v)}
               >
                 <div className="flex items-center gap-x-2">
-                  {Icon && <Icon />}
+                  {Icon && <Icon className="text-muted-foreground" />}
                   {column.columnDef.meta?.label ?? column.id}
                 </div>
               </MenuCheckboxItem>

@@ -6,6 +6,14 @@ import {
   DataControllerSearch,
   DataControllerVisibility,
 } from "@/core/components/data-controller";
+import {
+  ActiveFilters,
+  ActiveFiltersContainer,
+  ClearFilters,
+  FilterSelector,
+  ResetFilters,
+} from "@/core/components/filters";
+import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Separator } from "@/core/components/ui/separator";
 import { useDataController } from "@/core/hooks/use-data-controller";
 import { listUsers } from "../actions";
@@ -25,15 +33,28 @@ export function UserDataTable() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2">
-        <DataControllerVisibility table={table} />
+        <ButtonGroup>
+          <DataControllerVisibility table={table} align="start" />
+          <FilterSelector table={table} />
+        </ButtonGroup>
+
         <DataControllerPaginationNav table={table} />
-        <DataControllerPageSize table={table} />
+        <DataControllerPageSize table={table} className="w-fit" />
+        <ResetFilters table={table} />
         <DataControllerSearch table={table} />
       </div>
 
+      {table.getState().columnFilters.length > 0 && (
+        <ActiveFiltersContainer>
+          <ClearFilters table={table} />
+          <Separator orientation="vertical" className="h-4" />
+          <ActiveFilters table={table} />
+        </ActiveFiltersContainer>
+      )}
+
       <pre>{JSON.stringify(table.getRowModel().rows.length, null, 2)}</pre>
       <Separator />
-      <pre>{JSON.stringify(table.getState(), null, 2)}</pre>
+      <pre>{JSON.stringify(table.getState().columnFilters, null, 2)}</pre>
     </div>
   );
 }
