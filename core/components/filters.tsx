@@ -1,1811 +1,1668 @@
 "use client";
 
-import { useRender } from "@base-ui/react/use-render";
-import { Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { cva } from "class-variance-authority";
-import { AlertCircleIcon, CheckIcon, XIcon } from "lucide-react";
+import { useDebounce } from "@/core/hooks/use-debounce";
+import { messages } from "@/core/messages";
 import {
-  createContext,
-  useCallback,
-  useContext,
+  DataFilterOption,
+  DataFilterType,
+  ElementType,
+  FilterModel,
+  createNumberRange,
+  dateFilterDetails,
+  determineNewOperator,
+  filterTypeOperatorDetails,
+  formatDateRange,
+  formatLocalizedDate,
+  getColumn,
+  getColumnMeta,
+  isColumnOptionArray,
+  isFilterableColumn,
+  multiOptionFilterDetails,
+  numberFilterDetails,
+  optionFilterDetails,
+  textFilterDetails,
+} from "@/core/utils";
+import { formatNumber } from "@/core/utils/formaters";
+import { cn } from "@/core/utils/helpers";
+import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
+import { endOfDay, isEqual } from "date-fns";
+import {
+  ArrowRightIcon,
+  EllipsisIcon,
+  FilterIcon,
+  FilterXIcon,
+  RotateCcwSquareIcon,
+  XIcon,
+} from "lucide-react";
+import {
+  cloneElement,
+  isValidElement,
   useEffect,
   useEffectEvent,
-  useId,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { cn } from "../utils";
-import { Button } from "./ui/button";
-import { ButtonGroup, ButtonGroupText } from "./ui/button-group";
+import { DateRange, TZDate } from "react-day-picker";
+import { Button, ButtonProps } from "./ui/button";
+import { ButtonGroup } from "./ui/button-group";
+import { Calendar } from "./ui/calendar";
+import { Checkbox } from "./ui/checkbox";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandGroupLabel,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
 import { Input } from "./ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "./ui/input-group";
-import { Kbd } from "./ui/kbd";
-import {
-  Menu,
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuItem,
-  MenuPopup,
-  MenuSeparator,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-  MenuTrigger,
-} from "./ui/menu";
-import { ScrollArea } from "./ui/scroll-area";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
+import { Popover, PopoverPopup, PopoverTrigger } from "./ui/popover";
+import { Slider } from "./ui/slider";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "./ui/tabs";
 
-// i18n Configuration Type
-export type FilterI18nConfig = {
-  // UI Labels
-  addFilter: string;
-  searchFields: string;
-  noFieldsFound: string;
-  noResultsFound: string;
-  select: string;
-  true: string;
-  false: string;
-  min: string;
-  max: string;
-  to: string;
-  typeAndPressEnter: string;
-  selected: string;
-  selectedCount: string;
-  percent: string;
-  defaultCurrency: string;
-  defaultColor: string;
-  addFilterTitle: string;
-
-  // Operators
-  operators: {
-    is: string;
-    isNot: string;
-    isAnyOf: string;
-    isNotAnyOf: string;
-    includesAll: string;
-    excludesAll: string;
-    before: string;
-    after: string;
-    between: string;
-    notBetween: string;
-    contains: string;
-    notContains: string;
-    startsWith: string;
-    endsWith: string;
-    isExactly: string;
-    equals: string;
-    notEquals: string;
-    greaterThan: string;
-    lessThan: string;
-    overlaps: string;
-    includes: string;
-    excludes: string;
-    includesAllOf: string;
-    includesAnyOf: string;
-    empty: string;
-    notEmpty: string;
-  };
-
-  // Placeholders
-  placeholders: {
-    enterField: (fieldType: string) => string;
-    selectField: string;
-    searchField: (fieldName: string) => string;
-    enterKey: string;
-    enterValue: string;
-  };
-
-  // Helper functions
-  helpers: {
-    formatOperator: (operator: string) => string;
-  };
-
-  // Validation
-  validation: {
-    invalidEmail: string;
-    invalidUrl: string;
-    invalidTel: string;
-    invalid: string;
-  };
-};
-
-// Default English i18n configuration
-export const DEFAULT_I18N: FilterI18nConfig = {
-  // UI Labels
-  addFilter: "Filter",
-  searchFields: "Filter...",
-  noFieldsFound: "No filters found.",
-  noResultsFound: "No results found.",
-  select: "Select...",
-  true: "True",
-  false: "False",
-  min: "Min",
-  max: "Max",
-  to: "to",
-  typeAndPressEnter: "Type and press Enter to add tag",
-  selected: "selected",
-  selectedCount: "selected",
-  percent: "%",
-  defaultCurrency: "$",
-  defaultColor: "#000000",
-  addFilterTitle: "Add filter",
-
-  // Operators
-  operators: {
-    is: "is",
-    isNot: "is not",
-    isAnyOf: "is any of",
-    isNotAnyOf: "is not any of",
-    includesAll: "includes all",
-    excludesAll: "excludes all",
-    before: "before",
-    after: "after",
-    between: "between",
-    notBetween: "not between",
-    contains: "contains",
-    notContains: "does not contain",
-    startsWith: "starts with",
-    endsWith: "ends with",
-    isExactly: "is exactly",
-    equals: "equals",
-    notEquals: "not equals",
-    greaterThan: "greater than",
-    lessThan: "less than",
-    overlaps: "overlaps",
-    includes: "includes",
-    excludes: "excludes",
-    includesAllOf: "includes all of",
-    includesAnyOf: "includes any of",
-    empty: "is empty",
-    notEmpty: "is not empty",
-  },
-
-  // Placeholders
-  placeholders: {
-    enterField: (fieldType: string) => `Enter ${fieldType}...`,
-    selectField: "Select...",
-    searchField: (fieldName: string) => `Search ${fieldName.toLowerCase()}...`,
-    enterKey: "Enter key...",
-    enterValue: "Enter value...",
-  },
-
-  // Helper functions
-  helpers: {
-    formatOperator: (operator: string) => operator.replace(/_/g, " "),
-  },
-
-  // Validation
-  validation: {
-    invalidEmail: "Invalid email format",
-    invalidUrl: "Invalid URL format",
-    invalidTel: "Invalid phone format",
-    invalid: "Invalid input format",
-  },
-};
-
-// Context for all Filter component props
-type FilterContextValue = {
-  variant: "solid" | "default";
-  size: "sm" | "default" | "lg";
-  radius: "default" | "full";
-  i18n: FilterI18nConfig;
-  className?: string;
-  showSearchInput?: boolean;
-  trigger?: React.ReactNode;
-  allowMultiple?: boolean;
-};
-
-const FilterContext = createContext<FilterContextValue>({
-  variant: "default",
-  size: "default",
-  radius: "default",
-  i18n: DEFAULT_I18N,
-  className: undefined,
-  showSearchInput: true,
-  trigger: undefined,
-  allowMultiple: true,
-});
-
-const useFilterContext = () => useContext(FilterContext);
-
-// Container variant for filters wrapper
-const filtersContainerVariants = cva("flex flex-wrap items-center", {
-  variants: {
-    variant: { solid: "gap-2", default: "" },
-    size: { sm: "gap-1.5", default: "gap-2.5", lg: "gap-3.5" },
-  },
-  defaultVariants: { variant: "default", size: "default" },
-});
-
-function FilterInput<T = unknown>({
-  field,
-  onBlur,
-  onKeyDown,
+export function ActiveFiltersContainer({
   className,
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & {
+  children,
+}: {
   className?: string;
-  field?: FilterFieldConfig<T>;
+  children: React.ReactNode;
 }) {
-  const context = useFilterContext();
-  const [isValid, setIsValid] = useState(true);
-  const [validationMessage, setValidationMessage] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftBlur, setShowLeftBlur] = useState(false);
+  const [showRightBlur, setShowRightBlur] = useState(true);
 
+  // Check if there's content to scroll and update blur states
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+
+      // Show left blur if scrolled to the right
+      setShowLeftBlur(scrollLeft > 0);
+
+      // Show right blur if there's more content to scroll to the right
+      // Add a small buffer (1px) to account for rounding errors
+      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
+    }
+  };
+
+  // Log blur states for debugging
+  // useEffect(() => {
+  //   console.log("left:", showLeftBlur, "  right:", showRightBlur);
+  // }, [showLeftBlur, showRightBlur]);
+
+  // Set up ResizeObserver to monitor container size
   useEffect(() => {
-    if (props.autoFocus) {
-      const timer = setTimeout(() => inputRef.current?.focus(), 300);
-      return () => clearTimeout(timer);
+    if (scrollContainerRef.current) {
+      const resizeObserver = new ResizeObserver(() => checkScroll());
+      resizeObserver.observe(scrollContainerRef.current);
+      return () => resizeObserver.disconnect();
     }
-  }, [props.autoFocus]);
-
-  // Validation function to check if input matches pattern
-  const validateInput = (value: string, pattern?: string) => {
-    if (!pattern || !value) return true;
-    const regex = new RegExp(pattern);
-    return regex.test(value);
-  };
-
-  // Get validation message for field type
-  const getValidationMessage = () => context.i18n.validation.invalid;
-
-  // Handle blur event - validate when user leaves input
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const pattern = field?.pattern || props.pattern;
-
-    // Only validate if there's a value and (pattern or validation function)
-    if (value && (pattern || field?.validation)) {
-      let valid = true;
-      let customMessage = "";
-
-      // If there's a custom validation function, use it
-      if (field?.validation) {
-        const result = field.validation(value);
-        // Handle both boolean and object return types
-        if (typeof result === "boolean") valid = result;
-        else valid = result.valid;
-        customMessage =
-          typeof result !== "boolean" ? (result.message ?? "") : "";
-        // Use pattern validation
-      } else if (pattern) valid = validateInput(value, pattern);
-
-      setIsValid(valid);
-      setValidationMessage(
-        valid ? "" : customMessage || getValidationMessage(),
-      );
-    } else {
-      // Reset validation state for empty values or no validation
-      setIsValid(true);
-      setValidationMessage("");
-    }
-
-    // Call the original onBlur if provided
-    onBlur?.(e);
-  };
-
-  // Handle keydown event - hide validation error when user starts typing
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Hide validation error when user starts typing (any key except special keys)
-    if (
-      !isValid &&
-      ![
-        "Tab",
-        "Escape",
-        "Enter",
-        "ArrowUp",
-        "ArrowDown",
-        "ArrowLeft",
-        "ArrowRight",
-      ].includes(e.key)
-    ) {
-      setIsValid(true);
-      setValidationMessage("");
-    }
-
-    // Call the original onKeyDown if provided
-    onKeyDown?.(e);
-  };
-
-  return (
-    <InputGroup
-      className={cn(
-        "w-36",
-        context.size == "sm" && "h-7!",
-        context.size == "default" && "h-8!",
-        context.size == "lg" && "h-9!",
-        className,
-      )}
-    >
-      {field?.prefix && (
-        <InputGroupAddon>
-          <InputGroupText>{field.prefix}</InputGroupText>
-        </InputGroupAddon>
-      )}
-
-      <InputGroupInput
-        ref={inputRef}
-        aria-invalid={!isValid}
-        aria-describedby={
-          !isValid && validationMessage
-            ? `${field?.key || "input"}-error`
-            : undefined
-        }
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          context.size == "sm" && "h-7! text-xs",
-          context.size == "default" && "h-8!",
-          context.size == "lg" && "h-9!",
-        )}
-        {...props}
-      />
-
-      {!isValid && validationMessage && (
-        <InputGroupAddon align="inline-end">
-          <Tooltip>
-            <TooltipTrigger render={<Button size="icon-xs" />}>
-              <AlertCircleIcon className="text-destructive size-3.5" />
-            </TooltipTrigger>
-            <TooltipPopup>
-              <p className="text-sm">{validationMessage}</p>
-            </TooltipPopup>
-          </Tooltip>
-        </InputGroupAddon>
-      )}
-
-      {field?.suffix && (
-        <InputGroupAddon align="inline-end">
-          <InputGroupText>{field.suffix}</InputGroupText>
-        </InputGroupAddon>
-      )}
-    </InputGroup>
-  );
-}
-
-type FilterRemoveButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  icon?: React.ReactNode;
-};
-
-function FilterRemoveButton({
-  icon = <XIcon />,
-  ...props
-}: FilterRemoveButtonProps) {
-  const context = useFilterContext();
-
-  const sizeMap = {
-    sm: "sm",
-    default: "sm",
-    lg: "default",
-  } as const;
-
-  return (
-    <Button variant="outline" size={sizeMap[context.size]} {...props}>
-      {icon}
-    </Button>
-  );
-}
-
-// Generic types for flexible filter system
-export type FilterOption<T = unknown> = {
-  value: T;
-  label: string;
-  icon?: React.ReactNode;
-  metadata?: Record<string, unknown>;
-  className?: string;
-};
-
-export type FilterOperator = {
-  value: string;
-  label: string;
-  supportsMultiple?: boolean;
-};
-
-// Custom renderer props type
-export type CustomRendererProps<T = unknown> = {
-  field: FilterFieldConfig<T>;
-  values: T[];
-  onChange: (values: T[]) => void;
-  operator: string;
-};
-
-// Grouped field configuration type
-export type FilterFieldGroup<T = unknown> = {
-  group?: string;
-  fields: FilterFieldConfig<T>[];
-};
-
-// Union type for both flat and grouped field configurations
-export type FilterFieldsConfig<T = unknown> =
-  | FilterFieldConfig<T>[]
-  | FilterFieldGroup<T>[];
-
-export type FilterFieldConfig<T = unknown> = {
-  key?: string;
-  label?: string;
-  icon?: React.ReactNode;
-  type?: "select" | "multiselect" | "text" | "custom" | "separator";
-  // Group-level configuration
-  group?: string;
-  fields?: FilterFieldConfig<T>[];
-  // Field-specific options
-  options?: FilterOption<T>[];
-  operators?: FilterOperator[];
-  customRenderer?: (props: CustomRendererProps<T>) => React.ReactNode;
-  customValueRenderer?: (
-    values: T[],
-    options: FilterOption<T>[],
-  ) => React.ReactNode;
-  placeholder?: string;
-  searchable?: boolean;
-  maxSelections?: number;
-  min?: number;
-  max?: number;
-  step?: number;
-  prefix?: string | React.ReactNode;
-  suffix?: string | React.ReactNode;
-  pattern?: string;
-  validation?: (
-    value: unknown,
-  ) => boolean | { valid: boolean; message?: string };
-  allowCustomValues?: boolean;
-  className?: string;
-  menuPopupClassName?: string;
-  // Grouping options (legacy support)
-  groupLabel?: string;
-  // Boolean field options
-  onLabel?: string;
-  offLabel?: string;
-  // Input event handlers
-  onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  // Default operator to use when creating a filter for this field
-  defaultOperator?: string;
-  // Controlled values support for this field
-  value?: T[];
-  onValueChange?: (values: T[]) => void;
-};
-
-// Helper functions to handle both flat and grouped field configurations
-function isFieldGroup<T = unknown>(
-  item: FilterFieldConfig<T> | FilterFieldGroup<T>,
-): item is FilterFieldGroup<T> {
-  return "fields" in item && Array.isArray(item.fields);
-}
-
-// Helper function to check if a FilterFieldConfig is a group-level configuration
-function isGroupLevelField<T = unknown>(field: FilterFieldConfig<T>) {
-  return Boolean(field.group && field.fields);
-}
-
-function flattenFields<T = unknown>(
-  fields: FilterFieldsConfig<T>,
-): FilterFieldConfig<T>[] {
-  return fields.reduce<FilterFieldConfig<T>[]>((acc, item) => {
-    if (isFieldGroup(item)) return [...acc, ...item.fields];
-
-    // Handle group-level fields (new structure)
-    if (isGroupLevelField(item)) return [...acc, ...item.fields!];
-
-    return [...acc, item];
   }, []);
-}
 
-function getFieldsMap<T = unknown>(
-  fields: FilterFieldsConfig<T>,
-): Record<string, FilterFieldConfig<T>> {
-  const flatFields = flattenFields(fields);
-  return flatFields.reduce(
-    (acc, field) => {
-      // Only add fields that have a key (skip group-level configurations)
-      if (field.key) acc[field.key] = field;
-      return acc;
-    },
-    {} as Record<string, FilterFieldConfig<T>>,
-  );
-}
-
-// Helper function to create operators from i18n config
-const createOperatorsFromI18n = (
-  i18n: FilterI18nConfig,
-): Record<string, FilterOperator[]> => ({
-  select: [
-    { value: "is", label: i18n.operators.is },
-    { value: "is_not", label: i18n.operators.isNot },
-    { value: "empty", label: i18n.operators.empty },
-    { value: "not_empty", label: i18n.operators.notEmpty },
-  ],
-  multiselect: [
-    { value: "is_any_of", label: i18n.operators.isAnyOf },
-    { value: "is_not_any_of", label: i18n.operators.isNotAnyOf },
-    { value: "includes_all", label: i18n.operators.includesAll },
-    { value: "excludes_all", label: i18n.operators.excludesAll },
-    { value: "empty", label: i18n.operators.empty },
-    { value: "not_empty", label: i18n.operators.notEmpty },
-  ],
-  text: [
-    { value: "contains", label: i18n.operators.contains },
-    { value: "not_contains", label: i18n.operators.notContains },
-    { value: "starts_with", label: i18n.operators.startsWith },
-    { value: "ends_with", label: i18n.operators.endsWith },
-    { value: "is", label: i18n.operators.isExactly },
-    { value: "empty", label: i18n.operators.empty },
-    { value: "not_empty", label: i18n.operators.notEmpty },
-  ],
-  custom: [
-    { value: "is", label: i18n.operators.is },
-    { value: "after", label: i18n.operators.after },
-    { value: "is", label: i18n.operators.is },
-    { value: "between", label: i18n.operators.between },
-    { value: "empty", label: i18n.operators.empty },
-    { value: "not_empty", label: i18n.operators.notEmpty },
-  ],
-});
-
-// Default operators for different field types (using default i18n)
-export const DEFAULT_OPERATORS: Record<string, FilterOperator[]> =
-  createOperatorsFromI18n(DEFAULT_I18N);
-
-// Helper function to get operators for a field
-function getOperatorsForField<T = unknown>(
-  field: FilterFieldConfig<T>,
-  values: T[],
-  i18n: FilterI18nConfig,
-): FilterOperator[] {
-  if (field.operators) return field.operators;
-
-  const operators = createOperatorsFromI18n(i18n);
-
-  // Determine field type for operator selection
-  let fieldType = field.type || "select";
-
-  // If it's a select field but has multiple values, treat as multiselect
-  if (fieldType === "select" && values.length > 1) fieldType = "multiselect";
-
-  // If it's a multiselect field or has multiselect operators, use multiselect operators
-  if (fieldType === "multiselect" || field.type === "multiselect")
-    return operators.multiselect;
-
-  return operators[fieldType] || operators.select;
-}
-
-type FilterOperatorProps<T = unknown> = {
-  field: FilterFieldConfig<T>;
-  operator: string;
-  values: T[];
-  onChange: (operator: string) => void;
-};
-
-function FilterOperator<T = unknown>({
-  field,
-  operator,
-  values,
-  onChange,
-}: FilterOperatorProps<T>) {
-  const context = useFilterContext();
-  const operators = getOperatorsForField(field, values, context.i18n);
-
-  // Find the operator label, with fallback to formatted operator name
-  const operatorLabel =
-    operators.find((op) => op.value === operator)?.label ||
-    context.i18n.helpers.formatOperator(operator);
-
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <Button
-            variant="outline"
-            size={context.size}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            {operatorLabel}
-          </Button>
-        }
-      />
-
-      <MenuPopup align="start" className="w-fit min-w-fit">
-        {operators.map((op) => (
-          <MenuItem
-            key={op.value}
-            onClick={() => onChange(op.value)}
-            className="data-highlighted:bg-accent data-highlighted:text-accent-foreground flex items-center justify-between"
-          >
-            <span>{op.label}</span>
-            <CheckIcon
-              className={cn(
-                "text-primary ms-auto",
-                op.value === operator ? "opacity-100" : "opacity-0",
-              )}
-            />
-          </MenuItem>
-        ))}
-      </MenuPopup>
-    </Menu>
-  );
-}
-
-type FilterValueSelectorProps<T = unknown> = {
-  field: FilterFieldConfig<T>;
-  values: T[];
-  onChange: (values: T[]) => void;
-  operator: string;
-  autoFocus?: boolean;
-};
-
-type SelectOptionsPopoverProps<T = unknown> = {
-  field: FilterFieldConfig<T>;
-  values: T[];
-  onChange: (values: T[]) => void;
-  onClose?: () => void;
-  inline?: boolean;
-};
-
-function SelectOptionsPopover<T = unknown>({
-  field,
-  values,
-  onChange,
-  onClose,
-  inline = false,
-}: SelectOptionsPopoverProps<T>) {
-  const [open, setOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const context = useFilterContext();
-  const baseId = useId();
-
-  useEffect(() => {
-    if (open) inputRef.current?.focus();
-  }, [open]);
-
-  const onHighlightIndex = useEffectEvent(() => setHighlightedIndex(-1));
-  useEffect(() => onHighlightIndex(), [searchInput, open]);
-
-  useEffect(() => {
-    if (highlightedIndex >= 0 && open) {
-      const element = document.getElementById(
-        `${baseId}-item-${highlightedIndex}`,
-      );
-      element?.scrollIntoView({ block: "nearest" });
-    }
-  }, [highlightedIndex, open, baseId]);
-
-  const isMultiSelect = field.type === "multiselect" || values.length > 1;
-  const effectiveValues =
-    (field.value !== undefined ? (field.value as T[]) : values) || [];
-
-  const selectedOptions =
-    field.options?.filter((opt) => effectiveValues.includes(opt.value)) || [];
-  const unselectedOptions =
-    field.options?.filter((opt) => !effectiveValues.includes(opt.value)) || [];
-
-  // Filter options based on search input
-  const filteredSelectedOptions = selectedOptions; // Keep all selected visible
-  const filteredUnselectedOptions = unselectedOptions.filter((opt) =>
-    opt.label.toLowerCase().includes(searchInput.toLowerCase()),
-  );
-
-  const allFilteredOptions = useMemo(
-    () => [...filteredSelectedOptions, ...filteredUnselectedOptions],
-    [filteredSelectedOptions, filteredUnselectedOptions],
-  );
-
-  const handleClose = () => {
-    setOpen(false);
-    onClose?.();
-  };
-
-  const renderMenuPopup = () => (
-    <>
-      {field.searchable !== false && (
-        <>
-          <Input
-            ref={inputRef}
-            role="combobox"
-            aria-autocomplete="list"
-            aria-expanded={true}
-            aria-haspopup="listbox"
-            aria-controls={`${baseId}-listbox`}
-            aria-activedescendant={
-              highlightedIndex >= 0
-                ? `${baseId}-item-${highlightedIndex}`
-                : undefined
-            }
-            placeholder={context.i18n.placeholders.searchField(
-              field.label || "",
-            )}
-            className={cn(
-              "border-input h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none",
-              "focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0",
-              open && "placeholder:text-foreground",
-            )}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onBlur={() => open && inputRef.current?.focus()}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown") {
-                e.preventDefault();
-                if (allFilteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev < allFilteredOptions.length - 1 ? prev + 1 : 0,
-                  );
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                if (allFilteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev > 0 ? prev - 1 : allFilteredOptions.length - 1,
-                  );
-              } else if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                setOpen(false);
-              } else if (e.key === "Enter" && highlightedIndex >= 0) {
-                e.preventDefault();
-                const option = allFilteredOptions[highlightedIndex];
-                if (option) {
-                  const isSelected = effectiveValues.includes(
-                    option.value as T,
-                  );
-                  const next = isSelected
-                    ? (effectiveValues.filter((v) => v !== option.value) as T[])
-                    : isMultiSelect
-                      ? ([...effectiveValues, option.value] as T[])
-                      : ([option.value] as T[]);
-
-                  if (
-                    !isSelected &&
-                    isMultiSelect &&
-                    field.maxSelections &&
-                    next.length > field.maxSelections
-                  )
-                    return;
-
-                  if (field.onValueChange) field.onValueChange(next);
-                  else onChange(next);
-
-                  if (!isMultiSelect) handleClose();
-                }
-              }
-              e.stopPropagation();
-            }}
-          />
-          <MenuSeparator />
-        </>
-      )}
-      <div className="relative flex max-h-full">
-        <div
-          id={`${baseId}-listbox`}
-          role="listbox"
-          className="flex max-h-[min(var(--available-height),24rem)] w-full scroll-pt-2 scroll-pb-2 flex-col overscroll-contain"
-        >
-          <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
-            {allFilteredOptions.length === 0 && (
-              <div className="text-muted-foreground py-2 text-center text-sm">
-                {context.i18n.noResultsFound}
-              </div>
-            )}
-
-            {/* Selected items */}
-            {filteredSelectedOptions.length > 0 && (
-              <MenuGroup className="px-1">
-                {filteredSelectedOptions.map((option, index) => {
-                  const itemId = `${baseId}-item-${index}`;
-                  const isHighlighted = highlightedIndex === index;
-
-                  return (
-                    <MenuCheckboxItem
-                      key={String(option.value)}
-                      id={itemId}
-                      role="option"
-                      aria-selected={isHighlighted}
-                      data-highlighted={isHighlighted || undefined}
-                      onMouseEnter={() => setHighlightedIndex(index)}
-                      checked
-                      className={cn(
-                        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
-                        option.className,
-                      )}
-                      onSelect={(e) => {
-                        if (isMultiSelect) e.preventDefault();
-                      }}
-                      onCheckedChange={() => {
-                        const next = effectiveValues.filter(
-                          (v) => v !== option.value,
-                        ) as T[];
-
-                        if (field.onValueChange) field.onValueChange(next);
-                        else onChange(next);
-
-                        if (!isMultiSelect) handleClose();
-                      }}
-                    >
-                      {option.icon && option.icon}
-                      <span className="truncate">{option.label}</span>
-                    </MenuCheckboxItem>
-                  );
-                })}
-              </MenuGroup>
-            )}
-
-            {/* Separator */}
-            {filteredSelectedOptions.length > 0 &&
-              filteredUnselectedOptions.length > 0 && (
-                <MenuSeparator className="mx-0" />
-              )}
-
-            {/* Available items */}
-            {filteredUnselectedOptions.length > 0 && (
-              <MenuGroup className="px-1">
-                {filteredUnselectedOptions.map((option, index) => {
-                  const overallIndex = index + filteredSelectedOptions.length;
-                  const isHighlighted = highlightedIndex === overallIndex;
-                  const itemId = `${baseId}-item-${overallIndex}`;
-
-                  return (
-                    <MenuCheckboxItem
-                      key={String(option.value)}
-                      id={itemId}
-                      role="option"
-                      aria-selected={isHighlighted}
-                      data-highlighted={isHighlighted || undefined}
-                      onMouseEnter={() => setHighlightedIndex(overallIndex)}
-                      checked={false}
-                      className={cn(
-                        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
-                        option.className,
-                      )}
-                      onSelect={(e) => {
-                        if (isMultiSelect) e.preventDefault();
-                      }}
-                      onCheckedChange={() => {
-                        const next = isMultiSelect
-                          ? ([...effectiveValues, option.value] as T[])
-                          : ([option.value] as T[]);
-
-                        if (
-                          isMultiSelect &&
-                          field.maxSelections &&
-                          next.length > field.maxSelections
-                        )
-                          return;
-
-                        if (field.onValueChange) field.onValueChange(next);
-                        else onChange(next);
-
-                        if (!isMultiSelect) handleClose();
-                      }}
-                    >
-                      {option.icon && option.icon}
-                      <span className="truncate">{option.label}</span>
-                    </MenuCheckboxItem>
-                  );
-                })}
-              </MenuGroup>
-            )}
-          </ScrollArea>
-        </div>
-      </div>
-    </>
-  );
-
-  if (inline) return <div className="w-full">{renderMenuPopup()}</div>;
-
-  return (
-    <Menu
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-        if (!open) setTimeout(() => setSearchInput(""), 200);
-      }}
-    >
-      <MenuTrigger
-        render={
-          <Button variant="outline" size={context.size}>
-            <div className="flex items-center gap-1.5">
-              {field.customValueRenderer ? (
-                field.customValueRenderer(values, field.options || [])
-              ) : (
-                <>
-                  {selectedOptions.length > 0 && (
-                    <div className="flex items-center -space-x-1.5">
-                      {selectedOptions.slice(0, 3).map((option) => (
-                        <div key={String(option.value)}>{option.icon}</div>
-                      ))}
-                    </div>
-                  )}
-                  {selectedOptions.length === 1
-                    ? selectedOptions[0].label
-                    : selectedOptions.length > 1
-                      ? `${selectedOptions.length} ${context.i18n.selectedCount}`
-                      : context.i18n.select}
-                </>
-              )}
-            </div>
-          </Button>
-        }
-      />
-      <MenuPopup align="start" className={cn("w-50 px-0", field.className)}>
-        {renderMenuPopup()}
-      </MenuPopup>
-    </Menu>
-  );
-}
-
-function FilterValueSelector<T = unknown>({
-  field,
-  values,
-  onChange,
-  operator,
-  autoFocus,
-}: FilterValueSelectorProps<T>) {
-  //   const context = useFilterContext();
-
-  if (operator === "empty" || operator === "not_empty") return null;
-
-  if (field.customRenderer)
-    return (
-      <ButtonGroupText className="hover:bg-accent aria-expanded:bg-accent bg-background dark:bg-input/30 text-start whitespace-nowrap outline-hidden">
-        {field.customRenderer({ field, values, onChange, operator })}
-      </ButtonGroupText>
-    );
-
-  if (field.type === "text")
-    return (
-      <FilterInput
-        value={(values[0] as string) || ""}
-        onChange={(e) => onChange([e.target.value] as T[])}
-        placeholder={field.placeholder}
-        pattern={field.pattern}
-        field={field}
-        className={cn("w-36", field.className)}
-        autoFocus={autoFocus}
-      />
-    );
-
-  if (field.type === "select" || field.type === "multiselect")
-    return (
-      <SelectOptionsPopover field={field} values={values} onChange={onChange} />
-    );
-
-  return (
-    <SelectOptionsPopover field={field} values={values} onChange={onChange} />
-  );
-}
-export type Filter<T = unknown> = {
-  id: string;
-  field: string;
-  operator: string;
-  values: T[];
-};
-
-export type FilterGroup<T = unknown> = {
-  id: string;
-  label?: string;
-  filters: Filter<T>[];
-  fields: FilterFieldConfig<T>[];
-};
-
-type FiltersContentProps<T = unknown> = {
-  filters: Filter<T>[];
-  fields: FilterFieldsConfig<T>;
-  onChange: (filters: Filter<T>[]) => void;
-};
-
-export function FiltersContent<T = unknown>({
-  filters,
-  fields,
-  onChange,
-}: FiltersContentProps<T>) {
-  const context = useFilterContext();
-  const fieldsMap = useMemo(() => getFieldsMap(fields), [fields]);
-
-  const updateFilter = useCallback(
-    (filterId: string, updates: Partial<Filter<T>>) => {
-      onChange(
-        filters.map((filter) => {
-          if (filter.id === filterId) {
-            const updatedFilter = { ...filter, ...updates };
-            const hasEmpty =
-              updates.operator === "empty" || updates.operator === "not_empty";
-            if (hasEmpty) updatedFilter.values = [] as T[];
-            return updatedFilter;
-          }
-          return filter;
-        }),
-      );
-    },
-    [filters, onChange],
-  );
-
-  const removeFilter = useCallback(
-    (filterId: string) =>
-      onChange(filters.filter((filter) => filter.id !== filterId)),
-    [filters, onChange],
-  );
+  // Update blur states when children change
+  useEffect(() => checkScroll(), [children]);
 
   return (
     <div
       className={cn(
-        filtersContainerVariants({
-          variant: context.variant,
-          size: context.size,
-        }),
-        context.className,
-      )}
-    >
-      {filters.map((filter) => {
-        const field = fieldsMap[filter.field];
-        if (!field) return null;
-
-        return (
-          <ButtonGroup key={filter.id}>
-            <ButtonGroupText>
-              {field.icon && field.icon}
-              {field.label}
-            </ButtonGroupText>
-
-            <FilterOperator<T>
-              field={field}
-              operator={filter.operator}
-              values={filter.values}
-              onChange={(operator) => updateFilter(filter.id, { operator })}
-            />
-
-            <FilterValueSelector<T>
-              field={field}
-              values={filter.values}
-              onChange={(values) => updateFilter(filter.id, { values })}
-              operator={filter.operator}
-              autoFocus={false}
-            />
-
-            <FilterRemoveButton onClick={() => removeFilter(filter.id)} />
-          </ButtonGroup>
-        );
-      })}
-    </div>
-  );
-}
-
-type FiltersProps<T = unknown> = {
-  filters: Filter<T>[];
-  fields: FilterFieldsConfig<T>;
-  onChange: (filters: Filter<T>[]) => void;
-  className?: string;
-  variant?: "solid" | "default";
-  size?: "sm" | "default" | "lg";
-  radius?: "default" | "full";
-  i18n?: Partial<FilterI18nConfig>;
-  showSearchInput?: boolean;
-  trigger?: React.ReactNode;
-  allowMultiple?: boolean;
-  menuPopupClassName?: string;
-  collapseAddButton?: boolean;
-  enableShortcut?: boolean;
-  shortcutKey?: Hotkey;
-  shortcutLabel?: string;
-};
-
-type FilterSubmenuContentProps<T = unknown> = {
-  field: FilterFieldConfig<T>;
-  currentValues: T[];
-  isMultiSelect: boolean;
-  onToggle: (value: T, isSelected: boolean) => void;
-  i18n: FilterI18nConfig;
-  isActive?: boolean;
-  onActive?: () => void;
-  onBack?: () => void;
-  onClose?: () => void;
-};
-
-function FilterSubmenuContent<T = unknown>({
-  field,
-  currentValues,
-  isMultiSelect,
-  onToggle,
-  i18n,
-  isActive,
-  onActive,
-  onBack,
-  onClose,
-}: FilterSubmenuContentProps<T>) {
-  const [searchInput, setSearchInput] = useState("");
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const baseId = useId();
-
-  useEffect(() => {
-    if (isActive) {
-      if (field.searchable !== false) {
-        inputRef.current?.focus();
-      } else {
-        const listbox = document.getElementById(`${baseId}-listbox`);
-        listbox?.focus();
-      }
-    }
-  }, [isActive, field.searchable, baseId]);
-
-  const onHighlightIndex = useEffectEvent((index: number) =>
-    setHighlightedIndex(index),
-  );
-
-  useEffect(() => onHighlightIndex(-1), [searchInput]);
-
-  useEffect(() => {
-    if (highlightedIndex >= 0 && isActive) {
-      const element = document.getElementById(
-        `${baseId}-item-${highlightedIndex}`,
-      );
-      element?.scrollIntoView({ block: "nearest" });
-    }
-  }, [highlightedIndex, isActive, baseId]);
-
-  const filteredOptions = useMemo(() => {
-    return (
-      field.options?.filter((option) => {
-        const isSelected = currentValues.includes(option.value);
-        if (isSelected) return true;
-        if (!searchInput) return true;
-        return option.label.toLowerCase().includes(searchInput.toLowerCase());
-      }) || []
-    );
-  }, [field.options, searchInput, currentValues]);
-
-  useEffect(() => {
-    if (isActive && filteredOptions.length > 0) onHighlightIndex(0);
-  }, [isActive, filteredOptions.length]);
-
-  return (
-    <div className="flex flex-col" onMouseEnter={onActive}>
-      {field.searchable !== false && (
-        <>
-          <Input
-            ref={inputRef}
-            role="combobox"
-            aria-autocomplete="list"
-            aria-expanded={true}
-            aria-haspopup="listbox"
-            aria-controls={`${baseId}-listbox`}
-            aria-activedescendant={
-              highlightedIndex >= 0
-                ? `${baseId}-item-${highlightedIndex}`
-                : undefined
-            }
-            placeholder={i18n.placeholders.searchField(field.label || "")}
-            className={cn(
-              "h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none",
-              "focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0",
-              isActive && "placeholder:text-foreground",
-            )}
-            value={searchInput}
-            onBlur={() => isActive && inputRef.current?.focus()}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onFocus={() => onActive?.()}
-            onMouseEnter={(e) => {
-              onActive?.();
-              e.stopPropagation();
-            }}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown") {
-                e.preventDefault();
-                if (filteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev < filteredOptions.length - 1 ? prev + 1 : 0,
-                  );
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                if (filteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev > 0 ? prev - 1 : filteredOptions.length - 1,
-                  );
-              } else if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                onBack?.();
-              } else if (e.key === "Enter" && highlightedIndex >= 0) {
-                e.preventDefault();
-                const option = filteredOptions[highlightedIndex];
-                if (option) {
-                  onToggle(
-                    option.value as T,
-                    currentValues.includes(option.value),
-                  );
-                  if (!isMultiSelect) onBack?.();
-                }
-              } else if (e.key === "Escape") {
-                e.preventDefault();
-                onClose?.();
-              }
-              e.stopPropagation();
-            }}
-          />
-          <MenuSeparator />
-        </>
-      )}
-      <div className="relative flex max-h-full">
-        <div
-          className="flex max-h-[min(var(--available-height),24rem)] w-full scroll-pt-2 scroll-pb-2 flex-col overscroll-contain outline-hidden"
-          role="listbox"
-          id={`${baseId}-listbox`}
-          tabIndex={field.searchable === false ? 0 : -1}
-          onKeyDown={(e) => {
-            if (field.searchable === false) {
-              if (e.key === "ArrowDown") {
-                e.preventDefault();
-                if (filteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev < filteredOptions.length - 1 ? prev + 1 : 0,
-                  );
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                if (filteredOptions.length > 0)
-                  setHighlightedIndex((prev) =>
-                    prev > 0 ? prev - 1 : filteredOptions.length - 1,
-                  );
-              } else if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                onBack?.();
-              } else if (e.key === "Enter" && highlightedIndex >= 0) {
-                e.preventDefault();
-                const option = filteredOptions[highlightedIndex];
-                if (option) {
-                  onToggle(
-                    option.value as T,
-                    currentValues.includes(option.value),
-                  );
-                  if (!isMultiSelect) onBack?.();
-                }
-              } else if (e.key === "Escape") {
-                e.preventDefault();
-                onClose?.();
-              }
-              e.stopPropagation();
-            }
-          }}
-        >
-          <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
-            {filteredOptions.length === 0 ? (
-              <div className="text-muted-foreground py-2 text-center text-sm">
-                {i18n.noResultsFound}
-              </div>
-            ) : (
-              <MenuGroup>
-                {filteredOptions.map((option, index) => {
-                  const isSelected = currentValues.includes(option.value);
-                  const isHighlighted = highlightedIndex === index;
-                  const itemId = `${baseId}-item-${index}`;
-
-                  return (
-                    <MenuCheckboxItem
-                      key={String(option.value)}
-                      id={itemId}
-                      role="option"
-                      aria-selected={isHighlighted}
-                      data-highlighted={isHighlighted || undefined}
-                      onMouseEnter={() => setHighlightedIndex(index)}
-                      checked={isSelected}
-                      className={cn(
-                        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
-                        option.className,
-                      )}
-                      onSelect={(e) => {
-                        if (isMultiSelect) e.preventDefault();
-                      }}
-                      onCheckedChange={() =>
-                        onToggle(option.value as T, isSelected)
-                      }
-                    >
-                      {option.icon && option.icon}
-                      <span className="truncate">{option.label}</span>
-                    </MenuCheckboxItem>
-                  );
-                })}
-              </MenuGroup>
-            )}
-          </ScrollArea>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function Filters<T = unknown>({
-  filters,
-  fields,
-  onChange,
-  className,
-  variant = "default",
-  size = "default",
-  radius = "default",
-  i18n,
-  showSearchInput = true,
-  trigger,
-  allowMultiple = true,
-  menuPopupClassName,
-  enableShortcut = false,
-  shortcutKey = "F",
-  shortcutLabel = "F",
-}: FiltersProps<T>) {
-  const [addFilterOpen, setAddFilterOpen] = useState(false);
-  const [menuSearchInput, setMenuSearchInput] = useState("");
-  const [activeMenu, setActiveMenu] = useState<string>("root");
-  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [lastAddedFilterId, setLastAddedFilterId] = useState<string | null>(
-    null,
-  );
-  const rootInputRef = useRef<HTMLInputElement>(null);
-  const rootId = useId();
-
-  useHotkey(shortcutKey, () => setAddFilterOpen(true), {
-    enabled:
-      enableShortcut &&
-      !addFilterOpen &&
-      !(
-        document.activeElement instanceof HTMLInputElement ||
-        document.activeElement instanceof HTMLTextAreaElement
-      ),
-  });
-
-  useEffect(() => {
-    if (addFilterOpen && activeMenu === "root") rootInputRef.current?.focus();
-  }, [addFilterOpen, activeMenu]);
-
-  const onHighlightIndex = useEffectEvent((index: number) =>
-    setHighlightedIndex(index),
-  );
-
-  useEffect(() => onHighlightIndex(-1), [menuSearchInput]);
-
-  useEffect(() => {
-    if (highlightedIndex >= 0 && addFilterOpen) {
-      const element = document.getElementById(
-        `${rootId}-item-${highlightedIndex}`,
-      );
-      element?.scrollIntoView({ block: "nearest" });
-    }
-  }, [highlightedIndex, addFilterOpen, rootId]);
-
-  const onFilterOpen = useEffectEvent(() => setOpenSubMenu(null));
-
-  useEffect(() => {
-    if (!addFilterOpen) onFilterOpen();
-  }, [addFilterOpen]);
-
-  // Track which filter instance is being built in the current Add Filter menu session
-  // Maps fieldKey -> unique filterId created during this open session
-  const [sessionFilterIds, setSessionFilterIds] = useState<
-    Record<string, string>
-  >({});
-
-  useEffect(() => {
-    if (lastAddedFilterId) {
-      const timer = setTimeout(() => setLastAddedFilterId(null), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [lastAddedFilterId]);
-
-  const mergedI18n: FilterI18nConfig = {
-    ...DEFAULT_I18N,
-    ...i18n,
-    operators: { ...DEFAULT_I18N.operators, ...i18n?.operators },
-    placeholders: { ...DEFAULT_I18N.placeholders, ...i18n?.placeholders },
-    validation: { ...DEFAULT_I18N.validation, ...i18n?.validation },
-  };
-
-  const fieldsMap = useMemo(() => getFieldsMap(fields), [fields]);
-
-  const updateFilter = useCallback(
-    (filterId: string, updates: Partial<Filter<T>>) => {
-      onChange(
-        filters.map((filter) => {
-          if (filter.id === filterId) {
-            const updatedFilter = { ...filter, ...updates };
-            if (
-              updates.operator === "empty" ||
-              updates.operator === "not_empty"
-            )
-              updatedFilter.values = [] as T[];
-            return updatedFilter;
-          }
-          return filter;
-        }),
-      );
-    },
-    [filters, onChange],
-  );
-
-  const removeFilter = useCallback(
-    (filterId: string) => {
-      onChange(filters.filter((filter) => filter.id !== filterId));
-    },
-    [filters, onChange],
-  );
-
-  const addFilter = useCallback(
-    (fieldKey: string) => {
-      const field = fieldsMap[fieldKey];
-      if (field && field.key) {
-        const defaultOperator =
-          field.defaultOperator ||
-          (field.type === "multiselect" ? "is_any_of" : "is");
-        const defaultValues: unknown[] = field.type === "text" ? [""] : [];
-        const newFilter = createFilter<T>(
-          fieldKey,
-          defaultOperator,
-          defaultValues as T[],
-        );
-        setLastAddedFilterId(newFilter.id);
-        onChange([...filters, newFilter]);
-        setAddFilterOpen(false);
-        setMenuSearchInput("");
-      }
-    },
-    [fieldsMap, filters, onChange],
-  );
-
-  useEffect(() => {
-    if (addFilterOpen && activeMenu === "root") rootInputRef.current?.focus();
-  }, [addFilterOpen, activeMenu]);
-
-  const selectableFields = useMemo(() => {
-    const flatFields = flattenFields(fields);
-    return flatFields.filter((field) => {
-      if (!field.key || field.type === "separator") return false;
-      if (allowMultiple) return true;
-      return !filters.some((filter) => filter.field === field.key);
-    });
-  }, [fields, filters, allowMultiple]);
-
-  const filteredFields = useMemo(() => {
-    return selectableFields.filter(
-      (f) =>
-        !menuSearchInput ||
-        f.label?.toLowerCase().includes(menuSearchInput.toLowerCase()),
-    );
-  }, [selectableFields, menuSearchInput]);
-
-  useEffect(() => {
-    if (addFilterOpen && filteredFields.length > 0) onHighlightIndex(0);
-  }, [addFilterOpen, filteredFields.length]);
-
-  const triggerButton = useRender({
-    render: trigger as React.ReactElement,
-    defaultTagName: "button",
-  });
-
-  return (
-    <FilterContext.Provider
-      value={{
-        variant,
-        size,
-        radius,
-        i18n: mergedI18n,
+        "w-full border-t border-b border-dashed shadow-xs",
         className,
-        trigger,
-        allowMultiple,
-      }}
+      )}
     >
       <div
-        className={cn(filtersContainerVariants({ variant, size }), className)}
-      >
-        {selectableFields.length > 0 && (
-          <Menu
-            open={addFilterOpen}
-            onOpenChange={(open) => {
-              setAddFilterOpen(open);
-              if (!open) {
-                setMenuSearchInput("");
-                setSessionFilterIds({});
-              } else setActiveMenu("root");
-            }}
-          >
-            <MenuTrigger render={triggerButton} />
-            <MenuPopup className={cn("w-55", menuPopupClassName)} align="start">
-              {showSearchInput && (
-                <>
-                  <div className="relative">
-                    <Input
-                      ref={rootInputRef}
-                      role="combobox"
-                      aria-controls={`${rootId}-listbox`}
-                      aria-activedescendant={
-                        highlightedIndex >= 0
-                          ? `${rootId}-item-${highlightedIndex}`
-                          : undefined
-                      }
-                      placeholder={mergedI18n.searchFields}
-                      className={cn(
-                        "h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none",
-                        "focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0",
-                        activeMenu === "root" && "placeholder:text-foreground",
-                      )}
-                      value={menuSearchInput}
-                      onFocus={() => setActiveMenu("root")}
-                      onMouseEnter={() => setActiveMenu("root")}
-                      onBlur={() =>
-                        activeMenu === "root" && rootInputRef.current?.focus()
-                      }
-                      onChange={(e) => setMenuSearchInput(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowDown") {
-                          e.preventDefault();
-                          if (filteredFields.length > 0)
-                            setHighlightedIndex((prev) =>
-                              prev < filteredFields.length - 1 ? prev + 1 : 0,
-                            );
-                        } else if (e.key === "ArrowUp") {
-                          e.preventDefault();
-                          if (filteredFields.length > 0)
-                            setHighlightedIndex((prev) =>
-                              prev > 0 ? prev - 1 : filteredFields.length - 1,
-                            );
-                        } else if (
-                          (e.key === "ArrowRight" || e.key === "ArrowLeft") &&
-                          highlightedIndex >= 0
-                        ) {
-                          const field = filteredFields[highlightedIndex];
-                          const hasSubMenu =
-                            field &&
-                            (field.type === "select" ||
-                              field.type === "multiselect") &&
-                            field.options?.length;
-
-                          if (e.key === "ArrowRight" && hasSubMenu) {
-                            e.preventDefault();
-                            setOpenSubMenu(field.key || null);
-                            setActiveMenu(field.key || "root");
-                          } else if (e.key === "ArrowLeft") {
-                            e.preventDefault();
-                            if (openSubMenu) {
-                              setOpenSubMenu(null);
-                              setActiveMenu("root");
-                            }
-                          }
-                        } else if (e.key === "Enter" && highlightedIndex >= 0) {
-                          e.preventDefault();
-                          const field = filteredFields[highlightedIndex];
-                          if (field.key) {
-                            const hasSubMenu =
-                              (field.type === "select" ||
-                                field.type === "multiselect") &&
-                              field.options?.length;
-                            if (!hasSubMenu) addFilter(field.key);
-                            else {
-                              if (openSubMenu === field.key) {
-                                setOpenSubMenu(null);
-                                setActiveMenu("root");
-                              } else {
-                                setOpenSubMenu(field.key);
-                                setActiveMenu(field.key);
-                              }
-                            }
-                          }
-                        } else if (e.key === "Escape") setAddFilterOpen(false);
-                        e.stopPropagation();
-                      }}
-                    />
-                    {enableShortcut && shortcutLabel && (
-                      <Kbd className="bg-background absolute top-1/2 right-2 -translate-y-1/2 border">
-                        {shortcutLabel}
-                      </Kbd>
-                    )}
-                  </div>
-                  <MenuSeparator />
-                </>
-              )}
-
-              <div className="relative flex max-h-full">
-                <div
-                  className="flex max-h-[min(var(--available-height),24rem)] w-full scroll-pt-2 scroll-pb-2 flex-col overscroll-contain"
-                  role="listbox"
-                  id={`${rootId}-listbox`}
-                  onMouseEnter={() => setActiveMenu("root")}
-                >
-                  <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:m-0">
-                    {(() => {
-                      if (filteredFields.length === 0)
-                        return (
-                          <div className="text-muted-foreground py-2 text-center text-sm">
-                            {mergedI18n.noFieldsFound}
-                          </div>
-                        );
-
-                      return filteredFields.map((field, index) => {
-                        const isHighlighted = highlightedIndex === index;
-                        const itemId = `${rootId}-item-${index}`;
-                        const hasSubMenu =
-                          (field.type === "select" ||
-                            field.type === "multiselect") &&
-                          field.options?.length;
-
-                        if (hasSubMenu) {
-                          const isMultiSelect = field.type === "multiselect";
-                          const fieldKey = field.key as string;
-                          const sessionFilterId = sessionFilterIds[fieldKey];
-                          const sessionFilter = sessionFilterId
-                            ? filters.find((f) => f.id === sessionFilterId)
-                            : null;
-                          const currentValues = sessionFilter?.values || [];
-
-                          return (
-                            <MenuSub
-                              key={fieldKey}
-                              open={openSubMenu === fieldKey}
-                              onOpenChange={(open) => {
-                                if (open) setOpenSubMenu(fieldKey);
-                                else if (openSubMenu === fieldKey) {
-                                  setOpenSubMenu(null);
-                                  setActiveMenu("root");
-                                }
-                              }}
-                            >
-                              <MenuSubTrigger
-                                id={itemId}
-                                role="option"
-                                aria-selected={isHighlighted}
-                                data-highlighted={isHighlighted || undefined}
-                                onMouseEnter={() => {
-                                  setHighlightedIndex(index);
-                                  setActiveMenu("root");
-                                }}
-                                className="data-popup-open:bg-accent data-popup-open:text-accent-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground"
-                              >
-                                {field.icon}
-                                <span>{field.label}</span>
-                              </MenuSubTrigger>
-                              <MenuSubPopup
-                                className="w-50"
-                                // side="right"
-                              >
-                                <FilterSubmenuContent
-                                  field={field}
-                                  currentValues={currentValues}
-                                  isMultiSelect={isMultiSelect}
-                                  i18n={mergedI18n}
-                                  isActive={activeMenu === fieldKey}
-                                  onActive={() => {
-                                    if (field.searchable !== false)
-                                      setActiveMenu(fieldKey);
-                                  }}
-                                  onBack={() => {
-                                    setOpenSubMenu(null);
-                                    setActiveMenu("root");
-                                  }}
-                                  onClose={() => setAddFilterOpen(false)}
-                                  onToggle={(value, isSelected) => {
-                                    if (isMultiSelect) {
-                                      const nextValues = isSelected
-                                        ? (currentValues.filter(
-                                            (v) => v !== value,
-                                          ) as T[])
-                                        : ([...currentValues, value] as T[]);
-
-                                      if (sessionFilter) {
-                                        if (nextValues.length === 0) {
-                                          onChange(
-                                            filters.filter(
-                                              (f) => f.id !== sessionFilter.id,
-                                            ),
-                                          );
-                                          setSessionFilterIds((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: "",
-                                          }));
-                                        } else {
-                                          onChange(
-                                            filters.map((f) =>
-                                              f.id === sessionFilter.id
-                                                ? { ...f, values: nextValues }
-                                                : f,
-                                            ),
-                                          );
-                                        }
-                                      } else {
-                                        const newFilter = createFilter<T>(
-                                          fieldKey,
-                                          field.defaultOperator || "is_any_of",
-                                          nextValues,
-                                        );
-                                        onChange([...filters, newFilter]);
-                                        setSessionFilterIds((prev) => ({
-                                          ...prev,
-                                          [fieldKey]: newFilter.id,
-                                        }));
-                                      }
-                                    } else {
-                                      const newFilter = createFilter<T>(
-                                        fieldKey,
-                                        field.defaultOperator || "is",
-                                        [value] as T[],
-                                      );
-                                      setLastAddedFilterId(newFilter.id);
-                                      onChange([...filters, newFilter]);
-                                      setAddFilterOpen(false);
-                                    }
-                                  }}
-                                />
-                              </MenuSubPopup>
-                            </MenuSub>
-                          );
-                        }
-
-                        return (
-                          <MenuItem
-                            key={field.key}
-                            id={itemId}
-                            role="option"
-                            aria-selected={isHighlighted}
-                            data-highlighted={isHighlighted || undefined}
-                            onMouseEnter={() => setHighlightedIndex(index)}
-                            onClick={() => field.key && addFilter(field.key)}
-                            className="data-highlighted:bg-accent data-highlighted:text-accent-foreground"
-                          >
-                            {field.icon}
-                            <span>{field.label}</span>
-                          </MenuItem>
-                        );
-                      });
-                    })()}
-                  </ScrollArea>
-                </div>
-              </div>
-            </MenuPopup>
-          </Menu>
+        ref={scrollContainerRef}
+        onScroll={checkScroll}
+        className={cn(
+          "no-scrollbar flex items-center gap-2 overflow-x-auto py-2",
+          showLeftBlur && "mask-l-from-95%",
+          showRightBlur && "mask-r-from-95%",
         )}
-
-        {filters.map((filter) => {
-          const field = fieldsMap[filter.field];
-          if (!field) return null;
-          return (
-            <ButtonGroup key={filter.id}>
-              <ButtonGroupText className="bg-background dark:bg-input/30">
-                {field.icon && field.icon}
-                {field.label}
-              </ButtonGroupText>
-              <FilterOperator<T>
-                field={field}
-                operator={filter.operator}
-                values={filter.values}
-                onChange={(operator) => updateFilter(filter.id, { operator })}
-              />
-              <FilterValueSelector<T>
-                field={field}
-                values={filter.values}
-                operator={filter.operator}
-                onChange={(values) => updateFilter(filter.id, { values })}
-                autoFocus={filter.id === lastAddedFilterId}
-              />
-              <FilterRemoveButton onClick={() => removeFilter(filter.id)} />
-            </ButtonGroup>
-          );
-        })}
+      >
+        {children}
       </div>
-    </FilterContext.Provider>
+    </div>
   );
 }
 
-export function createFilter<T = unknown>(
-  field: string,
-  operator?: string,
-  values: T[] = [],
-): Filter<T> {
-  const id = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-  return { id, field, operator: operator || "is", values };
+export function ClearFilters<TData>({
+  table,
+  size = "sm",
+  variant = "destructive-outline",
+  ...props
+}: Omit<ButtonProps, "onClick"> & { table: Table<TData> }) {
+  return (
+    <Button
+      size={size}
+      variant={variant}
+      onClick={() => {
+        table.setColumnFilters([]);
+        table.setGlobalFilter("");
+      }}
+      {...props}
+    >
+      <FilterXIcon />
+      {!size?.startsWith("icon") && messages.actions.clear}
+    </Button>
+  );
 }
 
-export function createFilterGroup<T = unknown>(
-  id: string,
-  label: string,
-  fields: FilterFieldConfig<T>[],
-  initialFilters: Filter<T>[] = [],
-): FilterGroup<T> {
-  return { id, label, filters: initialFilters, fields };
+export function ResetFilters<TData>({
+  table,
+  size = "default",
+  variant = "outline",
+  ...props
+}: Omit<ButtonProps, "onClick"> & { table: Table<TData> }) {
+  // const dc = useDataController();
+
+  return (
+    <Button
+      size={size}
+      variant={variant}
+      onClick={() => {
+        table.reset();
+
+        // table.resetPagination();
+        // if (dc.defaultState?.page) table.setPageIndex(dc.defaultState.page);
+        // else table.resetPageIndex();
+        // if (dc.defaultState?.size) table.setPageSize(dc.defaultState.size);
+        // else table.resetPageSize();
+
+        table.resetColumnOrder();
+        table.resetColumnSizing();
+        table.resetColumnVisibility();
+        table.resetColumnPinning();
+        table.resetColumnFilters();
+
+        table.resetRowPinning();
+        table.resetRowSelection();
+
+        table.resetGlobalFilter();
+        table.setGlobalFilter("");
+
+        table.resetSorting();
+        table.resetGrouping();
+        table.resetExpanded();
+        table.resetHeaderSizeInfo();
+      }}
+      {...props}
+    >
+      <RotateCcwSquareIcon />
+      {!size?.startsWith("icon") && messages.actions.reset}
+    </Button>
+  );
+}
+
+export function FilterSelector<TData>({
+  table,
+  size,
+  variant = "outline",
+  align = "start",
+  placeholder = "Cari...",
+  ...props
+}: ButtonProps & {
+  table: Table<TData>;
+  align?: React.ComponentProps<typeof PopoverPopup>["align"];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [property, setProperty] = useState<string | undefined>(undefined);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const column = property ? getColumn(table, property) : undefined;
+  const columnMeta = property ? getColumnMeta(table, property) : undefined;
+
+  const properties = table.getAllColumns().filter(isFilterableColumn);
+
+  // const hasFilters = table.getState().columnFilters.length > 0;
+  const onFilter = useEffectEvent(() => {
+    inputRef.current?.focus();
+    setValue("");
+  });
+
+  useEffect(() => {
+    if (property && inputRef) onFilter();
+  }, [property]);
+
+  useEffect(() => {
+    if (!open) setTimeout(() => setValue(""), 150);
+  }, [open]);
+
+  const content = useMemo(
+    () =>
+      property && column && columnMeta ? (
+        <FitlerValueController
+          id={property}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      ) : (
+        <Command loopFocus>
+          <CommandInput
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            ref={inputRef}
+            placeholder={placeholder}
+          />
+          <CommandEmpty>{messages.empty}</CommandEmpty>
+          <CommandList className="max-h-fit">
+            <CommandGroup>
+              {properties.map((column) => (
+                <FilterableColumn
+                  key={column.id}
+                  column={column}
+                  table={table}
+                  setProperty={setProperty}
+                />
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      ),
+    [property, column, columnMeta, table, value, placeholder, properties],
+  );
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={async (value) => {
+        setOpen(value);
+        if (!value) setTimeout(() => setProperty(undefined), 100);
+      }}
+    >
+      <PopoverTrigger
+        render={
+          <Button size={size} variant={variant} {...props}>
+            <FilterIcon />
+            {!size?.startsWith("icon") && "Filter"}
+          </Button>
+        }
+      />
+
+      <PopoverPopup align={align} className="w-fit p-0">
+        {content}
+      </PopoverPopup>
+    </Popover>
+  );
+}
+
+export function FilterableColumn<TData>({
+  column,
+  setProperty,
+}: {
+  column: Column<TData>;
+  table: Table<TData>;
+  setProperty: (value: string) => void;
+}) {
+  const Icon = column.columnDef.meta?.icon;
+  return (
+    <CommandItem onSelect={() => setProperty(column.id)} className="group">
+      <div className="flex w-full items-center justify-between">
+        <div className="inline-flex items-center gap-1.5">
+          {Icon && <Icon />}
+          <span>{column.columnDef.meta?.label}</span>
+        </div>
+        <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
+      </div>
+    </CommandItem>
+  );
+}
+
+export function ActiveFilters<TData>({ table }: { table: Table<TData> }) {
+  const filters = table.getState().columnFilters;
+
+  return (
+    <>
+      {filters.map((filter) => {
+        const { id } = filter;
+
+        const column = getColumn(table, id);
+        const meta = getColumnMeta(table, id);
+
+        // Skip if no filter value
+        if (!filter.value) return null;
+
+        // Narrow the type based on meta.type and cast filter accordingly
+        switch (meta.type) {
+          case "text":
+            return renderFilter<TData, "text">(
+              filter as { id: string; value: FilterModel<"text", TData> },
+              column,
+              meta as ColumnMeta<TData, unknown> & { type: "text" },
+              table,
+            );
+          case "number":
+            return renderFilter<TData, "number">(
+              filter as { id: string; value: FilterModel<"number", TData> },
+              column,
+              meta as ColumnMeta<TData, unknown> & { type: "number" },
+              table,
+            );
+          case "date":
+            return renderFilter<TData, "date">(
+              filter as { id: string; value: FilterModel<"date", TData> },
+              column,
+              meta as ColumnMeta<TData, unknown> & { type: "date" },
+              table,
+            );
+          case "option":
+            return renderFilter<TData, "option">(
+              filter as { id: string; value: FilterModel<"option", TData> },
+              column,
+              meta as ColumnMeta<TData, unknown> & { type: "option" },
+              table,
+            );
+          case "multiOption":
+            return renderFilter<TData, "multiOption">(
+              filter as {
+                id: string;
+                value: FilterModel<"multiOption", TData>;
+              },
+              column,
+              meta as ColumnMeta<TData, unknown> & { type: "multiOption" },
+              table,
+            );
+          default:
+            return null; // Handle unknown types gracefully
+        }
+      })}
+    </>
+  );
+}
+
+// Generic render function for a filter with type-safe value
+function renderFilter<TData, T extends DataFilterType>(
+  filter: { id: string; value: FilterModel<T, TData> },
+  column: Column<TData, unknown>,
+  meta: ColumnMeta<TData, unknown> & { type: T },
+  table: Table<TData>,
+) {
+  const { id, value } = filter;
+
+  return (
+    <ButtonGroup key={`filter-${id}`} className="**:text-xs">
+      <FilterSubject meta={meta} />
+      <FilterOperator column={column} columnMeta={meta} filter={value} />
+      <FilterValue id={id} column={column} columnMeta={meta} table={table} />
+      <Button
+        size="icon-sm"
+        variant="outline"
+        onClick={() => table.getColumn(id)?.setFilterValue(undefined)}
+      >
+        <XIcon />
+      </Button>
+    </ButtonGroup>
+  );
+}
+
+/****** Property Filter Subject ******/
+
+export function FilterSubject<TData>({
+  meta,
+}: {
+  meta: ColumnMeta<TData, string>;
+}) {
+  const hasIcon = !!meta?.icon;
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      className="flex items-center gap-1.5 px-2 font-medium whitespace-nowrap select-none"
+    >
+      {hasIcon && <meta.icon />}
+      <span>{meta.label}</span>
+    </Button>
+  );
+}
+
+/****** Property Filter Operator ******/
+
+// Renders the filter operator display and menu for a given column filter
+// The filter operator display is the label and icon for the filter operator
+// The filter operator menu is the dropdown menu for the filter operator
+export function FilterOperator<TData, T extends DataFilterType>({
+  column,
+  columnMeta,
+  filter,
+}: {
+  column: Column<TData, unknown>;
+  columnMeta: ColumnMeta<TData, unknown>;
+  filter: FilterModel<T, TData>;
+}) {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const close = () => setOpen(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
+          <Button size="sm" variant="outline">
+            <FilterOperatorDisplay
+              filter={filter}
+              filterType={columnMeta.type}
+            />
+          </Button>
+        }
+      />
+
+      <PopoverPopup className="min-w-fit p-0">
+        <Command>
+          <CommandInput placeholder="Filter..." />
+          <CommandEmpty>{messages.empty}</CommandEmpty>
+          <CommandList className="max-h-fit">
+            <FilterOperatorController column={column} closeController={close} />
+          </CommandList>
+        </Command>
+      </PopoverPopup>
+    </Popover>
+  );
+}
+
+export function FilterOperatorDisplay<TData, T extends DataFilterType>({
+  filter,
+  filterType,
+}: {
+  filter: FilterModel<T, TData>;
+  filterType: T;
+}) {
+  const details = filterTypeOperatorDetails[filterType][filter.operator];
+
+  return <span>{details.label}</span>;
+}
+
+type FilterOperatorControllerProps<TData> = {
+  column: Column<TData, unknown>;
+  closeController: () => void;
+};
+
+export function FilterOperatorController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  const { type } = column.columnDef.meta!;
+
+  switch (type) {
+    case "option":
+      return (
+        <FilterOperatorOptionController
+          column={column}
+          closeController={closeController}
+        />
+      );
+    case "multiOption":
+      return (
+        <FilterOperatorMultiOptionController
+          column={column}
+          closeController={closeController}
+        />
+      );
+    case "date":
+      return (
+        <FilterOperatorDateController
+          column={column}
+          closeController={closeController}
+        />
+      );
+    case "text":
+      return (
+        <FilterOperatorTextController
+          column={column}
+          closeController={closeController}
+        />
+      );
+    case "number":
+      return (
+        <FilterOperatorNumberController
+          column={column}
+          closeController={closeController}
+        />
+      );
+    default:
+      return null;
+  }
+}
+
+function FilterOperatorOptionController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"option", TData>;
+  const filterDetails = optionFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(optionFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+    closeController();
+  };
+
+  return (
+    <CommandGroup>
+      <CommandGroupLabel>Operators</CommandGroupLabel>
+      {relatedFilters.map((r) => (
+        <CommandItem
+          key={r.value}
+          value={r.value}
+          onSelect={() => changeOperator(r.value)}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+function FilterOperatorMultiOptionController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"multiOption", TData>;
+  const filterDetails = multiOptionFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(multiOptionFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+    closeController();
+  };
+
+  return (
+    <CommandGroup>
+      <CommandGroupLabel>Operators</CommandGroupLabel>
+      {relatedFilters.map((r) => (
+        <CommandItem
+          key={r.value}
+          value={r.value}
+          onSelect={() => changeOperator(r.value)}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+function FilterOperatorDateController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"date", TData>;
+  const filterDetails = dateFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(dateFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+    closeController();
+  };
+
+  return (
+    <CommandGroup>
+      {relatedFilters.map((r) => (
+        <CommandItem
+          key={r.value}
+          value={r.value}
+          onSelect={() => changeOperator(r.value)}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+export function FilterOperatorTextController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"text", TData>;
+  const filterDetails = textFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(textFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) => {
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+    closeController();
+  };
+
+  return (
+    <CommandGroup>
+      <CommandGroupLabel>Operators</CommandGroupLabel>
+      {relatedFilters.map((r) => (
+        <CommandItem
+          key={r.value}
+          value={r.value}
+          onSelect={() => changeOperator(r.value)}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+function FilterOperatorNumberController<TData>({
+  column,
+  closeController,
+}: FilterOperatorControllerProps<TData>) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const filter = column.getFilterValue() as FilterModel<"number", TData>;
+
+  // Show all related operators
+  const relatedFilters = Object.values(numberFilterDetails);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const relatedFilterOperators = relatedFilters.map((r) => r.value);
+
+  const changeOperator = (
+    operator: (typeof relatedFilterOperators)[number],
+  ) => {
+    column.setFilterValue((old: typeof filter) => {
+      // Clear out the second value when switching to single-input operators
+      const target = numberFilterDetails[operator].target;
+      const newValues =
+        target === "single" ? [old.values[0]] : createNumberRange(old.values);
+      return { ...old, operator, values: newValues };
+    });
+    closeController();
+  };
+
+  return (
+    <CommandGroup>
+      <CommandGroupLabel>Operators</CommandGroupLabel>
+      {relatedFilters.map((r) => (
+        <CommandItem
+          key={r.value}
+          value={r.value}
+          onSelect={() => changeOperator(r.value)}
+        >
+          {r.label}
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+/****** Property Filter Value ******/
+
+export function FilterValue<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: {
+  id: string;
+  column: Column<TData>;
+  columnMeta: ColumnMeta<TData, TValue>;
+  table: Table<TData>;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <Button size="sm" variant="outline">
+            <FilterValueDisplay
+              id={id}
+              column={column}
+              columnMeta={columnMeta}
+              table={table}
+            />
+          </Button>
+        }
+      />
+      <PopoverPopup className="w-fit origin-(--radix-popover-content-transform-origin) p-0">
+        <FitlerValueController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      </PopoverPopup>
+    </Popover>
+  );
+}
+
+type FilterValueDisplayProps<TData, TValue> = {
+  id: string;
+  column: Column<TData>;
+  columnMeta: ColumnMeta<TData, TValue>;
+  table: Table<TData>;
+};
+
+export function FilterValueDisplay<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: FilterValueDisplayProps<TData, TValue>) {
+  switch (columnMeta.type) {
+    case "option":
+      return (
+        <FilterValueOptionDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "multiOption":
+      return (
+        <FilterValueMultiOptionDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "date":
+      return (
+        <FilterValueDateDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "text":
+      return (
+        <FilterValueTextDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "number":
+      return (
+        <FilterValueNumberDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    default:
+      return null;
+  }
+}
+
+function uniq<T>(a: T[]): T[] {
+  return Array.from(new Set(a));
+}
+
+export function FilterValueOptionDisplay<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: FilterValueDisplayProps<TData, TValue>) {
+  let options: DataFilterOption[];
+  const columnVals = table
+    .getCoreRowModel()
+    .rows.flatMap((r) => r.getValue<TValue>(id))
+    .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
+  const uniqueVals = uniq(columnVals);
+
+  // If static options are provided, use them
+  if (columnMeta.options) options = columnMeta.options;
+  // No static options provided,
+  // We should dynamically generate them based on the column data
+  else if (columnMeta.transformOptionFn) {
+    const transformOptionFn = columnMeta.transformOptionFn;
+
+    options = uniqueVals.map((v) =>
+      transformOptionFn(v as ElementType<NonNullable<TValue>>),
+    );
+  }
+
+  // Make sure the column data conforms to DataFilterOption type
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
+  // Invalid configuration
+  else
+    throw new Error(
+      `[data-filter] [${id}] Either provide static options, a transformOptionFn, or ensure the column data conforms to DataFilterOption type`,
+    );
+
+  const filter = column.getFilterValue() as FilterModel<"option", TData>;
+  const selected = options.filter((o) => filter?.values.includes(o.value));
+
+  // We display the selected options based on how many are selected
+  //
+  // If there is only one option selected, we display its icon and label
+  //
+  // If there are multiple options selected, we display:
+  // 1) up to 3 icons of the selected options
+  // 2) the number of selected options
+  if (selected.length === 1) {
+    const { label, icon: Icon } = selected[0];
+    const hasIcon = !!Icon;
+    return (
+      <span className="inline-flex items-center gap-1">
+        {hasIcon && (isValidElement(Icon) ? Icon : <Icon />)}
+        <span>{label}</span>
+      </span>
+    );
+  }
+
+  const name = columnMeta.label.toLowerCase();
+  const pluralName = name.endsWith("s") ? `${name}es` : `${name}s`;
+  const hasOptionIcons = !options?.some((o) => !o.icon);
+
+  return (
+    <div className="inline-flex items-center gap-0.5">
+      {hasOptionIcons &&
+        selected.slice(0, 3).map(({ value, icon }) => {
+          const Icon = icon!;
+          return isValidElement(Icon) ? Icon : <Icon key={value} />;
+        })}
+      <span className={cn(hasOptionIcons && "ml-1.5")}>
+        {selected.length} {pluralName}
+      </span>
+    </div>
+  );
+}
+
+export function FilterValueMultiOptionDisplay<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: FilterValueDisplayProps<TData, TValue>) {
+  let options: DataFilterOption[];
+  const columnVals = table
+    .getCoreRowModel()
+    .rows.flatMap((r) => r.getValue<TValue>(id))
+    .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
+  const uniqueVals = uniq(columnVals);
+
+  // If static options are provided, use them
+  if (columnMeta.options) options = columnMeta.options;
+  // No static options provided,
+  // We should dynamically generate them based on the column data
+  else if (columnMeta.transformOptionFn) {
+    const transformOptionFn = columnMeta.transformOptionFn;
+
+    options = uniqueVals.map((v) =>
+      transformOptionFn(v as ElementType<NonNullable<TValue>>),
+    );
+  }
+
+  // Make sure the column data conforms to DataFilterOption type
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
+  // Invalid configuration
+  else {
+    throw new Error(
+      `[data-filter] [${id}] Either provide static options, a transformOptionFn, or ensure the column data conforms to DataFilterOption type`,
+    );
+  }
+
+  const filter = column.getFilterValue() as FilterModel<"multiOption", TData>;
+  const selected = options.filter((o) => filter?.values[0].includes(o.value));
+
+  if (selected.length === 1) {
+    const { label, icon: Icon } = selected[0];
+    const hasIcon = !!Icon;
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        {hasIcon && (isValidElement(Icon) ? Icon : <Icon />)}
+        <span>{label}</span>
+      </span>
+    );
+  }
+
+  const name = columnMeta.label.toLowerCase();
+  const hasOptionIcons = !columnMeta.options?.some((o) => !o.icon);
+
+  return (
+    <div className="inline-flex items-center gap-1.5">
+      {hasOptionIcons && (
+        <div key="icons" className="inline-flex items-center gap-0.5">
+          {selected.slice(0, 3).map(({ value, icon }) => {
+            const Icon = icon!;
+            return isValidElement(Icon) ? (
+              cloneElement(Icon, { key: value })
+            ) : (
+              <Icon key={value} />
+            );
+          })}
+        </div>
+      )}
+      <span>
+        {selected.length} {name}
+      </span>
+    </div>
+  );
+}
+
+export function FilterValueDateDisplay<TData, TValue>({
+  column,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"date", TData>)
+    : undefined;
+
+  if (!filter) return null;
+  if (filter.values.length === 0) return <EllipsisIcon />;
+  if (filter.values.length === 1) {
+    const value = filter.values[0];
+    const formattedDateStr = formatLocalizedDate(value, "MMM d, yyyy");
+    return <span>{formattedDateStr}</span>;
+  }
+
+  const formattedRangeStr = formatDateRange(filter.values[0], filter.values[1]);
+
+  return <span>{formattedRangeStr}</span>;
+}
+
+export function FilterValueTextDisplay<TData, TValue>({
+  column,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"text", TData>)
+    : undefined;
+
+  if (!filter) return null;
+  if (filter.values.length === 0 || filter.values[0].trim() === "")
+    return <EllipsisIcon />;
+
+  const value = filter.values[0];
+
+  return <span>{value}</span>;
+}
+
+export function FilterValueNumberDisplay<TData, TValue>({
+  column,
+  columnMeta,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const cappedMax = columnMeta.max ?? 2147483647;
+
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"number", TData>)
+    : undefined;
+
+  if (!filter) return null;
+
+  if (
+    filter.operator === "is between" ||
+    filter.operator === "is not between"
+  ) {
+    const minValue = filter.values[0];
+    const maxValue =
+      filter.values[1] === Number.POSITIVE_INFINITY ||
+      filter.values[1] >= cappedMax
+        ? `${cappedMax}+`
+        : filter.values[1];
+
+    return (
+      <span className="tracking-tight tabular-nums">
+        {minValue} and {maxValue}
+      </span>
+    );
+  }
+
+  if (!filter.values || filter.values.length === 0) return null;
+
+  const value = filter.values[0];
+  return <span className="tracking-tight tabular-nums">{value}</span>;
+}
+
+export function FitlerValueController<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: {
+  id: string;
+  column: Column<TData>;
+  columnMeta: ColumnMeta<TData, TValue>;
+  table: Table<TData>;
+}) {
+  switch (columnMeta.type) {
+    case "option":
+      return (
+        <FilterValueOptionController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "multiOption":
+      return (
+        <FilterValueMultiOptionController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "date":
+      return (
+        <FilterValueDateController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "text":
+      return (
+        <FilterValueTextController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "number":
+      return (
+        <FilterValueNumberController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    default:
+      return null;
+  }
+}
+
+type ProperFilterValueMenuProps<TData, TValue> = {
+  id: string;
+  column: Column<TData>;
+  columnMeta: ColumnMeta<TData, TValue>;
+  table: Table<TData>;
+};
+
+export function FilterValueOptionController<TData, TValue>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"option", TData>)
+    : undefined;
+
+  let options: DataFilterOption[];
+  const columnVals = table
+    .getCoreRowModel()
+    .rows.flatMap((r) => r.getValue<TValue>(id))
+    .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
+
+  const uniqueVals = uniq(columnVals);
+
+  // If static options are provided, use them
+  if (columnMeta.options) options = columnMeta.options;
+  // No static options provided,
+  // We should dynamically generate them based on the column data
+  else if (columnMeta.transformOptionFn) {
+    const transformOptionFn = columnMeta.transformOptionFn;
+    options = uniqueVals.map((v) =>
+      transformOptionFn(v as ElementType<NonNullable<TValue>>),
+    );
+  }
+
+  // Make sure the column data conforms to DataFilterOption type
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
+  // Invalid configuration
+  else {
+    throw new Error(
+      `[data-filter] [${id}] Either provide static options, a transformOptionFn, or ensure the column data conforms to DataFilterOption type`,
+    );
+  }
+
+  const optionsCount: Record<DataFilterOption["value"], number> =
+    columnVals.reduce(
+      (acc, curr) => {
+        const { value } = columnMeta.transformOptionFn
+          ? columnMeta.transformOptionFn(
+              curr as ElementType<NonNullable<TValue>>,
+            )
+          : { value: curr as string };
+
+        acc[value] = (acc[value] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<DataFilterOption["value"], number>,
+    );
+
+  const handleOptionSelect = (value: string, check: boolean) => {
+    if (check)
+      column?.setFilterValue(
+        (old: undefined | FilterModel<"option", TData>) => {
+          if (!old || old.values.length === 0)
+            return {
+              operator: "is",
+              values: [value],
+              columnMeta: column.columnDef.meta,
+            } satisfies FilterModel<"option", TData>;
+
+          const newValues = [...old.values, value];
+
+          return {
+            operator: "is any of",
+            values: newValues,
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterModel<"option", TData>;
+        },
+      );
+    else
+      column?.setFilterValue(
+        (old: undefined | FilterModel<"option", TData>) => {
+          if (!old || old.values.length <= 1) return undefined;
+
+          const newValues = old.values.filter((v) => v !== value);
+          return {
+            operator: newValues.length > 1 ? "is any of" : "is",
+            values: newValues,
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterModel<"option", TData>;
+        },
+      );
+  };
+
+  return (
+    <Command loopFocus>
+      <CommandInput autoFocus placeholder={`Cari ${columnMeta.label}...`} />
+      <CommandEmpty>{messages.empty}</CommandEmpty>
+      <CommandList className="max-h-fit">
+        <CommandGroup>
+          {options.map(({ value, label, icon: Icon, count }) => {
+            const checked = Boolean(filter?.values.includes(value));
+            return (
+              <CommandItem
+                key={value}
+                onSelect={() => handleOptionSelect(value, !checked)}
+                className="group flex items-center justify-between gap-2"
+              >
+                <Checkbox checked={checked} />
+
+                {Icon &&
+                  (isValidElement(Icon) ? (
+                    Icon
+                  ) : (
+                    <Icon
+                      className={cn(
+                        checked ? "text-foreground" : "text-muted-foreground",
+                      )}
+                    />
+                  ))}
+
+                <span>{label}</span>
+
+                <span
+                  className={cn(
+                    "ml-auto tracking-tight",
+                    count === 0 && "slashed-zero",
+                  )}
+                >
+                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
+                  {formatNumber(count ?? optionsCount[value] ?? 0)}
+                </span>
+              </CommandItem>
+            );
+          })}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
+export function FilterValueMultiOptionController<
+  TData extends RowData,
+  TValue,
+>({
+  id,
+  column,
+  columnMeta,
+  table,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue() as
+    | FilterModel<"multiOption", TData>
+    | undefined;
+
+  let options: DataFilterOption[];
+  const columnVals = table
+    .getCoreRowModel()
+    .rows.flatMap((r) => r.getValue<TValue>(id))
+    .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null);
+  const uniqueVals = uniq(columnVals);
+
+  // If static options are provided, use them
+  if (columnMeta.options) options = columnMeta.options;
+  // No static options provided,
+  // We should dynamically generate them based on the column data
+  else if (columnMeta.transformOptionFn) {
+    const transformOptionFn = columnMeta.transformOptionFn;
+    options = uniqueVals.map((v) =>
+      transformOptionFn(v as ElementType<NonNullable<TValue>>),
+    );
+  }
+
+  // Make sure the column data conforms to DataFilterOption type
+  else if (isColumnOptionArray(uniqueVals)) options = uniqueVals;
+  // Invalid configuration
+  else {
+    throw new Error(
+      `[data-filter] [${id}] Either provide static options, a transformOptionFn, or ensure the column data conforms to DataFilterOption type`,
+    );
+  }
+
+  const optionsCount: Record<DataFilterOption["value"], number> =
+    columnVals.reduce(
+      (acc, curr) => {
+        const value = columnMeta.options
+          ? (curr as string)
+          : columnMeta.transformOptionFn!(
+              curr as ElementType<NonNullable<TValue>>,
+            ).value;
+
+        acc[value] = (acc[value] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<DataFilterOption["value"], number>,
+    );
+
+  // Handles the selection/deselection of an option
+  const handleOptionSelect = (value: string, check: boolean) => {
+    if (check) {
+      column.setFilterValue(
+        (old: undefined | FilterModel<"multiOption", TData>) => {
+          if (
+            !old ||
+            old.values.length === 0 ||
+            !old.values[0] ||
+            old.values[0].length === 0
+          )
+            return {
+              operator: "include",
+              values: [[value]],
+              columnMeta: column.columnDef.meta,
+            } satisfies FilterModel<"multiOption", TData>;
+
+          const newValues = [uniq([...old.values[0], value])];
+
+          return {
+            operator: determineNewOperator(
+              "multiOption",
+              old.values,
+              newValues,
+              old.operator,
+            ),
+            values: newValues,
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterModel<"multiOption", TData>;
+        },
+      );
+    } else
+      column.setFilterValue(
+        (old: undefined | FilterModel<"multiOption", TData>) => {
+          if (!old?.values[0] || old.values[0].length <= 1) return undefined;
+
+          const newValues = [
+            uniq([...old.values[0], value]).filter((v) => v !== value),
+          ];
+
+          return {
+            operator: determineNewOperator(
+              "multiOption",
+              old.values,
+              newValues,
+              old.operator,
+            ),
+            values: newValues,
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterModel<"multiOption", TData>;
+        },
+      );
+  };
+
+  return (
+    <Command loopFocus>
+      <CommandInput placeholder={`Cari ${columnMeta.label}...`} autoFocus />
+      <CommandEmpty>{messages.empty}</CommandEmpty>
+      <CommandList>
+        <CommandGroup>
+          {options.map(({ value, label, icon: Icon, count }) => {
+            const checked = Boolean(filter?.values[0]?.includes(value));
+            return (
+              <CommandItem
+                key={value}
+                onSelect={() => handleOptionSelect(value, !checked)}
+                className="group flex items-center justify-between gap-2"
+              >
+                <Checkbox checked={checked} />
+
+                {Icon &&
+                  (isValidElement(Icon) ? (
+                    Icon
+                  ) : (
+                    <Icon
+                      className={cn(
+                        checked ? "text-foreground" : "text-muted-foreground",
+                      )}
+                    />
+                  ))}
+
+                <span>{label}</span>
+
+                <span
+                  className={cn(
+                    "ml-auto tracking-tight",
+                    count === 0 && "slashed-zero",
+                  )}
+                >
+                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
+                  {formatNumber(count ?? optionsCount[value] ?? 0)}
+                </span>
+              </CommandItem>
+            );
+          })}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
+export function FilterValueDateController<TData, TValue>({
+  column,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"date", TData>)
+    : undefined;
+
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: filter?.values[0] ?? new TZDate(),
+    to: filter?.values[1] ?? undefined,
+  });
+
+  const changeDateRange = (value: DateRange | undefined) => {
+    const start = value?.from;
+    const end =
+      start && value?.to && !isEqual(start, value.to)
+        ? endOfDay(value.to)
+        : undefined;
+
+    setDate({ from: start, to: end });
+
+    const isRange = start && end;
+    const newValues = isRange ? [start, end] : start ? [start] : [];
+
+    column.setFilterValue((old: undefined | FilterModel<"date", TData>) => {
+      if (!old || old.values.length === 0)
+        return {
+          operator: newValues.length > 1 ? "is between" : "is",
+          values: newValues,
+          columnMeta: column.columnDef.meta,
+        } satisfies FilterModel<"date", TData>;
+
+      return {
+        operator:
+          old.values.length < newValues.length
+            ? "is between"
+            : old.values.length > newValues.length
+              ? "is"
+              : old.operator,
+        values: newValues,
+        columnMeta: column.columnDef.meta,
+      } satisfies FilterModel<"date", TData>;
+    });
+  };
+
+  return (
+    <Command>
+      {/* <CommandInput placeholder={`Cari ${columnMeta.label}...`} /> */}
+      {/* <CommandEmpty>{messages.empty}</CommandEmpty> */}
+      <CommandList className="max-h-fit">
+        <CommandGroup>
+          <Calendar
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={changeDateRange}
+            numberOfMonths={1}
+          />
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
+export function FilterValueTextController<TData, TValue>({
+  column,
+  columnMeta,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"text", TData>)
+    : undefined;
+  const filterValue = filter?.values[0] ?? "";
+
+  const [value, setValue] = useState(filterValue);
+  const debouncedValue = useDebounce(value);
+
+  useEffect(() => {
+    column.setFilterValue((old: undefined | FilterModel<"text", TData>) => {
+      if (!old || old.values.length === 0)
+        return {
+          operator: "contains",
+          values: [debouncedValue],
+          columnMeta: column.columnDef.meta,
+        } satisfies FilterModel<"text", TData>;
+      return { operator: old.operator, values: [debouncedValue] };
+    });
+  }, [column, debouncedValue]);
+
+  return (
+    <Command>
+      <CommandList className="max-h-fit">
+        <CommandGroup>
+          <CommandItem>
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={`Cari ${columnMeta.label}...`}
+              autoFocus
+            />
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
+export function FilterValueNumberController<TData, TValue>({
+  column,
+  columnMeta,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const cappedMax = columnMeta.max ?? Number.MAX_SAFE_INTEGER;
+
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"number", TData>)
+    : undefined;
+
+  const isNumberRange =
+    !!filter && numberFilterDetails[filter.operator].target === "multiple";
+
+  const [datasetMin] = column.getFacetedMinMaxValues() ?? [0, 0];
+
+  const initialValues = () => {
+    if (filter?.values)
+      return filter.values.map((val) =>
+        val >= cappedMax ? `${cappedMax}+` : val.toString(),
+      );
+
+    return [datasetMin.toString()];
+  };
+
+  const [inputValues, setInputValues] = useState<string[]>(initialValues);
+
+  const changeNumber = (value: number[]) => {
+    const sortedValues = [...value].sort((a, b) => a - b);
+
+    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
+      if (!old || old.values.length === 0)
+        return { operator: "is", values: sortedValues };
+
+      const operator = numberFilterDetails[old.operator];
+      let newValues: number[];
+
+      if (operator.target === "single") newValues = [sortedValues[0]];
+      else {
+        newValues = [
+          sortedValues[0] >= cappedMax ? cappedMax : sortedValues[0],
+          sortedValues[1] >= cappedMax
+            ? Number.POSITIVE_INFINITY
+            : sortedValues[1],
+        ];
+      }
+
+      return { operator: old.operator, values: newValues };
+    });
+  };
+
+  const handleInputChange = (index: number, value: string) => {
+    const newValues = [...inputValues];
+    if (isNumberRange && Number.parseInt(value, 10) >= cappedMax)
+      newValues[index] = `${cappedMax}+`;
+    else newValues[index] = value;
+
+    setInputValues(newValues);
+
+    const parsedValues = newValues.map((val) => {
+      if (val.trim() === "") return 0;
+      if (val === `${cappedMax}+`) return cappedMax;
+      return Number.parseInt(val, 10);
+    });
+
+    changeNumber(parsedValues);
+  };
+
+  const changeType = (type: "single" | "range") => {
+    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
+      if (type === "single")
+        return { operator: "is", values: [old?.values[0] ?? 0] };
+
+      const newMaxValue = old?.values[0] ?? cappedMax;
+      return { operator: "is between", values: [0, newMaxValue] };
+    });
+
+    if (type === "single") setInputValues([inputValues[0]]);
+    else {
+      const maxValue = inputValues[0] || cappedMax.toString();
+      setInputValues(["0", maxValue]);
+    }
+  };
+
+  const slider = {
+    value: inputValues.map((val) =>
+      val === "" || val === `${cappedMax}+`
+        ? cappedMax
+        : Number.parseInt(val, 10),
+    ),
+    onValueChange: (value: number[]) => {
+      const values = value.map((val) => (val >= cappedMax ? cappedMax : val));
+      setInputValues(
+        values.map((v) => (v >= cappedMax ? `${cappedMax}+` : v.toString())),
+      );
+      changeNumber(values);
+    },
+  };
+
+  return (
+    <Command>
+      <CommandList className="w-75 px-2 py-2">
+        <CommandGroup>
+          <div className="flex w-full flex-col">
+            <Tabs
+              value={isNumberRange ? "range" : "single"}
+              onValueChange={(v) =>
+                changeType(v === "range" ? "range" : "single")
+              }
+            >
+              <TabsList className="w-full *:text-xs">
+                <TabsTab value="single">Single</TabsTab>
+                <TabsTab value="range">Range</TabsTab>
+              </TabsList>
+              <TabsPanel value="single" className="mt-4 flex flex-col gap-4">
+                <Slider
+                  step={1}
+                  value={[Number(inputValues[0])]}
+                  onValueChange={(v) => {
+                    const value: number = Array.isArray(v) ? v[0] : v;
+                    if (value >= cappedMax)
+                      handleInputChange(0, `${cappedMax}+`);
+                    else handleInputChange(0, value.toString());
+                  }}
+                  min={datasetMin}
+                  max={cappedMax}
+                  aria-orientation="horizontal"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium">Value</span>
+                  <Input
+                    id="single"
+                    type="number"
+                    value={inputValues[0]}
+                    onChange={(e) => handleInputChange(0, e.target.value)}
+                    max={cappedMax}
+                  />
+                </div>
+              </TabsPanel>
+              <TabsPanel value="range" className="mt-4 flex flex-col gap-4">
+                <Slider
+                  step={1}
+                  value={slider.value}
+                  onValueChange={(v) => {
+                    const value: number = Array.isArray(v) ? v[0] : v;
+                    if (value >= cappedMax)
+                      handleInputChange(0, `${cappedMax}+`);
+                    else handleInputChange(0, value.toString());
+                  }}
+                  min={datasetMin}
+                  max={cappedMax}
+                  aria-orientation="horizontal"
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium">Min</span>
+                    <Input
+                      type="number"
+                      value={inputValues[0]}
+                      onChange={(e) => handleInputChange(0, e.target.value)}
+                      max={cappedMax}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium">Max</span>
+                    <Input
+                      type="text"
+                      value={inputValues[1]}
+                      placeholder={`${cappedMax}+`}
+                      onChange={(e) => handleInputChange(1, e.target.value)}
+                      max={cappedMax}
+                    />
+                  </div>
+                </div>
+              </TabsPanel>
+            </Tabs>
+          </div>
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
 }
