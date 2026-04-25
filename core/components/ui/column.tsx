@@ -8,9 +8,11 @@ import {
   PinOffIcon,
   XIcon,
 } from "lucide-react";
+import { SORT_ICONS } from "../data-controller";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from "./menu";
+import { Popover, PopoverPopup, PopoverTrigger } from "./popover";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "./tooltip";
 
 export function ColumnHeader<TData, TValue>({
   column,
@@ -27,6 +29,9 @@ export function ColumnHeader<TData, TValue>({
   const columnPinned = column.getIsPinned();
   const ColumnPinIcon = columnPinned ? PinOffIcon : PinIcon;
 
+  const sort = column.getIsSorted();
+  const SortIcon = sort ? SORT_ICONS[sort] : ArrowUpDownIcon;
+
   return (
     <div
       className={cn(
@@ -38,21 +43,34 @@ export function ColumnHeader<TData, TValue>({
 
       <div className="flex gap-x-px">
         {column.getCanSort() && (
-          <Button
-            size="icon-xs"
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc", isMulti)
-            }
-            disabled={disabled}
-          >
-            <ArrowUpDownIcon />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  size="icon-xs"
+                  variant="ghost"
+                  onClick={() => {
+                    if (sort === "asc") column.toggleSorting(true, isMulti);
+                    else if (sort === "desc") column.clearSorting();
+                    else column.toggleSorting(false, isMulti);
+                  }}
+                  disabled={disabled}
+                >
+                  <SortIcon />
+                </Button>
+              }
+            />
+            <TooltipPopup className="capitalize">
+              {typeof sort === "string" ? sort : "-"}
+            </TooltipPopup>
+          </Tooltip>
         )}
 
         {column.getCanPin() && (
-          <Menu>
-            <MenuTrigger
+          <Popover>
+            <PopoverTrigger
+              openOnHover
+              delay={0}
               render={
                 <Button size="icon-xs" variant="ghost" disabled={disabled}>
                   <ColumnPinIcon />
@@ -60,28 +78,33 @@ export function ColumnHeader<TData, TValue>({
               }
             />
 
-            <MenuPopup className="flex min-w-fit flex-row *:size-5 *:items-center *:justify-center *:p-0">
-              <MenuItem
+            <PopoverPopup className="*:p-1">
+              <Button
+                size="xs"
+                variant="ghost"
                 onClick={() => column.pin("left")}
                 disabled={columnPinned === "left"}
               >
                 <ArrowLeftIcon />
-              </MenuItem>
-              <MenuItem
-                variant="destructive"
+              </Button>
+              <Button
+                size="xs"
+                variant="destructive-ghost"
                 onClick={() => column.pin(false)}
                 disabled={columnPinned === false}
               >
                 <XIcon />
-              </MenuItem>
-              <MenuItem
+              </Button>
+              <Button
+                size="xs"
+                variant="ghost"
                 onClick={() => column.pin("right")}
                 disabled={columnPinned === "right"}
               >
                 <ArrowRightIcon />
-              </MenuItem>
-            </MenuPopup>
-          </Menu>
+              </Button>
+            </PopoverPopup>
+          </Popover>
         )}
       </div>
     </div>
@@ -97,9 +120,9 @@ export function ColumnHeaderCheckbox<TData, TValue>({
   return (
     <Checkbox
       aria-label="Select all"
-      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       indeterminate={table.getIsSomePageRowsSelected()}
       checked={table.getIsAllPageRowsSelected()}
+      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       className={cn("mx-auto", className)}
       {...props}
     />
