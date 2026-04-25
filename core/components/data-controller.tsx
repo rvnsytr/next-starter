@@ -84,7 +84,7 @@ export function DataControllerVisibility<TData>({
   );
 }
 
-const SORT_ICONS = { asc: ArrowUpIcon, desc: ArrowDownIcon };
+export const SORT_ICONS = { asc: ArrowUpIcon, desc: ArrowDownIcon };
 
 export function DataControllerSorting<TData>({
   table,
@@ -197,7 +197,7 @@ export function DataControllerPaginationNav<TData>({
         size={size}
         variant={variant}
         onClick={() => table.firstPage()}
-        disabled={Boolean(disabled || !table.getCanPreviousPage())}
+        disabled={disabled || !table.getCanPreviousPage()}
         {...props}
       >
         <ChevronsLeftIcon />
@@ -207,7 +207,7 @@ export function DataControllerPaginationNav<TData>({
         size={size}
         variant={variant}
         onClick={() => table.previousPage()}
-        disabled={Boolean(disabled || !table.getCanPreviousPage())}
+        disabled={disabled || !table.getCanPreviousPage()}
         {...props}
       >
         <ChevronLeftIcon />
@@ -217,7 +217,7 @@ export function DataControllerPaginationNav<TData>({
         size={size}
         variant={variant}
         onClick={() => table.nextPage()}
-        disabled={Boolean(disabled || !table.getCanNextPage())}
+        disabled={disabled || !table.getCanNextPage()}
         {...props}
       >
         <ChevronRightIcon />
@@ -227,7 +227,7 @@ export function DataControllerPaginationNav<TData>({
         size={size}
         variant={variant}
         onClick={() => table.lastPage()}
-        disabled={Boolean(disabled || !table.getCanNextPage())}
+        disabled={disabled || !table.getCanNextPage()}
         {...props}
       >
         <ChevronsRightIcon />
@@ -239,7 +239,7 @@ export function DataControllerPaginationNav<TData>({
 export function DataControllerPageSize<TData>({
   table,
   initialSizeState,
-  size = "sm",
+  className,
   ...props
 }: React.ComponentProps<typeof SelectTrigger> & {
   table: Table<TData>;
@@ -253,7 +253,7 @@ export function DataControllerPageSize<TData>({
       value={String(value)}
       onValueChange={(v) => table.setPageSize(Number(v))}
     >
-      <SelectTrigger size={size} {...props}>
+      <SelectTrigger className={cn("min-w-fit", className)} {...props}>
         <SelectValue />
       </SelectTrigger>
 

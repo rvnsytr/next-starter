@@ -30,7 +30,7 @@ type AllDataControllerState = DataControllerState & {
   rowSelection: RowSelectionState;
 };
 
-type DataControllerProps<TData> = Pick<
+export type DataControllerOptions<TData> = Pick<
   TableOptions<TData>,
   "getRowId" | "enableRowSelection"
 > & {
@@ -47,7 +47,7 @@ type DataControllerProps<TData> = Pick<
   defaultState?: AllDataControllerState;
 };
 
-type StatelessDataControllerOptions<TData> = DataControllerProps<TData> & {
+type StatelessDataControllerOptions<TData> = DataControllerOptions<TData> & {
   state: {
     [K in keyof AllDataControllerState]: [
       AllDataControllerState[K],
@@ -59,10 +59,14 @@ type StatelessDataControllerOptions<TData> = DataControllerProps<TData> & {
 type DataControllerResponse<TData> = {
   result: SWRResponse<ActionResponse<TData[]>>;
   table: Table<TData>;
+  columns: ColumnDef<TData>[];
 };
 
 export const pageSizes = [5, 10, 20, 30, 40, 50, 100];
 export const defaultPageSize = pageSizes[1];
+
+export const mutateControlledData = (key: string) =>
+  mutate((arg) => Array.isArray(arg) && arg[0] === key);
 
 export function useStatelessDataController<TData>({
   mode,
@@ -168,13 +172,13 @@ export function useStatelessDataController<TData>({
     onRowSelectionChange: setRowSelection,
   });
 
-  return { result, table };
+  return { result, table, columns: resolvedColumns };
 }
 
 export function useDataController<TData>({
   defaultState,
   ...props
-}: DataControllerProps<TData>) {
+}: DataControllerOptions<TData>) {
   const globalFilter = useState<string>(defaultState?.globalFilter ?? "");
 
   const pagination = useState<DataControllerState["pagination"]>({
@@ -216,6 +220,3 @@ export function useDataController<TData>({
     },
   });
 }
-
-export const mutateControlledData = (key: string) =>
-  mutate((arg) => Array.isArray(arg) && arg[0] === key);
