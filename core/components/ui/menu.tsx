@@ -80,7 +80,7 @@ export function MenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground flex min-h-7 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 *:[svg]:pointer-events-none *:[svg]:-mx-0.5 *:[svg]:shrink-0 *:[svg:not([class*='opacity-'])]:opacity-80 *:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground flex min-h-7 cursor-default items-center gap-2 rounded-md px-2 py-1 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 *:[svg]:pointer-events-none *:[svg]:-mx-0.5 *:[svg]:shrink-0 *:[svg:not([class*='opacity-'])]:opacity-80 *:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -100,7 +100,7 @@ export function MenuCheckboxItem({
       data-slot="menu-checkbox-item"
       checked={checked}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default items-center gap-2 rounded-sm py-1 ps-2 text-sm outline-none select-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default items-center gap-2 rounded-md py-1 ps-2 text-sm outline-none select-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         variant === "switch"
           ? "grid-cols-[1fr_auto] gap-4 pe-1.5"
           : "grid-cols-[.75rem_1fr] pe-4",
@@ -143,7 +143,7 @@ export function MenuRadioItem({
     <MenuPrimitive.RadioItem
       data-slot="menu-radio-item"
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[.75rem_1fr] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[.75rem_1fr] items-center gap-2 rounded-md py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -218,7 +218,7 @@ export function MenuSubTrigger({
       data-slot="menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-7 items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-7 items-center gap-2 rounded-md px-2 py-1 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

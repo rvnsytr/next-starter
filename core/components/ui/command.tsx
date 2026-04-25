@@ -78,7 +78,7 @@ function CommandDialogPopup({
         <CommandDialogPrimitive.Popup
           data-slot="command-dialog-popup"
           className={cn(
-            "bg-popover before:bg-muted/72 text-popover-foreground relative row-start-2 flex max-h-105 min-h-0 w-full max-w-xl min-w-0 -translate-y-[calc(1.25rem*var(--nested-dialogs))] scale-[calc(1-0.1*var(--nested-dialogs))] flex-col rounded-2xl border opacity-[calc(1-0.1*var(--nested-dialogs))] shadow-lg/5 transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform outline-none not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-ending-style:opacity-0 data-nested:data-ending-style:translate-y-8 data-nested-dialog-open:origin-top data-starting-style:scale-98 data-starting-style:opacity-0 data-nested:data-starting-style:translate-y-8 **:data-[slot=scroll-area-viewport]:data-has-overflow-y:pe-1 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+            "bg-popover before:bg-muted/72 text-popover-foreground relative row-start-2 flex max-h-105 min-h-0 w-full max-w-xl min-w-0 translate-y-[calc(-1.25rem*var(--nested-dialogs))] scale-[calc(1-0.1*var(--nested-dialogs))] flex-col rounded-2xl border opacity-[calc(1-0.1*var(--nested-dialogs))] shadow-lg/5 transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform outline-none not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-ending-style:opacity-0 data-nested:data-ending-style:translate-y-8 data-nested-dialog-open:origin-top data-starting-style:scale-98 data-starting-style:opacity-0 data-nested:data-starting-style:translate-y-8 **:data-[slot=scroll-area-viewport]:data-has-overflow-y:pe-1 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
             className,
           )}
           {...props}
@@ -107,14 +107,14 @@ function Command({
 }
 
 function CommandInput({
+  size = "lg",
   className,
   ...props
 }: React.ComponentProps<typeof AutocompleteInput>) {
   return (
     <div className="px-2.5 py-1.5">
       <AutocompleteInput
-        size="lg"
-        autoFocus
+        size={size}
         startAddon={<SearchIcon />}
         inputGroupProps={{
           className: cn(
@@ -123,6 +123,7 @@ function CommandInput({
           ),
           disableFocusStyle: true,
         }}
+        autoFocus
         {...props}
       />
     </div>

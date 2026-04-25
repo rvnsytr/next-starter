@@ -47,17 +47,16 @@ import { DateRange, TZDate } from "react-day-picker";
 import { Button, ButtonProps } from "./ui/button";
 import { ButtonGroup } from "./ui/button-group";
 import { Calendar } from "./ui/calendar";
-import { Checkbox } from "./ui/checkbox";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandGroupLabel,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "./ui/command";
 import { Input } from "./ui/input";
+import { InputGroup, InputGroupAddon } from "./ui/input-group";
+import {
+  Menu,
+  MenuCheckboxItem,
+  MenuItem,
+  MenuPopup,
+  MenuShortcut,
+  MenuTrigger,
+} from "./ui/menu";
 import { Popover, PopoverPopup, PopoverTrigger } from "./ui/popover";
 import { Slider } from "./ui/slider";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "./ui/tabs";
@@ -200,115 +199,97 @@ export function FilterSelector<TData>({
   size,
   variant = "outline",
   align = "start",
-  placeholder = "Cari...",
   ...props
 }: ButtonProps & {
   table: Table<TData>;
   align?: React.ComponentProps<typeof PopoverPopup>["align"];
   placeholder?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const anchor = useRef<HTMLButtonElement>(null);
   const [property, setProperty] = useState<string | undefined>(undefined);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const properties = useMemo(
+    () => table.getAllColumns().filter(isFilterableColumn),
+    [table],
+  );
 
   const column = property ? getColumn(table, property) : undefined;
   const columnMeta = property ? getColumnMeta(table, property) : undefined;
 
-  const properties = table.getAllColumns().filter(isFilterableColumn);
-
-  // const hasFilters = table.getState().columnFilters.length > 0;
-  const onFilter = useEffectEvent(() => {
-    inputRef.current?.focus();
-    setValue("");
-  });
-
-  useEffect(() => {
-    if (property && inputRef) onFilter();
-  }, [property]);
-
-  useEffect(() => {
-    if (!open) setTimeout(() => setValue(""), 150);
-  }, [open]);
-
-  const content = useMemo(
-    () =>
-      property && column && columnMeta ? (
-        <FitlerValueController
-          id={property}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      ) : (
-        <Command loopFocus>
-          <CommandInput
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            ref={inputRef}
-            placeholder={placeholder}
-          />
-          <CommandEmpty>{messages.empty}</CommandEmpty>
-          <CommandList className="max-h-fit">
-            <CommandGroup>
-              {properties.map((column) => (
-                <FilterableColumn
-                  key={column.id}
-                  column={column}
-                  table={table}
-                  setProperty={setProperty}
-                />
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      ),
-    [property, column, columnMeta, table, value, placeholder, properties],
-  );
-
-  return (
-    <Popover
-      open={open}
-      onOpenChange={async (value) => {
-        setOpen(value);
-        if (!value) setTimeout(() => setProperty(undefined), 100);
-      }}
-    >
-      <PopoverTrigger
-        render={
-          <Button size={size} variant={variant} {...props}>
-            <FilterIcon />
-            {!size?.startsWith("icon") && "Filter"}
-          </Button>
-        }
+  const content = useMemo(() => {
+    if (!property || !column || !columnMeta) return null;
+    return (
+      <FitlerValueController
+        id={property}
+        column={column}
+        columnMeta={columnMeta}
+        table={table}
       />
+    );
+  }, [column, columnMeta, property, table]);
 
-      <PopoverPopup align={align} className="w-fit p-0">
-        {content}
-      </PopoverPopup>
-    </Popover>
-  );
-}
-
-export function FilterableColumn<TData>({
-  column,
-  setProperty,
-}: {
-  column: Column<TData>;
-  table: Table<TData>;
-  setProperty: (value: string) => void;
-}) {
-  const Icon = column.columnDef.meta?.icon;
   return (
-    <CommandItem onSelect={() => setProperty(column.id)} className="group">
-      <div className="flex w-full items-center justify-between">
-        <div className="inline-flex items-center gap-1.5">
-          {Icon && <Icon />}
-          <span>{column.columnDef.meta?.label}</span>
-        </div>
-        <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
-      </div>
-    </CommandItem>
+    <>
+      <Menu>
+        <MenuTrigger
+          render={
+            <Button ref={anchor} size={size} variant={variant} {...props}>
+              <FilterIcon /> {!size?.startsWith("icon") && "Filter"}
+            </Button>
+          }
+        />
+
+        <MenuPopup align={align}>
+          {properties.map((column) => {
+            const columnType = column.columnDef.meta?.type;
+            const Icon = column.columnDef.meta?.icon;
+            return (
+              <MenuItem
+                key={column.id}
+                onClick={() => {
+                  setProperty(column.id);
+                  if (!columnType) return;
+                  const setter =
+                    columnType === "option" || columnType === "multiOption"
+                      ? setIsMenuOpen
+                      : setIsPopoverOpen;
+                  setTimeout(() => setter(true), 10);
+                }}
+              >
+                {Icon && <Icon />} {column.columnDef.meta?.label}
+                <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
+              </MenuItem>
+            );
+          })}
+        </MenuPopup>
+      </Menu>
+
+      <Menu
+        open={isMenuOpen}
+        onOpenChange={(v) => {
+          setIsMenuOpen(v);
+          if (!v) setProperty(undefined);
+        }}
+      >
+        <MenuPopup anchor={anchor} align={align}>
+          {content}
+        </MenuPopup>
+      </Menu>
+
+      <Popover
+        open={isPopoverOpen}
+        onOpenChange={(v) => {
+          setIsPopoverOpen(v);
+          if (!v) setProperty(undefined);
+        }}
+      >
+        <PopoverPopup anchor={anchor} align={align} className="*:p-1">
+          {content}
+        </PopoverPopup>
+      </Popover>
+    </>
   );
 }
 
@@ -406,15 +387,14 @@ export function FilterSubject<TData>({
 }: {
   meta: ColumnMeta<TData, string>;
 }) {
-  const hasIcon = !!meta?.icon;
+  const Icon = meta.icon;
   return (
     <Button
       size="sm"
       variant="outline"
       className="flex items-center gap-1.5 px-2 font-medium whitespace-nowrap select-none"
     >
-      {hasIcon && <meta.icon />}
-      <span>{meta.label}</span>
+      {Icon && <Icon />} {meta.label}
     </Button>
   );
 }
@@ -433,13 +413,9 @@ export function FilterOperator<TData, T extends DataFilterType>({
   columnMeta: ColumnMeta<TData, unknown>;
   filter: FilterModel<T, TData>;
 }) {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const close = () => setOpen(false);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
+    <Menu>
+      <MenuTrigger
         render={
           <Button size="sm" variant="outline">
             <FilterOperatorDisplay
@@ -450,16 +426,10 @@ export function FilterOperator<TData, T extends DataFilterType>({
         }
       />
 
-      <PopoverPopup className="min-w-fit p-0">
-        <Command>
-          <CommandInput placeholder="Filter..." />
-          <CommandEmpty>{messages.empty}</CommandEmpty>
-          <CommandList className="max-h-fit">
-            <FilterOperatorController column={column} closeController={close} />
-          </CommandList>
-        </Command>
-      </PopoverPopup>
-    </Popover>
+      <MenuPopup>
+        <FilterOperatorController column={column} />
+      </MenuPopup>
+    </Menu>
   );
 }
 
@@ -477,154 +447,31 @@ export function FilterOperatorDisplay<TData, T extends DataFilterType>({
 
 type FilterOperatorControllerProps<TData> = {
   column: Column<TData, unknown>;
-  closeController: () => void;
 };
 
 export function FilterOperatorController<TData>({
   column,
-  closeController,
 }: FilterOperatorControllerProps<TData>) {
   const { type } = column.columnDef.meta!;
 
   switch (type) {
-    case "option":
-      return (
-        <FilterOperatorOptionController
-          column={column}
-          closeController={closeController}
-        />
-      );
-    case "multiOption":
-      return (
-        <FilterOperatorMultiOptionController
-          column={column}
-          closeController={closeController}
-        />
-      );
-    case "date":
-      return (
-        <FilterOperatorDateController
-          column={column}
-          closeController={closeController}
-        />
-      );
     case "text":
-      return (
-        <FilterOperatorTextController
-          column={column}
-          closeController={closeController}
-        />
-      );
+      return <FilterOperatorTextController column={column} />;
     case "number":
-      return (
-        <FilterOperatorNumberController
-          column={column}
-          closeController={closeController}
-        />
-      );
+      return <FilterOperatorNumberController column={column} />;
+    case "date":
+      return <FilterOperatorDateController column={column} />;
+    case "option":
+      return <FilterOperatorOptionController column={column} />;
+    case "multiOption":
+      return <FilterOperatorMultiOptionController column={column} />;
     default:
       return null;
   }
 }
 
-function FilterOperatorOptionController<TData>({
-  column,
-  closeController,
-}: FilterOperatorControllerProps<TData>) {
-  const filter = column.getFilterValue() as FilterModel<"option", TData>;
-  const filterDetails = optionFilterDetails[filter.operator];
-
-  const relatedFilters = Object.values(optionFilterDetails).filter(
-    (o) => o.target === filterDetails.target,
-  );
-
-  const changeOperator = (operator: string) => {
-    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
-    closeController();
-  };
-
-  return (
-    <CommandGroup>
-      <CommandGroupLabel>Operators</CommandGroupLabel>
-      {relatedFilters.map((r) => (
-        <CommandItem
-          key={r.value}
-          value={r.value}
-          onSelect={() => changeOperator(r.value)}
-        >
-          {r.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
-  );
-}
-
-function FilterOperatorMultiOptionController<TData>({
-  column,
-  closeController,
-}: FilterOperatorControllerProps<TData>) {
-  const filter = column.getFilterValue() as FilterModel<"multiOption", TData>;
-  const filterDetails = multiOptionFilterDetails[filter.operator];
-
-  const relatedFilters = Object.values(multiOptionFilterDetails).filter(
-    (o) => o.target === filterDetails.target,
-  );
-
-  const changeOperator = (operator: string) => {
-    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
-    closeController();
-  };
-
-  return (
-    <CommandGroup>
-      <CommandGroupLabel>Operators</CommandGroupLabel>
-      {relatedFilters.map((r) => (
-        <CommandItem
-          key={r.value}
-          value={r.value}
-          onSelect={() => changeOperator(r.value)}
-        >
-          {r.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
-  );
-}
-
-function FilterOperatorDateController<TData>({
-  column,
-  closeController,
-}: FilterOperatorControllerProps<TData>) {
-  const filter = column.getFilterValue() as FilterModel<"date", TData>;
-  const filterDetails = dateFilterDetails[filter.operator];
-
-  const relatedFilters = Object.values(dateFilterDetails).filter(
-    (o) => o.target === filterDetails.target,
-  );
-
-  const changeOperator = (operator: string) => {
-    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
-    closeController();
-  };
-
-  return (
-    <CommandGroup>
-      {relatedFilters.map((r) => (
-        <CommandItem
-          key={r.value}
-          value={r.value}
-          onSelect={() => changeOperator(r.value)}
-        >
-          {r.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
-  );
-}
-
 export function FilterOperatorTextController<TData>({
   column,
-  closeController,
 }: FilterOperatorControllerProps<TData>) {
   const filter = column.getFilterValue() as FilterModel<"text", TData>;
   const filterDetails = textFilterDetails[filter.operator];
@@ -633,30 +480,18 @@ export function FilterOperatorTextController<TData>({
     (o) => o.target === filterDetails.target,
   );
 
-  const changeOperator = (operator: string) => {
+  const changeOperator = (operator: string) =>
     column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
-    closeController();
-  };
 
-  return (
-    <CommandGroup>
-      <CommandGroupLabel>Operators</CommandGroupLabel>
-      {relatedFilters.map((r) => (
-        <CommandItem
-          key={r.value}
-          value={r.value}
-          onSelect={() => changeOperator(r.value)}
-        >
-          {r.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
-  );
+  return relatedFilters.map((r) => (
+    <MenuItem key={r.value} onClick={() => changeOperator(r.value)}>
+      {r.label}
+    </MenuItem>
+  ));
 }
 
 function FilterOperatorNumberController<TData>({
   column,
-  closeController,
 }: FilterOperatorControllerProps<TData>) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filter = column.getFilterValue() as FilterModel<"number", TData>;
@@ -677,23 +512,73 @@ function FilterOperatorNumberController<TData>({
         target === "single" ? [old.values[0]] : createNumberRange(old.values);
       return { ...old, operator, values: newValues };
     });
-    closeController();
   };
 
-  return (
-    <CommandGroup>
-      <CommandGroupLabel>Operators</CommandGroupLabel>
-      {relatedFilters.map((r) => (
-        <CommandItem
-          key={r.value}
-          value={r.value}
-          onSelect={() => changeOperator(r.value)}
-        >
-          {r.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
+  return relatedFilters.map((r) => (
+    <MenuItem key={r.value} onClick={() => changeOperator(r.value)}>
+      {r.label}
+    </MenuItem>
+  ));
+}
+
+function FilterOperatorDateController<TData>({
+  column,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"date", TData>;
+  const filterDetails = dateFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(dateFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
   );
+
+  const changeOperator = (operator: string) =>
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+
+  return relatedFilters.map((r) => (
+    <MenuItem key={r.value} onClick={() => changeOperator(r.value)}>
+      {r.label}
+    </MenuItem>
+  ));
+}
+
+function FilterOperatorOptionController<TData>({
+  column,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"option", TData>;
+  const filterDetails = optionFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(optionFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) =>
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+
+  return relatedFilters.map((r) => (
+    <MenuItem key={r.value} onClick={() => changeOperator(r.value)}>
+      {r.label}
+    </MenuItem>
+  ));
+}
+
+function FilterOperatorMultiOptionController<TData>({
+  column,
+}: FilterOperatorControllerProps<TData>) {
+  const filter = column.getFilterValue() as FilterModel<"multiOption", TData>;
+  const filterDetails = multiOptionFilterDetails[filter.operator];
+
+  const relatedFilters = Object.values(multiOptionFilterDetails).filter(
+    (o) => o.target === filterDetails.target,
+  );
+
+  const changeOperator = (operator: string) =>
+    column.setFilterValue((old: typeof filter) => ({ ...old, operator }));
+
+  return relatedFilters.map((r) => (
+    <MenuItem key={r.value} onClick={() => changeOperator(r.value)}>
+      {r.label}
+    </MenuItem>
+  ));
 }
 
 /****** Property Filter Value ******/
@@ -709,28 +594,38 @@ export function FilterValue<TData, TValue>({
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
 }) {
+  const trigger = (
+    <Button size="sm" variant="outline">
+      <FilterValueDisplay
+        id={id}
+        column={column}
+        columnMeta={columnMeta}
+        table={table}
+      />
+    </Button>
+  );
+
+  const content = (
+    <FitlerValueController
+      id={id}
+      column={column}
+      columnMeta={columnMeta}
+      table={table}
+    />
+  );
+
+  if (columnMeta.type === "option" || columnMeta.type === "multiOption")
+    return (
+      <Menu>
+        <MenuTrigger render={trigger} />
+        <MenuPopup>{content}</MenuPopup>
+      </Menu>
+    );
+
   return (
     <Popover>
-      <PopoverTrigger
-        render={
-          <Button size="sm" variant="outline">
-            <FilterValueDisplay
-              id={id}
-              column={column}
-              columnMeta={columnMeta}
-              table={table}
-            />
-          </Button>
-        }
-      />
-      <PopoverPopup className="w-fit origin-(--radix-popover-content-transform-origin) p-0">
-        <FitlerValueController
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      </PopoverPopup>
+      <PopoverTrigger render={trigger} />
+      <PopoverPopup className="*:p-1">{content}</PopoverPopup>
     </Popover>
   );
 }
@@ -749,33 +644,6 @@ export function FilterValueDisplay<TData, TValue>({
   table,
 }: FilterValueDisplayProps<TData, TValue>) {
   switch (columnMeta.type) {
-    case "option":
-      return (
-        <FilterValueOptionDisplay
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
-    case "multiOption":
-      return (
-        <FilterValueMultiOptionDisplay
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
-    case "date":
-      return (
-        <FilterValueDateDisplay
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
     case "text":
       return (
         <FilterValueTextDisplay
@@ -794,6 +662,33 @@ export function FilterValueDisplay<TData, TValue>({
           table={table}
         />
       );
+    case "date":
+      return (
+        <FilterValueDateDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "option":
+      return (
+        <FilterValueOptionDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "multiOption":
+      return (
+        <FilterValueMultiOptionDisplay
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
     default:
       return null;
   }
@@ -801,6 +696,78 @@ export function FilterValueDisplay<TData, TValue>({
 
 function uniq<T>(a: T[]): T[] {
   return Array.from(new Set(a));
+}
+
+export function FilterValueTextDisplay<TData, TValue>({
+  column,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"text", TData>)
+    : undefined;
+
+  if (!filter) return null;
+  if (filter.values.length === 0 || filter.values[0].trim() === "")
+    return <EllipsisIcon />;
+
+  const value = filter.values[0];
+
+  return <span>{value}</span>;
+}
+
+export function FilterValueNumberDisplay<TData, TValue>({
+  column,
+  columnMeta,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const cappedMax = columnMeta.max ?? 2147483647;
+
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"number", TData>)
+    : undefined;
+
+  if (!filter) return null;
+
+  if (
+    filter.operator === "is between" ||
+    filter.operator === "is not between"
+  ) {
+    const minValue = filter.values[0];
+    const maxValue =
+      filter.values[1] === Number.POSITIVE_INFINITY ||
+      filter.values[1] >= cappedMax
+        ? `${cappedMax}+`
+        : filter.values[1];
+
+    return (
+      <span className="tracking-tight tabular-nums">
+        {minValue} and {maxValue}
+      </span>
+    );
+  }
+
+  if (!filter.values || filter.values.length === 0) return null;
+
+  const value = filter.values[0];
+  return <span className="tracking-tight tabular-nums">{value}</span>;
+}
+
+export function FilterValueDateDisplay<TData, TValue>({
+  column,
+}: FilterValueDisplayProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"date", TData>)
+    : undefined;
+
+  if (!filter) return null;
+  if (filter.values.length === 0) return <EllipsisIcon />;
+  if (filter.values.length === 1) {
+    const value = filter.values[0];
+    const formattedDateStr = formatLocalizedDate(value, "MMM d, yyyy");
+    return <span>{formattedDateStr}</span>;
+  }
+
+  const formattedRangeStr = formatDateRange(filter.values[0], filter.values[1]);
+
+  return <span>{formattedRangeStr}</span>;
 }
 
 export function FilterValueOptionDisplay<TData, TValue>({
@@ -947,78 +914,6 @@ export function FilterValueMultiOptionDisplay<TData, TValue>({
   );
 }
 
-export function FilterValueDateDisplay<TData, TValue>({
-  column,
-}: FilterValueDisplayProps<TData, TValue>) {
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"date", TData>)
-    : undefined;
-
-  if (!filter) return null;
-  if (filter.values.length === 0) return <EllipsisIcon />;
-  if (filter.values.length === 1) {
-    const value = filter.values[0];
-    const formattedDateStr = formatLocalizedDate(value, "MMM d, yyyy");
-    return <span>{formattedDateStr}</span>;
-  }
-
-  const formattedRangeStr = formatDateRange(filter.values[0], filter.values[1]);
-
-  return <span>{formattedRangeStr}</span>;
-}
-
-export function FilterValueTextDisplay<TData, TValue>({
-  column,
-}: FilterValueDisplayProps<TData, TValue>) {
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"text", TData>)
-    : undefined;
-
-  if (!filter) return null;
-  if (filter.values.length === 0 || filter.values[0].trim() === "")
-    return <EllipsisIcon />;
-
-  const value = filter.values[0];
-
-  return <span>{value}</span>;
-}
-
-export function FilterValueNumberDisplay<TData, TValue>({
-  column,
-  columnMeta,
-}: FilterValueDisplayProps<TData, TValue>) {
-  const cappedMax = columnMeta.max ?? 2147483647;
-
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"number", TData>)
-    : undefined;
-
-  if (!filter) return null;
-
-  if (
-    filter.operator === "is between" ||
-    filter.operator === "is not between"
-  ) {
-    const minValue = filter.values[0];
-    const maxValue =
-      filter.values[1] === Number.POSITIVE_INFINITY ||
-      filter.values[1] >= cappedMax
-        ? `${cappedMax}+`
-        : filter.values[1];
-
-    return (
-      <span className="tracking-tight tabular-nums">
-        {minValue} and {maxValue}
-      </span>
-    );
-  }
-
-  if (!filter.values || filter.values.length === 0) return null;
-
-  const value = filter.values[0];
-  return <span className="tracking-tight tabular-nums">{value}</span>;
-}
-
 export function FitlerValueController<TData, TValue>({
   id,
   column,
@@ -1031,33 +926,6 @@ export function FitlerValueController<TData, TValue>({
   table: Table<TData>;
 }) {
   switch (columnMeta.type) {
-    case "option":
-      return (
-        <FilterValueOptionController
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
-    case "multiOption":
-      return (
-        <FilterValueMultiOptionController
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
-    case "date":
-      return (
-        <FilterValueDateController
-          id={id}
-          column={column}
-          columnMeta={columnMeta}
-          table={table}
-        />
-      );
     case "text":
       return (
         <FilterValueTextController
@@ -1076,6 +944,33 @@ export function FitlerValueController<TData, TValue>({
           table={table}
         />
       );
+    case "date":
+      return (
+        <FilterValueDateController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "option":
+      return (
+        <FilterValueOptionController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
+    case "multiOption":
+      return (
+        <FilterValueMultiOptionController
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
+      );
     default:
       return null;
   }
@@ -1087,6 +982,279 @@ type ProperFilterValueMenuProps<TData, TValue> = {
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
 };
+
+export function FilterValueTextController<TData, TValue>({
+  column,
+  columnMeta,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"text", TData>)
+    : undefined;
+  const filterValue = filter?.values[0] ?? "";
+
+  const [value, setValue] = useState(filterValue);
+  const debouncedValue = useDebounce(value);
+
+  const onInput = useEffectEvent(() => {
+    column.setFilterValue((old: undefined | FilterModel<"text", TData>) => {
+      if (!old || old.values.length === 0)
+        return {
+          operator: "contains",
+          values: [debouncedValue],
+          columnMeta: column.columnDef.meta,
+        } satisfies FilterModel<"text", TData>;
+      return { operator: old.operator, values: [debouncedValue] };
+    });
+  });
+
+  useEffect(() => onInput(), [debouncedValue]);
+
+  const Icon = column.columnDef.meta?.icon;
+
+  return (
+    <InputGroup>
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={`Cari ${columnMeta.label}...`}
+        autoFocus
+      />
+      {Icon && (
+        <InputGroupAddon>
+          <Icon />
+        </InputGroupAddon>
+      )}
+    </InputGroup>
+  );
+}
+
+export function FilterValueNumberController<TData, TValue>({
+  column,
+  columnMeta,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const cappedMax = columnMeta.max ?? Number.MAX_SAFE_INTEGER;
+
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"number", TData>)
+    : undefined;
+
+  const isNumberRange =
+    !!filter && numberFilterDetails[filter.operator].target === "multiple";
+
+  const [datasetMin] = column.getFacetedMinMaxValues() ?? [0, 0];
+
+  const initialValues = () => {
+    if (filter?.values)
+      return filter.values.map((val) =>
+        val >= cappedMax ? `${cappedMax}+` : val.toString(),
+      );
+
+    return [datasetMin.toString()];
+  };
+
+  const [inputValues, setInputValues] = useState<string[]>(initialValues);
+
+  const changeNumber = (value: number[]) => {
+    const sortedValues = [...value].sort((a, b) => a - b);
+
+    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
+      if (!old || old.values.length === 0)
+        return { operator: "is", values: sortedValues };
+
+      const operator = numberFilterDetails[old.operator];
+      let newValues: number[];
+
+      if (operator.target === "single") newValues = [sortedValues[0]];
+      else {
+        newValues = [
+          sortedValues[0] >= cappedMax ? cappedMax : sortedValues[0],
+          sortedValues[1] >= cappedMax
+            ? Number.POSITIVE_INFINITY
+            : sortedValues[1],
+        ];
+      }
+
+      return { operator: old.operator, values: newValues };
+    });
+  };
+
+  const handleInputChange = (index: number, value: string) => {
+    const newValues = [...inputValues];
+    if (isNumberRange && Number.parseInt(value, 10) >= cappedMax)
+      newValues[index] = `${cappedMax}+`;
+    else newValues[index] = value;
+
+    setInputValues(newValues);
+
+    const parsedValues = newValues.map((val) => {
+      if (val.trim() === "") return 0;
+      if (val === `${cappedMax}+`) return cappedMax;
+      return Number.parseInt(val, 10);
+    });
+
+    changeNumber(parsedValues);
+  };
+
+  const changeType = (type: "single" | "range") => {
+    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
+      if (type === "single")
+        return { operator: "is", values: [old?.values[0] ?? 0] };
+
+      const newMaxValue = old?.values[0] ?? cappedMax;
+      return { operator: "is between", values: [0, newMaxValue] };
+    });
+
+    if (type === "single") setInputValues([inputValues[0]]);
+    else {
+      const maxValue = inputValues[0] || cappedMax.toString();
+      setInputValues(["0", maxValue]);
+    }
+  };
+
+  const slider = {
+    value: inputValues.map((val) =>
+      val === "" || val === `${cappedMax}+`
+        ? cappedMax
+        : Number.parseInt(val, 10),
+    ),
+    onValueChange: (value: number[]) => {
+      const values = value.map((val) => (val >= cappedMax ? cappedMax : val));
+      setInputValues(
+        values.map((v) => (v >= cappedMax ? `${cappedMax}+` : v.toString())),
+      );
+      changeNumber(values);
+    },
+  };
+
+  return (
+    <div className="flex w-full flex-col">
+      <Tabs
+        value={isNumberRange ? "range" : "single"}
+        onValueChange={(v) => changeType(v === "range" ? "range" : "single")}
+      >
+        <TabsList className="w-full *:text-xs">
+          <TabsTab value="single">Single</TabsTab>
+          <TabsTab value="range">Range</TabsTab>
+        </TabsList>
+        <TabsPanel value="single" className="mt-4 flex flex-col gap-4">
+          <Slider
+            step={1}
+            value={[Number(inputValues[0])]}
+            onValueChange={(v) => {
+              const value: number = Array.isArray(v) ? v[0] : v;
+              if (value >= cappedMax) handleInputChange(0, `${cappedMax}+`);
+              else handleInputChange(0, value.toString());
+            }}
+            min={datasetMin}
+            max={cappedMax}
+            aria-orientation="horizontal"
+          />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium">Value</span>
+            <Input
+              id="single"
+              type="number"
+              value={inputValues[0]}
+              onChange={(e) => handleInputChange(0, e.target.value)}
+              max={cappedMax}
+            />
+          </div>
+        </TabsPanel>
+        <TabsPanel value="range" className="mt-4 flex flex-col gap-4">
+          <Slider
+            step={1}
+            value={slider.value}
+            onValueChange={(v) => {
+              const value: number = Array.isArray(v) ? v[0] : v;
+              if (value >= cappedMax) handleInputChange(0, `${cappedMax}+`);
+              else handleInputChange(0, value.toString());
+            }}
+            min={datasetMin}
+            max={cappedMax}
+            aria-orientation="horizontal"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium">Min</span>
+              <Input
+                type="number"
+                value={inputValues[0]}
+                onChange={(e) => handleInputChange(0, e.target.value)}
+                max={cappedMax}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium">Max</span>
+              <Input
+                type="text"
+                value={inputValues[1]}
+                placeholder={`${cappedMax}+`}
+                onChange={(e) => handleInputChange(1, e.target.value)}
+                max={cappedMax}
+              />
+            </div>
+          </div>
+        </TabsPanel>
+      </Tabs>
+    </div>
+  );
+}
+
+export function FilterValueDateController<TData, TValue>({
+  column,
+}: ProperFilterValueMenuProps<TData, TValue>) {
+  const filter = column.getFilterValue()
+    ? (column.getFilterValue() as FilterModel<"date", TData>)
+    : undefined;
+
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: filter?.values[0] ?? new TZDate(),
+    to: filter?.values[1] ?? undefined,
+  });
+
+  const changeDateRange = (value: DateRange | undefined) => {
+    const start = value?.from;
+    const end =
+      start && value?.to && !isEqual(start, value.to)
+        ? endOfDay(value.to)
+        : undefined;
+
+    setDate({ from: start, to: end });
+
+    const isRange = start && end;
+    const newValues = isRange ? [start, end] : start ? [start] : [];
+
+    column.setFilterValue((old: undefined | FilterModel<"date", TData>) => {
+      if (!old || old.values.length === 0)
+        return {
+          operator: newValues.length > 1 ? "is between" : "is",
+          values: newValues,
+          columnMeta: column.columnDef.meta,
+        } satisfies FilterModel<"date", TData>;
+
+      return {
+        operator:
+          old.values.length < newValues.length
+            ? "is between"
+            : old.values.length > newValues.length
+              ? "is"
+              : old.operator,
+        values: newValues,
+        columnMeta: column.columnDef.meta,
+      } satisfies FilterModel<"date", TData>;
+    });
+  };
+
+  return (
+    <Calendar
+      mode="range"
+      defaultMonth={date?.from}
+      selected={date}
+      onSelect={changeDateRange}
+      numberOfMonths={1}
+    />
+  );
+}
 
 export function FilterValueOptionController<TData, TValue>({
   id,
@@ -1176,51 +1344,36 @@ export function FilterValueOptionController<TData, TValue>({
       );
   };
 
-  return (
-    <Command loopFocus>
-      <CommandInput autoFocus placeholder={`Cari ${columnMeta.label}...`} />
-      <CommandEmpty>{messages.empty}</CommandEmpty>
-      <CommandList className="max-h-fit">
-        <CommandGroup>
-          {options.map(({ value, label, icon: Icon, count }) => {
-            const checked = Boolean(filter?.values.includes(value));
-            return (
-              <CommandItem
-                key={value}
-                onSelect={() => handleOptionSelect(value, !checked)}
-                className="group flex items-center justify-between gap-2"
-              >
-                <Checkbox checked={checked} />
-
-                {Icon &&
-                  (isValidElement(Icon) ? (
-                    Icon
-                  ) : (
-                    <Icon
-                      className={cn(
-                        checked ? "text-foreground" : "text-muted-foreground",
-                      )}
-                    />
-                  ))}
-
-                <span>{label}</span>
-
-                <span
-                  className={cn(
-                    "ml-auto tracking-tight",
-                    count === 0 && "slashed-zero",
-                  )}
-                >
-                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
-                  {formatNumber(count ?? optionsCount[value] ?? 0)}
-                </span>
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
+  return options.map(({ value, label, icon: Icon, count }) => {
+    const checked = Boolean(filter?.values.includes(value));
+    return (
+      <MenuCheckboxItem
+        key={value}
+        checked={checked}
+        onCheckedChange={() => handleOptionSelect(value, !checked)}
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {Icon &&
+              (isValidElement(Icon) ? (
+                Icon
+              ) : (
+                <Icon className="text-muted-foreground" />
+              ))}
+            {label}
+          </div>
+          <MenuShortcut
+            className={cn(
+              "ml-auto tracking-tight tabular-nums",
+              count === 0 && "slashed-zero",
+            )}
+          >
+            {formatNumber(count ?? optionsCount[value] ?? 0)}
+          </MenuShortcut>
+        </div>
+      </MenuCheckboxItem>
+    );
+  });
 }
 
 export function FilterValueMultiOptionController<
@@ -1332,337 +1485,34 @@ export function FilterValueMultiOptionController<
       );
   };
 
-  return (
-    <Command loopFocus>
-      <CommandInput placeholder={`Cari ${columnMeta.label}...`} autoFocus />
-      <CommandEmpty>{messages.empty}</CommandEmpty>
-      <CommandList>
-        <CommandGroup>
-          {options.map(({ value, label, icon: Icon, count }) => {
-            const checked = Boolean(filter?.values[0]?.includes(value));
-            return (
-              <CommandItem
-                key={value}
-                onSelect={() => handleOptionSelect(value, !checked)}
-                className="group flex items-center justify-between gap-2"
-              >
-                <Checkbox checked={checked} />
-
-                {Icon &&
-                  (isValidElement(Icon) ? (
-                    Icon
-                  ) : (
-                    <Icon
-                      className={cn(
-                        checked ? "text-foreground" : "text-muted-foreground",
-                      )}
-                    />
-                  ))}
-
-                <span>{label}</span>
-
-                <span
-                  className={cn(
-                    "ml-auto tracking-tight",
-                    count === 0 && "slashed-zero",
-                  )}
-                >
-                  {/* {count < 999 ? formatNumber(count) : "999+"} */}
-                  {formatNumber(count ?? optionsCount[value] ?? 0)}
-                </span>
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
-export function FilterValueDateController<TData, TValue>({
-  column,
-}: ProperFilterValueMenuProps<TData, TValue>) {
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"date", TData>)
-    : undefined;
-
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: filter?.values[0] ?? new TZDate(),
-    to: filter?.values[1] ?? undefined,
-  });
-
-  const changeDateRange = (value: DateRange | undefined) => {
-    const start = value?.from;
-    const end =
-      start && value?.to && !isEqual(start, value.to)
-        ? endOfDay(value.to)
-        : undefined;
-
-    setDate({ from: start, to: end });
-
-    const isRange = start && end;
-    const newValues = isRange ? [start, end] : start ? [start] : [];
-
-    column.setFilterValue((old: undefined | FilterModel<"date", TData>) => {
-      if (!old || old.values.length === 0)
-        return {
-          operator: newValues.length > 1 ? "is between" : "is",
-          values: newValues,
-          columnMeta: column.columnDef.meta,
-        } satisfies FilterModel<"date", TData>;
-
-      return {
-        operator:
-          old.values.length < newValues.length
-            ? "is between"
-            : old.values.length > newValues.length
-              ? "is"
-              : old.operator,
-        values: newValues,
-        columnMeta: column.columnDef.meta,
-      } satisfies FilterModel<"date", TData>;
-    });
-  };
-
-  return (
-    <Command>
-      {/* <CommandInput placeholder={`Cari ${columnMeta.label}...`} /> */}
-      {/* <CommandEmpty>{messages.empty}</CommandEmpty> */}
-      <CommandList className="max-h-fit">
-        <CommandGroup>
-          <Calendar
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={changeDateRange}
-            numberOfMonths={1}
-          />
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
-export function FilterValueTextController<TData, TValue>({
-  column,
-  columnMeta,
-}: ProperFilterValueMenuProps<TData, TValue>) {
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"text", TData>)
-    : undefined;
-  const filterValue = filter?.values[0] ?? "";
-
-  const [value, setValue] = useState(filterValue);
-  const debouncedValue = useDebounce(value);
-
-  useEffect(() => {
-    column.setFilterValue((old: undefined | FilterModel<"text", TData>) => {
-      if (!old || old.values.length === 0)
-        return {
-          operator: "contains",
-          values: [debouncedValue],
-          columnMeta: column.columnDef.meta,
-        } satisfies FilterModel<"text", TData>;
-      return { operator: old.operator, values: [debouncedValue] };
-    });
-  }, [column, debouncedValue]);
-
-  return (
-    <Command>
-      <CommandList className="max-h-fit">
-        <CommandGroup>
-          <CommandItem>
-            <Input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={`Cari ${columnMeta.label}...`}
-              autoFocus
-            />
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
-export function FilterValueNumberController<TData, TValue>({
-  column,
-  columnMeta,
-}: ProperFilterValueMenuProps<TData, TValue>) {
-  const cappedMax = columnMeta.max ?? Number.MAX_SAFE_INTEGER;
-
-  const filter = column.getFilterValue()
-    ? (column.getFilterValue() as FilterModel<"number", TData>)
-    : undefined;
-
-  const isNumberRange =
-    !!filter && numberFilterDetails[filter.operator].target === "multiple";
-
-  const [datasetMin] = column.getFacetedMinMaxValues() ?? [0, 0];
-
-  const initialValues = () => {
-    if (filter?.values)
-      return filter.values.map((val) =>
-        val >= cappedMax ? `${cappedMax}+` : val.toString(),
-      );
-
-    return [datasetMin.toString()];
-  };
-
-  const [inputValues, setInputValues] = useState<string[]>(initialValues);
-
-  const changeNumber = (value: number[]) => {
-    const sortedValues = [...value].sort((a, b) => a - b);
-
-    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
-      if (!old || old.values.length === 0)
-        return { operator: "is", values: sortedValues };
-
-      const operator = numberFilterDetails[old.operator];
-      let newValues: number[];
-
-      if (operator.target === "single") newValues = [sortedValues[0]];
-      else {
-        newValues = [
-          sortedValues[0] >= cappedMax ? cappedMax : sortedValues[0],
-          sortedValues[1] >= cappedMax
-            ? Number.POSITIVE_INFINITY
-            : sortedValues[1],
-        ];
-      }
-
-      return { operator: old.operator, values: newValues };
-    });
-  };
-
-  const handleInputChange = (index: number, value: string) => {
-    const newValues = [...inputValues];
-    if (isNumberRange && Number.parseInt(value, 10) >= cappedMax)
-      newValues[index] = `${cappedMax}+`;
-    else newValues[index] = value;
-
-    setInputValues(newValues);
-
-    const parsedValues = newValues.map((val) => {
-      if (val.trim() === "") return 0;
-      if (val === `${cappedMax}+`) return cappedMax;
-      return Number.parseInt(val, 10);
-    });
-
-    changeNumber(parsedValues);
-  };
-
-  const changeType = (type: "single" | "range") => {
-    column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
-      if (type === "single")
-        return { operator: "is", values: [old?.values[0] ?? 0] };
-
-      const newMaxValue = old?.values[0] ?? cappedMax;
-      return { operator: "is between", values: [0, newMaxValue] };
-    });
-
-    if (type === "single") setInputValues([inputValues[0]]);
-    else {
-      const maxValue = inputValues[0] || cappedMax.toString();
-      setInputValues(["0", maxValue]);
-    }
-  };
-
-  const slider = {
-    value: inputValues.map((val) =>
-      val === "" || val === `${cappedMax}+`
-        ? cappedMax
-        : Number.parseInt(val, 10),
-    ),
-    onValueChange: (value: number[]) => {
-      const values = value.map((val) => (val >= cappedMax ? cappedMax : val));
-      setInputValues(
-        values.map((v) => (v >= cappedMax ? `${cappedMax}+` : v.toString())),
-      );
-      changeNumber(values);
-    },
-  };
-
-  return (
-    <Command>
-      <CommandList className="w-75 px-2 py-2">
-        <CommandGroup>
-          <div className="flex w-full flex-col">
-            <Tabs
-              value={isNumberRange ? "range" : "single"}
-              onValueChange={(v) =>
-                changeType(v === "range" ? "range" : "single")
-              }
-            >
-              <TabsList className="w-full *:text-xs">
-                <TabsTab value="single">Single</TabsTab>
-                <TabsTab value="range">Range</TabsTab>
-              </TabsList>
-              <TabsPanel value="single" className="mt-4 flex flex-col gap-4">
-                <Slider
-                  step={1}
-                  value={[Number(inputValues[0])]}
-                  onValueChange={(v) => {
-                    const value: number = Array.isArray(v) ? v[0] : v;
-                    if (value >= cappedMax)
-                      handleInputChange(0, `${cappedMax}+`);
-                    else handleInputChange(0, value.toString());
-                  }}
-                  min={datasetMin}
-                  max={cappedMax}
-                  aria-orientation="horizontal"
-                />
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium">Value</span>
-                  <Input
-                    id="single"
-                    type="number"
-                    value={inputValues[0]}
-                    onChange={(e) => handleInputChange(0, e.target.value)}
-                    max={cappedMax}
-                  />
-                </div>
-              </TabsPanel>
-              <TabsPanel value="range" className="mt-4 flex flex-col gap-4">
-                <Slider
-                  step={1}
-                  value={slider.value}
-                  onValueChange={(v) => {
-                    const value: number = Array.isArray(v) ? v[0] : v;
-                    if (value >= cappedMax)
-                      handleInputChange(0, `${cappedMax}+`);
-                    else handleInputChange(0, value.toString());
-                  }}
-                  min={datasetMin}
-                  max={cappedMax}
-                  aria-orientation="horizontal"
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium">Min</span>
-                    <Input
-                      type="number"
-                      value={inputValues[0]}
-                      onChange={(e) => handleInputChange(0, e.target.value)}
-                      max={cappedMax}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium">Max</span>
-                    <Input
-                      type="text"
-                      value={inputValues[1]}
-                      placeholder={`${cappedMax}+`}
-                      onChange={(e) => handleInputChange(1, e.target.value)}
-                      max={cappedMax}
-                    />
-                  </div>
-                </div>
-              </TabsPanel>
-            </Tabs>
+  return options.map(({ value, label, icon: Icon, count }) => {
+    const checked = Boolean(filter?.values[0]?.includes(value));
+    return (
+      <MenuCheckboxItem
+        key={value}
+        checked={checked}
+        onCheckedChange={() => handleOptionSelect(value, !checked)}
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {Icon &&
+              (isValidElement(Icon) ? (
+                Icon
+              ) : (
+                <Icon className="text-muted-foreground" />
+              ))}
+            {label}
           </div>
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
+          <MenuShortcut
+            className={cn(
+              "ml-auto tracking-tight tabular-nums",
+              count === 0 && "slashed-zero",
+            )}
+          >
+            {formatNumber(count ?? optionsCount[value] ?? 0)}
+          </MenuShortcut>
+        </div>
+      </MenuCheckboxItem>
+    );
+  });
 }
