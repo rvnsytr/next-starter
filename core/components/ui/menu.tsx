@@ -91,10 +91,14 @@ export function MenuItem({
 export function MenuCheckboxItem({
   checked,
   variant = "default",
+  checkIcon: Icon = <CheckIcon />,
   className,
   children,
   ...props
-}: MenuPrimitive.CheckboxItem.Props & { variant?: "default" | "switch" }) {
+}: MenuPrimitive.CheckboxItem.Props & {
+  variant?: "default" | "switch";
+  checkIcon?: React.ReactNode;
+}) {
   return (
     <MenuPrimitive.CheckboxItem
       data-slot="menu-checkbox-item"
@@ -121,7 +125,7 @@ export function MenuCheckboxItem({
       ) : (
         <>
           <MenuPrimitive.CheckboxItemIndicator className="col-start-1 -ms-0.5">
-            <CheckIcon />
+            {Icon}
           </MenuPrimitive.CheckboxItemIndicator>
           <span className="col-start-2">{children}</span>
         </>

@@ -4,6 +4,7 @@ import {
   DataControllerPageSize,
   DataControllerPaginationNav,
   DataControllerSearch,
+  DataControllerSorting,
   DataControllerVisibility,
 } from "@/core/components/data-controller";
 import {
@@ -35,6 +36,7 @@ export function UserDataTable() {
       <div className="flex gap-2">
         <ButtonGroup>
           <DataControllerVisibility table={table} align="start" />
+          <DataControllerSorting table={table} />
           <FilterSelector table={table} />
         </ButtonGroup>
 
@@ -54,7 +56,7 @@ export function UserDataTable() {
 
       <pre>{JSON.stringify(table.getRowModel().rows.length, null, 2)}</pre>
       <Separator />
-      <pre>{JSON.stringify(table.getState().columnFilters, null, 2)}</pre>
+      <pre>{JSON.stringify(table.getState(), null, 2)}</pre>
     </div>
   );
 }

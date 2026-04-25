@@ -51,7 +51,7 @@ type WDCConfig<Columns extends Record<string, WDCColumnConfig>> = {
 
 const columnFiltersValueSchema = z.object({
   operator: z.enum(allFilterOperators),
-  values: z.union([z.string(), z.number(), z.boolean(), z.date()]).array(),
+  values: z.union([z.string(), z.number(), z.date()]).array(),
 });
 
 export const defineWDCConfig = <

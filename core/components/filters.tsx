@@ -3,13 +3,13 @@
 import { useDebounce } from "@/core/hooks/use-debounce";
 import { messages } from "@/core/messages";
 import {
+  createNumberRange,
   DataFilterOption,
   DataFilterType,
-  ElementType,
-  FilterModel,
-  createNumberRange,
   dateFilterDetails,
   determineNewOperator,
+  ElementType,
+  FilterModel,
   filterTypeOperatorDetails,
   formatDateRange,
   formatLocalizedDate,
@@ -24,6 +24,7 @@ import {
 } from "@/core/utils";
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
 import {
@@ -49,6 +50,7 @@ import { ButtonGroup } from "./ui/button-group";
 import { Calendar } from "./ui/calendar";
 import { Input } from "./ui/input";
 import { InputGroup, InputGroupAddon } from "./ui/input-group";
+import { Kbd } from "./ui/kbd";
 import {
   Menu,
   MenuCheckboxItem,
@@ -150,65 +152,71 @@ export function ClearFilters<TData>({
 
 export function ResetFilters<TData>({
   table,
+  shortcut = "R",
   size = "default",
   variant = "outline",
   ...props
-}: Omit<ButtonProps, "onClick"> & { table: Table<TData> }) {
-  // const dc = useDataController();
+}: Omit<ButtonProps, "onClick"> & { table: Table<TData>; shortcut?: Hotkey }) {
+  const clear = () => {
+    table.reset();
+
+    // table.resetPagination();
+    // if (dc.defaultState?.page) table.setPageIndex(dc.defaultState.page);
+    // else table.resetPageIndex();
+    // if (dc.defaultState?.size) table.setPageSize(dc.defaultState.size);
+    // else table.resetPageSize();
+
+    table.resetColumnOrder();
+    table.resetColumnSizing();
+    table.resetColumnVisibility();
+    table.resetColumnPinning();
+    table.resetColumnFilters();
+
+    table.resetRowPinning();
+    table.resetRowSelection();
+
+    table.resetGlobalFilter();
+    table.setGlobalFilter("");
+
+    table.resetSorting();
+    table.resetGrouping();
+    table.resetExpanded();
+    table.resetHeaderSizeInfo();
+  };
+
+  useHotkey(shortcut, () => clear());
 
   return (
-    <Button
-      size={size}
-      variant={variant}
-      onClick={() => {
-        table.reset();
-
-        // table.resetPagination();
-        // if (dc.defaultState?.page) table.setPageIndex(dc.defaultState.page);
-        // else table.resetPageIndex();
-        // if (dc.defaultState?.size) table.setPageSize(dc.defaultState.size);
-        // else table.resetPageSize();
-
-        table.resetColumnOrder();
-        table.resetColumnSizing();
-        table.resetColumnVisibility();
-        table.resetColumnPinning();
-        table.resetColumnFilters();
-
-        table.resetRowPinning();
-        table.resetRowSelection();
-
-        table.resetGlobalFilter();
-        table.setGlobalFilter("");
-
-        table.resetSorting();
-        table.resetGrouping();
-        table.resetExpanded();
-        table.resetHeaderSizeInfo();
-      }}
-      {...props}
-    >
+    <Button size={size} variant={variant} onClick={() => clear()} {...props}>
       <RotateCcwSquareIcon />
       {!size?.startsWith("icon") && messages.actions.reset}
+      <Kbd className="hidden text-xs lg:inline-flex">
+        {formatForDisplay(shortcut)}
+      </Kbd>
     </Button>
   );
 }
 
 export function FilterSelector<TData>({
   table,
-  size,
   variant = "outline",
   align = "start",
+  shortcut = "F",
+  size = "default",
   ...props
 }: ButtonProps & {
   table: Table<TData>;
   align?: React.ComponentProps<typeof PopoverPopup>["align"];
-  placeholder?: string;
+  shortcut?: Hotkey;
 }) {
   const anchor = useRef<HTMLButtonElement>(null);
   const [property, setProperty] = useState<string | undefined>(undefined);
+
+  const [isOpen, setOpen] = useState<boolean>(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  useHotkey(shortcut, () => setOpen((v) => !v));
 
   const properties = useMemo(
     () => table.getAllColumns().filter(isFilterableColumn),
@@ -232,11 +240,15 @@ export function FilterSelector<TData>({
 
   return (
     <>
-      <Menu>
+      <Menu open={isOpen} onOpenChange={setOpen}>
         <MenuTrigger
           render={
             <Button ref={anchor} size={size} variant={variant} {...props}>
-              <FilterIcon /> {!size?.startsWith("icon") && "Filter"}
+              <FilterIcon />
+              {!size?.startsWith("icon") && "Filter"}
+              <Kbd className="hidden text-xs lg:inline-flex">
+                {formatForDisplay(shortcut)}
+              </Kbd>
             </Button>
           }
         />

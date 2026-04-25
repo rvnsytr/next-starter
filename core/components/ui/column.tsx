@@ -14,10 +14,12 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from "./menu";
 
 export function ColumnHeader<TData, TValue>({
   column,
+  isMulti = true,
   className,
   disabled = false,
   children,
 }: Pick<HeaderContext<TData, TValue>, "column"> & {
+  isMulti?: boolean;
   className?: string;
   disabled?: boolean;
   children: React.ReactNode;
@@ -39,7 +41,9 @@ export function ColumnHeader<TData, TValue>({
           <Button
             size="icon-xs"
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc", isMulti)
+            }
             disabled={disabled}
           >
             <ArrowUpDownIcon />
