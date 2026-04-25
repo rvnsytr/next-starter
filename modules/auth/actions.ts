@@ -23,10 +23,7 @@ export async function updateProfileName(name: string) {
   return res;
 }
 
-export async function updateProfilePicture(
-  file: File,
-  userId: string,
-): Promise<ActionResponse> {
+export async function updateProfilePicture(file: File, userId: string) {
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
       .select({ fileId: user.image })
@@ -54,12 +51,10 @@ export async function updateProfilePicture(
   });
 
   revalidatePath("/dashboard/profile");
-  return { success: res.status };
+  return res;
 }
 
-export async function deleteProfilePicture(
-  userId: string,
-): Promise<ActionResponse> {
+export async function deleteProfilePicture(userId: string) {
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
       .select({ fileId: user.image })
@@ -81,7 +76,7 @@ export async function deleteProfilePicture(
   });
 
   revalidatePath("/dashboard/profile");
-  return { success: res.status };
+  return res;
 }
 
 export async function createUser(body: {

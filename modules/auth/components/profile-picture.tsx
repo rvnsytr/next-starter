@@ -51,7 +51,7 @@ export function ProfilePicture({
         setIsChange(true);
         toast.promise(
           updateProfilePicture(file, user.id).then((res) => {
-            if (!res.success) throw res;
+            if (!res.status) throw res;
             return res;
           }),
           {
@@ -80,7 +80,7 @@ export function ProfilePicture({
     setIsRemoved(true);
     toast.promise(
       deleteProfilePicture(user.id).then((res) => {
-        if (!res.success) throw res;
+        if (!res.status) throw res;
         return res;
       }),
       {
