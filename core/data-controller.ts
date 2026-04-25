@@ -1,40 +1,23 @@
-import { isValid } from "date-fns";
-import {
-  and,
-  arrayContains,
-  arrayOverlaps,
-  asc,
-  between,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  inArray,
-  lt,
-  lte,
-  ne,
-  not,
-  notBetween,
-  notIlike,
-  notInArray,
-  or,
-} from "drizzle-orm";
+import { PaginationState, SortingState } from "@tanstack/react-table";
+import { asc, desc, ilike, or } from "drizzle-orm";
 import { AnyPgColumn, PgSelect } from "drizzle-orm/pg-core";
-import { DataTableState } from "./components/data-table";
-import { FilterOperators } from "./data-filter";
 
-type ConfigParserValue = string | number | Date;
+export type DataControllerState = {
+  globalFilter: string;
+  pagination: PaginationState;
+  sorting: SortingState;
+  // columnFilters: ColumnFiltersState;
+};
 
 type WDCColumnConfig = { column: AnyPgColumn } & (
-  | { type: "string"; parser?: (value: ConfigParserValue) => string }
-  | { type: "number"; parser?: (value: ConfigParserValue) => number }
-  | { type: "date"; parser?: (value: ConfigParserValue) => Date }
-  | { type: "boolean"; parser: (value: ConfigParserValue) => boolean }
+  | { type: "string"; parser?: (value: unknown) => string }
+  | { type: "number"; parser?: (value: unknown) => number }
+  | { type: "date"; parser?: (value: unknown) => Date }
+  | { type: "boolean"; parser: (value: unknown) => boolean }
 );
 
 type WDCConfig<Columns extends Record<string, WDCColumnConfig>> = {
-  disabled?: ("globalFilter" | "columnFilters" | "sorting" | "pagination")[];
+  disabled?: (keyof DataControllerState)[];
   columns: Columns;
   defaultOrderBy?: { id: keyof Columns; desc: boolean };
 };
@@ -48,8 +31,7 @@ export const defineWDCConfig = <
 export function withDataController<
   TQueryBuilder extends PgSelect,
   Columns extends Record<string, WDCColumnConfig>,
->(qb: TQueryBuilder, state: DataTableState, config: WDCConfig<Columns>) {
-  // #region Global Filter
+>(qb: TQueryBuilder, state: DataControllerState, config: WDCConfig<Columns>) {
   const columnValues = Object.values(config.columns);
   const globalFilterCols = columnValues.filter((c) => c.type === "string");
   if (
@@ -61,134 +43,130 @@ export function withDataController<
     const conditions = globalFilterCols.map((c) => ilike(c.column, value));
     if (conditions.length) qb = qb.where(or(...conditions));
   }
-  // #endregion
 
-  // #region Column Filters
-  if (!config.disabled?.includes("columnFilters") && state.columnFilters) {
-    const ilikeOperators: FilterOperators[] = ["contains"];
-    const notIlikeOperators: FilterOperators[] = ["does not contain"];
+  // if (!config.disabled?.includes("columnFilters") && state.columnFilters) {
+  //   const ilikeOperators: FilterOperators[] = ["contains"];
+  //   const notIlikeOperators: FilterOperators[] = ["does not contain"];
 
-    const eqOperators: FilterOperators[] = ["is"];
-    const notEqOperators: FilterOperators[] = ["is not"];
+  //   const eqOperators: FilterOperators[] = ["is"];
+  //   const notEqOperators: FilterOperators[] = ["is not"];
 
-    const ltOperators: FilterOperators[] = ["is less than", "is before"];
-    const lteOperators: FilterOperators[] = [
-      "is less than or equal to",
-      "is on or before",
-    ];
-    const gtOperators: FilterOperators[] = ["is greater than", "is after"];
-    const gteOperators: FilterOperators[] = [
-      "is greater than or equal to",
-      "is on or after",
-    ];
+  //   const ltOperators: FilterOperators[] = ["is less than", "is before"];
+  //   const lteOperators: FilterOperators[] = [
+  //     "is less than or equal to",
+  //     "is on or before",
+  //   ];
+  //   const gtOperators: FilterOperators[] = ["is greater than", "is after"];
+  //   const gteOperators: FilterOperators[] = [
+  //     "is greater than or equal to",
+  //     "is on or after",
+  //   ];
 
-    const betweenOperators: FilterOperators[] = ["is between"];
-    const notBetweenOperators: FilterOperators[] = ["is not between"];
+  //   const betweenOperators: FilterOperators[] = ["is between"];
+  //   const notBetweenOperators: FilterOperators[] = ["is not between"];
 
-    const inArrayOperators: FilterOperators[] = ["is any of"];
-    const notInArrayOperators: FilterOperators[] = ["is none of"];
+  //   const inArrayOperators: FilterOperators[] = ["is any of"];
+  //   const notInArrayOperators: FilterOperators[] = ["is none of"];
 
-    const includeAnyOperators: FilterOperators[] = [
-      "include",
-      "include any of",
-    ];
-    const excludeAnyOperators: FilterOperators[] = [
-      "exclude",
-      "exclude if any of",
-    ];
-    const includeAllOperators: FilterOperators[] = ["include all of"];
-    const excludeAllOperators: FilterOperators[] = ["exclude if all"];
+  //   const includeAnyOperators: FilterOperators[] = [
+  //     "include",
+  //     "include any of",
+  //   ];
+  //   const excludeAnyOperators: FilterOperators[] = [
+  //     "exclude",
+  //     "exclude if any of",
+  //   ];
+  //   const includeAllOperators: FilterOperators[] = ["include all of"];
+  //   const excludeAllOperators: FilterOperators[] = ["exclude if all"];
 
-    const conditions = state.columnFilters
-      .map(({ id, value: { operator, values } }) => {
-        const columnConfig = config.columns[id];
-        if (!columnConfig || !values.length) return null;
+  //   const conditions = state.columnFilters
+  //     .map(({ id, value }) => {
+  //       const columnConfig = config.columns[id];
+  //       if (!columnConfig || !values.length) return null;
 
-        const { column, type, parser } = columnConfig;
-        let parsedValues: (string | number | boolean | Date)[] = values;
+  //       const { column, type, parser } = columnConfig;
+  //       let parsedValues: (string | number | boolean | Date)[] = values;
 
-        if (type === "date")
-          parsedValues = values
-            .map((v) => {
-              const d = v instanceof Date ? v : new Date(v);
-              if (!isValid(d)) return null;
-              return d;
-            })
-            .filter((v) => !!v);
+  //       if (type === "date")
+  //         parsedValues = values
+  //           .map((v) => {
+  //             const d = v instanceof Date ? v : new Date(v);
+  //             if (!isValid(d)) return null;
+  //             return d;
+  //           })
+  //           .filter((v) => !!v);
 
-        if (type === "number")
-          parsedValues = values
-            .map((v) => {
-              const n = Number(v);
-              if (isNaN(n)) return null;
-              return n;
-            })
-            .filter((v) => v !== null);
+  //       if (type === "number")
+  //         parsedValues = values
+  //           .map((v) => {
+  //             const n = Number(v);
+  //             if (isNaN(n)) return null;
+  //             return n;
+  //           })
+  //           .filter((v) => v !== null);
 
-        if (type === "boolean")
-          parsedValues = values
-            .map((v) => {
-              if (parser) return parser(v);
-              if (typeof v !== "string") return null;
-              const n = v.trim().toLowerCase();
-              if (n === "true" || n === "1") return true;
-              if (n === "false" || n === "0") return false;
-              return null;
-            })
-            .filter((v) => v !== null);
+  //       if (type === "boolean")
+  //         parsedValues = values
+  //           .map((v) => {
+  //             if (parser) return parser(v);
+  //             if (typeof v !== "string") return null;
+  //             const n = v.trim().toLowerCase();
+  //             if (n === "true" || n === "1") return true;
+  //             if (n === "false" || n === "0") return false;
+  //             return null;
+  //           })
+  //           .filter((v) => v !== null);
 
-        if (!parsedValues.length) return null;
+  //       if (!parsedValues.length) return null;
 
-        if (ilikeOperators.includes(operator))
-          return ilike(column, `%${parsedValues[0]}%`);
-        if (notIlikeOperators.includes(operator))
-          return notIlike(column, `%${parsedValues[0]}%`);
+  //       if (ilikeOperators.includes(operator))
+  //         return ilike(column, `%${parsedValues[0]}%`);
+  //       if (notIlikeOperators.includes(operator))
+  //         return notIlike(column, `%${parsedValues[0]}%`);
 
-        if (eqOperators.includes(operator)) return eq(column, parsedValues[0]);
-        if (notEqOperators.includes(operator))
-          return ne(column, parsedValues[0]);
+  //       if (eqOperators.includes(operator)) return eq(column, parsedValues[0]);
+  //       if (notEqOperators.includes(operator))
+  //         return ne(column, parsedValues[0]);
 
-        if (ltOperators.includes(operator)) return lt(column, parsedValues[0]);
-        if (lteOperators.includes(operator))
-          return lte(column, parsedValues[0]);
-        if (gtOperators.includes(operator)) return gt(column, parsedValues[0]);
-        if (gteOperators.includes(operator))
-          return gte(column, parsedValues[0]);
+  //       if (ltOperators.includes(operator)) return lt(column, parsedValues[0]);
+  //       if (lteOperators.includes(operator))
+  //         return lte(column, parsedValues[0]);
+  //       if (gtOperators.includes(operator)) return gt(column, parsedValues[0]);
+  //       if (gteOperators.includes(operator))
+  //         return gte(column, parsedValues[0]);
 
-        if (betweenOperators.includes(operator)) {
-          if (parsedValues.length < 2) return null;
-          const [v1, v2] = parsedValues;
-          return between(column, v1, v2);
-        }
-        if (notBetweenOperators.includes(operator)) {
-          if (parsedValues.length < 2) return null;
-          const [v1, v2] = parsedValues;
-          return notBetween(column, v1, v2);
-        }
+  //       if (betweenOperators.includes(operator)) {
+  //         if (parsedValues.length < 2) return null;
+  //         const [v1, v2] = parsedValues;
+  //         return between(column, v1, v2);
+  //       }
+  //       if (notBetweenOperators.includes(operator)) {
+  //         if (parsedValues.length < 2) return null;
+  //         const [v1, v2] = parsedValues;
+  //         return notBetween(column, v1, v2);
+  //       }
 
-        if (inArrayOperators.includes(operator))
-          return inArray(column, parsedValues);
-        if (notInArrayOperators.includes(operator))
-          return notInArray(column, parsedValues);
+  //       if (inArrayOperators.includes(operator))
+  //         return inArray(column, parsedValues);
+  //       if (notInArrayOperators.includes(operator))
+  //         return notInArray(column, parsedValues);
 
-        if (includeAnyOperators.includes(operator))
-          return arrayOverlaps(column, parsedValues);
-        if (excludeAnyOperators.includes(operator))
-          return not(arrayOverlaps(column, parsedValues));
-        if (includeAllOperators.includes(operator))
-          return arrayContains(column, parsedValues);
-        if (excludeAllOperators.includes(operator))
-          return not(arrayContains(column, parsedValues));
+  //       if (includeAnyOperators.includes(operator))
+  //         return arrayOverlaps(column, parsedValues);
+  //       if (excludeAnyOperators.includes(operator))
+  //         return not(arrayOverlaps(column, parsedValues));
+  //       if (includeAllOperators.includes(operator))
+  //         return arrayContains(column, parsedValues);
+  //       if (excludeAllOperators.includes(operator))
+  //         return not(arrayContains(column, parsedValues));
 
-        return null;
-      })
-      .filter((v) => !!v);
+  //       return null;
+  //     })
+  //     .filter((v) => !!v);
 
-    if (conditions.length) qb = qb.where(and(...conditions));
-  }
-  // #endregion
+  //   if (conditions.length) qb = qb.where(and(...conditions));
+  // }
 
-  // #region Sorting
   if (!config.disabled?.includes("sorting")) {
     const applySorting = () => {
       if (state.sorting.length) {
@@ -213,14 +191,11 @@ export function withDataController<
 
     applySorting();
   }
-  // #endregion
 
-  // #region Pagination
   if (!config.disabled?.includes("pagination")) {
     const { pageIndex, pageSize } = state.pagination;
     qb = qb.limit(pageSize).offset(pageIndex * pageSize);
   }
-  // #endregion
 
   return qb;
 }

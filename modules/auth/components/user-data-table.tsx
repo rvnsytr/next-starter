@@ -1,13 +1,17 @@
 "use client";
 
-import { DataControllerSearch } from "@/core/components/data-controller";
+import {
+  DataControllerPageSize,
+  DataControllerPaginationNav,
+  DataControllerSearch,
+} from "@/core/components/data-controller";
 import { Separator } from "@/core/components/ui/separator";
 import { useDataController } from "@/core/hooks/use-data-controller";
 import { listUsers } from "../actions";
 import { getUserColumns } from "./user-column";
 
 export function UserDataTable() {
-  const { result, state, table } = useDataController({
+  const { result, table } = useDataController({
     mode: "auto",
     columns: () => getUserColumns(),
     query: {
@@ -19,16 +23,21 @@ export function UserDataTable() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DataControllerSearch table={table} />
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <div className="flex gap-2">
+        <DataControllerPaginationNav table={table} />
+        <DataControllerPageSize table={table} />
+        <DataControllerSearch table={table} />
+      </div>
+
+      <pre>{JSON.stringify(table.getState().pagination, null, 2)}</pre>
       <Separator />
       <pre>
         {JSON.stringify(
           {
             isValidating: result.isValidating,
             isLoading: result.isLoading,
-            tableData: table.getRowModel().rows.length,
-            data: result.data,
+            tableData: table.getRowModel().rows,
+            // data: result.data,
           },
           null,
           2,

@@ -11,10 +11,8 @@ export type OmitByType<T, V> = {
 
 export type ActionResponse<T = unknown> = {
   count?: ({ total: number } & Record<string, number>) | undefined;
-} & (
-  | { success: true; data?: T }
-  | { success: false; message?: string; error?: unknown }
-);
+  message?: string;
+} & ({ success: true; data: T } | { success: false; error?: unknown });
 
 export type StringCase =
   | "kebab"

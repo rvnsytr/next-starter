@@ -90,7 +90,9 @@ export async function createUser(body: {
   return res;
 }
 
-export async function listUsers(): Promise<AuthSession["user"][]> {
+export async function listUsers(): Promise<
+  ActionResponse<AuthSession["user"][]>
+> {
   "use cache";
 
   // const hasPermission = await auth.api.userHasPermission({
@@ -101,7 +103,8 @@ export async function listUsers(): Promise<AuthSession["user"][]> {
   // if (!hasPermission.success)
   //   return { success: false, error: messages.forbidden };
 
-  return await db.select().from(user);
+  const data = await db.select().from(user);
+  return { success: true, data };
 
   // const countQb = db
   //   .select({
