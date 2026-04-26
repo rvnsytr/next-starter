@@ -51,7 +51,7 @@ import {
   mutateListSessions,
   useListSessions,
 } from "../hooks/use-list-sessions";
-import { useAuth } from "../provider";
+import { useSession } from "../provider";
 import { ImpersonateUserBadge } from "./impersonate-user-badge";
 
 export function SessionList() {
@@ -79,7 +79,7 @@ export function SessionListCollapsible({
   name?: string;
   data: AuthSession["session"][];
 }) {
-  const { session } = useAuth();
+  const { session } = useSession();
   const [revokingSession, setRevokingSession] = useState<string | null>();
 
   if (!data.length)

@@ -6,10 +6,10 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/core/components/ui/avatar";
-import { useAuth } from "@/modules/auth/provider";
+import { useSession } from "@/modules/auth/provider";
 
 export function SidebarAppSiteHeaderAvatar() {
-  const { user } = useAuth();
+  const { user } = useSession();
 
   return (
     <Avatar className="rounded-md *:rounded-md after:rounded-md">

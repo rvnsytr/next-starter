@@ -20,7 +20,7 @@ import {
 import { getMenuByRole } from "@/core/route";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
-import { useAuth } from "@/modules/auth/provider";
+import { useSession } from "@/modules/auth/provider";
 import { menuConfig } from "@/shared/menu";
 import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
@@ -29,7 +29,7 @@ import { useMemo } from "react";
 
 export function SidebarAppHeader() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useSession();
 
   const data: QuickSearchDataGroup = useMemo(() => {
     return [

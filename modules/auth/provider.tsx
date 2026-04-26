@@ -30,8 +30,8 @@ export function AuthProvider({
   );
 }
 
-export function useAuth() {
+export function useSession() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used in AuthProvider");
+  if (!ctx) throw new Error("useSession must be used in AuthProvider");
   return ctx;
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useAuth } from "../provider";
+import { useSession } from "../provider";
 import { UserRoleBadge } from "./user-role-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
 export function ProfileBadges() {
-  const { user } = useAuth();
+  const { user } = useSession();
   return (
     <>
       {user.emailVerified && <UserVerifiedBadge />}

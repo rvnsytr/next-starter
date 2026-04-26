@@ -18,13 +18,13 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { updateProfileName } from "../actions";
-import { useAuth } from "../provider";
+import { useSession } from "../provider";
 import { userSchema } from "../schema";
 import { ProfilePicture } from "./profile-picture";
 
 export function ProfileForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { user } = useSession();
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema.pick({ name: true, email: true });
