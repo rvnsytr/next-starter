@@ -1,5 +1,11 @@
 import { AuthSession } from "@/core/auth";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/core/components/ui/avatar";
+import { Button } from "@/core/components/ui/button";
+import {
   ColumnCellCheckbox,
   ColumnCellNumber,
   ColumnHeader,
@@ -9,6 +15,7 @@ import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { allRoles } from "@/shared/permission";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
+  ArrowUpRightIcon,
   CalendarCheck2Icon,
   CalendarSyncIcon,
   CircleDotIcon,
@@ -22,13 +29,14 @@ import {
   roleConfig,
   userStatusConfig,
 } from "../config";
+import { ColumnRoleMenu } from "./column-role-menu";
 import { UserRoleBadge } from "./user-role-badge";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
 const createColumn = createColumnHelper<AuthSession["user"]>();
 export const getUserColumns = (
-  //   currentUserId: string,
+  setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>,
   result?: { isLoading: boolean; count?: Record<string, number> },
 ) => [
   createColumn.display({
@@ -51,13 +59,21 @@ export const getUserColumns = (
         Nama
       </ColumnHeader>
     ),
-    cell: (c) => c.getValue(),
-    // cell: (c) => (
-    //   <UserDetailModal
-    //     data={c.row.original}
-    //     isCurrentUser={c.row.original.id === currentUserId}
-    //   />
-    // ),
+    cell: (c) => (
+      <div className="flex items-center gap-1">
+        <Avatar radius="md">
+          <AvatarImage src={c.row.original.image ?? undefined} />
+          <AvatarFallback>{c.getValue().slice(0, 2)}</AvatarFallback>
+        </Avatar>
+        <Button
+          size="sm"
+          variant="link"
+          onClick={() => setData(c.row.original)}
+        >
+          {c.getValue()} <ArrowUpRightIcon />
+        </Button>
+      </div>
+    ),
     filterFn: filterFn("text"),
     meta: { label: "Nama", type: "text", icon: UserRoundIcon },
   }),
@@ -104,7 +120,12 @@ export const getUserColumns = (
         Role
       </ColumnHeader>
     ),
-    cell: (c) => <UserRoleBadge value={c.cell.getValue()} />,
+    cell: (c) => (
+      <div className="flex items-center gap-2">
+        <ColumnRoleMenu data={c.row.original} />
+        <UserRoleBadge value={c.cell.getValue()} />
+      </div>
+    ),
     filterFn: filterFn("option"),
     meta: {
       label: "Role",

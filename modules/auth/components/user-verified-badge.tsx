@@ -30,8 +30,7 @@ export function UserVerifiedBadge({
           />
         }
       />
-
-      <TooltipPopup>Terverifikasi.</TooltipPopup>
+      <TooltipPopup>Terverifikasi</TooltipPopup>
     </Tooltip>
   );
 }

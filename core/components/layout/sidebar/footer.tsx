@@ -10,6 +10,7 @@ import {
 } from "@/core/components/ui/sidebar";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
+import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
 import { menuConfig } from "@/shared/menu";
 import { routesConfig } from "@/shared/route";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
@@ -53,7 +54,7 @@ export function SidebarAppFooter() {
 
         <SidebarSeparator />
 
-        {/* <StopImpersonateUserMenuItem /> */}
+        <StopImpersonateUserMenuItem />
 
         <SidebarMenuItem>
           <SignOutButton />

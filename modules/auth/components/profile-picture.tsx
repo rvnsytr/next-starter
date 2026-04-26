@@ -140,7 +140,7 @@ export function ProfilePicture({
                   disabled={!user.image || isChange || isRemoved}
                 >
                   <LoadingSpinner loading={isRemoved} />
-                  {messages.actions.remove}
+                  {messages.actions.delete}
                 </Button>
               }
             />

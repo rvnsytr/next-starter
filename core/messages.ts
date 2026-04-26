@@ -18,7 +18,7 @@ export const messages = {
     cancel: "Batal",
     clear: "Bersihkan",
     confirm: "Konfirmasi",
-    remove: "Hapus",
+    delete: "Hapus",
     reset: "Atur Ulang",
     save: "Simpan",
     update: "Simpan Perubahan",
@@ -36,9 +36,6 @@ export const messages = {
   notFound: "Sumber daya yang diminta tidak ditemukan.",
   unauthorized: "Tindakan tidak terautentikasi",
   forbidden: "Tidak memiliki izin untuk melakukan tindakan ini.",
-
-  removeLabel: (thing: string) =>
-    `Untuk mengonfirmasi, ketik "${thing}" pada kolom di bawah ini.`,
 
   noChanges: (thing: string) => `Tidak ada perubahan pada ${thing}.`,
   thingNotMatch: (thing: string) =>
