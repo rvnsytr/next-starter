@@ -210,10 +210,14 @@ export function CreateUserDialog() {
                     {allRoles.map((role) => {
                       const { icon: Icon, ...config } = roleConfig[role];
                       return (
-                        <Label key={role} className="w-full" asCard>
-                          <RadioGroupItem value={role} />
-                          <Icon /> {config.label}
-                          {/* {config.description} */}
+                        <Label key={role} className="w-full flex-col" asCard>
+                          <RadioGroupItem value={role} hidden />
+                          <div className="flex items-center gap-2">
+                            <Icon /> {config.label}
+                          </div>
+                          <small className="text-muted-foreground font-normal">
+                            {config.description}
+                          </small>
                         </Label>
                       );
                     })}
@@ -225,7 +229,11 @@ export function CreateUserDialog() {
           </DialogPanel>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+            <DialogClose
+              render={
+                <Button variant="outline">{messages.actions.cancel}</Button>
+              }
+            />
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner loading={isLoading} />
               {messages.actions.add}

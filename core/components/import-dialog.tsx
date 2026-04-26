@@ -425,9 +425,11 @@ export function ImportDialog<T, K extends string>({
           <Separator />
 
           <DialogFooter>
-            <DialogClose render={<Button />}>
-              {messages.actions.cancel}
-            </DialogClose>
+            <DialogClose
+              render={
+                <Button variant="outline">{messages.actions.cancel}</Button>
+              }
+            />
             <Button type="submit" disabled={isLoading}>
               <LoadingSpinner
                 loading={isLoading}
