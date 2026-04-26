@@ -30,7 +30,7 @@ export const messages = {
 
   loading: "Sedang memuat...",
   success: "Sukses",
-  error: "Terjadi kesalahan. Silakan coba lagi nanti.",
+  error: "Terjadi kesalahan",
 
   empty: "Tidak ada hasil yang ditemukan.",
   notFound: "Sumber daya yang diminta tidak ditemukan.",

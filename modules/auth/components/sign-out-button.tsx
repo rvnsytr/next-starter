@@ -19,7 +19,7 @@ export function signOutClient({
   toast.promise(
     authClient.signOut().then((res) => {
       if (res.error) throw res.error;
-      return res;
+      return res.data;
     }),
     {
       loading: { title: messages.loading },
@@ -51,8 +51,8 @@ export function SignOutButton() {
     <SidebarMenuButton
       tooltip="Keluar"
       variant="destructive-ghost"
-      disabled={isLoading}
       onClick={clickHandler}
+      disabled={isLoading}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <LogOutIcon /> }} />
       Keluar

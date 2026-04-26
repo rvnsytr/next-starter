@@ -51,6 +51,7 @@ import {
   mutateListSessions,
   useListSessions,
 } from "../hooks/use-list-sessions";
+import { useListUserSessions } from "../hooks/use-list-user-sessions";
 import { useSession } from "../provider";
 import { ImpersonateUserBadge } from "./impersonate-user-badge";
 
@@ -61,16 +62,16 @@ export function SessionList() {
   return <SessionListCollapsible data={data ?? []} />;
 }
 
-// function UserDetailSessionList({
-//   data: userData,
-// }: {
-//   data: Pick<AuthSession["user"], "id" | "name">;
-// }) {
-//   const { data, error, isLoading } = useListUserSessions(userData.id);
-//   if (error) return <ErrorFallback error={error} />;
-//   if (!data && isLoading) return <LoadingFallback />;
-//   return <SessionListCollapsible name={userData.name} data={data ?? []} />;
-// }
+export function UserDetailSessionList({
+  data: user,
+}: {
+  data: Pick<AuthSession["user"], "id" | "name">;
+}) {
+  const { data, error, isLoading } = useListUserSessions(user.id);
+  if (error) return <ErrorFallback error={error} />;
+  if (!data && isLoading) return <LoadingFallback />;
+  return <SessionListCollapsible name={user.name} data={data ?? []} />;
+}
 
 export function SessionListCollapsible({
   name,

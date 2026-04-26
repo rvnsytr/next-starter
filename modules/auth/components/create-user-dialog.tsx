@@ -25,7 +25,6 @@ import { Label } from "@/core/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { mutateControlledData } from "@/core/hooks/use-data-controller";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { messages } from "@/core/messages";
 import { allRoles, defaultRole } from "@/shared/permission";
@@ -38,6 +37,7 @@ import { z } from "zod";
 import { createUser } from "../actions";
 import { roleConfig } from "../config";
 import { passwordSchema, userSchema } from "../schema";
+import { mutateUserDataTable } from "./user-data-table";
 
 const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
 
@@ -82,7 +82,7 @@ export function CreateUserDialog() {
         success: () => {
           setIsLoading(false);
           form.reset();
-          mutateControlledData("/auth/admin/list-users");
+          mutateUserDataTable();
           return { title: `Akun atas nama ${rest.name} berhasil dibuat.` };
         },
         error: (e) => {

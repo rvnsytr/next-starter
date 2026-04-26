@@ -49,7 +49,7 @@ export function ChangePasswordForm() {
       (async () => {
         const res = await authClient.changePassword(formData);
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       })(),
       {
         loading: { title: messages.loading },

@@ -62,7 +62,7 @@ export function SignUpForm() {
     toast.promise(
       authClient.signUp.email({ password, ...rest }).then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },

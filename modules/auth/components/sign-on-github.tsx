@@ -23,12 +23,12 @@ export function SignOnGithubButton() {
         })
         .then((res) => {
           if (res.error) throw res.error;
-          return res;
+          return res.data;
         }),
       {
         loading: { title: messages.loading },
         success: (res) => {
-          const name = "user" in res.data ? res.data.user.name : undefined;
+          const name = "user" in res ? res.user.name : undefined;
           return {
             title: "Berhasil masuk!",
             description: `Selamat datang${name ? ` ${name}` : ""}!`,

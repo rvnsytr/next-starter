@@ -42,13 +42,13 @@ export function SignInForm() {
         .email({ ...formData, callbackURL: "/dashboard" })
         .then((res) => {
           if (res.error) throw res.error;
-          return res;
+          return res.data;
         }),
       {
         loading: { title: messages.loading },
         success: (res) => ({
           title: "Berhasil masuk!",
-          description: `Selamat datang${res.data.user.name ? ` ${res.data.user.name}` : ""}!`,
+          description: `Selamat datang${res.user.name ? ` ${res.user.name}` : ""}!`,
         }),
         error: (e) => {
           setIsLoading(false);

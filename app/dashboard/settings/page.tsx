@@ -14,7 +14,7 @@ import { Kbd, KbdGroup } from "@/core/components/ui/kbd";
 import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
-import { SessionList } from "@/modules/auth/components/session-list-collapsible";
+import { SessionList } from "@/modules/auth/components/session-list";
 import { appConfig } from "@/shared/config";
 import {
   FrameIcon,

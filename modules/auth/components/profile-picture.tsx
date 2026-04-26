@@ -62,7 +62,7 @@ export function ProfilePicture({
             },
             error: (e) => {
               setIsChange(false);
-              return { title: e.message };
+              return { title: messages.error, description: e.message };
             },
           },
         );
@@ -91,7 +91,7 @@ export function ProfilePicture({
         },
         error: (e) => {
           setIsRemoved(false);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );

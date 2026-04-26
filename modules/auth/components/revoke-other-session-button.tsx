@@ -27,7 +27,7 @@ export function RevokeOtherSessionsButton() {
     toast.promise(
       authClient.revokeOtherSessions().then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },
