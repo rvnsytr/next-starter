@@ -50,7 +50,7 @@ export type DataTableProps<TData> = {
     footer?: string;
   };
 
-  renderRowSelection?: (props: {
+  renderRowSelectionButton?: (props: {
     rows: Row<TData>[];
     table: TableType<TData>;
   }) => React.ReactNode;
@@ -63,7 +63,7 @@ export function DataTable<TData>({
   className,
   classNames,
 
-  renderRowSelection,
+  renderRowSelectionButton,
   ...options
 }: DataControllerOptions<TData> & DataTableProps<TData>) {
   const isMobile = useIsMobile();
@@ -109,7 +109,8 @@ export function DataTable<TData>({
             <Separator orientation="vertical" className="h-4" />
           )}
 
-          {isSelected && renderRowSelection?.({ table, rows: selectedRows })}
+          {isSelected &&
+            renderRowSelectionButton?.({ table, rows: selectedRows })}
         </div>
 
         <div className="flex gap-x-2 *:grow">

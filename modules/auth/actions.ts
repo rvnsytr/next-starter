@@ -6,7 +6,7 @@ import { deleteFiles, uploadFiles } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
 import { files, user } from "@/shared/db/schema";
 import { Role } from "@/shared/permission";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
 
@@ -90,28 +90,6 @@ export async function listUserSessions(userId: string) {
   });
   return sessions as AuthSession["session"][];
 }
-
-// export async function revokeUserSessions(ids: string[]) {
-//   const headers = await nextHeaders();
-//   return Promise.all(
-//     ids.map(
-//       async (userId) =>
-//         await auth.api.revokeUserSessions({ body: { userId }, headers }),
-//     ),
-//   );
-// }
-
-// export async function removeUsers(
-//   data: Pick<AuthSession["user"], "id" | "image">[],
-// ) {
-//   const headers = await nextHeaders();
-//   return Promise.all(
-//     data.map(async ({ id, image }) => {
-//       if (image) await deleteFiles([image]);
-//       return await auth.api.removeUser({ body: { userId: id }, headers });
-//     }),
-//   );
-// }
 
 export async function listUsers(): Promise<
   ActionResponse<AuthSession["user"][]>
@@ -248,6 +226,30 @@ export async function deleteUser(userId: string) {
     });
   });
 
+  updateTag("list-users");
+  return res;
+}
+
+export async function deleteUsers(userIds: string[]) {
+  const res = await db.transaction(async (tx) => {
+    const fileIds = await tx
+      .delete(user)
+      .where(inArray(user.id, userIds))
+      .returning({ fileId: user.image })
+      .then((res) => res.map((v) => v.fileId).filter((id) => !!id) as string[]);
+
+    if (fileIds.length > 0) {
+      const filePaths = await tx
+        .delete(files)
+        .where(inArray(files.id, fileIds))
+        .returning({ filePath: files.file_path });
+
+      if (filePaths.length > 0)
+        await deleteFiles(filePaths.map((v) => v.filePath));
+    }
+
+    return fileIds.length;
+  });
   updateTag("list-users");
   return res;
 }
