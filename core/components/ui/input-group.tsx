@@ -25,10 +25,14 @@ const inputGroupAddonVariants = cva(
 );
 
 export function InputGroup({
+  size = "default",
   disableFocusStyle = false,
   className,
   ...props
-}: React.ComponentProps<"div"> & { disableFocusStyle?: boolean }) {
+}: React.ComponentProps<"div"> & {
+  size?: InputProps["size"];
+  disableFocusStyle?: boolean;
+}) {
   return (
     <div
       data-slot="input-group"
@@ -36,6 +40,10 @@ export function InputGroup({
       className={cn(
         // Base
         "relative inline-flex w-full min-w-0 items-center rounded-lg border text-sm transition-shadow",
+        // Size
+        "h-8",
+        size === "sm" && "h-7",
+        size === "lg" && "h-9",
         // Colors
         "border-input bg-background text-foreground ring-ring/24 dark:bg-input/32 shadow-xs/5",
         // Autofill
