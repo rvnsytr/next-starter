@@ -27,16 +27,13 @@ export function SignOnGithubButton() {
         }),
       {
         loading: { title: messages.loading },
-        success: (res) => {
-          const name = "user" in res ? res.user.name : undefined;
-          return {
-            title: "Berhasil masuk!",
-            description: `Selamat datang${name ? ` ${name}` : ""}!`,
-          };
-        },
+        success: () => ({
+          title: "Berhasil masuk!",
+          description: "Selamat datang!",
+        }),
         error: (e) => {
           setIsLoading(false);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );

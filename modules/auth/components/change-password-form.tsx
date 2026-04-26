@@ -60,7 +60,7 @@ export function ChangePasswordForm() {
         },
         error: (e) => {
           setIsLoading(false);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );

@@ -48,11 +48,17 @@ export function SignInForm() {
         loading: { title: messages.loading },
         success: (res) => ({
           title: "Berhasil masuk!",
-          description: `Selamat datang${res.user.name ? ` ${res.user.name}` : ""}!`,
+          description: res.user.name ? (
+            <span>
+              Selamat datang <b>{res.user.name}</b>!
+            </span>
+          ) : (
+            "Selamat datang!"
+          ),
         }),
         error: (e) => {
           setIsLoading(false);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );

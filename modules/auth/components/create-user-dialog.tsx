@@ -83,11 +83,18 @@ export function CreateUserDialog() {
           setIsLoading(false);
           form.reset();
           mutateUserDataTable();
-          return { title: `Akun atas nama ${rest.name} berhasil dibuat.` };
+          return {
+            title: messages.success,
+            description: (
+              <span>
+                Akun atas nama <b>{rest.name}</b> berhasil dibuat.
+              </span>
+            ),
+          };
         },
         error: (e) => {
           setIsLoading(false);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );

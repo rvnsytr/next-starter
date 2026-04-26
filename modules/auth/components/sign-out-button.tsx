@@ -29,7 +29,7 @@ export function signOutClient({
       },
       error: (e) => {
         onError?.(e);
-        return { title: e.message };
+        return { title: messages.error, description: e.message };
       },
     },
   );

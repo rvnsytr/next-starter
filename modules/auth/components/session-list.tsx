@@ -128,7 +128,7 @@ export function SessionListCollapsible({
         },
         error: (e) => {
           setRevokingSession(null);
-          return { title: e.message };
+          return { title: messages.error, description: e.message };
         },
       },
     );
