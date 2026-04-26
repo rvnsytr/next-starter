@@ -108,7 +108,8 @@ export function ProfilePicture({
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onClick={openFileDialog}
-        className="size-20 cursor-pointer rounded-lg *:rounded-lg after:rounded-lg"
+        radius="lg"
+        className="size-20 cursor-pointer"
       >
         <AvatarImage src={user.image ?? undefined} />
         <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>

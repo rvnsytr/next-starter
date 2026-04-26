@@ -11,13 +11,13 @@
   --spacing: 0.25rem;
 
   --success: var(--color-green-500);
-  --success-foreground: var(--color-green-700);
+  --success-foreground: var(--color-green-800);
   --warning: var(--color-yellow-500);
-  --warning-foreground: var(--color-yellow-700);
+  --warning-foreground: var(--color-yellow-800);
   --info: var(--color-blue-500);
-  --info-foreground: var(--color-blue-700);
+  --info-foreground: var(--color-blue-800);
   --destructive: var(--color-red-500);
-  --destructive-foreground: var(--color-red-700);
+  --destructive-foreground: var(--color-red-800);
 
   --background: oklch(0.99 0 0);
   --foreground: oklch(0 0 0);

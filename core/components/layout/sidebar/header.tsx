@@ -60,7 +60,7 @@ export function SidebarAppHeader() {
             className="group/head-button h-13 group-data-[collapsible=icon]:my-2.5 group-data-[collapsible=icon]:p-0"
             render={<Link href="/dashboard/profile" />}
           >
-            <Avatar className="rounded-md *:rounded-md after:rounded-md">
+            <Avatar radius="md">
               <AvatarImage src={user.image ?? undefined} />
               <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
               <AvatarBadge className="bg-success" />
