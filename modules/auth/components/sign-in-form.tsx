@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { passwordSchema, userSchema } from "../schema";
+import { ResetPasswordDialog } from "./reset-password";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -123,7 +124,7 @@ export function SignInForm() {
           )}
         />
 
-        {/* <ResetPasswordDialog /> */}
+        <ResetPasswordDialog />
       </div>
 
       <Button type="submit" className="relative" disabled={isLoading}>
