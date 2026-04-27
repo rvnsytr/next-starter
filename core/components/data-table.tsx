@@ -1,5 +1,6 @@
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
+import { Hotkey } from "@tanstack/react-hotkeys";
 import { flexRender, Row, Table as TableType } from "@tanstack/react-table";
 import {
   DataControllerOptions,
@@ -53,6 +54,13 @@ export type DataTableProps<TData> = {
     table?: string;
     footer?: string;
   };
+  shortcuts?: {
+    filter?: Hotkey;
+    sort?: Hotkey;
+    view?: Hotkey;
+    reset?: Hotkey;
+    search?: Hotkey;
+  };
 
   renderRowSelectionButton?: (props: {
     rows: Row<TData>[];
@@ -65,6 +73,7 @@ function BaseDataTable<TData>({
   placeholder,
   className,
   classNames,
+  shortcuts,
   renderRowSelectionButton,
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
@@ -100,12 +109,18 @@ function BaseDataTable<TData>({
               table={table}
               align="start"
               disabled={result.isLoading}
+              shortcut={shortcuts?.filter}
             />
-            <DataControllerSorting table={table} disabled={result.isLoading} />
+            <DataControllerSorting
+              table={table}
+              disabled={result.isLoading}
+              shortcut={shortcuts?.sort}
+            />
             <DataControllerVisibility
               table={table}
               align={isMobile ? "end" : "center"}
               disabled={result.isLoading}
+              shortcut={shortcuts?.view}
             />
           </ButtonGroup>
 
@@ -118,11 +133,16 @@ function BaseDataTable<TData>({
         </div>
 
         <div className="flex gap-x-2 *:grow">
-          <ResetFilters table={table} disabled={result.isLoading} />
+          <ResetFilters
+            table={table}
+            disabled={result.isLoading}
+            shortcut={shortcuts?.reset}
+          />
           <DataControllerSearch
             table={table}
             placeholder={placeholder?.search}
             disabled={result.isLoading}
+            shortcut={shortcuts?.search}
           />
         </div>
       </div>
@@ -268,6 +288,7 @@ export function DataTable<TData>({
   placeholder,
   className,
   classNames,
+  shortcuts,
   renderRowSelectionButton,
   ...options
 }: DataTableProps<TData> & DataControllerOptions<TData>) {
@@ -278,6 +299,7 @@ export function DataTable<TData>({
       placeholder={placeholder}
       className={className}
       classNames={classNames}
+      shortcuts={shortcuts}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
     />
@@ -289,6 +311,7 @@ export function QueryDataTable<TData>({
   placeholder,
   className,
   classNames,
+  shortcuts,
   renderRowSelectionButton,
   ...options
 }: DataTableProps<TData> & QueryDataControllerOptions<TData>) {
@@ -299,6 +322,7 @@ export function QueryDataTable<TData>({
       placeholder={placeholder}
       className={className}
       classNames={classNames}
+      shortcuts={shortcuts}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
     />

@@ -32,7 +32,7 @@ import {
 export function DataControllerVisibility<TData>({
   table,
   align,
-  shortcut = "V",
+  shortcut,
   size = "default",
   variant = "outline",
   className,
@@ -43,7 +43,10 @@ export function DataControllerVisibility<TData>({
   shortcut?: Hotkey;
 }) {
   const [isOpen, setisOpen] = useState<boolean>(false);
-  useHotkey(shortcut, () => setisOpen((v) => !v));
+
+  useHotkey(shortcut ?? "V", () => setisOpen((v) => !v), {
+    enabled: !!shortcut,
+  });
 
   return (
     <Menu open={isOpen} onOpenChange={setisOpen}>
@@ -51,9 +54,11 @@ export function DataControllerVisibility<TData>({
         render={
           <Button size={size} variant={variant} {...props}>
             <EyeIcon /> {!size?.startsWith("icon") && "Lihat"}{" "}
-            <Kbd className="hidden text-xs lg:inline-flex">
-              {formatForDisplay(shortcut)}
-            </Kbd>
+            {shortcut && (
+              <Kbd className="hidden text-xs lg:inline-flex">
+                {formatForDisplay(shortcut)}
+              </Kbd>
+            )}
           </Button>
         }
       />
@@ -90,7 +95,7 @@ export function DataControllerSorting<TData>({
   table,
   align,
   isMulti = true,
-  shortcut = "S",
+  shortcut,
   size = "default",
   variant = "outline",
   className,
@@ -102,7 +107,10 @@ export function DataControllerSorting<TData>({
   shortcut?: Hotkey;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  useHotkey(shortcut, () => setIsOpen((v) => !v));
+
+  useHotkey(shortcut ?? "S", () => setIsOpen((v) => !v), {
+    enabled: !!shortcut,
+  });
 
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
@@ -110,9 +118,11 @@ export function DataControllerSorting<TData>({
         render={
           <Button size={size} variant={variant} {...props}>
             <ArrowUpDownIcon /> {!size?.startsWith("icon") && "Sortir"}{" "}
-            <Kbd className="hidden text-xs lg:inline-flex">
-              {formatForDisplay(shortcut)}
-            </Kbd>
+            {shortcut && (
+              <Kbd className="hidden text-xs lg:inline-flex">
+                {formatForDisplay(shortcut)}
+              </Kbd>
+            )}
           </Button>
         }
       />
@@ -153,14 +163,16 @@ export function DataControllerSearch<TData>({
   table,
   placeholder = "Cari...",
   className,
-  shortcut = "/",
+  shortcut,
   ...props
 }: Omit<
   React.ComponentProps<typeof InputGroupInput>,
   "ref" | "value" | "onChange"
 > & { table: Table<TData>; shortcut?: Hotkey }) {
   const searchRef = useRef<HTMLInputElement>(null);
-  useHotkey(shortcut, () => searchRef.current?.focus());
+  useHotkey(shortcut ?? "/", () => searchRef.current?.focus(), {
+    enabled: !!shortcut,
+  });
 
   return (
     <InputGroup className={cn(className)}>
@@ -176,9 +188,11 @@ export function DataControllerSearch<TData>({
         <SearchIcon />
       </InputGroupAddon>
 
-      <InputGroupAddon align="inline-end" className="hidden lg:inline-flex">
-        <Kbd>{formatForDisplay(shortcut)}</Kbd>
-      </InputGroupAddon>
+      {shortcut && (
+        <InputGroupAddon align="inline-end" className="hidden lg:inline-flex">
+          <Kbd>{formatForDisplay(shortcut)}</Kbd>
+        </InputGroupAddon>
+      )}
     </InputGroup>
   );
 }

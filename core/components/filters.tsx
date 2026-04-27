@@ -152,7 +152,7 @@ export function ClearFilters<TData>({
 
 export function ResetFilters<TData>({
   table,
-  shortcut = "R",
+  shortcut,
   size = "default",
   variant = "outline",
   ...props
@@ -184,15 +184,17 @@ export function ResetFilters<TData>({
     table.resetHeaderSizeInfo();
   };
 
-  useHotkey(shortcut, () => clear());
+  useHotkey(shortcut ?? "R", () => clear(), { enabled: !!shortcut });
 
   return (
     <Button size={size} variant={variant} onClick={() => clear()} {...props}>
       <RotateCcwSquareIcon />
       {!size?.startsWith("icon") && messages.actions.reset}
-      <Kbd className="hidden text-xs lg:inline-flex">
-        {formatForDisplay(shortcut)}
-      </Kbd>
+      {shortcut && (
+        <Kbd className="hidden text-xs lg:inline-flex">
+          {formatForDisplay(shortcut)}
+        </Kbd>
+      )}
     </Button>
   );
 }
@@ -201,7 +203,7 @@ export function FilterSelector<TData>({
   table,
   variant = "outline",
   align = "start",
-  shortcut = "F",
+  shortcut,
   size = "default",
   ...props
 }: ButtonProps & {
@@ -216,7 +218,7 @@ export function FilterSelector<TData>({
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-  useHotkey(shortcut, () => setOpen((v) => !v));
+  useHotkey(shortcut ?? "F", () => setOpen((v) => !v), { enabled: !!shortcut });
 
   const properties = useMemo(
     () => table.getAllColumns().filter(isFilterableColumn),
@@ -246,9 +248,11 @@ export function FilterSelector<TData>({
             <Button ref={anchor} size={size} variant={variant} {...props}>
               <FilterIcon />
               {!size?.startsWith("icon") && "Filter"}
-              <Kbd className="hidden text-xs lg:inline-flex">
-                {formatForDisplay(shortcut)}
-              </Kbd>
+              {shortcut && (
+                <Kbd className="hidden text-xs lg:inline-flex">
+                  {formatForDisplay(shortcut)}
+                </Kbd>
+              )}
             </Button>
           }
         />
