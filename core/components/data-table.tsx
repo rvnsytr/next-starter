@@ -25,6 +25,7 @@ import {
   ResetFilters,
 } from "./filters";
 import { ButtonGroup } from "./ui/button-group";
+import { ErrorFallback } from "./ui/fallback";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
@@ -69,18 +70,17 @@ function BaseDataTable<TData>({
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
   const isMobile = useIsMobile();
 
-  const { data, isLoading } = result;
-
-  const state = table.getState();
-  const pageCount = table.getPageCount();
+  if (result.error) return <ErrorFallback error={result.error} />;
+  if (!result.isLoading && !result.data?.success)
+    return <ErrorFallback error={result.data?.message} />;
 
   const selectedRowsCount =
-    Object.keys(state.rowSelection).length ??
+    Object.keys(table.getState().rowSelection).length ??
     table.getFilteredSelectedRowModel().rows.length;
 
   const rowsLength = table.getFilteredRowModel().rows.length;
-  const rowsCount = data?.success
-    ? (data?.count?.total ?? rowsLength)
+  const rowsCount = result.data?.success
+    ? (result.data?.count?.total ?? rowsLength)
     : rowsLength;
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -96,12 +96,16 @@ function BaseDataTable<TData>({
       >
         <div className={cn("flex flex-col gap-2 lg:flex-row lg:items-center")}>
           <ButtonGroup className="w-full lg:w-fit **:[button]:grow">
-            <FilterSelector table={table} align="start" disabled={isLoading} />
-            <DataControllerSorting table={table} disabled={isLoading} />
+            <FilterSelector
+              table={table}
+              align="start"
+              disabled={result.isLoading}
+            />
+            <DataControllerSorting table={table} disabled={result.isLoading} />
             <DataControllerVisibility
               table={table}
               align={isMobile ? "end" : "center"}
-              disabled={isLoading}
+              disabled={result.isLoading}
             />
           </ButtonGroup>
 
@@ -114,16 +118,16 @@ function BaseDataTable<TData>({
         </div>
 
         <div className="flex gap-x-2 *:grow">
-          <ResetFilters table={table} disabled={isLoading} />
+          <ResetFilters table={table} disabled={result.isLoading} />
           <DataControllerSearch
             table={table}
             placeholder={placeholder?.search}
-            disabled={isLoading}
+            disabled={result.isLoading}
           />
         </div>
       </div>
 
-      {state.columnFilters.length > 0 && (
+      {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersContainer className={classNames?.filterContainer}>
           <ClearFilters table={table} />
           <Separator orientation="vertical" className="h-4" />
@@ -166,14 +170,16 @@ function BaseDataTable<TData>({
         </TableHeader>
 
         <TableBody>
-          {isLoading ? (
-            Array.from({ length: state.pagination.pageSize }).map((_, i) => (
-              <TableRow key={i}>
-                <TableCell colSpan={columns.length}>
-                  <Skeleton className="h-8 w-full" />
-                </TableCell>
-              </TableRow>
-            ))
+          {result.isLoading ? (
+            Array.from({ length: table.getState().pagination.pageSize }).map(
+              (_, i) => (
+                <TableRow key={i}>
+                  <TableCell colSpan={columns.length}>
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
+                </TableRow>
+              ),
+            )
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -223,12 +229,12 @@ function BaseDataTable<TData>({
       >
         <div className="order-4 flex items-center gap-x-2 lg:order-1">
           <Label className="shrink-0">Baris per halaman</Label>
-          <DataControllerPageSize table={table} disabled={isLoading} />
+          <DataControllerPageSize table={table} disabled={result.isLoading} />
         </div>
 
         <small className="text-muted-foreground order-3 shrink-0 lg:order-2">
           {formatNumber(selectedRowsCount)} dari{" "}
-          {isLoading ? "?" : formatNumber(rowsCount)} baris dipilih
+          {result.isLoading ? "?" : formatNumber(rowsCount)} baris dipilih
         </small>
 
         <small className="text-muted-foreground order-1 mx-auto text-sm lg:order-3">
@@ -237,15 +243,20 @@ function BaseDataTable<TData>({
 
         <small className="order-2 shrink-0 tabular-nums lg:order-4">
           Halaman{" "}
-          {isLoading ? "?" : formatNumber(state.pagination.pageIndex + 1)} dari{" "}
-          {isLoading ? "?" : formatNumber(pageCount > 0 ? pageCount : 1)}
+          {result.isLoading
+            ? "?"
+            : formatNumber(table.getState().pagination.pageIndex + 1)}{" "}
+          dari{" "}
+          {result.isLoading
+            ? "?"
+            : formatNumber(table.getPageCount() > 0 ? table.getPageCount() : 1)}
         </small>
 
         <DataControllerPaginationNav
           table={table}
           size="icon"
           className="order-3 shrink-0 lg:order-5"
-          disabled={isLoading}
+          disabled={result.isLoading}
         />
       </div>
     </div>
