@@ -1,15 +1,6 @@
 # Next.js Starter Template
 
-A lightweight, opinionated starter template for **Next.js 16 (App Router)** with just the tools and configurations I use in most projects. Built to minimize the setup process so I can get straight to building features rather than configuring the basics.
-
-## Features
-
-- Authentication with user dashboard and RBAC
-- Clean, modular project structure
-- Database and S3 integration (Drizzle + AWS SDK)
-- Handy utility functions, actions and S3 helpers
-- Ready-to-use components, and styling
-- Scalable feature-based modules architecture
+A **Next.js 16 App Router** starter template with authentication, database, S3 file handler, and a modular architecture. Skip the boring part.
 
 ## Tech Stack
 
@@ -20,11 +11,11 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
 
 - Styling
   - [Tailwind CSS v4](https://tailwindcss.com)
-  - [Shadcn/ui](https://ui.shadcn.com)
+  - [coss/ui](https://coss.com/ui), [shadcn/ui](https://ui.shadcn.com) and other mentioned component libraries
 
 - Database and ORM
   - [PostgreSQL](https://www.postgresql.org)
-  - [Drizzle ORM](https://orm.drizzle.team)
+  - [Drizzle ORM (v1)](https://orm.drizzle.team)
 
 - Authentication
   - [Better Auth](https://better-auth.com)
@@ -41,8 +32,8 @@ A lightweight, opinionated starter template for **Next.js 16 (App Router)** with
 ### Installation
 
 ```sh
-git clone https://github.com/RvnSytR/next-starter
-cd next-starter
+git clone https://github.com/rvnsytr/next-starter &&
+cd next-starter &&
 bun install
 ```
 
@@ -62,95 +53,27 @@ bun run dev
 
 ## File Structure
 
-This project uses a **feature-based module architecture**, where each feature is isolated, self-contained, and exports only its public API, where shared, stable, low-change code lives in `core/`.
+This project uses a **feature-based (module) architecture** where each feature is isolated and self-contained, where stable low-change code lives in `core/` and globally used code or configs lives in `shared/`.
 
 ### Principles
 
-- Each feature lives in `modules/<feature>/`
-- A Module contain **only what the module needs**
-- Prefer the **shortest possible import path**
-- Components can be structured either as:
-  - a single file (`component.tsx`, `component.client.tsx`), or
-  - grouped (`components/*`) — as long as public components are exported from the module’s index.ts
-- `core/` contains shared, stable, low-change code and **should not be edited**
-- Only edit the following files when extending domain logic:
-  - `core/constants/menu.ts` — Menus metadata
-  - `core/route.ts` — Routes metadata
-  - `core/schema.db.ts` — Drizzle DB schemas
-  - `core/schema.zod.ts` — Zod schemas
+- Common utilities and components are placed in `core/` for reuse across modules, while shared configurations and types are in `shared/`.
+- Each module is self-contained, with its own actions, config, components, and hooks.
+- Import paths should be as short as possible, avoiding deep relative imports.
+- Modules code can be structured as either a single file (e.g., `actions.ts`) or a folder containing multiple related files (e.g., `components/`), depending on the complexity of the feature. The key is to keep related code together and maintain clarity in the project structure. For example, a module usually contains:
+  - `actions` — Server actions
+  - `config` — Module-specific configuration
+  - `components` — React components related to the module
+  - `hooks` — Custom hooks related to the module
+  - `schema` — Zod schemas
 
-```pgsql
-next-starter/
-  app/
-    api/
-    dashboard/
-    sign-in/
-    layout.tsx
-    not-found.tsx
-    page.tsx
-
-  modules/
-    auth/
-      actions.ts
-      components.client.tsx
-      components.tsx
-      constants.ts
-      hooks.ts                -- Module-specific hooks and SWR helpers (useSWR and its mutator).
-      provider.auth.tsx       -- format: provider.<name>.tsx
-      schema.db.ts            -- Module-specific Drizzle DB schemas.
-      schema.zod.ts           -- Module-specific Zod schemas.
-
-    parent-module/
-      sub-module/
-
-  core/
-    components/
-      layout/
-      ui/
-    constants/
-      menu.ts                 -- Modifiable.
-    hooks/
-    providers/
-    utils/
-
-    actions.ts
-    api.ts
-    auth.client.ts
-    auth.ts
-    data-table.ts
-    db.ts
-    filter.ts
-    permissions.ts
-    route.ts                  -- Modifiable.
-    schema.db.ts              -- Modifiable.
-    schema.zod.ts
-    storage.ts
-
-  public/
-
-  styles/
-    globals.css
-```
-
-### Examples
-
-#### - Prefer Shortest Import
+### Import Conventions
 
 ```typescript
-import ... from "./auth";      // ✅ OK
-import ... from "../auth";     // ✅ OK
-import ... from "@/core/auth"; // ✅ OK
+import ... from "./feature";           // ✅ OK - shortest path
+import ... from "../sibling";          // ✅ OK
+import ... from "@/core/utils";        // ✅ OK - alias imports
+import ... from "@/shared/menu";       // ✅ OK - shared config
 
-import ... from "../../auth";  // ❌ Avoid deep relative imports
+import ... from "../../deep/path";     // ❌ Avoid deep relative imports
 ```
-
-## TODO
-
-- Ban & Unban Table Action
-- More Numeric Form Inputs
-- Event Calendar
-- Rich Text Editor
-- from react/express-starter: email verification
-- from react/express-starter: reset password
-- from react/express-starter: storage table
-- from react/express-starter: event-log
