@@ -50,9 +50,9 @@ import { BanUserDialog } from "./ban-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { ImpersonateUserDialog } from "./impersonate-user-dialog";
 import { RevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
+import { RoleBadge } from "./role-badge";
 import { UserDetailSessionList } from "./session-list";
 import { UnbanUserDialog } from "./unban-user-dialog";
-import { UserRoleBadge } from "./user-role-badge";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
@@ -188,7 +188,7 @@ function Content({
       <DialogPanel className="flex flex-col gap-y-3">
         <div className="flex items-center gap-2">
           {isCurrentUser && <Badge variant="outline">Pengguna saat ini</Badge>}
-          <UserRoleBadge value={data.role} />
+          <RoleBadge value={data.role} />
           <UserStatusBadge value={getUserStatus(data)} />
         </div>
 

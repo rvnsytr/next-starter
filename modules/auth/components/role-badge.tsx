@@ -7,7 +7,7 @@ import {
 import { Role } from "@/shared/permission";
 import { roleConfig } from "../config";
 
-export function UserRoleBadge({
+export function RoleBadge({
   value,
   withText = true,
   className,

@@ -21,7 +21,7 @@ import { listUsers } from "../actions";
 import { useSession } from "../provider";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
-import { getUserColumns } from "./user-column";
+import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
 const key = "/auth/admin/list-users";
