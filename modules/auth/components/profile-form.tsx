@@ -23,8 +23,8 @@ import { userSchema } from "../schema";
 import { ProfilePicture } from "./profile-picture";
 
 export function ProfileForm() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSession();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema.pick({ name: true, email: true });
@@ -42,7 +42,7 @@ export function ProfileForm() {
       });
 
     setIsLoading(true);
-    toast.promise(updateProfileName(name), {
+    toast.promise(updateProfileName(user.id, { name }), {
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);

@@ -13,18 +13,17 @@ export const defaultRole: Role = "user";
 export const ac = createAccessControl({
   ...defaultStatements,
   storage: ["create", "list", "get", "delete"],
-  "event-log": ["list", "list:own", "list:user"],
+  activity: ["list", "get"],
 });
 
 export const roles: Record<Role, BetterAuthRole> = {
   user: ac.newRole({
     storage: ["create", "get", "delete"],
-    "event-log": ["list:own"],
   }),
 
   admin: ac.newRole({
     ...adminAc.statements,
     storage: ["create", "list", "get", "delete"],
-    "event-log": ["list", "list:own", "list:user"],
+    activity: ["list", "get"],
   }),
 };

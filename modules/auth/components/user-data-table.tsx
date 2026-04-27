@@ -42,8 +42,16 @@ export function UserDataTable() {
     <>
       <QueryDataTable
         mode="auto"
-        columns={(res) => getUserColumns(setData, res)}
-        query={{ key, fetcher: async () => await listUsers(), immutable: true }}
+        columns={(ctx) => {
+          const isLoading = ctx?.isLoading ?? false;
+          const count = ctx?.data?.count;
+          return getUserColumns(setData, { isLoading, count });
+        }}
+        query={{
+          key,
+          fetcher: async () => await listUsers(user.role),
+          immutable: true,
+        }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
         placeholder={{ search: "Cari Pengguna..." }}

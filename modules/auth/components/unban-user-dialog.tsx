@@ -15,6 +15,7 @@ import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { LockKeyholeOpenIcon } from "lucide-react";
 import { unbanUser } from "../actions";
+import { useSession } from "../provider";
 import { mutateUserDataTable } from "./user-data-table";
 
 export function UnbanUserDialog({
@@ -30,9 +31,11 @@ export function UnbanUserDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
 }) {
+  const { user } = useSession();
+
   const clickHandler = () => {
     setIsLoading(true);
-    toast.promise(unbanUser(data.id), {
+    toast.promise(unbanUser(user.id, { userId: data.id }), {
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);

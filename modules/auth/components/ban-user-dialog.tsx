@@ -30,6 +30,7 @@ import { TriangleAlertIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { banUser } from "../actions";
+import { useSession } from "../provider";
 import { mutateUserDataTable } from "./user-data-table";
 
 export function BanUserDialog({
@@ -45,6 +46,8 @@ export function BanUserDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
 }) {
+  const { user } = useSession();
+
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z.object({
     banReason: sharedSchemas.string({ label: "Alasan diblokir" }).optional(),
@@ -69,13 +72,14 @@ export function BanUserDialog({
     const isValidDate = isBefore(new Date(), banExpiresDate ?? new Date());
 
     toast.promise(
-      banUser(
-        data.id,
+      banUser(user.id, {
+        userId: data.id,
         banReason,
-        isValidDate && banExpiresDate
-          ? differenceInSeconds(endOfDay(banExpiresDate), new Date())
-          : undefined,
-      ),
+        banExpiresIn:
+          isValidDate && banExpiresDate
+            ? differenceInSeconds(endOfDay(banExpiresDate), new Date())
+            : undefined,
+      }),
       {
         loading: { title: messages.loading },
         success: () => {

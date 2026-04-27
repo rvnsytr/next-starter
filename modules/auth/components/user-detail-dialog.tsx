@@ -30,10 +30,12 @@ import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { messages } from "@/core/messages";
+import { UserActivityTimeline } from "@/modules/activity/components/timeline";
 import {
   BanIcon,
   CookieIcon,
   EllipsisIcon,
+  HistoryIcon,
   InfinityIcon,
   Layers2Icon,
   LockKeyholeOpenIcon,
@@ -198,6 +200,10 @@ function Content({
               <UserRoundIcon /> Informasi Profil
             </TabsTab>
 
+            <TabsTab value="activity">
+              <HistoryIcon /> Aktivitas
+            </TabsTab>
+
             <TabsTab value="sessions" className="h-6">
               <CookieIcon /> Sesi Terdaftar
             </TabsTab>
@@ -211,6 +217,10 @@ function Content({
                 <DetailList data={banInfo} />
               </>
             )}
+          </TabsPanel>
+
+          <TabsPanel value="activity">
+            <UserActivityTimeline userId={data.id} />
           </TabsPanel>
 
           <TabsPanel value="sessions">

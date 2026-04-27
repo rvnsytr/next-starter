@@ -50,7 +50,7 @@ export function ProfilePicture({
       if (file instanceof File && !isChange) {
         setIsChange(true);
         toast.promise(
-          updateProfilePicture(file, user.id).then((res) => {
+          updateProfilePicture(user.id, file).then((res) => {
             if (!res.status) throw res;
             return res;
           }),

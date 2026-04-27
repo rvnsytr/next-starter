@@ -36,12 +36,14 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createUser } from "../actions";
 import { roleConfig } from "../config";
+import { useSession } from "../provider";
 import { passwordSchema, userSchema } from "../schema";
 import { mutateUserDataTable } from "./user-data-table";
 
 const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
 
 export function CreateUserDialog() {
+  const { user } = useSession();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,7 +78,7 @@ export function CreateUserDialog() {
   const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
     setIsLoading(true);
     toast.promise(
-      createUser({ password: newPassword, role: newRole, ...rest }),
+      createUser(user.id, { password: newPassword, role: newRole, ...rest }),
       {
         loading: { title: messages.loading },
         success: () => {

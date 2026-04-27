@@ -1,3 +1,4 @@
+import { allActivityType } from "@/modules/activity/config";
 import {
   bigint,
   boolean,
@@ -103,4 +104,23 @@ export const files = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [index("files_file_path_idx").on(table.file_path)],
+);
+
+export type Activity = typeof activity.$inferSelect;
+export type ActivityWithEntity = Activity & { entity?: string };
+export const activity = pgTable(
+  "activity",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+
+    type: text("type", { enum: allActivityType }).notNull(),
+    entitiyId: text("entitiyId"),
+    data: text("data"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("activity_type_idx").on(table.type)],
 );
