@@ -1,7 +1,7 @@
 "use client";
 
 import { AuthSession } from "@/core/auth";
-import { DataTable } from "@/core/components/data-table";
+import { QueryDataTable } from "@/core/components/data-table";
 import { Button } from "@/core/components/ui/button";
 import {
   Menu,
@@ -18,6 +18,7 @@ import { messages } from "@/core/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsers } from "../actions";
+import { useSession } from "../provider";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
 import { getUserColumns } from "./user-column";
@@ -27,6 +28,8 @@ const key = "/auth/admin/list-users";
 export const mutateUserDataTable = () => mutateControlledData(key);
 
 export function UserDataTable() {
+  const { user } = useSession();
+
   const [data, setData] = useState<AuthSession["user"] | null>(null);
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
 
@@ -37,10 +40,13 @@ export function UserDataTable() {
 
   return (
     <>
-      <DataTable
+      <QueryDataTable
         mode="auto"
         columns={(res) => getUserColumns(setData, res)}
         query={{ key, fetcher: async () => await listUsers(), immutable: true }}
+        getRowId={(row) => row.id}
+        enableRowSelection={(row) => row.original.id !== user.id}
+        placeholder={{ search: "Cari Pengguna..." }}
         renderRowSelectionButton={({ table, rows }) => {
           const data = rows.map((row) => row.original);
           return (

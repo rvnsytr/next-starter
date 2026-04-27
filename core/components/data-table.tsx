@@ -3,7 +3,10 @@ import { cn } from "@/core/utils/helpers";
 import { flexRender, Row, Table as TableType } from "@tanstack/react-table";
 import {
   DataControllerOptions,
+  DataControllerResponse,
+  QueryDataControllerOptions,
   useDataController,
+  useQueryDataController,
 } from "../hooks/use-data-controller";
 import { useIsMobile } from "../hooks/use-media-query";
 import { messages } from "../messages";
@@ -56,18 +59,15 @@ export type DataTableProps<TData> = {
   }) => React.ReactNode;
 };
 
-export function DataTable<TData>({
+function BaseDataTable<TData>({
   caption,
   placeholder,
-
   className,
   classNames,
-
   renderRowSelectionButton,
-  ...options
-}: DataControllerOptions<TData> & DataTableProps<TData>) {
+  controller: { result, table, columns },
+}: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
   const isMobile = useIsMobile();
-  const { result, table, columns } = useDataController(options);
 
   const { data, isLoading } = result;
 
@@ -249,5 +249,47 @@ export function DataTable<TData>({
         />
       </div>
     </div>
+  );
+}
+
+export function DataTable<TData>({
+  caption,
+  placeholder,
+  className,
+  classNames,
+  renderRowSelectionButton,
+  ...options
+}: DataTableProps<TData> & DataControllerOptions<TData>) {
+  const controller = useDataController(options);
+  return (
+    <BaseDataTable
+      caption={caption}
+      placeholder={placeholder}
+      className={className}
+      classNames={classNames}
+      renderRowSelectionButton={renderRowSelectionButton}
+      controller={controller}
+    />
+  );
+}
+
+export function QueryDataTable<TData>({
+  caption,
+  placeholder,
+  className,
+  classNames,
+  renderRowSelectionButton,
+  ...options
+}: DataTableProps<TData> & QueryDataControllerOptions<TData>) {
+  const controller = useQueryDataController(options);
+  return (
+    <BaseDataTable
+      caption={caption}
+      placeholder={placeholder}
+      className={className}
+      classNames={classNames}
+      renderRowSelectionButton={renderRowSelectionButton}
+      controller={controller}
+    />
   );
 }

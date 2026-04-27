@@ -44,6 +44,11 @@ export function formatLocalizedDate(date: Date, formatStr: string) {
   return format(date, formatStr, { locale });
 }
 
+export function parseLocalizedDate(str: string, formatStr: string) {
+  const parsed = parse(str, formatStr, new Date(), { locale });
+  return isValid(parsed) ? parsed : undefined;
+}
+
 export function formatDateRange(start: Date, end: Date) {
   const sameMonth = start.getMonth() === end.getMonth();
   const sameYear = start.getFullYear() === end.getFullYear();
