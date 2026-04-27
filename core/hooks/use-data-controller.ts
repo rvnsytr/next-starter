@@ -53,14 +53,14 @@ export type DataControllerOptions<TData> = Pick<
   mode?: "auto" | "manual";
   columns:
     | ColumnDef<TData>
-    | ((result?: SWRResponse<ActionResponse<TData[]>>) => ColumnDef<TData>);
+    | ((context?: SWRResponse<ActionResponse<TData[]>>) => ColumnDef<TData>);
   query: {
     key: string;
-    fetcher: (context: DataControllerState) => Promise<ActionResponse<TData[]>>;
+    fetcher: (state: DataControllerState) => Promise<ActionResponse<TData[]>>;
     config?: SWRConfiguration;
   } & ({ immutable: true } | { immutable?: false; revalidate?: boolean });
 
-  defaultState?: AllDataControllerState;
+  defaultState?: Partial<AllDataControllerState>;
 };
 
 type StatelessDataControllerOptions<TData> = DataControllerOptions<TData> & {
@@ -198,8 +198,8 @@ export function useDataController<TData>({
   const globalFilter = useState<string>(defaultState?.globalFilter ?? "");
 
   const pagination = useState<DataControllerState["pagination"]>({
-    pageIndex: defaultState?.pagination.pageIndex ?? 0,
-    pageSize: defaultState?.pagination.pageSize ?? defaultPageSize,
+    pageIndex: defaultState?.pagination?.pageIndex ?? 0,
+    pageSize: defaultState?.pagination?.pageSize ?? defaultPageSize,
   });
 
   const sorting = useState<DataControllerState["sorting"]>(
@@ -211,8 +211,8 @@ export function useDataController<TData>({
   );
 
   const columnPinning = useState<ColumnPinningState>({
-    left: defaultState?.columnPinning.left ?? [],
-    right: defaultState?.columnPinning.right ?? [],
+    left: defaultState?.columnPinning?.left ?? [],
+    right: defaultState?.columnPinning?.right ?? [],
   });
 
   const columnVisibility = useState<VisibilityState>(
@@ -370,10 +370,10 @@ export function useQueryDataController<TData>({
   const pagination = useQueryStates(
     {
       pageIndex: parseAsIndex.withDefault(
-        defaultState?.pagination.pageIndex ?? 0,
+        defaultState?.pagination?.pageIndex ?? 0,
       ),
       pageSize: parseAsInteger.withDefault(
-        defaultState?.pagination.pageSize ?? defaultPageSize,
+        defaultState?.pagination?.pageSize ?? defaultPageSize,
       ),
     },
     {
@@ -397,10 +397,10 @@ export function useQueryDataController<TData>({
   const columnPinning = useQueryStates(
     {
       left: parseAsArrayOf(parseAsString).withDefault(
-        defaultState?.columnPinning.left ?? [],
+        defaultState?.columnPinning?.left ?? [],
       ),
       right: parseAsArrayOf(parseAsString).withDefault(
-        defaultState?.columnPinning.right ?? [],
+        defaultState?.columnPinning?.right ?? [],
       ),
     },
     {
