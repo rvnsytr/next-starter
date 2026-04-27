@@ -10,7 +10,7 @@ import {
   TableIcon,
   VideoIcon,
 } from "lucide-react";
-import { toBytes } from "../utils";
+import { toBytes } from "../core/utils";
 
 export type FileType = (typeof allFileTypes)[number];
 export const allFileTypes = [

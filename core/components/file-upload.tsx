@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { fileTypeConfig, FileTypeConfig } from "../config/file-type";
+import { fileTypeConfig, FileTypeConfig } from "../../shared/file-type";
 import {
   FileMetadata,
   FileUploadOptions,

@@ -33,8 +33,8 @@ import {
   StepperTrigger,
 } from "@/core/components/ui/stepper";
 import { toast } from "@/core/components/ui/toast";
-import { fileTypeConfig } from "@/core/config/file-type";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
+import { fileTypeConfig } from "@/shared/file-type";
 import {
   BookUserIcon,
   CheckIcon,

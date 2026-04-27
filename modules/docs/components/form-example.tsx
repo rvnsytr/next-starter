@@ -57,10 +57,10 @@ import {
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
-import { fileTypeConfig } from "@/core/config/file-type";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
 import { languageConfig } from "@/shared/config";
+import { fileTypeConfig } from "@/shared/file-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { SaveIcon, SearchIcon } from "lucide-react";
