@@ -172,7 +172,7 @@ export async function createUser(
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-created" },
-      { userId: adminId, type: "admin-user-create", entitiyId: res.user.id },
+      { userId: adminId, type: "admin-user-create", entityId: res.user.id },
     ]);
 
     return res;
@@ -194,7 +194,7 @@ export async function updateUserRole(
       {
         userId: adminId,
         type: "admin-user-update-role",
-        entitiyId: res.user.id,
+        entityId: res.user.id,
       },
     ]);
 
@@ -221,7 +221,7 @@ export async function banUser(
       {
         userId: adminId,
         type: "admin-user-ban",
-        entitiyId: res.user.id,
+        entityId: res.user.id,
         data: body.banReason,
       },
     ]);
@@ -242,7 +242,7 @@ export async function unbanUser(adminId: string, body: { userId: string }) {
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-unbanned" },
-      { userId: adminId, type: "admin-user-unban", entitiyId: res.user.id },
+      { userId: adminId, type: "admin-user-unban", entityId: res.user.id },
     ]);
 
     return res;
