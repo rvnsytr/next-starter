@@ -6,7 +6,6 @@ import {
 } from "@/core/components/layout/sidebar";
 import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
-import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { LayoutProvider } from "@/core/providers/layout";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { getSession } from "@/modules/auth/actions";
@@ -33,24 +32,22 @@ export default async function DashboardLayout({
       }
     >
       <DashboardAuth>
-        <DynamicBreadcrumbProvider>
-          <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
-            <SidebarProvider className="flex flex-col">
-              <SidebarAppSiteHeader />
+        <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
+          <SidebarProvider className="flex flex-col">
+            <SidebarAppSiteHeader />
 
-              <div className="flex flex-1">
-                <SidebarApp />
+            <div className="flex flex-1">
+              <SidebarApp />
 
-                <SidebarInset>
-                  {children}
-                  <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
-                    <FooterNote className="container" />
-                  </footer>
-                </SidebarInset>
-              </div>
-            </SidebarProvider>
-          </DashboardLayoutMode>
-        </DynamicBreadcrumbProvider>
+              <SidebarInset>
+                {children}
+                <footer className="bg-background/90 z-10 mt-auto flex items-center justify-center border-t py-4 text-center md:h-12.5">
+                  <FooterNote className="container" />
+                </footer>
+              </SidebarInset>
+            </div>
+          </SidebarProvider>
+        </DashboardLayoutMode>
       </DashboardAuth>
     </Suspense>
   );

@@ -3,6 +3,7 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
+import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
 import { appConfig } from "@/shared/config";
@@ -60,12 +61,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           >
             <ToastProvider>
               <AnchoredToastProvider>
-                <main className="relative isolate flex min-h-svh flex-col">
-                  <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
-                  {children}
-                </main>
+                <DynamicBreadcrumbProvider>
+                  <main className="relative isolate flex min-h-svh flex-col">
+                    <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
+                    {children}
+                  </main>
 
-                <GlobalShortcuts />
+                  <GlobalShortcuts />
+                </DynamicBreadcrumbProvider>
               </AnchoredToastProvider>
             </ToastProvider>
           </ThemeProvider>
