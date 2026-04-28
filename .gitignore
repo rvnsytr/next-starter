@@ -11,7 +11,7 @@
 !.yarn/versions
 
 # local
-test/
+/test
 
 # next.js
 /.next/
