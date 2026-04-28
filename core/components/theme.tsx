@@ -17,6 +17,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 export type Theme = (typeof allThemes)[number];
 export const allThemes = ["light", "system", "dark"] as const;
 
+export const THEME_TOGGLE_LABEL = "Toggle Theme";
 export const THEME_TOGGLE_HOTKEY: Hotkey = "Alt+T";
 
 export const themeConfig: Record<Theme, { icon: LucideIcon }> = {
@@ -33,19 +34,21 @@ export function nextTheme(currentTheme?: string) {
 
 export function ThemeToggle({
   align,
+  withTooltip = true,
   size = "icon",
   variant = "ghost",
   onClick,
   disabled = false,
   ...props
 }: Omit<ButtonProps, "children"> &
-  Pick<ComponentProps<typeof TooltipPopup>, "align">) {
+  Pick<ComponentProps<typeof TooltipPopup>, "align"> & {
+    withTooltip?: boolean;
+  }) {
   const isMobile = useIsMobile();
   const isMounted = useIsMounted();
   const { theme, setTheme } = useTheme();
   const { isTransitioning, startTransition } = useViewTransition();
 
-  const label = "Toggle Theme";
   const currentTheme = (theme ?? "system") as Theme;
   const { icon: Icon } = themeConfig[currentTheme];
 
@@ -70,18 +73,19 @@ export function ThemeToggle({
       {...props}
     >
       <Icon />
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{THEME_TOGGLE_LABEL}</span>
     </Button>
   );
 
-  if (isMobile) return element;
+  if (isMobile || !withTooltip) return element;
 
   return (
     <Tooltip>
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          {label} <Kbd>{formatForDisplay(THEME_TOGGLE_HOTKEY)}</Kbd>
+          {THEME_TOGGLE_LABEL}{" "}
+          <Kbd>{formatForDisplay(THEME_TOGGLE_HOTKEY)}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>

@@ -15,6 +15,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 export type LayoutMode = (typeof allLayoutMode)[number];
 export const allLayoutMode = ["fullwidth", "centered"] as const;
 
+export const LAYOUT_TOGGLE_LABEL = "Toggle Layout";
 export const LAYOUT_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 export const defaultLayout: LayoutMode = "centered";
 
@@ -28,6 +29,7 @@ export const layoutModeConfig: Record<
 
 export function LayoutToggle({
   align,
+  withTooltip,
   size = "icon-sm",
   variant = "ghost",
   onClick,
@@ -35,12 +37,13 @@ export function LayoutToggle({
   className,
   ...props
 }: Omit<ButtonProps, "children"> &
-  Pick<React.ComponentProps<typeof TooltipPopup>, "align">) {
+  Pick<React.ComponentProps<typeof TooltipPopup>, "align"> & {
+    withTooltip?: boolean;
+  }) {
   const isMounted = useIsMounted();
   const isMobile = useIsMobile();
   const { layout, setLayout } = useLayout();
 
-  const label = "Toggle Layout";
   const { icon: Icon } = layoutModeConfig[layout];
 
   const toggleLayout = () =>
@@ -48,7 +51,7 @@ export function LayoutToggle({
 
   useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
 
-  if (!isMounted) {
+  if (!isMounted || !withTooltip) {
     return (
       <Button
         size={size}
@@ -74,7 +77,7 @@ export function LayoutToggle({
       {...props}
     >
       <Icon />
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{LAYOUT_TOGGLE_LABEL}</span>
     </Button>
   );
 
@@ -85,7 +88,8 @@ export function LayoutToggle({
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          {label} <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
+          {LAYOUT_TOGGLE_LABEL}{" "}
+          <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>

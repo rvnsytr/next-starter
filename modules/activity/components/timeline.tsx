@@ -79,7 +79,7 @@ function BaseActivityTimeline({
                   <TimelineSeparator />
 
                   <TimelineIndicator className="flex size-8 items-center justify-center border-none bg-(--timeline-color)/10 text-(--timeline-color)">
-                    <Icon className="size-4 text-white" />
+                    <Icon className="size-4" />
                   </TimelineIndicator>
 
                   <TimelineDate>

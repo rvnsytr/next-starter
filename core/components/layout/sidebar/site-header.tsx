@@ -25,7 +25,7 @@ export function SidebarAppSiteHeader() {
             </ShimmerText>
           </Link>
 
-          <DynamicBreadcrumb className="hidden md:flex" />
+          <DynamicBreadcrumb className="hidden md:flex" fallback />
         </div>
 
         <div className="flex items-center gap-x-2">

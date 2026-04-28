@@ -15,7 +15,7 @@ export function ScrollToTopButton({
       data-slot="scroll-to-top-button"
       size={size}
       className={cn(
-        "fixed right-6 bottom-6 z-40 rounded-full lg:right-10 lg:bottom-8",
+        "fixed right-6 bottom-6 z-40 lg:right-10 lg:bottom-8",
         className,
       )}
       onClick={(e) => {

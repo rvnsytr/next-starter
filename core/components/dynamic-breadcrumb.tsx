@@ -20,18 +20,28 @@ import { Skeleton } from "./ui/skeleton";
 // type DynamicBreadcrumbContent = { href: Route; label: string };
 // type DynamicBreadcrumbData = Route | DynamicBreadcrumbContent;
 
-export function DynamicBreadcrumb({ className }: { className?: string }) {
+export function DynamicBreadcrumb({
+  className,
+  classNames,
+  fallback = false,
+}: {
+  className?: string;
+  classNames?: { list?: string; page?: string };
+  fallback?: boolean;
+}) {
   const { breadcrumbs } = useDynamicBreadcrumb();
 
-  if (!breadcrumbs.length)
-    return <Skeleton className={cn("h-5 w-48", className)} />;
+  if (!breadcrumbs.length) {
+    if (fallback) return <Skeleton className={cn("h-5 w-48", className)} />;
+    return null;
+  }
 
   const isCompact = breadcrumbs.length > 3;
   const lastPart = breadcrumbs[breadcrumbs.length - 1];
 
   return (
     <Breadcrumb className={className}>
-      <BreadcrumbList>
+      <BreadcrumbList className={classNames?.list}>
         <BreadcrumbSeparator>/</BreadcrumbSeparator>
 
         {breadcrumbs.length > 1 &&
@@ -44,7 +54,7 @@ export function DynamicBreadcrumb({ className }: { className?: string }) {
 
             return (
               <Fragment key={br.href}>
-                <BreadcrumbItem className="shrink-0">
+                <BreadcrumbItem>
                   <BreadcrumbLink
                     render={
                       <Link href={br.href} className="link">
@@ -91,7 +101,7 @@ export function DynamicBreadcrumb({ className }: { className?: string }) {
         )}
 
         <BreadcrumbItem>
-          <BreadcrumbPage className="line-clamp-1">
+          <BreadcrumbPage className={classNames?.page}>
             {lastPart.label}
           </BreadcrumbPage>
         </BreadcrumbItem>

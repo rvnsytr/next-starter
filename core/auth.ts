@@ -20,6 +20,7 @@ export type AuthSession = typeof auth.$Infer.Session;
 
 export const auth = betterAuth({
   appName: appConfig.name,
+  baseURL: process.env.BETTER_AUTH_URL,
 
   database: drizzleAdapter(db, { provider: "pg" }),
   // experimental: { joins: true },

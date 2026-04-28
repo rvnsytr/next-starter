@@ -6,24 +6,31 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 export const TooltipCreateHandle: typeof TooltipPrimitive.createHandle =
   TooltipPrimitive.createHandle;
 
-export function Tooltip({
+export function TooltipProvider({
   delay = 0,
+  children,
+  ...props
+}: TooltipPrimitive.Provider.Props) {
+  return (
+    <TooltipProvider data-slot="tooltip-provider" delay={delay} {...props}>
+      {children}
+    </TooltipProvider>
+  );
+}
+
+export function Tooltip({
+  delay,
   timeout,
   closeDelay,
   children,
   ...props
 }: TooltipPrimitive.Provider.Props & TooltipPrimitive.Root.Props) {
   return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delay={delay}
-      timeout={timeout}
-      closeDelay={closeDelay}
-    >
+    <TooltipProvider delay={delay} timeout={timeout} closeDelay={closeDelay}>
       <TooltipPrimitive.Root data-slot="tooltip" {...props}>
         {children}
       </TooltipPrimitive.Root>
-    </TooltipPrimitive.Provider>
+    </TooltipProvider>
   );
 }
 
@@ -37,6 +44,7 @@ export function TooltipPopup({
   align = "center",
   alignOffset = 0,
   anchor,
+  portalProps,
   className,
   children,
   ...props
@@ -44,9 +52,9 @@ export function TooltipPopup({
   Pick<
     TooltipPrimitive.Positioner.Props,
     "side" | "sideOffset" | "align" | "alignOffset" | "anchor"
-  >) {
+  > & { portalProps?: TooltipPrimitive.Portal.Props }) {
   return (
-    <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Portal {...portalProps}>
       <TooltipPrimitive.Positioner
         data-slot="tooltip-positioner"
         side={side}
@@ -59,7 +67,7 @@ export function TooltipPopup({
         <TooltipPrimitive.Popup
           data-slot="tooltip-popup"
           className={cn(
-            "bg-popover text-popover-foreground relative flex h-(--popup-height,auto) w-(--popup-width,auto) origin-(--transform-origin) rounded-md border text-xs text-balance shadow-md/5 transition-[width,height,scale,opacity] not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-md)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-ending-style:opacity-0 data-instant:duration-0 data-starting-style:scale-100 data-starting-style:opacity-0 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+            "bg-popover text-popover-foreground relative flex h-(--popup-height,auto) w-(--popup-width,auto) origin-(--transform-origin) rounded-md border text-xs text-balance shadow-md/5 transition-[width,height,scale,opacity] not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-md)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-ending-style:opacity-0 data-instant:duration-0 data-starting-style:scale-98 data-starting-style:opacity-0 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
             className,
           )}
           {...props}

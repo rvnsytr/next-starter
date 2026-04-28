@@ -1,6 +1,6 @@
 {
   "files.readonlyInclude": { "**/api/auth/**": true, "**/core/**": true },
-  "search.exclude": { "**/api/auth/**": true, "**/core/**": true },
+  "search.exclude": { "**/api/auth/**": true },
 
   "js/ts.preferences.autoImportFileExcludePatterns": [
     "next/router",
