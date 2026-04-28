@@ -10,22 +10,29 @@ import {
 } from "drizzle-orm/pg-core";
 import { allRoles } from "../permission";
 
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  role: text("role", { enum: allRoles }).default("user").notNull(),
-  banned: boolean("banned").default(false),
-  banReason: text("ban_reason"),
-  banExpires: timestamp("ban_expires"),
-});
+export const user = pgTable(
+  "user",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    role: text("role", { enum: allRoles }).default("user").notNull(),
+    banned: boolean("banned").default(false),
+    banReason: text("ban_reason"),
+    banExpires: timestamp("ban_expires"),
+  },
+  (table) => [
+    index("user_role_idx").on(table.role),
+    index("user_banned_idx").on(table.banned),
+  ],
+);
 
 export const session = pgTable(
   "session",
@@ -117,7 +124,7 @@ export const activity = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
 
     type: text("type", { enum: allActivityType }).notNull(),
-    entitiyId: text("entitiyId"),
+    entityId: text("entityId"),
     data: text("data"),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -1,6 +1,6 @@
 import { allGenders } from "@/shared/config";
+import { FileType, fileTypeConfig } from "@/shared/file-type";
 import z from "zod";
-import { FileType, fileTypeConfig } from "../shared/file-type";
 import { messages } from "./messages";
 
 type FilesSchemaOptions = {

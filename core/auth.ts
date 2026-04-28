@@ -20,6 +20,8 @@ export type AuthSession = typeof auth.$Infer.Session;
 
 export const auth = betterAuth({
   appName: appConfig.name,
+
+  // secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
   database: drizzleAdapter(db, { provider: "pg" }),
@@ -30,6 +32,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    // requireEmailVerification: true,
     // sendResetPassword: async ({ user, token }) => {
     //   const { name, email } = user;
     //   const url = `${appConfig.cors.origin}/reset-password?token=${token}`;

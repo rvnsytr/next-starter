@@ -37,10 +37,10 @@ export type DataControllerState = {
 };
 
 type WDCColumnConfig = { column: AnyPgColumn } & (
-  | { type: "string"; parser?: (value: unknown) => string }
-  | { type: "number"; parser?: (value: unknown) => number }
-  | { type: "date"; parser?: (value: unknown) => Date }
-  | { type: "boolean"; parser: (value: unknown) => boolean }
+  | { type: "string"; parser?: (value: string | number | Date) => string }
+  | { type: "number"; parser?: (value: string | number | Date) => number }
+  | { type: "date"; parser?: (value: string | number | Date) => Date }
+  | { type: "boolean"; parser: (value: string | number | Date) => boolean }
 );
 
 type WDCConfig<Columns extends Record<string, WDCColumnConfig>> = {
@@ -119,9 +119,9 @@ export function withDataController<
 
         const columnConfig = config.columns[id];
         if (!columnConfig || !values.length) return null;
-        const { column, type, parser } = columnConfig;
 
-        let parsedValues: (string | number | boolean | Date)[] = values;
+        const { column, type, parser } = columnConfig;
+        let parsedValues: (string | number | Date | boolean)[] = values;
 
         if (type === "date")
           parsedValues = values

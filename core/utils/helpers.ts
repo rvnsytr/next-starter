@@ -45,3 +45,10 @@ export function getExcelColumnKey(columnNumber: number): string {
 
   return !!result ? result : "-";
 }
+
+export function getFileParts(originalFileName: string) {
+  const parts = originalFileName.split(".");
+  const fileName = parts.slice(0, -1).join(".");
+  const extension = parts.at(-1) ?? "";
+  return { fileName, extension };
+}

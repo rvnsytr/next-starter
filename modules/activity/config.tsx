@@ -12,8 +12,10 @@ import {
 
 export type ActivityType = (typeof allActivityType)[number];
 export const allActivityType = [
+  // "user-registered",
   "user-created",
   // "user-imported",
+  // "user-activated",
   // "user-verified",
   "user-role-updated",
   "user-banned",
