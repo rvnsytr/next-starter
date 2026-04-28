@@ -1,4 +1,3 @@
-import { allLayoutMode } from "@/core/components/layout";
 import { FooterNote } from "@/core/components/layout/footer-note";
 import {
   SidebarApp,
@@ -6,7 +5,7 @@ import {
 } from "@/core/components/layout/sidebar";
 import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
-import { LayoutProvider } from "@/core/providers/layout";
+import { allLayoutMode, LayoutProvider } from "@/core/providers/layout";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { getSession } from "@/modules/auth/actions";
 import { AuthProvider } from "@/modules/auth/provider";

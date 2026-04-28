@@ -165,7 +165,7 @@ function SidebarMainContentCollapsible({
     if (isActive && !isOpen) setIsOpen(true);
   });
 
-  useEffect(() => onActiveRoute, [isActive]);
+  useEffect(() => onActiveRoute(), [isActive]);
 
   return <Collapsible open={isOpen} onOpenChange={setIsOpen} {...props} />;
 }

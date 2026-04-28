@@ -101,9 +101,9 @@ export function QuickSearch({
 }: QuickSearchProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isTransitioning, startTransition] = useTransition();
   const isMounted = useIsMounted();
   const { copy } = useCopyToClipboard();
+  const [isTransitioning, startTransition] = useTransition();
 
   const data: QuickSearchGroup[] | QuickSearchItem[] = useMemo(() => {
     if (type !== "group") return handleDataItems(propData);

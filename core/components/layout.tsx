@@ -2,30 +2,21 @@
 
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { useLayout } from "@/core/providers/layout";
+import {
+  LAYOUT_TOGGLE_HOTKEY,
+  layoutModeConfig,
+  useLayout,
+} from "@/core/providers/layout";
 import { cn } from "@/core/utils";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { FrameIcon, LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { FrameIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export type LayoutMode = (typeof allLayoutMode)[number];
-export const allLayoutMode = ["fullwidth", "centered"] as const;
-
 export const LAYOUT_TOGGLE_LABEL = "Toggle Layout";
-export const LAYOUT_TOGGLE_HOTKEY: Hotkey = "Alt+L";
-export const defaultLayout: LayoutMode = "centered";
-
-export const layoutModeConfig: Record<
-  LayoutMode,
-  { label: string; icon: LucideIcon }
-> = {
-  fullwidth: { label: "Fullwidth", icon: ScanIcon },
-  centered: { label: "Centered", icon: MinimizeIcon },
-};
 
 export function LayoutToggle({
   align,
@@ -51,7 +42,7 @@ export function LayoutToggle({
 
   useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
 
-  if (!isMounted || !withTooltip) {
+  if (!isMounted) {
     return (
       <Button
         size={size}
@@ -81,7 +72,7 @@ export function LayoutToggle({
     </Button>
   );
 
-  if (isMobile) return element;
+  if (isMobile || !withTooltip) return element;
 
   return (
     <Tooltip>
