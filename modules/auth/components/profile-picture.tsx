@@ -58,7 +58,7 @@ export function ProfilePicture({
             loading: { title: messages.loading },
             success: () => {
               setIsChange(false);
-              return { title: "Foto profil Anda berhasil diperbarui." };
+              return { title: "Foto profil berhasil diperbarui." };
             },
             error: (e) => {
               setIsChange(false);
@@ -74,7 +74,7 @@ export function ProfilePicture({
     if (!user.image)
       return toast.add({
         type: "info",
-        title: messages.noChanges("foto profil Anda"),
+        title: messages.noChanges("foto profil"),
       });
 
     setIsRemoved(true);
@@ -87,7 +87,7 @@ export function ProfilePicture({
         loading: { title: messages.loading },
         success: () => {
           setIsRemoved(false);
-          return { title: "Foto profil Anda berhasil dihapus." };
+          return { title: "Foto profil berhasil dihapus." };
         },
         error: (e) => {
           setIsRemoved(false);

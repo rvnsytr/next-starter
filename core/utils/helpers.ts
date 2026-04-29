@@ -52,3 +52,11 @@ export function getFileParts(originalFileName: string) {
   const extension = parts.at(-1) ?? "";
   return { fileName, extension };
 }
+
+export function getClientCookie(name: string) {
+  if (!document?.cookie) return undefined;
+  return document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split("=")[1];
+}
