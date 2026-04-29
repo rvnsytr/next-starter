@@ -35,7 +35,7 @@ export function DeleteUserDialog({
   setIsLoading,
   setData,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name" | "image">;
+  data: Pick<AuthSession["user"], "id" | "name">;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

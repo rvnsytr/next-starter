@@ -56,7 +56,7 @@ export function ResetPasswordDialog() {
     toast.promise(
       authClient.requestPasswordReset({ email }).then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },
@@ -160,7 +160,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
     toast.promise(
       authClient.resetPassword({ token, newPassword }).then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },

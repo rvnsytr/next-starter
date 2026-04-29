@@ -34,7 +34,7 @@ export function RevokeUserSessionsDialog({
     toast.promise(
       authClient.admin.revokeUserSessions({ userId: data.id }).then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },

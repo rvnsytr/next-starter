@@ -58,7 +58,7 @@ export function ProfileForm() {
   return (
     <Form onSubmit={form.handleSubmit(formHandler)}>
       <CardContent>
-        <ProfilePicture user={user} />
+        <ProfilePicture data={user} />
 
         <div className="grid gap-x-2 gap-y-4 lg:grid-cols-2">
           <Controller

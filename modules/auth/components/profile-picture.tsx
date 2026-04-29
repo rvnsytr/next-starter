@@ -28,9 +28,9 @@ import { useState } from "react";
 import { deleteProfilePicture, updateProfilePicture } from "../actions";
 
 export function ProfilePicture({
-  user,
+  data,
 }: {
-  user: Pick<AuthSession["user"], "id" | "name" | "image">;
+  data: Pick<AuthSession["user"], "id" | "name" | "image">;
 }) {
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
@@ -50,7 +50,7 @@ export function ProfilePicture({
       if (file instanceof File && !isChange) {
         setIsChange(true);
         toast.promise(
-          updateProfilePicture(user.id, file).then((res) => {
+          updateProfilePicture(data.id, file).then((res) => {
             if (!res.status) throw res;
             return res;
           }),
@@ -71,7 +71,7 @@ export function ProfilePicture({
   });
 
   const deleteHandler = () => {
-    if (!user.image)
+    if (!data.image)
       return toast.add({
         type: "info",
         title: messages.noChanges("foto profil"),
@@ -79,7 +79,7 @@ export function ProfilePicture({
 
     setIsRemoved(true);
     toast.promise(
-      deleteProfilePicture(user.id).then((res) => {
+      deleteProfilePicture(data.id).then((res) => {
         if (!res.status) throw res;
         return res;
       }),
@@ -111,8 +111,8 @@ export function ProfilePicture({
         radius="lg"
         className="size-20 cursor-pointer"
       >
-        <AvatarImage src={user.image ?? undefined} />
-        <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+        <AvatarImage src={data.image ?? undefined} />
+        <AvatarFallback>{data.name.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col gap-y-2">
@@ -137,7 +137,7 @@ export function ProfilePicture({
                 <Button
                   size="sm"
                   variant="destructive-outline"
-                  disabled={!user.image || isChange || isRemoved}
+                  disabled={!data.image || isChange || isRemoved}
                 >
                   <LoadingSpinner loading={isRemoved} />
                   {messages.actions.delete}

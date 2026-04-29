@@ -117,7 +117,7 @@ export function SessionListCollapsible({
     toast.promise(
       authClient.revokeSession({ token }).then((res) => {
         if (res.error) throw res.error;
-        return res;
+        return res.data;
       }),
       {
         loading: { title: messages.loading },
