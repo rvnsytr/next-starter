@@ -32,7 +32,7 @@ export async function updateProfilePicture(userId: string, file: File) {
       const [{ filePath }] = await tx
         .delete(files)
         .where(eq(files.id, fileId))
-        .returning({ filePath: files.file_path });
+        .returning({ filePath: files.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
@@ -65,7 +65,7 @@ export async function deleteProfilePicture(userId: string) {
       const [{ filePath }] = await tx
         .delete(files)
         .where(eq(files.id, fileId))
-        .returning({ filePath: files.file_path });
+        .returning({ filePath: files.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
@@ -276,7 +276,7 @@ export async function deleteUser(adminId: string, body: { userId: string }) {
       const [{ filePath }] = await tx
         .delete(files)
         .where(eq(files.id, fileId))
-        .returning({ filePath: files.file_path });
+        .returning({ filePath: files.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
@@ -306,7 +306,7 @@ export async function deleteUsers(
       const filePaths = await tx
         .delete(files)
         .where(inArray(files.id, fileIds))
-        .returning({ filePath: files.file_path });
+        .returning({ filePath: files.filePath });
 
       if (filePaths.length > 0)
         await deleteFiles(filePaths.map((v) => v.filePath));

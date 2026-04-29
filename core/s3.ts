@@ -57,10 +57,10 @@ export async function uploadFiles(
       });
       return {
         file: {
-          file_path: Key,
-          file_name: file.name,
-          file_type: file.type,
-          file_size: file.size,
+          filePath: Key,
+          fileName: file.name,
+          mimeType: file.type,
+          fileSize: file.size,
         },
         output: await s3.send(command),
       };

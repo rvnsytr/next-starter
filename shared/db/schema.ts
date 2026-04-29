@@ -99,10 +99,10 @@ export const files = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    file_path: text("file_path").notNull(),
-    file_name: text("file_name").notNull(),
-    file_type: text("file_type").notNull(),
-    file_size: bigint("file_size", { mode: "number" }).notNull(),
+    filePath: text("file_path").notNull(),
+    fileName: text("file_name").notNull(),
+    mimeType: text("mime_type").notNull(),
+    fileSize: bigint("file_size", { mode: "number" }).notNull(),
 
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -110,7 +110,7 @@ export const files = pgTable(
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [index("files_file_path_idx").on(table.file_path)],
+  (table) => [index("files_file_path_idx").on(table.filePath)],
 );
 
 export type Activity = typeof activity.$inferSelect;

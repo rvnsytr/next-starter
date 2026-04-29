@@ -97,7 +97,7 @@ export const auth = betterAuth({
         if (z.url().safeParse(userData.image).success) return ctx.json(session);
 
         const data = await db
-          .select({ filePath: files.file_path })
+          .select({ filePath: files.filePath })
           .from(files)
           .where(eq(files.id, userData.image));
 
