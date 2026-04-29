@@ -14,11 +14,11 @@ import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export type Theme = (typeof allThemes)[number];
-export const allThemes = ["light", "system", "dark"] as const;
-
 export const THEME_TOGGLE_LABEL = "Toggle Theme";
 export const THEME_TOGGLE_HOTKEY: Hotkey = "Alt+T";
+
+export type Theme = (typeof allThemes)[number];
+export const allThemes = ["light", "system", "dark"] as const;
 
 export const themeConfig: Record<Theme, { icon: LucideIcon }> = {
   light: { icon: SunIcon },
