@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { getUserStatus } from "../config";
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 import { BanUserDialog } from "./ban-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { ImpersonateUserDialog } from "./impersonate-user-dialog";

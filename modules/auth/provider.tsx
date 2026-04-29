@@ -3,9 +3,9 @@
 import { AuthSession } from "@/core/auth";
 import { authorizedRoute } from "@/core/route";
 import { notFound, usePathname } from "next/navigation";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode } from "react";
 
-const AuthContext = createContext<AuthSession | undefined>(undefined);
+export const AuthContext = createContext<AuthSession | undefined>(undefined);
 
 export function AuthProvider({
   session,
@@ -28,10 +28,4 @@ export function AuthProvider({
   return (
     <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
   );
-}
-
-export function useSession() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useSession must be used in AuthProvider");
-  return ctx;
 }

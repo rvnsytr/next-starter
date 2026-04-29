@@ -3,7 +3,7 @@
 import { Badge } from "@/core/components/ui/badge";
 import { Ping } from "@/core/components/ui/ping";
 import { Layers2Icon } from "lucide-react";
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 
 export function ImpersonateUserBadge({
   impersonating,

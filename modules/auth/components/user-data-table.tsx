@@ -18,7 +18,7 @@ import { messages } from "@/core/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsers } from "../actions";
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
 import { getUserColumns } from "./user-columns";

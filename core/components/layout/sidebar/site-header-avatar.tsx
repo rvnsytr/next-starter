@@ -6,7 +6,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/core/components/ui/avatar";
-import { useSession } from "@/modules/auth/provider";
+import { useSession } from "@/modules/auth/hooks/use-session";
 
 export function SidebarAppSiteHeaderAvatar() {
   const { user } = useSession();

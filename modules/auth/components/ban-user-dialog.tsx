@@ -30,7 +30,7 @@ import { TriangleAlertIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { banUser } from "../actions";
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 import { mutateUserDataTable } from "./user-data-table";
 
 export function BanUserDialog({

@@ -20,7 +20,7 @@ import {
 import { getMenuByRole } from "@/core/route";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
-import { useSession } from "@/modules/auth/provider";
+import { useSession } from "@/modules/auth/hooks/use-session";
 import { menuConfig } from "@/shared/menu";
 import { LogOutIcon } from "lucide-react";
 import Link from "next/link";

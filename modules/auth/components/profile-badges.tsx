@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 import { RoleBadge } from "./role-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 

@@ -23,7 +23,7 @@ import { LinkSpinner } from "@/core/components/ui/spinner";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { getActiveRoute, getMenuByRole } from "@/core/route";
 import { toCase } from "@/core/utils";
-import { useSession } from "@/modules/auth/provider";
+import { useSession } from "@/modules/auth/hooks/use-session";
 import { menuConfig } from "@/shared/menu";
 import { routesConfig } from "@/shared/route";
 import { formatForDisplay } from "@tanstack/react-hotkeys";

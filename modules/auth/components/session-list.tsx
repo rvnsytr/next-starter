@@ -52,7 +52,7 @@ import {
   useListSessions,
 } from "../hooks/use-list-sessions";
 import { useListUserSessions } from "../hooks/use-list-user-sessions";
-import { useSession } from "../provider";
+import { useSession } from "../hooks/use-session";
 import { ImpersonateUserBadge } from "./impersonate-user-badge";
 
 export function SessionList() {

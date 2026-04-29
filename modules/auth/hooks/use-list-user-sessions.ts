@@ -11,5 +11,3 @@ export function useListUserSessions(userId: string, config?: SWRConfiguration) {
 
 export const mutateListUserSessions = (userId: string) =>
   mutate(`/auth/list-user-sessions?id=${userId}`);
-
-// export const mutateListUsers = () => mutateDataTable("/auth/list-users");
