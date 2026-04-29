@@ -5,7 +5,7 @@ import { db } from "@/core/db";
 import { messages } from "@/core/messages";
 import { deleteFiles, uploadFiles } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
-import { activity, files, user } from "@/shared/db/schema";
+import { activity, file as fileTable, user } from "@/shared/db/schema";
 import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
@@ -30,15 +30,15 @@ export async function updateProfilePicture(userId: string, file: File) {
 
     if (fileId) {
       const [{ filePath }] = await tx
-        .delete(files)
-        .where(eq(files.id, fileId))
-        .returning({ filePath: files.filePath });
+        .delete(fileTable)
+        .where(eq(fileTable.id, fileId))
+        .returning({ filePath: fileTable.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
     const [uploadRes] = await uploadFiles([{ file, path: `avatar/${userId}` }]);
     const [insertRes] = await tx
-      .insert(files)
+      .insert(fileTable)
       .values(uploadRes.file)
       .returning();
 
@@ -63,9 +63,9 @@ export async function deleteProfilePicture(userId: string) {
 
     if (fileId) {
       const [{ filePath }] = await tx
-        .delete(files)
-        .where(eq(files.id, fileId))
-        .returning({ filePath: files.filePath });
+        .delete(fileTable)
+        .where(eq(fileTable.id, fileId))
+        .returning({ filePath: fileTable.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
@@ -274,9 +274,9 @@ export async function deleteUser(adminId: string, body: { userId: string }) {
 
     if (fileId) {
       const [{ filePath }] = await tx
-        .delete(files)
-        .where(eq(files.id, fileId))
-        .returning({ filePath: files.filePath });
+        .delete(fileTable)
+        .where(eq(fileTable.id, fileId))
+        .returning({ filePath: fileTable.filePath });
       if (filePath) await deleteFiles([filePath]);
     }
 
@@ -304,9 +304,9 @@ export async function deleteUsers(
 
     if (fileIds.length > 0) {
       const filePaths = await tx
-        .delete(files)
-        .where(inArray(files.id, fileIds))
-        .returning({ filePath: files.filePath });
+        .delete(fileTable)
+        .where(inArray(fileTable.id, fileIds))
+        .returning({ filePath: fileTable.filePath });
 
       if (filePaths.length > 0)
         await deleteFiles(filePaths.map((v) => v.filePath));

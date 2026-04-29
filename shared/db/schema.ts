@@ -1,4 +1,4 @@
-import { allActivityType } from "@/modules/activity/config";
+import { allActivityType } from "@/modules/activity/config.activity-type";
 import {
   bigint,
   boolean,
@@ -94,8 +94,8 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const files = pgTable(
-  "files",
+export const file = pgTable(
+  "file",
   {
     id: uuid("id").primaryKey().defaultRandom(),
 
@@ -110,7 +110,7 @@ export const files = pgTable(
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [index("files_file_path_idx").on(table.filePath)],
+  (table) => [index("file_file_path_idx").on(table.filePath)],
 );
 
 export type Activity = typeof activity.$inferSelect;

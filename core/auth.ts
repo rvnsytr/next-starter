@@ -1,5 +1,5 @@
 import { appConfig } from "@/shared/config";
-import { files } from "@/shared/db/schema";
+import { file } from "@/shared/db/schema";
 import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -97,9 +97,9 @@ export const auth = betterAuth({
         if (z.url().safeParse(userData.image).success) return ctx.json(session);
 
         const data = await db
-          .select({ filePath: files.filePath })
-          .from(files)
-          .where(eq(files.id, userData.image));
+          .select({ filePath: file.filePath })
+          .from(file)
+          .where(eq(file.id, userData.image));
 
         if (!data.length) return ctx.json(session);
 

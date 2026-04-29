@@ -1,6 +1,6 @@
 "use server";
 
-import { files } from "@/shared/db/schema";
+import { file } from "@/shared/db/schema";
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
@@ -42,7 +42,7 @@ export async function uploadFiles(
   payload: UploadFilesPayload[],
   options?: UploadFilesOptions,
 ): Promise<
-  { file: typeof files.$inferInsert; output: PutObjectCommandOutput }[]
+  { file: typeof file.$inferInsert; output: PutObjectCommandOutput }[]
 > {
   const { Bucket = defaultBucket, ...rest } = options ?? {};
   return await Promise.all(

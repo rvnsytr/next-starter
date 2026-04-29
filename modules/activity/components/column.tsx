@@ -3,7 +3,8 @@ import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { Activity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
-import { allActivityType, getActivityConfig } from "../config";
+import { getActivityConfig } from "../config";
+import { allActivityType } from "../config.activity-type";
 
 const createColumn = createColumnHelper<Activity>();
 export const getActivityColumns = (result?: {
