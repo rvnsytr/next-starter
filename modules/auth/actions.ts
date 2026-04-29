@@ -11,10 +11,6 @@ import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 
-export async function getSession() {
-  return await auth.api.getSession({ headers: await headers() });
-}
-
 export async function updateProfileName(
   userId: string,
   body: { name: string },

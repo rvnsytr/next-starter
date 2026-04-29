@@ -1,3 +1,4 @@
+import { auth } from "@/core/auth";
 import { FooterNote } from "@/core/components/layout/footer-note";
 import {
   SidebarApp,
@@ -10,10 +11,9 @@ import {
   LayoutModeProvider,
 } from "@/core/providers/layout-mode";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
-import { getSession } from "@/modules/auth/actions";
 import { AuthProvider } from "@/modules/auth/provider";
 import { Metadata } from "next";
-import { cookies, headers } from "next/headers";
+import { cookies, headers as nextHeaders } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import z from "zod";
@@ -33,7 +33,7 @@ export default async function DashboardLayout({
         />
       }
     >
-      <DashboardAuth>
+      <DashboardAuthProvider>
         <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
           <SidebarProvider className="flex flex-col">
             <SidebarAppSiteHeader />
@@ -50,16 +50,20 @@ export default async function DashboardLayout({
             </div>
           </SidebarProvider>
         </DashboardLayoutMode>
-      </DashboardAuth>
+      </DashboardAuthProvider>
     </Suspense>
   );
 }
 
-async function DashboardAuth({ children }: { children?: React.ReactNode }) {
-  const req = await headers();
-  const session = await getSession();
+async function DashboardAuthProvider({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
+  const headers = await nextHeaders();
+  const session = await auth.api.getSession({ headers });
 
-  const pathname = req.get("x-pathname");
+  const pathname = headers.get("x-pathname");
   if (!session || !authorizedRoute(pathname, session.user.role))
     return notFound();
 

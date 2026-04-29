@@ -12,9 +12,13 @@ export function TooltipProvider({
   ...props
 }: TooltipPrimitive.Provider.Props) {
   return (
-    <TooltipProvider data-slot="tooltip-provider" delay={delay} {...props}>
+    <TooltipPrimitive.Provider
+      data-slot="tooltip-provider"
+      delay={delay}
+      {...props}
+    >
       {children}
-    </TooltipProvider>
+    </TooltipPrimitive.Provider>
   );
 }
 

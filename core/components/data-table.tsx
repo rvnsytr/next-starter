@@ -1,3 +1,5 @@
+"use client";
+
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
 import { Hotkey } from "@tanstack/react-hotkeys";

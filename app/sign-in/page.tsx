@@ -13,7 +13,7 @@ import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { appConfig } from "@/shared/config";
-import { LogInIcon } from "lucide-react";
+import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -39,7 +39,9 @@ export default function Page() {
               <TabsTab value="masuk">
                 <LogInIcon /> Masuk
               </TabsTab>
-              <TabsTab value="daftar">Daftar</TabsTab>
+              <TabsTab value="daftar">
+                <UserRoundPlusIcon /> Daftar
+              </TabsTab>
             </TabsList>
 
             <TabsPanel value="masuk">
