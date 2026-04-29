@@ -2,13 +2,9 @@
 
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import {
-  LAYOUT_TOGGLE_HOTKEY,
-  layoutModeConfig,
-  useLayout,
-} from "@/core/providers/layout";
+import { layoutModeConfig, useLayoutMode } from "@/core/providers/layout-mode";
 import { cn } from "@/core/utils";
-import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { FrameIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { Kbd } from "./ui/kbd";
@@ -16,9 +12,10 @@ import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export const LAYOUT_TOGGLE_LABEL = "Toggle Layout";
+export const LAYOUT_MODE_TOGGLE_LABEL = "Toggle Layout";
+export const LAYOUT_MODE_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 
-export function LayoutToggle({
+export function LayoutModeToggle({
   align,
   withTooltip,
   size = "icon-sm",
@@ -33,14 +30,14 @@ export function LayoutToggle({
   }) {
   const isMounted = useIsMounted();
   const isMobile = useIsMobile();
-  const { layout, setLayout } = useLayout();
+  const { layout, setLayout } = useLayoutMode();
 
   const { icon: Icon } = layoutModeConfig[layout];
 
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
 
-  useHotkey(LAYOUT_TOGGLE_HOTKEY, toggleLayout);
+  useHotkey(LAYOUT_MODE_TOGGLE_HOTKEY, toggleLayout);
 
   if (!isMounted) {
     return (
@@ -68,7 +65,7 @@ export function LayoutToggle({
       {...props}
     >
       <Icon />
-      <span className="sr-only">{LAYOUT_TOGGLE_LABEL}</span>
+      <span className="sr-only">{LAYOUT_MODE_TOGGLE_LABEL}</span>
     </Button>
   );
 
@@ -79,16 +76,16 @@ export function LayoutToggle({
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          {LAYOUT_TOGGLE_LABEL}{" "}
-          <Kbd>{formatForDisplay(LAYOUT_TOGGLE_HOTKEY)}</Kbd>
+          {LAYOUT_MODE_TOGGLE_LABEL}{" "}
+          <Kbd>{formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>
   );
 }
 
-export function LayoutSettings() {
-  const { layout, setLayout } = useLayout();
+export function LayoutModeSettings() {
+  const { layout, setLayout } = useLayoutMode();
 
   return (
     <RadioGroup

@@ -1,14 +1,11 @@
 "use client";
 
-import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { cn } from "../utils";
 
 export type LayoutMode = (typeof allLayoutMode)[number];
 export const allLayoutMode = ["fullwidth", "centered"] as const;
-
-export const LAYOUT_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 export const defaultLayout: LayoutMode = "centered";
 
 export const layoutModeConfig: Record<
@@ -19,14 +16,16 @@ export const layoutModeConfig: Record<
   centered: { label: "Centered", icon: MinimizeIcon },
 };
 
-type LayoutContextType = {
+type LayoutModeContextType = {
   layout: LayoutMode;
   setLayout: React.Dispatch<React.SetStateAction<LayoutMode>>;
 };
 
-const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
+const LayoutModeContext = createContext<LayoutModeContextType | undefined>(
+  undefined,
+);
 
-export function LayoutProvider({
+export function LayoutModeProvider({
   layout: fallbackLayout,
   className,
   children,
@@ -42,19 +41,19 @@ export function LayoutProvider({
   }, [layout]);
 
   return (
-    <LayoutContext.Provider value={{ layout, setLayout }}>
+    <LayoutModeContext.Provider value={{ layout, setLayout }}>
       <div
         data-layout-mode={layout}
         className={cn("group/layout-mode flex h-full flex-col", className)}
       >
         {children}
       </div>
-    </LayoutContext.Provider>
+    </LayoutModeContext.Provider>
   );
 }
 
-export function useLayout() {
-  const ctx = useContext(LayoutContext);
-  if (!ctx) throw new Error("useLayout must be used in LayoutProvider");
+export function useLayoutMode() {
+  const ctx = useContext(LayoutModeContext);
+  if (!ctx) throw new Error("useLayoutMode must be used in LayoutModeProvider");
   return ctx;
 }

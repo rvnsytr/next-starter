@@ -5,7 +5,10 @@ import {
 } from "@/core/components/layout/sidebar";
 import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
-import { allLayoutMode, LayoutProvider } from "@/core/providers/layout";
+import {
+  allLayoutMode,
+  LayoutModeProvider,
+} from "@/core/providers/layout-mode";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { getSession } from "@/modules/auth/actions";
 import { AuthProvider } from "@/modules/auth/provider";
@@ -77,8 +80,8 @@ async function DashboardLayoutMode({
     .parse(cookieStore.get("layout-preference")?.value);
 
   return (
-    <LayoutProvider layout={layoutPreference} className={className}>
+    <LayoutModeProvider layout={layoutPreference} className={className}>
       {children}
-    </LayoutProvider>
+    </LayoutModeProvider>
   );
 }

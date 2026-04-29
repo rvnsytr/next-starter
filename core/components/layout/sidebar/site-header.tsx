@@ -1,5 +1,5 @@
 import { DynamicBreadcrumb } from "@/core/components/dynamic-breadcrumb";
-import { LayoutToggle } from "@/core/components/layout";
+import { LayoutModeToggle } from "@/core/components/layout-mode";
 import { ThemeToggle } from "@/core/components/theme";
 import { Separator } from "@/core/components/ui/separator";
 import { ShimmerText } from "@/core/components/ui/shimmer-text";
@@ -30,7 +30,7 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           <ImpersonateUserBadge />
-          <LayoutToggle />
+          <LayoutModeToggle />
           <ThemeToggle align="end" />
 
           <Separator orientation="vertical" className="mr-2 h-4" />

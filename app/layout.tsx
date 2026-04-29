@@ -59,18 +59,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             disableTransitionOnChange
             enableSystem
           >
-            <ToastProvider>
-              <AnchoredToastProvider>
-                <DynamicBreadcrumbProvider>
+            <DynamicBreadcrumbProvider>
+              <ToastProvider>
+                <AnchoredToastProvider>
                   <main className="relative isolate flex min-h-svh flex-col">
                     <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
                     {children}
                   </main>
 
                   <GlobalShortcuts />
-                </DynamicBreadcrumbProvider>
-              </AnchoredToastProvider>
-            </ToastProvider>
+                </AnchoredToastProvider>
+              </ToastProvider>
+            </DynamicBreadcrumbProvider>
           </ThemeProvider>
         </NuqsAdapter>
       </body>
