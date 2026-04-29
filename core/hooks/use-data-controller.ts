@@ -40,11 +40,14 @@ import { useDebounce } from "./use-debounce";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ColumnDef<TData> = ColumnDefType<TData, any>[];
+
 type AllDataControllerState = DataControllerState & {
   columnPinning: ColumnPinningState;
   columnVisibility: VisibilityState;
   rowSelection: RowSelectionState;
 };
+
+export type DataControllerResult<TData> = SWRResponse<ActionResponse<TData[]>>;
 
 export type DataControllerOptions<TData> = Pick<
   TableOptions<TData>,
@@ -53,7 +56,7 @@ export type DataControllerOptions<TData> = Pick<
   mode?: "auto" | "manual";
   columns:
     | ColumnDef<TData>
-    | ((context?: SWRResponse<ActionResponse<TData[]>>) => ColumnDef<TData>);
+    | ((result?: DataControllerResult<TData>) => ColumnDef<TData>);
   query: {
     key: string;
     fetcher: (state: DataControllerState) => Promise<ActionResponse<TData[]>>;
@@ -73,7 +76,7 @@ type StatelessDataControllerOptions<TData> = DataControllerOptions<TData> & {
 };
 
 export type DataControllerResponse<TData> = {
-  result: SWRResponse<ActionResponse<TData[]>>;
+  result: DataControllerResult<TData>;
   table: Table<TData>;
   columns: ColumnDef<TData>;
 };
@@ -104,7 +107,7 @@ export function useStatelessDataController<TData>({
 }: StatelessDataControllerOptions<TData>): DataControllerResponse<TData> {
   const debouncedSearch = useDebounce(globalFilter);
 
-  const queryState: DataControllerState = useMemo(
+  const state: DataControllerState = useMemo(
     () => ({
       globalFilter: debouncedSearch,
       pagination: pagination,
@@ -116,8 +119,8 @@ export function useStatelessDataController<TData>({
 
   const shouldRevalidate = !query.immutable && (query.revalidate ?? true);
   const result = useSWR<ActionResponse<TData[]>>(
-    mode === "manual" ? [query.key, queryState] : [query.key],
-    () => query.fetcher(queryState),
+    mode === "manual" ? [query.key, state] : [query.key],
+    () => query.fetcher(state),
     {
       ...query.config,
       revalidateIfStale:
@@ -291,7 +294,7 @@ const columnFiltersSchema = z.object({
 });
 
 function getColumnFiltersParser<TData>(
-  columns: ColumnDef<TData> | (() => ColumnDef<TData>),
+  columns: DataControllerOptions<TData>["columns"],
 ) {
   return createParser<DataControllerState["columnFilters"]>({
     parse: (value) => {
@@ -303,7 +306,7 @@ function getColumnFiltersParser<TData>(
           if (!id || !operator || !rawValues) return null;
 
           const resolvedColumns =
-            typeof columns !== "function" ? columns : columns();
+            typeof columns === "function" ? columns() : columns;
           const col = resolvedColumns.find((c) => c.id === id);
           if (!col) return null;
 

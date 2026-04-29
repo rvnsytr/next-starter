@@ -38,20 +38,18 @@ export function UserDataTable() {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
 
+  const fetcher = async () => await listUsers(user.role);
+
   return (
     <>
       <QueryDataTable
         mode="auto"
-        columns={(ctx) => {
-          const isLoading = ctx?.isLoading ?? false;
-          const count = ctx?.data?.count;
+        columns={(result) => {
+          const isLoading = result?.isLoading ?? false;
+          const count = result?.data?.count;
           return getUserColumns(setData, { isLoading, count });
         }}
-        query={{
-          key,
-          fetcher: async () => await listUsers(user.role),
-          immutable: true,
-        }}
+        query={{ key, fetcher, immutable: true }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
         placeholder={{ search: "Cari Pengguna..." }}
