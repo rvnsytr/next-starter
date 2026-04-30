@@ -2,10 +2,10 @@
 
 import { authClient } from "@/core/auth-client";
 import { Button } from "@/core/components/ui/button";
-import { GithubIcon } from "@/core/components/ui/icons";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
+import { GithubIcon } from "@/shared/components/icons";
 import { useState } from "react";
 
 export function SignOnGithubButton() {
