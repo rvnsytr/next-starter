@@ -42,7 +42,13 @@ export async function uploadFiles(
   payload: UploadFilesPayload[],
   options?: UploadFilesOptions,
 ): Promise<
-  { file: typeof file.$inferInsert; output: PutObjectCommandOutput }[]
+  {
+    file: Pick<
+      typeof file.$inferInsert,
+      "filePath" | "fileName" | "mimeType" | "fileSize"
+    >;
+    output: PutObjectCommandOutput;
+  }[]
 > {
   const { Bucket = defaultBucket, ...rest } = options ?? {};
   return await Promise.all(

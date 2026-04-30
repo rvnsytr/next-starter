@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { messages } from "../messages";
 import { FileMetadata, FileWithPreview } from "../types";
+import { getFileInfo } from "../utils";
 
 export type FileUploadOptions = {
   accept?: string;
@@ -61,13 +62,6 @@ export function useStatelessFileUpload(
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
-
-  const getFileInfo = (file: File | FileMetadata) => ({
-    name: file.name,
-    size: file.size,
-    type: file instanceof File ? file.type || "" : file.type,
-    extension: `.${file.name.split(".").pop()}`,
-  });
 
   const validateFile = useCallback(
     (file: File | FileMetadata) => {
