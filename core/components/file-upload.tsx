@@ -1,5 +1,6 @@
 "use client";
 
+import { fileTypeConfig, FileTypeConfig } from "@/shared/file-type";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -11,14 +12,12 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { fileTypeConfig, FileTypeConfig } from "../../shared/file-type";
 import {
-  FileMetadata,
   FileUploadOptions,
-  FileWithPreview,
   useStatelessFileUpload,
 } from "../hooks/use-file-upload";
 import { messages } from "../messages";
+import { FileMetadata, FileWithPreview } from "../types";
 import { cn, formatBytes } from "../utils";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button, ResetButton } from "./ui/button";

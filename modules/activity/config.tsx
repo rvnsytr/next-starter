@@ -52,7 +52,7 @@ export const activityConfig: Record<
       </span>
     ),
     icon: UserRoundCogIcon,
-    color: "var(--color-sky-500)",
+    color: "var(--color-info)",
   }),
   "user-banned": {
     label: "Akun Diblokir",
@@ -126,7 +126,7 @@ export const activityConfig: Record<
   //     </span>
   //   ),
   //   icon: ImportIcon,
-  //   color: "var(--color-sky-500)",
+  //   color: "var(--color-info)",
   // }),
   "admin-user-update-role": (c) => ({
     label: "Admin Mengubah Peran",
@@ -136,7 +136,7 @@ export const activityConfig: Record<
       </span>
     ),
     icon: UserRoundCogIcon,
-    color: "var(--color-sky-500)",
+    color: "var(--color-info)",
   }),
   "admin-user-ban": (c) => ({
     label: "Admin Memblokir Akun",

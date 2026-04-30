@@ -1,7 +1,9 @@
 import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon } from "lucide-react";
 import { Route } from "next";
+import z from "zod";
 import { RouteRole } from "./route";
+import { sharedSchemas } from "./schema";
 
 export type Override<T, U> = Omit<T, keyof U> & U;
 
@@ -72,3 +74,8 @@ export type MenuItem = {
   // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
   subItems?: { label: string; href?: Route | string; role?: RouteRole }[];
 };
+
+export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
+export type FileWithPreview = z.infer<
+  ReturnType<typeof sharedSchemas.fileWithPreview>
+>;

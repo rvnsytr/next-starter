@@ -9,19 +9,26 @@ import { activity, file as fileTable, user } from "@/shared/db/schema";
 import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
-import { headers } from "next/headers";
+import { headers as nextHeaders } from "next/headers";
 
 export async function updateProfileName(
   userId: string,
   body: { name: string },
 ) {
-  const res = await auth.api.updateUser({ headers: await headers(), body });
+  const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
   await db.insert(activity).values({ userId, type: "profile-updated" });
   revalidatePath("/dashboard/profile");
   return res;
 }
 
-export async function updateProfilePicture(userId: string, file: File) {
+export async function updateProfilePicture(file: File) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
+  const userId = session.user.id;
+
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
       .select({ fileId: user.image })
@@ -45,7 +52,7 @@ export async function updateProfilePicture(userId: string, file: File) {
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
 
     return await auth.api.updateUser({
-      headers: await headers(),
+      headers,
       body: { image: insertRes.id },
     });
   });
@@ -54,7 +61,13 @@ export async function updateProfilePicture(userId: string, file: File) {
   return res;
 }
 
-export async function deleteProfilePicture(userId: string) {
+export async function deleteProfilePicture() {
+  const headers = await nextHeaders();
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
+  const userId = session.user.id;
+
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
       .select({ fileId: user.image })
@@ -70,11 +83,7 @@ export async function deleteProfilePicture(userId: string) {
     }
 
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
-
-    return await auth.api.updateUser({
-      headers: await headers(),
-      body: { image: null },
-    });
+    return await auth.api.updateUser({ headers, body: { image: null } });
   });
 
   revalidatePath("/dashboard/profile");
@@ -82,12 +91,12 @@ export async function deleteProfilePicture(userId: string) {
 }
 
 export async function listSessions() {
-  return await auth.api.listSessions({ headers: await headers() });
+  return await auth.api.listSessions({ headers: await nextHeaders() });
 }
 
 export async function listUserSessions(userId: string) {
   const { sessions } = await auth.api.listUserSessions({
-    headers: await headers(),
+    headers: await nextHeaders(),
     body: { userId },
   });
   return sessions as Session[];
@@ -95,7 +104,7 @@ export async function listUserSessions(userId: string) {
 
 export async function listUsers(role: Role): Promise<ActionResponse<User[]>> {
   const hasPermission = await auth.api.userHasPermission({
-    headers: await headers(),
+    headers: await nextHeaders(),
     body: { permissions: { user: ["list"] }, role },
   });
 
@@ -149,24 +158,27 @@ async function cachedUsers(): Promise<User[]> {
   // return { success: true, count, data: data as User[] };
 }
 
-export async function createUser(
-  adminId: string,
-  body: {
-    email: string;
-    password: string;
-    name: string;
-    role: Role;
-  },
-) {
+export async function createUser(body: {
+  email: string;
+  password: string;
+  name: string;
+  role: Role;
+}) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.createUser({
-      headers: await headers(),
-      body,
-    });
+    const res = await auth.api.createUser({ headers, body });
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-created" },
-      { userId: adminId, type: "admin-user-create", entityId: res.user.id },
+      {
+        userId: session.user.id,
+        type: "admin-user-create",
+        entityId: res.user.id,
+      },
     ]);
 
     return res;
@@ -176,17 +188,19 @@ export async function createUser(
   return res;
 }
 
-export async function updateUserRole(
-  adminId: string,
-  body: { userId: string; role: Role },
-) {
+export async function updateUserRole(body: { userId: string; role: Role }) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.setRole({ headers: await headers(), body });
+    const res = await auth.api.setRole({ headers, body });
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-role-updated", data: body.role },
       {
-        userId: adminId,
+        userId: session.user.id,
         type: "admin-user-update-role",
         entityId: res.user.id,
       },
@@ -199,21 +213,23 @@ export async function updateUserRole(
   return res;
 }
 
-export async function banUser(
-  adminId: string,
-  body: {
-    userId: string;
-    banReason?: string;
-    banExpiresIn?: number;
-  },
-) {
+export async function banUser(body: {
+  userId: string;
+  banReason?: string;
+  banExpiresIn?: number;
+}) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.banUser({ headers: await headers(), body });
+    const res = await auth.api.banUser({ headers, body });
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-banned" },
       {
-        userId: adminId,
+        userId: session.user.id,
         type: "admin-user-ban",
         entityId: res.user.id,
         data: body.banReason,
@@ -227,16 +243,22 @@ export async function banUser(
   return res;
 }
 
-export async function unbanUser(adminId: string, body: { userId: string }) {
+export async function unbanUser(body: { userId: string }) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.unbanUser({
-      headers: await headers(),
-      body,
-    });
+    const res = await auth.api.unbanUser({ headers, body });
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-unbanned" },
-      { userId: adminId, type: "admin-user-unban", entityId: res.user.id },
+      {
+        userId: session.user.id,
+        type: "admin-user-unban",
+        entityId: res.user.id,
+      },
     ]);
 
     return res;
@@ -248,7 +270,7 @@ export async function unbanUser(adminId: string, body: { userId: string }) {
 
 export async function impersonateUser(userId: string) {
   const res = await auth.api.impersonateUser({
-    headers: await headers(),
+    headers: await nextHeaders(),
     body: { userId },
   });
   revalidatePath("/dashboard");
@@ -257,13 +279,18 @@ export async function impersonateUser(userId: string) {
 
 export async function stopImpersonateUser() {
   const res = await auth.api.stopImpersonating({
-    headers: await headers(),
+    headers: await nextHeaders(),
   });
   revalidatePath("/dashboard");
   return res;
 }
 
-export async function deleteUser(adminId: string, body: { userId: string }) {
+export async function deleteUser(body: { userId: string }) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = await db.transaction(async (tx) => {
     const [{ name, fileId }] = await tx
       .select({ name: user.name, fileId: user.image })
@@ -278,21 +305,25 @@ export async function deleteUser(adminId: string, body: { userId: string }) {
       if (filePath) await deleteFiles([filePath]);
     }
 
-    await tx
-      .insert(activity)
-      .values({ userId: adminId, type: "admin-user-delete", data: name });
+    await tx.insert(activity).values({
+      userId: session.user.id,
+      type: "admin-user-delete",
+      data: name,
+    });
 
-    return await auth.api.removeUser({ headers: await headers(), body });
+    return await auth.api.removeUser({ headers, body });
   });
 
   updateTag("list-users");
   return res;
 }
 
-export async function deleteUsers(
-  adminId: string,
-  body: { userIds: string[] },
-) {
+export async function deleteUsers(body: { userIds: string[] }) {
+  const headers = await nextHeaders();
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error(messages.unauthorized);
+
   const res = await db.transaction(async (tx) => {
     const fileIds = await tx
       .delete(user)
@@ -312,7 +343,7 @@ export async function deleteUsers(
 
     const userCount = body.userIds.length;
     await tx.insert(activity).values({
-      userId: adminId,
+      userId: session.user.id,
       type: "admin-users-delete",
       data: userCount.toString(),
     });

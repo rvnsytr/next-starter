@@ -1,14 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import z from "zod";
 import { messages } from "../messages";
-import { sharedSchemas } from "../schema";
-
-export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
-export type FileWithPreview = z.infer<
-  ReturnType<typeof sharedSchemas.fileWithPreview>
->;
+import { FileMetadata, FileWithPreview } from "../types";
 
 export type FileUploadOptions = {
   accept?: string;

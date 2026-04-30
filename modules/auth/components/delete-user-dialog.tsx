@@ -25,7 +25,6 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { deleteUser, deleteUsers } from "../actions";
-import { useSession } from "../hooks/use-session";
 import { mutateUserDataTable } from "./user-data-table";
 
 export function DeleteUserDialog({
@@ -41,7 +40,6 @@ export function DeleteUserDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
-  const { user } = useSession();
   const [input, setInput] = useState<string>("");
 
   type FormSchema = z.infer<typeof formSchema>;
@@ -61,7 +59,7 @@ export function DeleteUserDialog({
     setIsLoading(true);
     setOpen(false);
 
-    toast.promise(deleteUser(user.id, { userId: data.id }), {
+    toast.promise(deleteUser({ userId: data.id }), {
       loading: { title: messages.loading },
       success: () => {
         form.reset();
@@ -161,7 +159,6 @@ export function ActionDeleteUsersDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess: () => void;
 }) {
-  const { user } = useSession();
   const [input, setInput] = useState<string>("");
 
   const inputValue = `Hapus ${String(userIds.length)} Pengguna`;
@@ -185,7 +182,7 @@ export function ActionDeleteUsersDialog({
     setIsLoading(true);
     setOpen(false);
 
-    toast.promise(deleteUsers(user.id, { userIds }), {
+    toast.promise(deleteUsers({ userIds }), {
       loading: { title: messages.loading },
       success: (res) => {
         setIsLoading(false);

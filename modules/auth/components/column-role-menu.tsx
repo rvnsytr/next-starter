@@ -36,7 +36,7 @@ export function ColumnRoleMenu({
       });
 
     setIsLoading(true);
-    toast.promise(updateUserRole(user.id, { userId: data.id, role }), {
+    toast.promise(updateUserRole({ userId: data.id, role }), {
       loading: { title: messages.loading },
       success: () => {
         const { label } = roleConfig[role];
