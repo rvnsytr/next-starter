@@ -4,7 +4,7 @@ import { Activity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
 import { getActivityConfig } from "../config";
-import { allActivityType } from "../config.activity-type";
+import { allActivityType } from "../schema";
 
 const createColumn = createColumnHelper<Activity>();
 export const getActivityColumns = (result?: {

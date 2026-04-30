@@ -1,4 +1,4 @@
-import { allActivityType } from "@/modules/activity/config.activity-type";
+import { allActivityType } from "@/modules/activity/schema";
 import {
   bigint,
   boolean,
