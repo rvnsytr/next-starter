@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { Button } from "@/core/components/ui/button";
 import {
   Dialog,
@@ -35,11 +35,11 @@ export function DeleteUserDialog({
   setIsLoading,
   setData,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name">;
+  data: Pick<User, "id" | "name">;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
+  setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
   const { user } = useSession();
   const [input, setInput] = useState<string>("");

@@ -17,6 +17,8 @@ export type Permissions = {
 };
 
 export type AuthSession = typeof auth.$Infer.Session;
+export type User = AuthSession["user"];
+export type Session = AuthSession["session"];
 
 export const auth = betterAuth({
   appName: appConfig.name,

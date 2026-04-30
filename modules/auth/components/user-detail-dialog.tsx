@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import {
   Avatar,
   AvatarFallback,
@@ -56,13 +56,13 @@ import { UnbanUserDialog } from "./unban-user-dialog";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
-type SetData = React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
+type SetData = React.Dispatch<React.SetStateAction<User | null>>;
 
 export function UserDetailDialog({
   data,
   setData,
 }: {
-  data: AuthSession["user"] | null;
+  data: User | null;
   setData: SetData;
 }) {
   return (
@@ -74,13 +74,7 @@ export function UserDetailDialog({
   );
 }
 
-function Content({
-  data,
-  setData,
-}: {
-  data: AuthSession["user"];
-  setData: SetData;
-}) {
+function Content({ data, setData }: { data: User; setData: SetData }) {
   const { user } = useSession();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);

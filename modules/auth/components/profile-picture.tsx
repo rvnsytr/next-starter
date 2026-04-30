@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -30,7 +30,7 @@ import { deleteProfilePicture, updateProfilePicture } from "../actions";
 export function ProfilePicture({
   data,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name" | "image">;
+  data: Pick<User, "id" | "name" | "image">;
 }) {
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);

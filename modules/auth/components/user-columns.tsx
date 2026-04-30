@@ -1,4 +1,4 @@
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import {
   Avatar,
   AvatarFallback,
@@ -34,9 +34,9 @@ import { RoleBadge } from "./role-badge";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
-const createColumn = createColumnHelper<AuthSession["user"]>();
+const createColumn = createColumnHelper<User>();
 export const getUserColumns = (
-  setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>,
+  setData: React.Dispatch<React.SetStateAction<User | null>>,
   result?: { isLoading: boolean; count?: Record<string, number> },
 ) => [
   createColumn.display({

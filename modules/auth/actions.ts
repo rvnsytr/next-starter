@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, AuthSession } from "@/core/auth";
+import { auth, Session, User } from "@/core/auth";
 import { db } from "@/core/db";
 import { messages } from "@/core/messages";
 import { deleteFiles, uploadFiles } from "@/core/s3";
@@ -90,12 +90,10 @@ export async function listUserSessions(userId: string) {
     headers: await headers(),
     body: { userId },
   });
-  return sessions as AuthSession["session"][];
+  return sessions as Session[];
 }
 
-export async function listUsers(
-  role: Role,
-): Promise<ActionResponse<AuthSession["user"][]>> {
+export async function listUsers(role: Role): Promise<ActionResponse<User[]>> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await headers(),
     body: { permissions: { user: ["list"] }, role },
@@ -107,7 +105,7 @@ export async function listUsers(
   return { success: true, data: await cachedUsers() };
 }
 
-async function cachedUsers(): Promise<AuthSession["user"][]> {
+async function cachedUsers(): Promise<User[]> {
   "use cache";
   cacheTag("list-users");
 
@@ -148,7 +146,7 @@ async function cachedUsers(): Promise<AuthSession["user"][]> {
 
   // const data = await withDataTable(dataQb, state, config).execute();
 
-  // return { success: true, count, data: data as AuthSession["user"][] };
+  // return { success: true, count, data: data as User[] };
 }
 
 export async function createUser(

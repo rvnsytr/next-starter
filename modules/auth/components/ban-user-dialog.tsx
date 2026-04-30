@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { DatePicker } from "@/core/components/date-picker";
 import { Button } from "@/core/components/ui/button";
 import {
@@ -40,11 +40,11 @@ export function BanUserDialog({
   setIsLoading,
   setData,
 }: {
-  data: AuthSession["user"];
+  data: User;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
+  setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
   const { user } = useSession();
 

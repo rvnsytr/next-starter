@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { Button } from "@/core/components/ui/button";
 import {
   Menu,
@@ -22,7 +22,7 @@ import { mutateUserDataTable } from "./user-data-table";
 export function ColumnRoleMenu({
   data,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name" | "role">;
+  data: Pick<User, "id" | "name" | "role">;
 }) {
   const { user } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);

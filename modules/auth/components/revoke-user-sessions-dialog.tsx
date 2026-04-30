@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { authClient } from "@/core/auth-client";
 import {
   AlertDialog,
@@ -24,7 +24,7 @@ export function RevokeUserSessionsDialog({
   setOpen,
   setIsLoading,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name">;
+  data: Pick<User, "id" | "name">;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

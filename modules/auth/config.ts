@@ -1,4 +1,4 @@
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { Role } from "@/shared/permission";
 import {
   BanIcon,
@@ -68,7 +68,7 @@ export const userStatusConfig: Record<
 };
 
 export function getUserStatus(
-  data: Pick<AuthSession["user"], "email" | "emailVerified" | "banned">,
+  data: Pick<User, "email" | "emailVerified" | "banned">,
 ): UserStatus {
   if (data.banned) return "banned";
   if (data.emailVerified) return "verified";

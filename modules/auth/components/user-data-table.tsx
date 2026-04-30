@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import { QueryDataTable } from "@/core/components/data-table";
 import { Button } from "@/core/components/ui/button";
 import {
@@ -30,7 +30,7 @@ export const mutateUserDataTable = () => mutateControlledData(key);
 export function UserDataTable() {
   const { user } = useSession();
 
-  const [data, setData] = useState<AuthSession["user"] | null>(null);
+  const [data, setData] = useState<User | null>(null);
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
 
   const [isRevokeSessionsDialogOpen, setIsRevokeSessionsDialogOpen] =

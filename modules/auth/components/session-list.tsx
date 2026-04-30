@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { Session, User } from "@/core/auth";
 import { authClient } from "@/core/auth-client";
 import {
   AlertDialog,
@@ -65,7 +65,7 @@ export function SessionList() {
 export function UserDetailSessionList({
   data: user,
 }: {
-  data: Pick<AuthSession["user"], "id" | "name">;
+  data: Pick<User, "id" | "name">;
 }) {
   const { data, error, isLoading } = useListUserSessions(user.id);
   if (error) return <ErrorFallback error={error} />;
@@ -78,7 +78,7 @@ export function SessionListCollapsible({
   data,
 }: {
   name?: string;
-  data: AuthSession["session"][];
+  data: Session[];
 }) {
   const { session } = useSession();
   const [revokingSession, setRevokingSession] = useState<string | null>();
@@ -111,7 +111,7 @@ export function SessionListCollapsible({
     { label: "Operating System", key: "os" },
   ];
 
-  const clickHandler = ({ id, token }: AuthSession["session"]) => {
+  const clickHandler = ({ id, token }: Session) => {
     setRevokingSession(id);
 
     toast.promise(

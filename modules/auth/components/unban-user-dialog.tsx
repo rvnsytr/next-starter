@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthSession } from "@/core/auth";
+import { User } from "@/core/auth";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -25,11 +25,11 @@ export function UnbanUserDialog({
   setIsLoading,
   setData,
 }: {
-  data: AuthSession["user"];
+  data: User;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setData: React.Dispatch<React.SetStateAction<AuthSession["user"] | null>>;
+  setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
   const { user } = useSession();
 
