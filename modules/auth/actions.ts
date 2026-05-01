@@ -23,7 +23,6 @@ export async function updateProfileName(
 
 export async function updateProfilePicture(file: File) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -165,7 +164,6 @@ export async function createUser(body: {
   role: Role;
 }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -190,7 +188,6 @@ export async function createUser(body: {
 
 export async function updateUserRole(body: { userId: string; role: Role }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -219,7 +216,6 @@ export async function banUser(body: {
   banExpiresIn?: number;
 }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -245,7 +241,6 @@ export async function banUser(body: {
 
 export async function unbanUser(body: { userId: string }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -287,7 +282,6 @@ export async function stopImpersonateUser() {
 
 export async function deleteUser(body: { userId: string }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
@@ -320,7 +314,6 @@ export async function deleteUser(body: { userId: string }) {
 
 export async function deleteUsers(body: { userIds: string[] }) {
   const headers = await nextHeaders();
-
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 

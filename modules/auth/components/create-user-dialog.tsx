@@ -46,9 +46,7 @@ export function CreateUserDialog() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useHotkey(CREATE_USER_DIALOG_HOTKEY, () => setIsOpen(true), {
-    enabled: !isOpen,
-  });
+  useHotkey(CREATE_USER_DIALOG_HOTKEY, () => setIsOpen(true));
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = userSchema
