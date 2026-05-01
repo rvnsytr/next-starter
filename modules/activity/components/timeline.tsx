@@ -22,6 +22,7 @@ import {
   DataControllerResponse,
   useDataController,
 } from "@/core/hooks/use-data-controller";
+import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { messages } from "@/core/messages";
 import { formatLocalizedDate } from "@/core/utils";
 import { cn } from "@/core/utils/helpers";
@@ -41,6 +42,9 @@ function BaseActivityTimeline({
 }: ActivityTimelineProps & {
   controller: DataControllerResponse<ActivityWithEntity>;
 }) {
+  const isMounted = useIsMounted();
+  if (!isMounted) return <LoadingFallback variant="frame" />;
+
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
       <div className="flex gap-x-2">

@@ -11,6 +11,7 @@ import {
   useDataController,
   useQueryDataController,
 } from "../hooks/use-data-controller";
+import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
 import { messages } from "../messages";
 import {
@@ -28,7 +29,7 @@ import {
   ResetFilters,
 } from "./filters";
 import { ButtonGroup } from "./ui/button-group";
-import { ErrorFallback } from "./ui/fallback";
+import { ErrorFallback, LoadingFallback } from "./ui/fallback";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
@@ -80,6 +81,9 @@ function BaseDataTable<TData>({
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
   const isMobile = useIsMobile();
+  const isMounted = useIsMounted();
+
+  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   if (result.error) return <ErrorFallback error={result.error} />;
   if (!result.isLoading && !result.data?.success)
