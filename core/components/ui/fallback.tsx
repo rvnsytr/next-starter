@@ -42,7 +42,7 @@ export function ErrorFallback({
 
       {!hideDesc && (
         <AlertDescription>
-          <pre>{message}</pre>
+          <pre className="whitespace-pre-wrap">{message}</pre>
         </AlertDescription>
       )}
     </Alert>

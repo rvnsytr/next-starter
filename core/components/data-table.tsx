@@ -102,7 +102,7 @@ function BaseDataTable<TData>({
       <div
         className={cn(
           "flex w-full flex-col gap-2 lg:flex-row lg:justify-between",
-          className,
+          classNames?.toolbox,
         )}
       >
         <div className={cn("flex flex-col gap-2 lg:flex-row lg:items-center")}>
@@ -249,21 +249,33 @@ function BaseDataTable<TData>({
           classNames?.footer,
         )}
       >
-        <div className="order-4 flex items-center gap-x-2 lg:order-1">
+        <div
+          data-slot="pagination"
+          className="order-4 flex items-center gap-x-2 lg:order-1"
+        >
           <Label className="shrink-0">Baris per halaman</Label>
           <DataControllerPageSize table={table} disabled={result.isLoading} />
         </div>
 
-        <small className="text-muted-foreground order-3 shrink-0 lg:order-2">
+        <small
+          data-slot="selected-rows"
+          className="text-muted-foreground order-3 shrink-0 lg:order-2"
+        >
           {formatNumber(selectedRowsCount)} dari{" "}
           {result.isLoading ? "?" : formatNumber(rowsCount)} baris dipilih
         </small>
 
-        <small className="text-muted-foreground order-1 mx-auto text-sm lg:order-3">
+        <small
+          data-slot="caption"
+          className="text-muted-foreground order-1 mx-auto text-sm lg:order-3"
+        >
           {caption}
         </small>
 
-        <small className="order-2 shrink-0 tabular-nums lg:order-4">
+        <small
+          data-slot="page-info"
+          className="order-2 shrink-0 tabular-nums lg:order-4"
+        >
           Halaman{" "}
           {result.isLoading
             ? "?"
@@ -275,6 +287,7 @@ function BaseDataTable<TData>({
         </small>
 
         <DataControllerPaginationNav
+          data-slot="pagination-nav"
           table={table}
           size="icon"
           className="order-3 shrink-0 lg:order-5"

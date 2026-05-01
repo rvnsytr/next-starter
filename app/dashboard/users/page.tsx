@@ -8,7 +8,7 @@ import { CardAction } from "@/core/components/ui/card";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/route";
 import { CreateUserDialog } from "@/modules/auth/components/create-user-dialog";
-import { UserDataTable } from "@/modules/auth/components/user-data-table";
+import { UserDataTable } from "@/modules/auth/components/data-table";
 import { Metadata } from "next";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };

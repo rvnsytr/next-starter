@@ -19,9 +19,9 @@ import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsers } from "../actions";
 import { useSession } from "../hooks/use-session";
+import { getUserColumns } from "./columns";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
-import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
 const key = "/auth/admin/list-users";

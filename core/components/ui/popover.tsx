@@ -80,7 +80,10 @@ function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
   return (
     <PopoverPrimitive.Title
       data-slot="popover-title"
-      className={cn("text-lg leading-none font-semibold", className)}
+      className={cn(
+        "flex items-center gap-2 text-base leading-tight font-semibold **:[svg:not([class*='size-'])]:size-4",
+        className,
+      )}
       {...props}
     />
   );
