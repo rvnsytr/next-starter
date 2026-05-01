@@ -17,9 +17,9 @@ import { useState } from "react";
 import { updateUserRole } from "../actions";
 import { roleConfig } from "../config";
 import { useSession } from "../hooks/use-session";
-import { mutateUserDataTable } from "./data-table";
+import { mutateUserDataTable } from "./user-data-table";
 
-export function ColumnRoleMenu({
+export function UserRoleColumn({
   data,
 }: {
   data: Pick<User, "id" | "name" | "role">;

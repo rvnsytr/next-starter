@@ -15,7 +15,7 @@ import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { LockKeyholeOpenIcon } from "lucide-react";
 import { unbanUser } from "../actions";
-import { mutateUserDataTable } from "./data-table";
+import { mutateUserDataTable } from "./user-data-table";
 
 export function UnbanUserDialog({
   data,

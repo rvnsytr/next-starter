@@ -29,8 +29,8 @@ import {
   roleConfig,
   userStatusConfig,
 } from "../config";
-import { ColumnRoleMenu } from "./column-role-menu";
 import { RoleBadge } from "./role-badge";
+import { UserRoleColumn } from "./user-role-column";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
@@ -122,7 +122,7 @@ export const getUserColumns = (
     ),
     cell: (c) => (
       <div className="flex items-center gap-2">
-        <ColumnRoleMenu data={c.row.original} />
+        <UserRoleColumn data={c.row.original} />
         <RoleBadge value={c.cell.getValue()} />
       </div>
     ),

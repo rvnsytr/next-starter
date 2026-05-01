@@ -37,7 +37,7 @@ import { z } from "zod";
 import { createUser } from "../actions";
 import { roleConfig } from "../config";
 import { passwordSchema, userSchema } from "../schema";
-import { mutateUserDataTable } from "./data-table";
+import { mutateUserDataTable } from "./user-data-table";
 
 const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
 

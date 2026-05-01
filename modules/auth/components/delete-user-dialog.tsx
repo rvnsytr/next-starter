@@ -25,7 +25,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { deleteUser, deleteUsers } from "../actions";
-import { mutateUserDataTable } from "./data-table";
+import { mutateUserDataTable } from "./user-data-table";
 
 export function DeleteUserDialog({
   data,
