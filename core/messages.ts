@@ -33,7 +33,6 @@ export const messages = {
   error: "Terjadi kesalahan",
 
   empty: "Tidak ada hasil yang ditemukan.",
-  notFound: "Sumber daya yang diminta tidak ditemukan.",
   unauthorized: "Tindakan tidak terautentikasi",
   forbidden: "Tidak memiliki izin untuk melakukan tindakan ini.",
 
@@ -48,6 +47,7 @@ export const messages = {
 
   // -- Validation
   invalid: (field: string) => `${capitalize(field, "first")} tidak valid.`,
+  notFound: (field: string) => `${capitalize(field, "first")} tidak ditemukan.`,
 
   required: (field: string) => `${capitalize(field, "first")} wajib diisi.`,
   requiredInvalidType: (field: string, fieldType: string) =>

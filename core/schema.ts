@@ -23,8 +23,8 @@ export const sharedSchemas = {
     const { tooShort, tooLong } = messages.string;
 
     const label = options?.label ?? undefined;
-    const min = options?.min ?? 0;
-    const max = options?.max ?? 0;
+    const min = options?.min ?? null;
+    const max = options?.max ?? null;
     const sanitize = options?.sanitize ?? true;
     const withRequired = options?.withRequired ?? false;
 
@@ -34,13 +34,13 @@ export const sharedSchemas = {
     if (sanitize)
       schema = schema.regex(/^$|[A-Za-z0-9]/, { message: invalidError });
 
-    if (min > 0) {
+    if (min) {
       const error =
         label && (min <= 1 && withRequired ? required : tooShort)(label, min);
       schema = schema.min(min, { error });
     }
 
-    if (max > 0) {
+    if (max) {
       const error = label && tooLong(label, max);
       schema = schema.max(max, { error });
     }
@@ -58,20 +58,20 @@ export const sharedSchemas = {
     const { tooSmall, tooLarge } = messages.number;
 
     const label = options?.label ?? undefined;
-    const min = options?.min ?? 0;
-    const max = options?.max ?? 0;
+    const min = options?.min ?? null;
+    const max = options?.max ?? null;
     const withRequired = options?.withRequired ?? true;
 
     const invalidError = label && invalid(label);
     let schema = z.number({ error: invalidError });
 
-    if (min > 0) {
+    if (min) {
       const error =
         label && (min <= 1 && withRequired ? required : tooSmall)(label, min);
       schema = schema.min(min, { error });
     }
 
-    if (max > 0) {
+    if (max) {
       const error = label && tooLarge(label, max);
       schema = schema.max(max, { error });
     }
