@@ -9,7 +9,7 @@ import {
   UserRoundXIcon,
   UserSquare2Icon,
 } from "lucide-react";
-import { ActivityType } from "./schema";
+import { ActivityType } from "../schema";
 
 type ActivityConfigMetadata = {
   label: string;

@@ -1,12 +1,12 @@
 import { ColumnCellNumber, ColumnHeader } from "@/core/components/ui/column";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
-import { Activity } from "@/shared/db/schema";
+import { ActivityWithEntity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
 import { getActivityConfig } from "../config";
 import { allActivityType } from "../schema";
 
-const createColumn = createColumnHelper<Activity>();
+const createColumn = createColumnHelper<ActivityWithEntity>();
 export const getActivityColumns = (result?: {
   isLoading: boolean;
   count?: Record<string, number>;

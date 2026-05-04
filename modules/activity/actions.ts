@@ -9,10 +9,11 @@ import { Role } from "@/shared/permission";
 import { desc, eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";
 import { headers } from "next/headers";
+import { ACTIVITY_KEYS } from "./config/keys";
 
 async function cachedActivities(): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag("activities");
+  cacheTag(ACTIVITY_KEYS.list);
   return await db.select().from(activity).orderBy(desc(activity.createdAt));
 }
 
@@ -33,7 +34,7 @@ export async function listActivities(
 
 async function cachedActivity(userId: string): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(`activity-${userId}`);
+  cacheTag(ACTIVITY_KEYS.get(userId));
   return await db
     .select()
     .from(activity)

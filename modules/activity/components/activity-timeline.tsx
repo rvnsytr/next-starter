@@ -30,6 +30,7 @@ import { useSession } from "@/modules/auth/hooks/use-session";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getActivities } from "../actions";
 import { getActivityConfig } from "../config";
+import { ACTIVITY_KEYS } from "../config/keys";
 import { getActivityColumns } from "./activity-column";
 
 export type ActivityTimelineProps = {
@@ -131,7 +132,7 @@ export function UserActivityTimeline({
   const controller = useDataController({
     ...controllerOptions,
     query: {
-      key: `/activities/${userId}`,
+      key: ACTIVITY_KEYS.get(userId),
       fetcher: async () => await getActivities(user.role, userId),
     },
   });
