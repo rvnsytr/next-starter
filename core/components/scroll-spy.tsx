@@ -105,7 +105,7 @@ export function Scrollspy({
 
     const activeAnchor = anchorElementsRef.current[activeIdx];
     const sectionId =
-      activeAnchor?.getAttribute(`data-${dataAttribute}-anchor`) || null;
+      activeAnchor?.getAttribute(`data-${dataAttribute}-anchor`) ?? null;
 
     setActiveSection(sectionId);
   }, [targetRef, dataAttribute, offset, setActiveSection]);
@@ -117,7 +117,7 @@ export function Scrollspy({
       const sectionId =
         anchorElement
           .getAttribute(`data-${dataAttribute}-anchor`)
-          ?.replace("#", "") || null;
+          ?.replace("#", "") ?? null;
 
       if (!sectionId) return;
 

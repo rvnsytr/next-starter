@@ -56,6 +56,13 @@ export function getFileInfo(file: File | FileMetadata) {
   };
 }
 
+export function getFileNameParts(originalFileName: string) {
+  const parts = originalFileName.split(".");
+  const fileName = parts.slice(0, -1).join(".");
+  const extension = parts.at(-1) ?? "";
+  return { fileName, extension };
+}
+
 export function getClientCookie(name: string) {
   if (!document?.cookie) return undefined;
   return document.cookie

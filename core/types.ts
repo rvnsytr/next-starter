@@ -11,8 +11,10 @@ export type OmitByType<T, V> = {
   [K in keyof T as T[K] extends V ? never : K]: T[K];
 };
 
+export type Count = ({ total: number } & Record<string, number>) | undefined;
+
 export type ActionResponse<T = unknown> = {
-  count?: ({ total: number } & Record<string, number>) | undefined;
+  count?: Count;
   message?: string;
 } & ({ success: true; data: T } | { success: false; error?: unknown });
 
@@ -63,6 +65,11 @@ export type TransformKeys<
         }
       : T;
 
+export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
+export type FileWithPreview = z.infer<
+  ReturnType<typeof sharedSchemas.fileWithPreview>
+>;
+
 export type Menu = { group: string; items: MenuItem[] };
 
 export type MenuItem = {
@@ -74,8 +81,3 @@ export type MenuItem = {
   // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
   subItems?: { label: string; href?: Route | string; role?: RouteRole }[];
 };
-
-export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
-export type FileWithPreview = z.infer<
-  ReturnType<typeof sharedSchemas.fileWithPreview>
->;
