@@ -23,17 +23,25 @@ export function TooltipProvider({
 }
 
 export function Tooltip({
+  withProvider = true,
   delay,
   timeout,
   closeDelay,
   children,
   ...props
-}: TooltipPrimitive.Provider.Props & TooltipPrimitive.Root.Props) {
+}: TooltipPrimitive.Provider.Props &
+  TooltipPrimitive.Root.Props & { withProvider?: boolean }) {
+  const element = (
+    <TooltipPrimitive.Root data-slot="tooltip" {...props}>
+      {children}
+    </TooltipPrimitive.Root>
+  );
+
+  if (!withProvider) return element;
+
   return (
     <TooltipProvider delay={delay} timeout={timeout} closeDelay={closeDelay}>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props}>
-        {children}
-      </TooltipPrimitive.Root>
+      {element}{" "}
     </TooltipProvider>
   );
 }

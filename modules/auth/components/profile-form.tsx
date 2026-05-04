@@ -22,12 +22,12 @@ import { useSession } from "../hooks/use-session";
 import { userSchema } from "../schema";
 import { ProfilePicture } from "./profile-picture";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = userSchema.pick({ name: true, email: true });
+
 export function ProfileForm() {
   const { user } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema.pick({ name: true, email: true });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

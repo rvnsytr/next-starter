@@ -160,7 +160,6 @@ export function ActionDeleteUsersDialog({
   onSuccess: () => void;
 }) {
   const [input, setInput] = useState<string>("");
-
   const inputValue = `Hapus ${String(userIds.length)} Pengguna`;
 
   type FormSchema = z.infer<typeof formSchema>;

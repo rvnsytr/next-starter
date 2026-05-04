@@ -22,14 +22,14 @@ import z from "zod";
 import { passwordSchema, userSchema } from "../schema";
 import { ResetPasswordDialog } from "./reset-password";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = userSchema.pick({ email: true }).extend({
+  password: passwordSchema.shape.password,
+  rememberMe: z.boolean(),
+});
+
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema.pick({ email: true }).extend({
-    password: passwordSchema.shape.password,
-    rememberMe: z.boolean(),
-  });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

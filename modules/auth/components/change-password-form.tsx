@@ -17,21 +17,21 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { passwordSchema } from "../schema";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = passwordSchema
+  .pick({
+    currentPassword: true,
+    newPassword: true,
+    confirmPassword: true,
+  })
+  .extend({ revokeOtherSessions: z.boolean() })
+  .refine((sc) => sc.newPassword === sc.confirmPassword, {
+    message: messages.thingNotMatch("Kata sandi"),
+    path: ["confirmPassword"],
+  });
+
 export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = passwordSchema
-    .pick({
-      currentPassword: true,
-      newPassword: true,
-      confirmPassword: true,
-    })
-    .extend({ revokeOtherSessions: z.boolean() })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: messages.thingNotMatch("Kata sandi"),
-      path: ["confirmPassword"],
-    });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

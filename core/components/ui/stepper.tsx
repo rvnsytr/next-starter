@@ -344,10 +344,10 @@ export function StepperIndicator({
           (state === "completed" && indicators.completed) ||
           (state === "active" && indicators.active) ||
           (state === "inactive" && indicators.inactive))
-          ? (isLoading && indicators.loading) ||
-            (state === "completed" && indicators.completed) ||
-            (state === "active" && indicators.active) ||
-            (state === "inactive" && indicators.inactive)
+          ? ((isLoading && indicators.loading) ??
+            (state === "completed" && indicators.completed) ??
+            (state === "active" && indicators.active) ??
+            (state === "inactive" && indicators.inactive))
           : children}
       </div>
     </div>

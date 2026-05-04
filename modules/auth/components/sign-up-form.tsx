@@ -27,24 +27,24 @@ import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { passwordSchema, userSchema } from "../schema";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = userSchema
+  .pick({ name: true, email: true })
+  .extend({
+    newPassword: passwordSchema.shape.newPassword,
+    confirmPassword: passwordSchema.shape.confirmPassword,
+    agreement: z.boolean().refine((v) => v, {
+      error:
+        "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
+    }),
+  })
+  .refine((sc) => sc.newPassword === sc.confirmPassword, {
+    message: messages.thingNotMatch("Kata sandi"),
+    path: ["confirmPassword"],
+  });
+
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema
-    .pick({ name: true, email: true })
-    .extend({
-      newPassword: passwordSchema.shape.newPassword,
-      confirmPassword: passwordSchema.shape.confirmPassword,
-      agreement: z.boolean().refine((v) => v, {
-        error:
-          "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
-      }),
-    })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: messages.thingNotMatch("Kata sandi"),
-      path: ["confirmPassword"],
-    });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

@@ -40,11 +40,11 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { passwordSchema, userSchema } from "../schema";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = userSchema.pick({ email: true });
+
 export function ResetPasswordDialog() {
   const [isLoading, setIsLoading] = useState(false);
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema.pick({ email: true });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

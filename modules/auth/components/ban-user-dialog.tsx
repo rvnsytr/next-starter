@@ -32,6 +32,14 @@ import z from "zod";
 import { banUser } from "../actions";
 import { mutateUserDataTable } from "./user-data-table";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = z.object({
+  banReason: sharedSchemas.string({ label: "Alasan diblokir" }).optional(),
+  banExpiresDate: sharedSchemas
+    .date({ label: "Tanggal blokir berakhir" })
+    .optional(),
+});
+
 export function BanUserDialog({
   data,
   open,
@@ -45,14 +53,6 @@ export function BanUserDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = z.object({
-    banReason: sharedSchemas.string({ label: "Alasan diblokir" }).optional(),
-    banExpiresDate: sharedSchemas
-      .date({ label: "Tanggal blokir berakhir" })
-      .optional(),
-  });
-
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { banReason: "" },

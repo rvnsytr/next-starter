@@ -41,24 +41,24 @@ import { mutateUserDataTable } from "./user-data-table";
 
 const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
 
+type FormSchema = z.infer<typeof formSchema>;
+const formSchema = userSchema
+  .pick({ name: true, email: true, role: true })
+  .extend({
+    newPassword: passwordSchema.shape.newPassword,
+    confirmPassword: passwordSchema.shape.confirmPassword,
+  })
+  .refine((sc) => sc.newPassword === sc.confirmPassword, {
+    message: messages.thingNotMatch("Kata sandi"),
+    path: ["confirmPassword"],
+  });
+
 export function CreateUserDialog() {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useHotkey(CREATE_USER_DIALOG_HOTKEY, () => setIsOpen(true));
-
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = userSchema
-    .pick({ name: true, email: true, role: true })
-    .extend({
-      newPassword: passwordSchema.shape.newPassword,
-      confirmPassword: passwordSchema.shape.confirmPassword,
-    })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: messages.thingNotMatch("Kata sandi"),
-      path: ["confirmPassword"],
-    });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
