@@ -18,5 +18,5 @@ export const passwordSchema = z.object({
 
 export const userSchema = createSelectSchema(user, {
   email: sharedSchemas.email,
-  name: sharedSchemas.string({ label: "Nama", min: 1 }),
+  name: sharedSchemas.string({ label: "Nama", min: 1, withRequired: true }),
 });

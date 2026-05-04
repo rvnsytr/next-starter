@@ -1,35 +1,11 @@
 import { User } from "@/core/auth";
-import { Role } from "@/shared/permission";
 import {
   BanIcon,
   CircleCheckIcon,
   CircleDotIcon,
   CircleXIcon,
   LucideIcon,
-  ShieldUserIcon,
-  UserRoundIcon,
 } from "lucide-react";
-
-export const AUTH_USER_LIST_KEY = "/auth/admin/list-users";
-
-export const roleConfig: Record<
-  Role,
-  { label: string; description: string; icon: LucideIcon; color: string }
-> = {
-  user: {
-    label: "Pengguna",
-    icon: UserRoundIcon,
-    description: "Pengguna standar dengan akses dan izin dasar.",
-    color: "var(--primary)",
-  },
-  admin: {
-    label: "Admin",
-    icon: ShieldUserIcon,
-    description:
-      "Administrator dengan akses penuh dan kontrol pengelolaan sistem.",
-    color: "var(--color-cyan-500)",
-  },
-};
 
 export type UserStatus = (typeof allUserStatus)[number];
 export const allUserStatus = [

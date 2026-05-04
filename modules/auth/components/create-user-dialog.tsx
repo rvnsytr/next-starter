@@ -35,7 +35,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createUser } from "../actions";
-import { roleConfig } from "../config";
+import { roleConfig } from "../config/role";
 import { passwordSchema, userSchema } from "../schema";
 import { mutateUserDataTable } from "./user-data-table";
 

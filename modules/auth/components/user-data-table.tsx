@@ -18,15 +18,14 @@ import { messages } from "@/core/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsers } from "../actions";
-import { AUTH_USER_LIST_KEY } from "../config";
+import { AUTH_KEYS } from "../config/keys";
 import { useSession } from "../hooks/use-session";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
 import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
-export const mutateUserDataTable = () =>
-  mutateControlledData(AUTH_USER_LIST_KEY);
+export const mutateUserDataTable = () => mutateControlledData(AUTH_KEYS.users);
 
 export function UserDataTable() {
   const { user } = useSession();
@@ -50,7 +49,7 @@ export function UserDataTable() {
           const count = result?.data?.count;
           return getUserColumns(setData, { isLoading, count });
         }}
-        query={{ key: AUTH_USER_LIST_KEY, fetcher, immutable: true }}
+        query={{ key: AUTH_KEYS.users, fetcher, immutable: true }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
         placeholder={{ search: "Cari Pengguna..." }}

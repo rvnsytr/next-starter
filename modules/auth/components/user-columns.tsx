@@ -23,12 +23,12 @@ import {
   ShieldUserIcon,
   UserRoundIcon,
 } from "lucide-react";
+import { roleConfig } from "../config/role";
 import {
   allUserStatus,
   getUserStatus,
-  roleConfig,
   userStatusConfig,
-} from "../config";
+} from "../config/user-status";
 import { RoleBadge } from "./role-badge";
 import { UserRoleColumn } from "./user-role-column";
 import { UserStatusBadge } from "./user-status-badge";

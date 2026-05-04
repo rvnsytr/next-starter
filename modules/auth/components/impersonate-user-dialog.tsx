@@ -16,7 +16,7 @@ import { messages } from "@/core/messages";
 import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { impersonateUser } from "../actions";
-import { roleConfig } from "../config";
+import { roleConfig } from "../config/role";
 
 export function ImpersonateUserDialog({
   data,

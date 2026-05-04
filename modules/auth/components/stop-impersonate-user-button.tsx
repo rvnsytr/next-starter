@@ -11,7 +11,7 @@ import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { stopImpersonateUser } from "../actions";
-import { roleConfig } from "../config";
+import { roleConfig } from "../config/role";
 import { useSession } from "../hooks/use-session";
 
 export function StopImpersonateUserMenuItem() {

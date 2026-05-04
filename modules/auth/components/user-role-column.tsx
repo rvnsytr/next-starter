@@ -15,7 +15,7 @@ import { allRoles, defaultRole, Role } from "@/shared/permission";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { updateUserRole } from "../actions";
-import { roleConfig } from "../config";
+import { roleConfig } from "../config/role";
 import { useSession } from "../hooks/use-session";
 import { mutateUserDataTable } from "./user-data-table";
 

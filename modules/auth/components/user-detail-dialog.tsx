@@ -44,7 +44,7 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { getUserStatus } from "../config";
+import { getUserStatus } from "../config/user-status";
 import { useSession } from "../hooks/use-session";
 import { BanUserDialog } from "./ban-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
