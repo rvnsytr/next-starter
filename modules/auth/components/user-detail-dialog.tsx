@@ -30,7 +30,7 @@ import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { messages } from "@/core/messages";
-import { UserActivityTimeline } from "@/modules/activity/components/timeline";
+import { UserActivityTimeline } from "@/modules/activity/components/activity-timeline";
 import {
   BanIcon,
   CookieIcon,

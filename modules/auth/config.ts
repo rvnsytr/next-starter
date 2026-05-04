@@ -10,6 +10,8 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 
+export const AUTH_USER_LIST_KEY = "/auth/admin/list-users";
+
 export const roleConfig: Record<
   Role,
   { label: string; description: string; icon: LucideIcon; color: string }

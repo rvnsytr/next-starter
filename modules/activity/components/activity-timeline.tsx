@@ -30,7 +30,7 @@ import { useSession } from "@/modules/auth/hooks/use-session";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getActivities } from "../actions";
 import { getActivityConfig } from "../config";
-import { getActivityColumns } from "./column";
+import { getActivityColumns } from "./activity-column";
 
 export type ActivityTimelineProps = {
   className?: string;

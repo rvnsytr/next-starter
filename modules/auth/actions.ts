@@ -10,6 +10,7 @@ import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
+import { AUTH_USER_LIST_KEY } from "./config";
 
 export async function updateProfileName(
   userId: string,
@@ -115,7 +116,7 @@ export async function listUsers(role: Role): Promise<ActionResponse<User[]>> {
 
 async function cachedUsers(): Promise<User[]> {
   "use cache";
-  cacheTag("list-users");
+  cacheTag(AUTH_USER_LIST_KEY);
 
   return await db.select().from(user).orderBy(desc(user.createdAt));
 
@@ -182,7 +183,7 @@ export async function createUser(body: {
     return res;
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
 
@@ -206,7 +207,7 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
     return res;
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
 
@@ -235,7 +236,7 @@ export async function banUser(body: {
     return res;
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
 
@@ -259,7 +260,7 @@ export async function unbanUser(body: { userId: string }) {
     return res;
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
 
@@ -308,7 +309,7 @@ export async function deleteUser(body: { userId: string }) {
     return await auth.api.removeUser({ headers, body });
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
 
@@ -344,6 +345,6 @@ export async function deleteUsers(body: { userIds: string[] }) {
     return { userCount, fileCount: fileIds.length };
   });
 
-  updateTag("list-users");
+  updateTag(AUTH_USER_LIST_KEY);
   return res;
 }
