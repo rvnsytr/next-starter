@@ -62,8 +62,14 @@ export function fromCase(str: string) {
     .trim();
 }
 
-export function toCase(str: string, mode: StringCase) {
-  const base = normalizeString(str);
+export function toCase(
+  str: string,
+  mode: StringCase,
+  options?: { normalize?: boolean },
+) {
+  const normalize = options?.normalize ?? true;
+
+  const base = normalize ? normalizeString(str) : str;
 
   switch (mode) {
     case "kebab":
