@@ -114,7 +114,7 @@ const controllerOptions: Omit<
   "query"
 > = {
   mode: "auto",
-  columns: (result) => getActivityColumns(result),
+  columns: getActivityColumns,
   getRowId: (row) => row.id,
   defaultState: { pagination: { pageIndex: 0, pageSize: 5 } },
 };

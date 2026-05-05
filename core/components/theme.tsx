@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export const THEME_TOGGLE_LABEL = "Toggle Theme";
-export const THEME_TOGGLE_HOTKEY: Hotkey = "Alt+T";
+export const THEME_TOGGLE_HOTKEY: Hotkey = "D";
 
 export type Theme = (typeof allThemes)[number];
 export const allThemes = ["light", "system", "dark"] as const;

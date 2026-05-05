@@ -116,26 +116,38 @@ export function SidebarAppContent() {
 
                           <CollapsiblePanel>
                             <SidebarMenuSub>
-                              {subItems.map((itm, idx) => (
-                                <SidebarMenuSubItem key={idx}>
-                                  <SidebarMenuSubButton
-                                    className="flex justify-between"
-                                    render={
-                                      <Link
-                                        href={
-                                          itm.href ??
-                                          `${route}#${toCase(itm.label, "kebab")}`
-                                        }
-                                      >
-                                        <span className="line-clamp-1">
-                                          {itm.label}
-                                        </span>
-                                        <LinkSpinner />
-                                      </Link>
-                                    }
-                                  />
-                                </SidebarMenuSubItem>
-                              ))}
+                              {subItems.map((itm, idx) => {
+                                if (itm.disabled) {
+                                  return (
+                                    <SidebarMenuSubItem key={idx}>
+                                      <SidebarMenuSubButton className="pointer-events-none line-clamp-1 flex justify-between opacity-64">
+                                        {itm.label}
+                                      </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                  );
+                                }
+
+                                return (
+                                  <SidebarMenuSubItem key={idx}>
+                                    <SidebarMenuSubButton
+                                      className="flex justify-between"
+                                      render={
+                                        <Link
+                                          href={
+                                            itm.href ??
+                                            `${route}#${toCase(itm.label, "kebab")}`
+                                          }
+                                        >
+                                          <span className="line-clamp-1">
+                                            {itm.label}
+                                          </span>
+                                          <LinkSpinner />
+                                        </Link>
+                                      }
+                                    />
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
                             </SidebarMenuSub>
                           </CollapsiblePanel>
                         </>

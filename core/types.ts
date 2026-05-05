@@ -81,5 +81,10 @@ export type MenuItem = {
   shortcut?: Hotkey;
 
   // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
-  subItems?: { label: string; href?: Route | string; role?: RouteRole }[];
+  subItems?: {
+    label: string;
+    href?: Route | string;
+    role?: RouteRole;
+    disabled?: boolean;
+  }[];
 };

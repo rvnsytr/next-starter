@@ -44,8 +44,9 @@ export type QuickSearchItemType =
 
 export type QuickSearchItem = QuickSearchItemType & {
   label: string;
-  icon?: React.ReactNode;
   shortcut?: Hotkey;
+  disabled?: boolean;
+  icon?: React.ReactNode;
 };
 
 export type QuickSearchGroup = {
@@ -75,8 +76,9 @@ function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
       type: "nav",
       label: config.title,
       value: item.route,
-      shortcut: item.shortcut,
       icon: item.icon ? <item.icon /> : undefined,
+      disabled: item.disabled,
+      shortcut: item.shortcut,
     };
 
     const subItems: QuickSearchItem[] = (item.subItems ?? []).map((sub) => ({
@@ -84,6 +86,7 @@ function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
       label: `${baseItem.label} / ${sub.label}`,
       value: sub.href ?? `${item.route}#${toCase(sub.label, "kebab")}`,
       icon: <DotIcon className="text-muted-foreground" />,
+      disabled: sub.disabled,
     }));
 
     return [baseItem, ...subItems];
@@ -184,6 +187,7 @@ export function QuickSearch({
         value={item.type !== "action" ? item.value : undefined}
         onClick={() => actionHandler(item)}
         className="flex cursor-pointer items-center gap-x-2 **:[svg]:size-4"
+        disabled={item.disabled}
       >
         {item.icon}
 
