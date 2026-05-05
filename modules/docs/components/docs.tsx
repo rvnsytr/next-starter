@@ -94,7 +94,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/core/components/ui/drawer";
-import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
 import { Field, FieldLabel } from "@/core/components/ui/field";
 import { Fieldset } from "@/core/components/ui/fieldset";
 import { Input } from "@/core/components/ui/input";
@@ -172,6 +171,7 @@ import {
   TimelineTitle,
 } from "@/core/components/ui/timeline";
 import { cn, toCase } from "@/core/utils";
+import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,

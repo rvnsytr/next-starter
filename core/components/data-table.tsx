@@ -2,6 +2,7 @@
 
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
+import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { Hotkey } from "@tanstack/react-hotkeys";
 import { flexRender, Row, Table as TableType } from "@tanstack/react-table";
 import {
@@ -29,7 +30,6 @@ import {
   ResetFilters,
 } from "./filters";
 import { ButtonGroup } from "./ui/button-group";
-import { ErrorFallback, LoadingFallback } from "./ui/fallback";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";

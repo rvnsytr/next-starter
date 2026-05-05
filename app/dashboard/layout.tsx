@@ -4,7 +4,6 @@ import {
   SidebarApp,
   SidebarAppSiteHeader,
 } from "@/core/components/layout/sidebar";
-import { LoadingFallback } from "@/core/components/ui/fallback";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import {
   allLayoutMode,
@@ -12,6 +11,7 @@ import {
 } from "@/core/providers/layout-mode";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
+import { LoadingFallback } from "@/shared/components/fallback";
 import { Metadata } from "next";
 import { cookies, headers as nextHeaders } from "next/headers";
 import { notFound } from "next/navigation";

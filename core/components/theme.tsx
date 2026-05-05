@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingFallback } from "@/shared/components/fallback";
 import { formatForDisplay, Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -8,7 +9,6 @@ import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
 import { useViewTransition } from "../hooks/use-view-transition";
 import { Button, ButtonProps } from "./ui/button";
-import { LoadingFallback } from "./ui/fallback";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
