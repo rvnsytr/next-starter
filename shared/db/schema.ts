@@ -1,4 +1,4 @@
-import { allActivityType } from "@/modules/activity/schema";
+import { allActivityTypes } from "@/modules/activity/schema";
 import {
   bigint,
   boolean,
@@ -123,7 +123,7 @@ export const activity = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    type: text("type", { enum: allActivityType }).notNull(),
+    type: text("type", { enum: allActivityTypes }).notNull(),
     entityId: text("entityId"),
     data: text("data"),
 

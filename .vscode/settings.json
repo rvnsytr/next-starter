@@ -4,7 +4,8 @@
   "files.readonlyInclude": {
     "**/api/auth/**": true,
     "**/core/**": true,
-    "**/modules/auth/**": true
+    "**/modules/auth/**": true,
+    "**/modules/activity/**": true
   },
 
   "js/ts.preferences.autoImportFileExcludePatterns": [

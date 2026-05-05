@@ -1,7 +1,7 @@
 import { LucideIcon, MarsIcon, VenusIcon } from "lucide-react";
 
-export type Gender = (typeof genders)[number];
-export const genders = ["m", "f"] as const;
+export type Gender = (typeof allGenders)[number];
+export const allGenders = ["m", "f"] as const;
 export const genderConfig: Record<
   Gender,
   { displayName: string; icon: LucideIcon; color: string }

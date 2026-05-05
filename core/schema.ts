@@ -1,4 +1,4 @@
-import { genders } from "@/shared/config/gender";
+import { allGenders } from "@/shared/config/gender";
 import { FileType, fileTypeConfig } from "@/shared/file-type";
 import z from "zod";
 import { messages } from "./messages";
@@ -321,7 +321,7 @@ export const sharedSchemas = {
     .regex(/[0-9]/, { error: messages.password.number })
     .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
 
-  gender: z.enum(genders, { error: messages.invalid("Jenis kelamin") }),
+  gender: z.enum(allGenders, { error: messages.invalid("Jenis kelamin") }),
 };
 
 export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(

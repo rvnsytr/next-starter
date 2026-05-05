@@ -1,5 +1,5 @@
-export type ActivityType = (typeof allActivityType)[number];
-export const allActivityType = [
+export type ActivityType = (typeof allActivityTypes)[number];
+export const allActivityTypes = [
   // "user-registered",
   "user-created",
   // "user-imported",

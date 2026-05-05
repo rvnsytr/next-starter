@@ -4,7 +4,7 @@ import { ActivityWithEntity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
 import { getActivityConfig } from "../config";
-import { allActivityType } from "../schema";
+import { allActivityTypes } from "../schema";
 
 const createColumn = createColumnHelper<ActivityWithEntity>();
 export const getActivityColumns = (result?: {
@@ -30,7 +30,7 @@ export const getActivityColumns = (result?: {
       label: "Tipe",
       type: "option",
       icon: RouteIcon,
-      options: allActivityType.map((value) => {
+      options: allActivityTypes.map((value) => {
         const { label, icon } = getActivityConfig(value);
         const count = result?.count?.[value];
         return { value, label, icon, count };
