@@ -3,15 +3,16 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
-import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
+import { LoadingFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/config/app";
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
+import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 import z from "zod";
 import { id } from "zod/locales";
 
@@ -36,14 +37,6 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export const viewport: Viewport = {
-  minimumScale: 1,
-  initialScale: 1,
-  width: "device-width",
-  userScalable: false,
-  viewportFit: "cover",
-};
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -59,18 +52,26 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             disableTransitionOnChange
             enableSystem
           >
-            <DynamicBreadcrumbProvider>
-              <ToastProvider>
-                <AnchoredToastProvider>
-                  <main className="relative isolate flex min-h-svh flex-col">
-                    <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
+            <ToastProvider>
+              <AnchoredToastProvider>
+                <main className="relative isolate flex min-h-svh flex-col">
+                  <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
+                  <Suspense
+                    fallback={
+                      <LoadingFallback
+                        variant="orbit"
+                        className="size-6"
+                        containerClassName="min-h-svh"
+                      />
+                    }
+                  >
                     {children}
-                  </main>
+                  </Suspense>
+                </main>
 
-                  <GlobalShortcuts />
-                </AnchoredToastProvider>
-              </ToastProvider>
-            </DynamicBreadcrumbProvider>
+                <GlobalShortcuts />
+              </AnchoredToastProvider>
+            </ToastProvider>
           </ThemeProvider>
         </NuqsAdapter>
       </body>

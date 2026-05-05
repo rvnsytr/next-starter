@@ -5,17 +5,16 @@ import {
   SidebarAppSiteHeader,
 } from "@/core/components/layout/sidebar";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
+import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import {
   allLayoutMode,
   LayoutModeProvider,
 } from "@/core/providers/layout-mode";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
-import { LoadingFallback } from "@/shared/components/fallback";
 import { Metadata } from "next";
 import { cookies, headers as nextHeaders } from "next/headers";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import z from "zod";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
@@ -24,18 +23,10 @@ export default async function DashboardLayout({
   children,
 }: LayoutProps<"/dashboard">) {
   return (
-    <Suspense
-      fallback={
-        <LoadingFallback
-          variant="orbit"
-          className="size-6"
-          containerClassName="min-h-svh"
-        />
-      }
-    >
-      <DashboardAuthProvider>
-        <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
-          <SidebarProvider className="flex flex-col">
+    <DashboardAuthProvider>
+      <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
+        <SidebarProvider className="flex flex-col">
+          <DynamicBreadcrumbProvider>
             <SidebarAppSiteHeader />
 
             <div className="flex flex-1">
@@ -48,10 +39,10 @@ export default async function DashboardLayout({
                 </footer>
               </SidebarInset>
             </div>
-          </SidebarProvider>
-        </DashboardLayoutMode>
-      </DashboardAuthProvider>
-    </Suspense>
+          </DynamicBreadcrumbProvider>
+        </SidebarProvider>
+      </DashboardLayoutMode>
+    </DashboardAuthProvider>
   );
 }
 
@@ -64,8 +55,8 @@ async function DashboardAuthProvider({
   const session = await auth.api.getSession({ headers });
 
   const pathname = headers.get("x-pathname");
-  if (!session || !authorizedRoute(pathname, session.user.role))
-    return notFound();
+  const isAuthorized = session && authorizedRoute(pathname, session.user.role);
+  if (!isAuthorized) return notFound();
 
   return <AuthProvider session={session}>{children}</AuthProvider>;
 }

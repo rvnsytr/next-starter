@@ -102,7 +102,9 @@ export async function listUserSessions(userId: string) {
   return sessions as Session[];
 }
 
-export async function listUsers(role: Role): Promise<ActionResponse<User[]>> {
+export async function listUsersAction(
+  role: Role,
+): Promise<ActionResponse<User[]>> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await nextHeaders(),
     body: { permissions: { user: ["list"] }, role },
@@ -111,10 +113,10 @@ export async function listUsers(role: Role): Promise<ActionResponse<User[]>> {
   if (!hasPermission.success)
     return { success: false, message: messages.forbidden };
 
-  return { success: true, data: await cachedUsers() };
+  return { success: true, data: await listUsers() };
 }
 
-async function cachedUsers(): Promise<User[]> {
+async function listUsers(): Promise<User[]> {
   "use cache";
   cacheTag(AUTH_KEYS.users);
 

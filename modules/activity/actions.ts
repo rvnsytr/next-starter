@@ -11,13 +11,13 @@ import { cacheTag } from "next/cache";
 import { headers } from "next/headers";
 import { ACTIVITY_KEYS } from "./config/keys";
 
-async function cachedActivities(): Promise<ActivityWithEntity[]> {
+async function listActivities(): Promise<ActivityWithEntity[]> {
   "use cache";
   cacheTag(ACTIVITY_KEYS.list);
   return await db.select().from(activity).orderBy(desc(activity.createdAt));
 }
 
-export async function listActivities(
+export async function listActivitiesAction(
   role: Role,
 ): Promise<ActionResponse<ActivityWithEntity[]>> {
   const hasPermission = await auth.api.userHasPermission({
@@ -28,7 +28,7 @@ export async function listActivities(
   if (!hasPermission.success)
     return { success: false, message: messages.forbidden };
 
-  const data = await cachedActivities();
+  const data = await listActivities();
   return { success: true, data };
 }
 

@@ -17,7 +17,7 @@ import { mutateControlledData } from "@/core/hooks/use-data-controller";
 import { messages } from "@/core/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { listUsers } from "../actions";
+import { listUsersAction } from "../actions";
 import { AUTH_KEYS } from "../config/keys";
 import { useSession } from "../hooks/use-session";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
@@ -38,7 +38,7 @@ export function UserDataTable() {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] =
     useState<boolean>(false);
 
-  const fetcher = async () => await listUsers(user.role);
+  const fetcher = async () => await listUsersAction(user.role);
 
   return (
     <>
