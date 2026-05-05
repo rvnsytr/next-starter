@@ -20,7 +20,7 @@ type ActivityConfigMetadata = {
 
 type ActivityConfigContext = Pick<ActivityWithEntity, "data" | "entity">;
 
-export const activityConfig: Record<
+export const activityTypeConfig: Record<
   ActivityType,
   | ActivityConfigMetadata
   | ((ctx?: ActivityConfigContext) => ActivityConfigMetadata)
@@ -181,10 +181,10 @@ export const activityConfig: Record<
   }),
 };
 
-export function getActivityConfig(
+export function getActivityTypeConfig(
   type: ActivityType,
   ctx?: ActivityConfigContext,
 ) {
-  const config = activityConfig[type];
+  const config = activityTypeConfig[type];
   return typeof config === "function" ? config(ctx) : config;
 }

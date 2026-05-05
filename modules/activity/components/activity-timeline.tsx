@@ -29,7 +29,7 @@ import { useSession } from "@/modules/auth/hooks/use-session";
 import { LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getActivities } from "../actions";
-import { getActivityConfig } from "../config";
+import { getActivityTypeConfig } from "../config";
 import { ACTIVITY_KEYS } from "../config/keys";
 import { getActivityColumns } from "./activity-column";
 
@@ -71,7 +71,7 @@ function BaseActivityTimeline({
               description,
               icon: Icon,
               color,
-            } = getActivityConfig(item.type, item);
+            } = getActivityTypeConfig(item.type, item);
 
             return (
               <TimelineItem

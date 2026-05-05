@@ -4,7 +4,7 @@ import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
-import { getActivityConfig } from "../config";
+import { getActivityTypeConfig } from "../config";
 import { allActivityTypes } from "../schema";
 
 const createColumn = createColumnHelper<ActivityWithEntity>();
@@ -31,7 +31,7 @@ export const getActivityColumns = (
       type: "option",
       icon: RouteIcon,
       options: allActivityTypes.map((value) => {
-        const { label, icon } = getActivityConfig(value);
+        const { label, icon } = getActivityTypeConfig(value);
         const count = result?.data?.success
           ? (result?.data.count?.[value] ?? undefined)
           : undefined;
