@@ -1,4 +1,5 @@
 import { ColumnCellNumber, ColumnHeader } from "@/core/components/ui/column";
+import { DataControllerResult } from "@/core/hooks/use-data-controller";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -7,10 +8,9 @@ import { getActivityConfig } from "../config";
 import { allActivityTypes } from "../schema";
 
 const createColumn = createColumnHelper<ActivityWithEntity>();
-export const getActivityColumns = (result?: {
-  isLoading: boolean;
-  count?: Record<string, number>;
-}) => [
+export const getActivityColumns = (
+  result?: DataControllerResult<ActivityWithEntity>,
+) => [
   createColumn.display({
     id: "no",
     header: "No",
@@ -32,7 +32,9 @@ export const getActivityColumns = (result?: {
       icon: RouteIcon,
       options: allActivityTypes.map((value) => {
         const { label, icon } = getActivityConfig(value);
-        const count = result?.count?.[value];
+        const count = result?.data?.success
+          ? (result?.data.count?.[value] ?? undefined)
+          : undefined;
         return { value, label, icon, count };
       }),
     },

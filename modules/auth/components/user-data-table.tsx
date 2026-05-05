@@ -44,11 +44,7 @@ export function UserDataTable() {
     <>
       <QueryDataTable
         mode="auto"
-        columns={(result) => {
-          const isLoading = result?.isLoading ?? false;
-          const count = result?.data?.count;
-          return getUserColumns(setData, { isLoading, count });
-        }}
+        columns={(result) => getUserColumns(setData, result)}
         query={{ key: AUTH_KEYS.users, fetcher, immutable: true }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}

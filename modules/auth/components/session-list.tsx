@@ -20,7 +20,6 @@ import {
   CollapsibleTrigger,
 } from "@/core/components/ui/collapsible";
 import { DetailList, DetailListData } from "@/core/components/ui/detail-list";
-import { ErrorFallback, LoadingFallback } from "@/core/components/ui/fallback";
 import {
   Item,
   ItemActions,
@@ -34,6 +33,7 @@ import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { cn } from "@/core/utils";
+import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import {
   ChevronsUpDownIcon,
   Gamepad2Icon,

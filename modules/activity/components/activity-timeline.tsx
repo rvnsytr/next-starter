@@ -5,7 +5,6 @@ import {
   FilterSelector,
   ResetFilters,
 } from "@/core/components/filters";
-import { LoadingFallback } from "@/core/components/ui/fallback";
 import { Separator } from "@/core/components/ui/separator";
 import {
   Timeline,
@@ -27,6 +26,7 @@ import { messages } from "@/core/messages";
 import { formatLocalizedDate } from "@/core/utils";
 import { cn } from "@/core/utils/helpers";
 import { useSession } from "@/modules/auth/hooks/use-session";
+import { LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getActivities } from "../actions";
 import { getActivityConfig } from "../config";
@@ -114,11 +114,7 @@ const controllerOptions: Omit<
   "query"
 > = {
   mode: "auto",
-  columns: (ctx) => {
-    const isLoading = ctx?.isLoading ?? false;
-    const count = ctx?.data?.count;
-    return getActivityColumns({ isLoading, count });
-  },
+  columns: (result) => getActivityColumns(result),
   getRowId: (row) => row.id,
   defaultState: { pagination: { pageIndex: 0, pageSize: 5 } },
 };

@@ -11,6 +11,7 @@ import {
   ColumnHeader,
   ColumnHeaderCheckbox,
 } from "@/core/components/ui/column";
+import { DataControllerResult } from "@/core/hooks/use-data-controller";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { allRoles } from "@/shared/permission";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -37,7 +38,7 @@ import { UserVerifiedBadge } from "./user-verified-badge";
 const createColumn = createColumnHelper<User>();
 export const getUserColumns = (
   setData: React.Dispatch<React.SetStateAction<User | null>>,
-  result?: { isLoading: boolean; count?: Record<string, number> },
+  result?: DataControllerResult<User>,
 ) => [
   createColumn.display({
     id: "select",
@@ -108,7 +109,9 @@ export const getUserColumns = (
       icon: CircleDotIcon,
       options: allUserStatus.map((value) => {
         const { label, icon } = userStatusConfig[value];
-        const count = result?.count?.[value];
+        const count = result?.data?.success
+          ? (result?.data.count?.[value] ?? undefined)
+          : undefined;
         return { value, label, icon, count };
       }),
     },
@@ -133,7 +136,9 @@ export const getUserColumns = (
       icon: ShieldUserIcon,
       options: allRoles.map((value) => {
         const { label, icon } = roleConfig[value];
-        const count = result?.count?.[value];
+        const count = result?.data?.success
+          ? (result?.data.count?.[value] ?? undefined)
+          : undefined;
         return { value, label, icon, count };
       }),
     },

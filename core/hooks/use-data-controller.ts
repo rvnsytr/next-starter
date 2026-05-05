@@ -162,7 +162,12 @@ export function useStatelessDataController<TData>({
 
     // * Pagination
     manualPagination: mode === "manual",
-    rowCount: mode === "manual" ? (result.data?.count?.total ?? 0) : undefined,
+    rowCount:
+      mode === "manual"
+        ? result.data?.success
+          ? (result.data.count?.total ?? 0)
+          : 0
+        : undefined,
     onPaginationChange: setPagination,
     getPaginationRowModel:
       mode === "auto" ? getPaginationRowModel() : undefined,
