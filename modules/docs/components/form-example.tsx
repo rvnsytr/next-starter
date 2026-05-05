@@ -59,7 +59,7 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { sharedSchemas } from "@/core/schema";
-import { languageConfig } from "@/shared/config";
+import { languageConfig } from "@/shared/config/language";
 import { fileTypeConfig } from "@/shared/file-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";

@@ -12,7 +12,7 @@ import { getRouteTitle } from "@/core/route";
 import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";

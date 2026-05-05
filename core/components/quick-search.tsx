@@ -1,6 +1,6 @@
 "use client";
 
-import { routesConfig } from "@/shared/route";
+import { routeConfig } from "@/shared/config/route";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,
@@ -69,11 +69,11 @@ export type QuickSearchProps = (
 function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
   return items.flatMap((item) => {
     if ("label" in item) return item;
-    const config = routesConfig[item.route];
+    const config = routeConfig[item.route];
 
     const baseItem: QuickSearchItem = {
       type: "nav",
-      label: config.label,
+      label: config.title,
       value: item.route,
       shortcut: item.shortcut,
       icon: item.icon ? <item.icon /> : undefined,

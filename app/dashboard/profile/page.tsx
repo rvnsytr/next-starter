@@ -9,7 +9,7 @@ import {
 import { getRouteTitle } from "@/core/route";
 import { ProfileBadges } from "@/modules/auth/components/profile-badges";
 import { ProfileForm } from "@/modules/auth/components/profile-form";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import { UserRoundIcon } from "lucide-react";
 import { Metadata } from "next";
 

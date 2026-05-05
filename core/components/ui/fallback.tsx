@@ -1,5 +1,5 @@
 import { cn } from "@/core/utils";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import { TriangleAlertIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Spinner, SpinnerProps } from "./spinner";

@@ -1,4 +1,4 @@
-import { Gender, genderConfig } from "@/shared/config";
+import { Gender, genderConfig } from "@/shared/config/gender";
 import { CustomColorBadge } from "./custom-color-badge";
 
 export function GenderBadge({ value }: { value: Gender }) {

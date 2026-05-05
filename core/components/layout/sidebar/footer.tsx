@@ -11,8 +11,8 @@ import {
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
+import { routeConfig } from "@/shared/config/route";
 import { menuConfig } from "@/shared/menu";
-import { routesConfig } from "@/shared/route";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import Link from "next/link";
 
@@ -23,21 +23,21 @@ export function SidebarAppFooter() {
         {menuConfig["dashboard-footer"].map(
           ({ route, icon: Icon, disabled, shortcut }) => {
             const iconElement = Icon && <Icon />;
-            const { label } = routesConfig[route];
+            const { title } = routeConfig[route];
 
             return (
               <SidebarMenuItem key={route}>
                 {disabled ? (
                   <SidebarMenuButton size="sm" disabled>
-                    {iconElement} {label}
+                    {iconElement} {title}
                   </SidebarMenuButton>
                 ) : (
                   <SidebarMenuButton
                     size="sm"
-                    tooltip={label}
+                    tooltip={title}
                     render={
                       <Link href={route}>
-                        <LinkSpinner icon={{ base: iconElement }} /> {label}
+                        <LinkSpinner icon={{ base: iconElement }} /> {title}
                         {shortcut && (
                           <Kbd className="ml-auto hidden lg:inline-flex">
                             {formatForDisplay(shortcut)}

@@ -18,7 +18,7 @@ import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   FrameIcon,

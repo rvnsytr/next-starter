@@ -6,7 +6,7 @@ import {
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";

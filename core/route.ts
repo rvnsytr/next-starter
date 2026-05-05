@@ -1,6 +1,6 @@
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
+import { routeConfig } from "@/shared/config/route";
 import { Role } from "@/shared/permission";
-import { routesConfig } from "@/shared/route";
 import { Route } from "next";
 import { Menu } from "./types";
 
@@ -8,7 +8,7 @@ export type RouteRole = "all" | Role[];
 
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
-  const meta = routesConfig[route];
+  const meta = routeConfig[route];
   if (!meta) return false;
   if (!meta.role) return true;
   return meta.role && (meta.role === "all" || meta.role.includes(role));
@@ -24,7 +24,7 @@ export function setRouteTitle(title: string) {
 }
 
 export function getRouteTitle(route: Route) {
-  return setRouteTitle(routesConfig[route].label);
+  return setRouteTitle(routeConfig[route].title);
 }
 
 export function getRouteHierarchy(path: string): Route[] {
@@ -33,7 +33,7 @@ export function getRouteHierarchy(path: string): Route[] {
 }
 
 export function getActiveRoute(menu: Menu[], pathname: string) {
-  const allRoutes = Object.keys(routesConfig) as Route[];
+  const allRoutes = Object.keys(routeConfig) as Route[];
   const allMenuRoutes = menu.flatMap((m) => m.items.map((c) => c.route));
 
   const parts = pathname.split("/").filter(Boolean);
@@ -59,7 +59,7 @@ export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {
   const filteredMenu = menu.map(({ group, items }) => {
     const filteredItems = items
       .filter(({ route }) => {
-        const meta = routesConfig[route];
+        const meta = routeConfig[route];
         if (!("role" in meta)) return true;
         return checkRole(meta.role);
       })

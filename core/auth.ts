@@ -1,4 +1,4 @@
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
 import { file } from "@/shared/db/schema";
 import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";

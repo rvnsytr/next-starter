@@ -1,4 +1,5 @@
-import { appConfig, Language, languageConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config/app";
+import { Language, languageConfig } from "@/shared/config/language";
 import z from "zod";
 import {
   ActionResponse,
