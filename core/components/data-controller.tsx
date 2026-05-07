@@ -1,6 +1,6 @@
 "use client";
 
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import { Table } from "@tanstack/react-table";
 import {
   ArrowDownIcon,
@@ -42,14 +42,17 @@ export function DataControllerVisibility<TData>({
   align?: React.ComponentProps<typeof MenuPopup>["align"];
   shortcut?: Hotkey;
 }) {
-  const [isOpen, setisOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  useHotkey(shortcut ?? "V", () => setisOpen((v) => !v), {
-    enabled: !!shortcut,
-  });
+  useHotkeys(
+    shortcut
+      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
+      : [],
+    { enabled: !!shortcut },
+  );
 
   return (
-    <Menu open={isOpen} onOpenChange={setisOpen}>
+    <Menu open={isOpen} onOpenChange={setIsOpen}>
       <MenuTrigger
         render={
           <Button size={size} variant={variant} {...props}>
@@ -108,9 +111,12 @@ export function DataControllerSorting<TData>({
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  useHotkey(shortcut ?? "S", () => setIsOpen((v) => !v), {
-    enabled: !!shortcut,
-  });
+  useHotkeys(
+    shortcut
+      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
+      : [],
+    { enabled: !!shortcut },
+  );
 
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
@@ -170,9 +176,13 @@ export function DataControllerSearch<TData>({
   "ref" | "value" | "onChange"
 > & { table: Table<TData>; shortcut?: Hotkey }) {
   const searchRef = useRef<HTMLInputElement>(null);
-  useHotkey(shortcut ?? "/", () => searchRef.current?.focus(), {
-    enabled: !!shortcut,
-  });
+
+  useHotkeys(
+    shortcut
+      ? [{ hotkey: shortcut, callback: () => searchRef.current?.focus() }]
+      : [],
+    { enabled: !!shortcut },
+  );
 
   return (
     <InputGroup className={cn(className)}>

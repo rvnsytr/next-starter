@@ -24,7 +24,7 @@ import {
 } from "@/core/utils";
 import { formatNumber } from "@/core/utils/formaters";
 import { cn } from "@/core/utils/helpers";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
 import {
@@ -184,7 +184,9 @@ export function ResetFilters<TData>({
     table.resetHeaderSizeInfo();
   };
 
-  useHotkey(shortcut ?? "R", () => clear(), { enabled: !!shortcut });
+  useHotkeys(shortcut ? [{ hotkey: shortcut, callback: clear }] : [], {
+    enabled: !!shortcut,
+  });
 
   return (
     <Button size={size} variant={variant} onClick={() => clear()} {...props}>
@@ -214,11 +216,16 @@ export function FilterSelector<TData>({
   const anchor = useRef<HTMLButtonElement>(null);
   const [property, setProperty] = useState<string | undefined>(undefined);
 
-  const [isOpen, setOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-  useHotkey(shortcut ?? "F", () => setOpen((v) => !v), { enabled: !!shortcut });
+  useHotkeys(
+    shortcut
+      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
+      : [],
+    { enabled: !!shortcut },
+  );
 
   const properties = useMemo(
     () => table.getAllColumns().filter(isFilterableColumn),
@@ -242,7 +249,7 @@ export function FilterSelector<TData>({
 
   return (
     <>
-      <Menu open={isOpen} onOpenChange={setOpen}>
+      <Menu open={isOpen} onOpenChange={setIsOpen}>
         <MenuTrigger
           render={
             <Button ref={anchor} size={size} variant={variant} {...props}>
