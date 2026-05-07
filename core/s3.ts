@@ -1,5 +1,3 @@
-"use server";
-
 import { file } from "@/shared/db/schema";
 import {
   DeleteObjectsCommand,
@@ -16,20 +14,14 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Override } from "./types";
 
-const endpoint = {
-  private: process.env.S3_ENDPOINT!,
-  public: process.env.S3_PUBLIC_ENDPOINT!,
-};
-
-const bucket = {
-  private: process.env.S3_BUCKET!,
-  public: process.env.S3_PUBLIC_BUCKET!,
-};
+const S3_PUBLIC_ENDPOINT = process.env.S3_PUBLIC_ENDPOINT!;
+const S3_BUCKET = process.env.S3_BUCKET!;
+const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET!;
 
 const defaultDir = "global";
 
 const s3 = new S3Client({
-  endpoint: endpoint.private,
+  endpoint: process.env.S3_ENDPOINT!,
   region: process.env.S3_REGION!,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY!,
@@ -59,10 +51,14 @@ export type UploadFilesResponse = {
   output: PutObjectCommandOutput;
 };
 
+const getBucket = (v: FileVisibility = "private") =>
+  v === "public" ? S3_PUBLIC_BUCKET : S3_BUCKET;
+
 export async function uploadFiles(
   payload: UploadFilesPayload[],
   options?: UploadFilesOptions,
 ): Promise<UploadFilesResponse[]> {
+  "use server";
   const visibility = options?.visibility ?? "private";
 
   return await Promise.all(
@@ -73,7 +69,7 @@ export async function uploadFiles(
         Key,
         Body: Buffer.from(await file.arrayBuffer()),
         ContentType: file.type,
-        Bucket: bucket[visibility],
+        Bucket: getBucket(visibility),
         ...options,
       });
 
@@ -94,7 +90,8 @@ export async function uploadFiles(
 export async function listFiles(
   options?: ControlledS3Options<ListObjectsV2CommandInput>,
 ) {
-  const Bucket = bucket[options?.visibility ?? "private"];
+  "use server";
+  const Bucket = getBucket(options?.visibility);
   const command = new ListObjectsV2Command({ Bucket, ...options });
   return await s3.send(command);
 }
@@ -103,7 +100,8 @@ export async function createSignedUrls(
   filePaths: string[],
   options?: ControlledS3Options<GetObjectCommandInput>,
 ) {
-  const Bucket = bucket[options?.visibility ?? "private"];
+  "use server";
+  const Bucket = getBucket(options?.visibility);
   return await Promise.all(
     filePaths.map(async (filePath) => {
       const command = new GetObjectCommand({
@@ -117,9 +115,9 @@ export async function createSignedUrls(
   );
 }
 
-export async function createPublicUrls(filePaths: string[]) {
+export function createPublicUrls(filePaths: string[]) {
   return filePaths.map((filePath) => {
-    return `${endpoint.public}/${bucket.public}/${encodeURIComponent(filePath)}`;
+    return `${S3_PUBLIC_ENDPOINT}/${S3_PUBLIC_BUCKET}/${encodeURIComponent(filePath)}`;
   });
 }
 
@@ -127,9 +125,10 @@ export async function deleteFiles(
   filePaths: string[],
   options?: ControlledS3Options<Omit<DeleteObjectsCommandInput, "Delete">>,
 ) {
+  "use server";
   if (!filePaths.length) return [];
 
-  const Bucket = bucket[options?.visibility ?? "private"];
+  const Bucket = getBucket(options?.visibility);
   const command = new DeleteObjectsCommand({
     Bucket,
     Delete: { Objects: filePaths.map((Key) => ({ Key })), Quiet: false },

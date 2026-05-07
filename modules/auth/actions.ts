@@ -48,12 +48,17 @@ export async function updateProfilePicture(file: File) {
       { visibility: "public" },
     );
 
-    const [publicUrl] = await createPublicUrls([uploadRes.file.filePath]);
+    const [insertRes] = await tx
+      .insert(fileTable)
+      .values(uploadRes.file)
+      .returning();
 
-    await tx.insert(fileTable).values(uploadRes.file).returning();
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
 
-    return await auth.api.updateUser({ headers, body: { image: publicUrl } });
+    return await auth.api.updateUser({
+      headers,
+      body: { image: insertRes.id },
+    });
   });
 
   revalidatePath("/dashboard/profile");
@@ -105,7 +110,25 @@ async function listUsers(): Promise<User[]> {
   "use cache";
   cacheTag(AUTH_KEYS.users);
 
-  return await db.select().from(user).orderBy(desc(user.createdAt));
+  const userData = await db.select().from(user).orderBy(desc(user.createdAt));
+
+  const userImageIds = userData.map((v) => v.image).filter((v) => v !== null);
+  const fileData = await db
+    .select()
+    .from(fileTable)
+    .where(inArray(fileTable.id, userImageIds));
+
+  const fileMap = new Map(fileData.map((f) => [f.id, f]));
+
+  return userData.map((u) => {
+    if (!u.image) return u;
+
+    const imageFile = fileMap.get(u.image);
+    if (!imageFile) return u;
+
+    const [image] = createPublicUrls([imageFile.filePath]);
+    return { ...u, image };
+  });
 
   // const countQb = db
   //   .select({

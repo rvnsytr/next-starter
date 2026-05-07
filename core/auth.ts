@@ -1,10 +1,15 @@
 import { appConfig } from "@/shared/config/app";
+import { file } from "@/shared/db/schema";
 import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, openAPI } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
+import z from "zod";
 import { db } from "./db";
+import { createPublicUrls } from "./s3";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -79,5 +84,30 @@ export const auth = betterAuth({
         defaultValue: defaultRole,
       },
     },
+  },
+
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      const { session } = ctx.context;
+
+      if (ctx.path === "/get-session") {
+        if (!session) return ctx.json(null);
+
+        const { session: sessionData, user: userData } = session;
+        if (!userData.image) return ctx.json(session);
+
+        if (z.url().safeParse(userData.image).success) return ctx.json(session);
+
+        const data = await db
+          .select({ filePath: file.filePath })
+          .from(file)
+          .where(eq(file.id, userData.image));
+
+        if (!data.length) return ctx.json(session);
+
+        const [image] = createPublicUrls([data[0].filePath]);
+        return ctx.json({ session: sessionData, user: { ...userData, image } });
+      }
+    }),
   },
 });
