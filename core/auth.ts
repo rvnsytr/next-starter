@@ -9,7 +9,7 @@ import { admin as adminPlugin, openAPI } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "./db";
-import { createSignedUrl } from "./s3";
+import { createSignedUrls } from "./s3";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -105,7 +105,7 @@ export const auth = betterAuth({
 
         if (!data.length) return ctx.json(session);
 
-        const image = await createSignedUrl(data[0].filePath);
+        const [image] = await createSignedUrls([data[0].filePath]);
         return ctx.json({ session: sessionData, user: { ...userData, image } });
       }
     }),

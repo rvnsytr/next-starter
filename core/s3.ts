@@ -82,13 +82,17 @@ export async function listFiles(
   return await s3.send(command);
 }
 
-export async function createSignedUrl(
-  filePath: string,
+export async function createSignedUrls(
+  filePaths: string[],
   options?: ControlledS3Options<GetObjectCommandInput>,
 ) {
   const { Bucket = defaultBucket, ...rest } = options ?? {};
-  const command = new GetObjectCommand({ Key: filePath, Bucket, ...rest });
-  return await getSignedUrl(s3, command);
+  return await Promise.all(
+    filePaths.map(async (filePath) => {
+      const command = new GetObjectCommand({ Key: filePath, Bucket, ...rest });
+      return await getSignedUrl(s3, command);
+    }),
+  );
 }
 
 // export async function getFilePublicUrl(key: string) {
