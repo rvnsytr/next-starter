@@ -8,6 +8,10 @@
     "**/modules/activity/**": true
   },
 
+  "files.readonlyExclude": {
+    "**/modules/activity/schema.ts": true
+  },
+
   "js/ts.preferences.autoImportFileExcludePatterns": [
     "next/router",
     "@base-ui/react"
