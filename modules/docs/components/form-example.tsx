@@ -143,7 +143,6 @@ export function FormExample() {
       switch: false,
 
       password: "Example#123",
-      // make dummy data
       files: [],
     },
   });
@@ -151,7 +150,6 @@ export function FormExample() {
   const formHandler = (formData: FormSchema) => {
     console.log(formData);
 
-    // const res = await uploadFiles({ files: formData.file });
     toast.add({
       type: "success",
       title: messages.success,

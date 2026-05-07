@@ -104,13 +104,20 @@ export const file = pgTable(
     mimeType: text("mime_type").notNull(),
     fileSize: bigint("file_size", { mode: "number" }).notNull(),
 
+    visibility: text("visibility", { enum: ["private", "public"] })
+      .default("private")
+      .notNull(),
+
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [index("file_file_path_idx").on(table.filePath)],
+  (table) => [
+    index("file_file_path_idx").on(table.filePath),
+    index("file_visibility_idx").on(table.visibility),
+  ],
 );
 
 export type Activity = typeof activity.$inferSelect;

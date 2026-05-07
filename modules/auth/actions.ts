@@ -3,7 +3,7 @@
 import { auth, Session, User } from "@/core/auth";
 import { db } from "@/core/db";
 import { messages } from "@/core/messages";
-import { deleteFiles, uploadFiles } from "@/core/s3";
+import { createPublicUrls, deleteFiles, uploadFiles } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
 import { activity, file as fileTable, user } from "@/shared/db/schema";
 import { Role } from "@/shared/permission";
@@ -40,21 +40,20 @@ export async function updateProfilePicture(file: File) {
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
         .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath]);
+      if (filePath) await deleteFiles([filePath], { visibility: "public" });
     }
 
-    const [uploadRes] = await uploadFiles([{ file, path: `avatar/${userId}` }]);
-    const [insertRes] = await tx
-      .insert(fileTable)
-      .values(uploadRes.file)
-      .returning();
+    const [uploadRes] = await uploadFiles(
+      [{ file, path: `avatar/${file.name}` }],
+      { visibility: "public" },
+    );
 
+    const [publicUrl] = await createPublicUrls([uploadRes.file.filePath]);
+
+    await tx.insert(fileTable).values(uploadRes.file).returning();
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
 
-    return await auth.api.updateUser({
-      headers,
-      body: { image: insertRes.id },
-    });
+    return await auth.api.updateUser({ headers, body: { image: publicUrl } });
   });
 
   revalidatePath("/dashboard/profile");
@@ -79,7 +78,7 @@ export async function deleteProfilePicture() {
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
         .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath]);
+      if (filePath) await deleteFiles([filePath], { visibility: "public" });
     }
 
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
@@ -100,20 +99,6 @@ export async function listUserSessions(userId: string) {
     body: { userId },
   });
   return sessions as Session[];
-}
-
-export async function listUsersAction(
-  role: Role,
-): Promise<ActionResponse<User[]>> {
-  const hasPermission = await auth.api.userHasPermission({
-    headers: await nextHeaders(),
-    body: { permissions: { user: ["list"] }, role },
-  });
-
-  if (!hasPermission.success)
-    return { success: false, message: messages.forbidden };
-
-  return { success: true, data: await listUsers() };
 }
 
 async function listUsers(): Promise<User[]> {
@@ -160,6 +145,20 @@ async function listUsers(): Promise<User[]> {
   // return { success: true, count, data: data as User[] };
 }
 
+export async function listUsersAction(
+  role: Role,
+): Promise<ActionResponse<User[]>> {
+  const hasPermission = await auth.api.userHasPermission({
+    headers: await nextHeaders(),
+    body: { permissions: { user: ["list"] }, role },
+  });
+
+  if (!hasPermission.success)
+    return { success: false, message: messages.forbidden };
+
+  return { success: true, data: await listUsers() };
+}
+
 export async function createUser(body: {
   email: string;
   password: string;
@@ -171,18 +170,18 @@ export async function createUser(body: {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.createUser({ headers, body });
+    const createRes = await auth.api.createUser({ headers, body });
 
     await tx.insert(activity).values([
-      { userId: res.user.id, type: "user-created" },
+      { userId: createRes.user.id, type: "user-created" },
       {
         userId: session.user.id,
         type: "admin-user-create",
-        entityId: res.user.id,
+        entityId: createRes.user.id,
       },
     ]);
 
-    return res;
+    return createRes;
   });
 
   updateTag(AUTH_KEYS.users);
@@ -299,7 +298,7 @@ export async function deleteUser(body: { userId: string }) {
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
         .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath]);
+      if (filePath) await deleteFiles([filePath], { visibility: "public" });
     }
 
     await tx.insert(activity).values({
@@ -334,7 +333,10 @@ export async function deleteUsers(body: { userIds: string[] }) {
         .returning({ filePath: fileTable.filePath });
 
       if (filePaths.length > 0)
-        await deleteFiles(filePaths.map((v) => v.filePath));
+        await deleteFiles(
+          filePaths.map((v) => v.filePath),
+          { visibility: "public" },
+        );
     }
 
     const userCount = body.userIds.length;
