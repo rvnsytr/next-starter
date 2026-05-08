@@ -30,7 +30,7 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           <ImpersonateUserBadge />
-          <LayoutModeToggle />
+          <LayoutModeToggle withTooltip />
           <ThemeToggle align="end" />
 
           <Separator orientation="vertical" className="mr-2 h-4" />

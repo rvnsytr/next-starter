@@ -10,6 +10,7 @@ import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
+import z from "zod";
 import { AUTH_KEYS } from "./config/keys";
 
 export async function updateProfileName(
@@ -78,7 +79,7 @@ export async function deleteProfilePicture() {
       .from(user)
       .where(eq(user.id, userId));
 
-    if (fileId) {
+    if (fileId && !z.url().safeParse(fileId).success) {
       const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
@@ -316,7 +317,7 @@ export async function deleteUser(body: { userId: string }) {
       .from(user)
       .where(eq(user.id, body.userId));
 
-    if (fileId) {
+    if (fileId && !z.url().safeParse(fileId).success) {
       const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
@@ -347,7 +348,11 @@ export async function deleteUsers(body: { userIds: string[] }) {
       .delete(user)
       .where(inArray(user.id, body.userIds))
       .returning({ fileId: user.image })
-      .then((res) => res.map((v) => v.fileId).filter((id) => !!id) as string[]);
+      .then((res) =>
+        res
+          .map((v) => v.fileId)
+          .filter((id): id is string => !!id && !z.url().safeParse(id).success),
+      );
 
     if (fileIds.length > 0) {
       const filePaths = await tx

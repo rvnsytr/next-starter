@@ -19,7 +19,6 @@ import { ChangePasswordForm } from "@/modules/auth/components/change-password-fo
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
 import { appConfig } from "@/shared/config/app";
-import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   FrameIcon,
   LockKeyholeIcon,
@@ -50,7 +49,8 @@ export default function Page() {
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {formatForDisplay(THEME_TOGGLE_HOTKEY)}
+              {/* {formatForDisplay(THEME_TOGGLE_HOTKEY)} */}
+              {THEME_TOGGLE_HOTKEY}
             </Kbd>
           </CardAction>
         </CardHeader>
@@ -76,7 +76,8 @@ export default function Page() {
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)}
+              {/* {formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)} */}
+              {LAYOUT_MODE_TOGGLE_HOTKEY}
             </Kbd>
           </CardAction>
         </CardHeader>

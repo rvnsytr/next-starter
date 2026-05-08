@@ -17,7 +17,7 @@ export const LAYOUT_MODE_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 
 export function LayoutModeToggle({
   align,
-  withTooltip,
+  withTooltip = false,
   size = "icon-sm",
   variant = "ghost",
   onClick,
