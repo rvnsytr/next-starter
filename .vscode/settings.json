@@ -9,7 +9,7 @@
   },
 
   "files.readonlyExclude": {
-    "**/modules/activity/schema.ts": true
+    "**/modules/activity/**": true
   },
 
   "js/ts.preferences.autoImportFileExcludePatterns": [
