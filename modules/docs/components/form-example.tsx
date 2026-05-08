@@ -192,8 +192,8 @@ export function FormExample() {
             <Field name={field.name} invalid={fieldState.invalid}>
               <NumberField
                 defaultValue={0}
-                locale={languageConfig.id.locale}
                 onValueChange={onChange}
+                locale={languageConfig.id.locale}
                 required
                 {...field}
               >
@@ -345,7 +345,7 @@ export function FormExample() {
 
                         <ComboboxChipsInput
                           placeholder={
-                            items.length > 0 ? undefined : "Select fruits..."
+                            items.length <= 0 ? "Select fruits..." : undefined
                           }
                         />
                       </>

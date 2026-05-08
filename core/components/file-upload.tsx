@@ -293,7 +293,7 @@ export function FileUpload({
                   className={cn(
                     "absolute bottom-0 z-10",
                     "grid gap-y-1 p-3 break-all",
-                    "*:line-clamp-1 *:w-fit *:cursor-text",
+                    "*:line-clamp-1 *:w-fit",
                   )}
                 >
                   <p className="text-sm font-medium">{file.file.name}</p>

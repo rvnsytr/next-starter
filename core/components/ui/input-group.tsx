@@ -109,7 +109,7 @@ export function InputGroupText({
   return (
     <span
       className={cn(
-        "text-muted-foreground line-clamp-1 flex items-center gap-2 leading-none whitespace-nowrap **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
+        "text-muted-foreground flex items-center gap-2 leading-none whitespace-nowrap **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
