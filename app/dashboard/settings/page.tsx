@@ -37,7 +37,7 @@ export default function Page() {
     <PageContainer className="items-center px-0 lg:px-4">
       <Card id="tema" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
-          <CardTitle className="flex items-center gap-x-2">
+          <CardTitle>
             <SunMoonIcon /> Tema
           </CardTitle>
           <CardDescription>
@@ -48,8 +48,10 @@ export default function Page() {
             sesuai preferensi Anda.
           </CardDescription>
 
-          <CardAction className="hidden lg:inline-flex">
-            <Kbd>{formatForDisplay(THEME_TOGGLE_HOTKEY)}</Kbd>
+          <CardAction>
+            <Kbd className="hidden lg:inline-flex">
+              {formatForDisplay(THEME_TOGGLE_HOTKEY)}
+            </Kbd>
           </CardAction>
         </CardHeader>
 
@@ -60,7 +62,7 @@ export default function Page() {
 
       <Card id="layout" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
-          <CardTitle className="flex items-center gap-x-2">
+          <CardTitle>
             <FrameIcon /> Layout
           </CardTitle>
           <CardDescription>
@@ -72,8 +74,10 @@ export default function Page() {
             lebar lebih dari <code>1024px</code>.
           </CardDescription>
 
-          <CardAction className="hidden lg:inline-flex">
-            <Kbd>{formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)}</Kbd>
+          <CardAction>
+            <Kbd className="hidden lg:inline-flex">
+              {formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)}
+            </Kbd>
           </CardAction>
         </CardHeader>
 
@@ -84,7 +88,7 @@ export default function Page() {
 
       <Card id="sesi-aktif" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
-          <CardTitle className="flex items-center gap-x-2">
+          <CardTitle>
             <ShieldIcon /> Sesi Aktif
           </CardTitle>
           <CardDescription>
@@ -103,7 +107,7 @@ export default function Page() {
 
       <Card id="ubah-kata-sandi" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
-          <CardTitle className="flex items-center gap-x-2">
+          <CardTitle>
             <LockKeyholeIcon /> Ubah Kata Sandi
           </CardTitle>
           <CardDescription>
