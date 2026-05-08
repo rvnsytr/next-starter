@@ -36,11 +36,11 @@ export async function updateProfilePicture(file: File) {
       .where(eq(user.id, userId));
 
     if (fileId) {
-      const [{ filePath }] = await tx
+      const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
-        .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath], { visibility: "public" });
+        .returning({ path: fileTable.path });
+      if (path) await deleteFiles([path], { visibility: "public" });
     }
 
     const [uploadRes] = await uploadFiles(
@@ -79,11 +79,11 @@ export async function deleteProfilePicture() {
       .where(eq(user.id, userId));
 
     if (fileId) {
-      const [{ filePath }] = await tx
+      const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
-        .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath], { visibility: "public" });
+        .returning({ path: fileTable.path });
+      if (path) await deleteFiles([path], { visibility: "public" });
     }
 
     await tx.insert(activity).values({ userId, type: "profile-image-updated" });
@@ -126,7 +126,7 @@ async function listUsers(): Promise<User[]> {
     const imageFile = fileMap.get(u.image);
     if (!imageFile) return u;
 
-    const [image] = createPublicUrls([imageFile.filePath]);
+    const [image] = createPublicUrls([imageFile.path]);
     return { ...u, image };
   });
 
@@ -317,11 +317,11 @@ export async function deleteUser(body: { userId: string }) {
       .where(eq(user.id, body.userId));
 
     if (fileId) {
-      const [{ filePath }] = await tx
+      const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
-        .returning({ filePath: fileTable.filePath });
-      if (filePath) await deleteFiles([filePath], { visibility: "public" });
+        .returning({ path: fileTable.path });
+      if (path) await deleteFiles([path], { visibility: "public" });
     }
 
     await tx.insert(activity).values({
@@ -353,11 +353,11 @@ export async function deleteUsers(body: { userIds: string[] }) {
       const filePaths = await tx
         .delete(fileTable)
         .where(inArray(fileTable.id, fileIds))
-        .returning({ filePath: fileTable.filePath });
+        .returning({ path: fileTable.path });
 
       if (filePaths.length > 0)
         await deleteFiles(
-          filePaths.map((v) => v.filePath),
+          filePaths.map((v) => v.path),
           { visibility: "public" },
         );
     }

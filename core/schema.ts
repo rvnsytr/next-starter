@@ -1,5 +1,7 @@
 import { allGenders } from "@/shared/config/gender";
+import { file } from "@/shared/db/schema";
 import { FileType, fileTypeConfig } from "@/shared/file-type";
+import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
 import { messages } from "./messages";
 
@@ -138,13 +140,9 @@ export const sharedSchemas = {
     return schema;
   },
 
-  fileMetadata: z.object({
-    id: z.string(),
-    name: z.string(),
-    type: z.string(),
-    size: z.number(),
-    url: z.string(),
-  }),
+  fileMetadata: createSelectSchema(file)
+    .pick({ id: true, path: true, name: true, type: true, size: true })
+    .extend({ url: z.string().optional() }),
 
   fileWithPreview(type: FileType, options?: FileSchemaOptions) {
     const fileSchema = this.file(type, options);

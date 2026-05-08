@@ -99,13 +99,13 @@ export const auth = betterAuth({
         if (z.url().safeParse(userData.image).success) return ctx.json(session);
 
         const data = await db
-          .select({ filePath: file.filePath })
+          .select({ path: file.path })
           .from(file)
           .where(eq(file.id, userData.image));
 
         if (!data.length) return ctx.json(session);
 
-        const [image] = createPublicUrls([data[0].filePath]);
+        const [image] = createPublicUrls([data[0].path]);
         return ctx.json({ session: sessionData, user: { ...userData, image } });
       }
     }),

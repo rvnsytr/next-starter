@@ -99,10 +99,10 @@ export const file = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    filePath: text("file_path").notNull(),
-    fileName: text("file_name").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: bigint("file_size", { mode: "number" }).notNull(),
+    path: text("path").notNull(),
+    name: text("name").notNull(),
+    type: text("type").notNull(),
+    size: bigint("size", { mode: "number" }).notNull(),
 
     visibility: text("visibility", { enum: ["private", "public"] })
       .default("private")
@@ -115,7 +115,7 @@ export const file = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
-    index("file_file_path_idx").on(table.filePath),
+    index("file_file_path_idx").on(table.path),
     index("file_visibility_idx").on(table.visibility),
   ],
 );

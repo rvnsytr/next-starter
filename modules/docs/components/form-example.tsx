@@ -150,6 +150,11 @@ export function FormExample() {
   const formHandler = (formData: FormSchema) => {
     console.log(formData);
 
+    // in server action
+    // const preparedFiles = prepareFiles(formData.files);
+    // const uploadRes = await uploadFiles(preparedFiles.upload);
+    // const insertRes = await db.insert(file).values(preparedFiles.upload);
+
     toast.add({
       type: "success",
       title: messages.success,

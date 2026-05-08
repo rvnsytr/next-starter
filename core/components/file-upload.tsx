@@ -217,7 +217,7 @@ export function FileUpload({
                 tabIndex={0}
                 data-slot="file"
                 className={cn(
-                  "group/file relative aspect-3/4 overflow-hidden rounded-xl border",
+                  "group/file relative aspect-square overflow-hidden rounded-xl border",
                   "focus-visible:border-ring focus-visible:ring-ring/50 outline-0 focus-visible:ring-[3px]",
 
                   isImage ? "bg-black text-white" : "bg-card text-foreground",

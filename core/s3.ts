@@ -1,4 +1,4 @@
-import { file } from "@/shared/db/schema";
+import { file as fileTable } from "@/shared/db/schema";
 import {
   DeleteObjectsCommand,
   DeleteObjectsCommandInput,
@@ -12,7 +12,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Override } from "./types";
+import { FileWithPreview, Override } from "./types";
 
 const S3_PUBLIC_ENDPOINT = process.env.S3_PUBLIC_ENDPOINT!;
 const S3_BUCKET = process.env.S3_BUCKET!;
@@ -45,8 +45,8 @@ export type UploadFilesOptions = ControlledS3Options<
 
 export type UploadFilesResponse = {
   file: Pick<
-    typeof file.$inferSelect,
-    "filePath" | "fileName" | "mimeType" | "fileSize" | "visibility"
+    typeof fileTable.$inferSelect,
+    "path" | "name" | "type" | "size" | "visibility"
   >;
   output: PutObjectCommandOutput;
 };
@@ -75,10 +75,10 @@ export async function uploadFiles(
 
       return {
         file: {
-          filePath: Key,
-          fileName: file.name,
-          mimeType: file.type,
-          fileSize: file.size,
+          path: Key,
+          name: file.name,
+          type: file.type,
+          size: file.size,
           visibility,
         },
         output: await s3.send(command),
@@ -119,6 +119,38 @@ export function createPublicUrls(filePaths: string[]) {
   return filePaths.map((filePath) => {
     return `${S3_PUBLIC_ENDPOINT}/${S3_PUBLIC_BUCKET}/${encodeURIComponent(filePath)}`;
   });
+}
+
+export function prepareFiles(
+  files: FileWithPreview[],
+  options?: {
+    setPath?: (file: FileWithPreview, index: number) => string;
+  },
+): {
+  upload: UploadFilesPayload[];
+  db: (typeof fileTable.$inferInsert)[];
+} {
+  const upload: UploadFilesPayload[] = [];
+  const db: (typeof fileTable.$inferInsert)[] = [];
+
+  files.forEach((item, index) => {
+    if (item.file instanceof File) {
+      const path = options?.setPath
+        ? options.setPath(item, index)
+        : `${defaultDir}/${item.file.name}`;
+
+      upload.push({ file: item.file, path });
+
+      db.push({
+        path,
+        name: item.file.name,
+        type: item.file.type,
+        size: item.file.size,
+      });
+    } else db.push(item.file);
+  });
+
+  return { upload, db };
 }
 
 export async function deleteFiles(

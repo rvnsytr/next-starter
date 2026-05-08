@@ -70,6 +70,13 @@ export const messages = {
       `${capitalize(field, "first")} tidak boleh lebih dari ${max}.`,
   },
 
+  array: {
+    tooSmall: (field: string, min: number) =>
+      `${capitalize(field, "first")} harus terdiri dari minimal ${min} item.`,
+    tooLarge: (field: string, max: number) =>
+      `${capitalize(field, "first")} tidak boleh melebihi ${max} item.`,
+  },
+
   date: {
     tooEarly: (field: string, min: Date) =>
       `${capitalize(field, "first")} tidak boleh lebih awal dari ${formatLocalizedDate(min, "PPP")}.`,
