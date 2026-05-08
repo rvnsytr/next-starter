@@ -81,8 +81,8 @@ function BaseDataTable<TData>({
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
   const isMobile = useIsMobile();
-  const isMounted = useIsMounted();
 
+  const isMounted = useIsMounted();
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
   if (result.error) return <ErrorFallback error={result.error} />;
@@ -206,7 +206,7 @@ function BaseDataTable<TData>({
                 </TableRow>
               ),
             )
-          ) : table.getRowModel().rows?.length ? (
+          ) : table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -294,7 +294,7 @@ function BaseDataTable<TData>({
           data-slot="pagination-nav"
           table={table}
           size="icon"
-          className="order-3 shrink-0 lg:order-5"
+          className="order-3 lg:order-5"
           disabled={result.isLoading}
         />
       </div>

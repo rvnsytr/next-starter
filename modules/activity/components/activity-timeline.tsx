@@ -1,10 +1,15 @@
 import {
+  DataControllerPageSize,
+  DataControllerPaginationNav,
+} from "@/core/components/data-controller";
+import {
   ActiveFilters,
   ActiveFiltersContainer,
   ClearFilters,
   FilterSelector,
   ResetFilters,
 } from "@/core/components/filters";
+import { Label } from "@/core/components/ui/label";
 import { Separator } from "@/core/components/ui/separator";
 import {
   Timeline,
@@ -23,10 +28,10 @@ import {
 } from "@/core/hooks/use-data-controller";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { messages } from "@/core/messages";
-import { formatLocalizedDate } from "@/core/utils";
+import { formatLocalizedDate, formatNumber } from "@/core/utils";
 import { cn } from "@/core/utils/helpers";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { LoadingFallback } from "@/shared/components/fallback";
+import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getActivities } from "../actions";
 import { getActivityTypeConfig } from "../config";
@@ -46,6 +51,10 @@ function BaseActivityTimeline({
   const isMounted = useIsMounted();
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
+  if (result.error) return <ErrorFallback error={result.error} />;
+  if (!result.isLoading && !result.data?.success)
+    return <ErrorFallback error={result.data?.message} />;
+
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
       <div className="flex gap-x-2">
@@ -63,15 +72,15 @@ function BaseActivityTimeline({
 
       {result.isLoading ? (
         <LoadingFallback />
-      ) : result.data?.success && result.data.data.length ? (
+      ) : table.getRowModel().rows.length ? (
         <Timeline orientation="vertical" className="px-2">
-          {result.data.data.map((item, index) => {
+          {table.getRowModel().rows.map((row, index) => {
             const {
               label,
               description,
               icon: Icon,
               color,
-            } = getActivityTypeConfig(item.type, item);
+            } = getActivityTypeConfig(row.original.type, row.original);
 
             return (
               <TimelineItem
@@ -88,7 +97,7 @@ function BaseActivityTimeline({
                   </TimelineIndicator>
 
                   <TimelineDate>
-                    {formatLocalizedDate(item.createdAt, "PPPp")}
+                    {formatLocalizedDate(row.original.createdAt, "PPPp")}
                   </TimelineDate>
 
                   <TimelineTitle className="text-(--timeline-color)">
@@ -105,6 +114,35 @@ function BaseActivityTimeline({
           <small>{messages.empty}</small>
         </div>
       )}
+
+      <div className="flex items-center justify-between gap-4">
+        <div data-slot="pagination" className="flex items-center gap-x-2">
+          <Label className="hidden shrink-0 lg:inline-flex">Per halaman</Label>
+          <DataControllerPageSize
+            table={table}
+            size="sm"
+            disabled={result.isLoading}
+          />
+        </div>
+
+        <small data-slot="page-info" className="shrink-0 tabular-nums">
+          Halaman{" "}
+          {result.isLoading
+            ? "?"
+            : formatNumber(table.getState().pagination.pageIndex + 1)}{" "}
+          dari{" "}
+          {result.isLoading
+            ? "?"
+            : formatNumber(table.getPageCount() > 0 ? table.getPageCount() : 1)}
+        </small>
+
+        <DataControllerPaginationNav
+          data-slot="pagination-nav"
+          table={table}
+          size="icon-sm"
+          disabled={result.isLoading}
+        />
+      </div>
     </div>
   );
 }

@@ -129,10 +129,10 @@ export const activityTypeConfig: Record<
   //   color: "var(--color-info)",
   // }),
   "admin-user-update-role": (c) => ({
-    label: "Admin Mengubah Peran",
+    label: "Admin Mengubah Role",
     description: (
       <span>
-        Admin mengubah peran akun <b>{c?.entity}</b>.
+        Admin mengubah role akun <b>{c?.entity}</b>.
       </span>
     ),
     icon: UserRoundCogIcon,
