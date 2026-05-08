@@ -38,10 +38,11 @@ export function ErrorFallback({
     <Alert variant="destructive" className={className}>
       <TriangleAlertIcon />
       <AlertTitle>
-        {`${appConfig.name} / `}
+        {appConfig.name}
+        {/* {`${appConfig.name} / `}
         <code className="bg-destructive/10 text-xs tabular-nums">
           {error?.code ?? 500}
-        </code>
+        </code> */}
       </AlertTitle>
 
       {!hideDesc && (

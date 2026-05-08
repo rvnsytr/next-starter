@@ -18,11 +18,11 @@ export const user = pgTable(
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").notNull().default(false),
     image: text("image"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+      .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
     role: text("role", { enum: allRoles }).notNull().default("user"),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
@@ -40,10 +40,10 @@ export const session = pgTable(
     id: text("id").primaryKey(),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+      .notNull()
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     userId: text("user_id")
@@ -70,10 +70,10 @@ export const account = pgTable(
     refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
     scope: text("scope"),
     password: text("password"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+      .notNull()
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
   (table) => [index("account_user_id_idx").on(table.userId)],
 );
@@ -85,11 +85,11 @@ export const verification = pgTable(
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+      .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
@@ -109,10 +109,10 @@ export const file = pgTable(
       .notNull(),
 
     updatedAt: timestamp("updated_at")
+      .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
     index("file_file_path_idx").on(table.filePath),
@@ -134,7 +134,7 @@ export const activity = pgTable(
     entityId: text("entityId"),
     data: text("data"),
 
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("activity_type_idx").on(table.type)],
 );
