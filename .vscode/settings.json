@@ -9,7 +9,8 @@
   },
 
   "files.readonlyExclude": {
-    "**/modules/activity/**": true
+    "**/modules/activity/config/index.tsx": true,
+    "**/modules/activity/schema.ts": true
   },
 
   "js/ts.preferences.autoImportFileExcludePatterns": [
