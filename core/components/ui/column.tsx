@@ -32,6 +32,8 @@ export function ColumnHeader<TData, TValue>({
   const sort = column.getIsSorted();
   const SortIcon = sort ? SORT_ICONS[sort] : ArrowUpDownIcon;
 
+  const Icon = column.columnDef.meta?.icon;
+
   return (
     <div
       className={cn(
@@ -39,6 +41,8 @@ export function ColumnHeader<TData, TValue>({
         className,
       )}
     >
+      {Icon && <Icon className="size-4" />}
+
       {children}
 
       <div className="flex gap-x-px">
@@ -137,13 +141,15 @@ export function ColumnCellCheckbox<TData, TValue>({
   Omit<React.ComponentProps<typeof Checkbox>, "checked" | "onCheckedChange">) {
   if (!row.getCanSelect()) return;
   return (
-    <Checkbox
-      aria-label="Select row"
-      checked={row.getIsSelected()}
-      onCheckedChange={(value) => row.toggleSelected(!!value)}
-      className={cn("mx-auto", className)}
-      {...props}
-    />
+    <div data-no-row-click>
+      <Checkbox
+        aria-label="Select row"
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        className={cn("mx-auto", className)}
+        {...props}
+      />
+    </div>
   );
 }
 

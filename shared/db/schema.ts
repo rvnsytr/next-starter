@@ -131,7 +131,7 @@ export const activity = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
 
     type: text("type", { enum: allActivityTypes }).notNull(),
-    entityId: text("entityId"),
+    entityId: text("entity_id"),
     data: text("data"),
 
     createdAt: timestamp("created_at").notNull().defaultNow(),
