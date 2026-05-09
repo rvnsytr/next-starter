@@ -8,10 +8,12 @@ import { ComponentProps } from "react";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
 import { useViewTransition } from "../hooks/use-view-transition";
-import { Button, ButtonProps } from "./ui/button";
+import { cn } from "../utils";
+import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export const THEME_TOGGLE_LABEL = "Toggle Theme";
@@ -33,11 +35,12 @@ export function nextTheme(currentTheme?: string) {
 }
 
 export function ThemeToggle({
-  align,
   withTooltip = true,
+  align,
   size = "icon",
   variant = "ghost",
   onClick,
+  className,
   disabled = false,
   ...props
 }: Omit<ButtonProps, "children"> &
@@ -52,14 +55,8 @@ export function ThemeToggle({
   const currentTheme = (theme ?? "system") as Theme;
   const { icon: Icon } = themeConfig[currentTheme];
 
-  if (!isMounted) {
-    const { icon: DefaultIcon } = themeConfig.system;
-    return (
-      <Button size={size} variant={variant} disabled>
-        <DefaultIcon />
-      </Button>
-    );
-  }
+  if (!isMounted)
+    return <Skeleton className={cn(buttonVariants({ size }), className)} />;
 
   const element = (
     <Button
@@ -69,6 +66,7 @@ export function ThemeToggle({
         onClick?.(e);
         startTransition(() => setTheme(nextTheme));
       }}
+      className={className}
       disabled={disabled || isTransitioning}
       {...props}
     >

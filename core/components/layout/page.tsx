@@ -3,14 +3,17 @@
 import { cn } from "@/core/utils";
 
 export function PageContainer({
+  withContainer = true,
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { withContainer?: boolean }) {
   return (
     <div
       data-slot="page-container"
       className={cn(
-        "relative z-10 flex flex-1 flex-col gap-4 p-4 md:group-data-[layout-mode=centered]/layout-mode:container",
+        "relative z-10 flex flex-1 flex-col gap-4 py-4",
+        withContainer && "px-4",
+        "lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4",
         className,
       )}
       {...props}

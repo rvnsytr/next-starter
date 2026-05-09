@@ -96,10 +96,10 @@ export function useIsDesktop() {
   return useMediaQuery("md");
 }
 
-export function useIsMobile() {
-  return useMediaQuery("max-md");
-}
-
 export function useIsTablet() {
   return useMediaQuery("md:max-lg");
+}
+
+export function useIsMobile() {
+  return useMediaQuery("max-md");
 }

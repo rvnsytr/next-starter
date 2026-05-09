@@ -16,7 +16,7 @@ import { useIsMounted } from "../hooks/use-is-mounted";
 import { messages } from "../messages";
 import { Menu, MenuItem } from "../types";
 import { cn, toCase } from "../utils";
-import { Button, ButtonProps } from "./ui/button";
+import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import {
   Command,
   CommandCollection,
@@ -35,6 +35,7 @@ import {
   CommandShortcut,
 } from "./ui/command";
 import { Kbd, KbdGroup } from "./ui/kbd";
+import { Skeleton } from "./ui/skeleton";
 import { LoadingSpinner } from "./ui/spinner";
 import { toast } from "./ui/toast";
 
@@ -163,22 +164,7 @@ export function QuickSearch({
   );
 
   if (!isMounted)
-    return (
-      <Button
-        size={size}
-        variant="outline"
-        className={cn(
-          className,
-          "text-muted-foreground hidden justify-start md:inline-flex",
-        )}
-        disabled
-      >
-        <SearchIcon /> {placeholder}
-        {shortcuts.length > 0 && (
-          <Kbd className="ml-auto">{formatForDisplay(shortcuts[0])}</Kbd>
-        )}
-      </Button>
-    );
+    return <Skeleton className={cn(buttonVariants({ size }), className)} />;
 
   const Item = ({ item }: { item: QuickSearchItem }) => {
     const splitedLabel = item.label.split("/");

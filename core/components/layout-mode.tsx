@@ -1,35 +1,35 @@
 "use client";
 
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { useIsMobile } from "@/core/hooks/use-media-query";
+import { useMediaQuery } from "@/core/hooks/use-media-query";
 import { layoutModeConfig, useLayoutMode } from "@/core/providers/layout-mode";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { FrameIcon } from "lucide-react";
-import { Button, ButtonProps } from "./ui/button";
+import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export const LAYOUT_MODE_TOGGLE_LABEL = "Toggle Layout";
 export const LAYOUT_MODE_TOGGLE_HOTKEY: Hotkey = "Alt+L";
 
 export function LayoutModeToggle({
-  align,
   withTooltip = false,
-  size = "icon-sm",
+  align,
+  size = "icon",
   variant = "ghost",
   onClick,
-  disabled = false,
   className,
+  disabled = false,
   ...props
 }: Omit<ButtonProps, "children"> &
   Pick<React.ComponentProps<typeof TooltipPopup>, "align"> & {
     withTooltip?: boolean;
   }) {
   const isMounted = useIsMounted();
-  const isMobile = useIsMobile();
+  const isLargeScreen = useMediaQuery("3xl");
   const { layout, setLayout } = useLayoutMode();
 
   const { icon: Icon } = layoutModeConfig[layout];
@@ -39,18 +39,9 @@ export function LayoutModeToggle({
 
   useHotkey(LAYOUT_MODE_TOGGLE_HOTKEY, toggleLayout);
 
-  if (!isMounted) {
-    return (
-      <Button
-        size={size}
-        variant={variant}
-        className={cn("hidden 2xl:inline-flex", className)}
-        disabled
-      >
-        <FrameIcon />
-      </Button>
-    );
-  }
+  if (!isLargeScreen) return null;
+  if (!isMounted)
+    return <Skeleton className={cn(buttonVariants({ size }), className)} />;
 
   const element = (
     <Button
@@ -60,7 +51,7 @@ export function LayoutModeToggle({
         onClick?.(e);
         toggleLayout();
       }}
-      className={cn("hidden 2xl:inline-flex", className)}
+      className={className}
       disabled={disabled}
       {...props}
     >
@@ -69,7 +60,7 @@ export function LayoutModeToggle({
     </Button>
   );
 
-  if (isMobile || !withTooltip) return element;
+  if (!withTooltip) return element;
 
   return (
     <Tooltip>
