@@ -65,6 +65,7 @@ export type DataTableProps<TData> = {
     search?: Hotkey;
   };
 
+  onRowClick?: (row: Row<TData>) => void;
   renderRowSelectionButton?: (props: {
     rows: Row<TData>[];
     table: TableType<TData>;
@@ -77,6 +78,7 @@ function BaseDataTable<TData>({
   className,
   classNames,
   shortcuts,
+  onRowClick,
   renderRowSelectionButton,
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
@@ -211,6 +213,13 @@ function BaseDataTable<TData>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className={cn(!!onRowClick && "z-0 cursor-pointer select-none")}
+                onClick={(e) => {
+                  if (!onRowClick) return;
+                  const target = e.target as HTMLElement;
+                  if (target.closest("[data-no-row-click]")) return;
+                  onRowClick(row);
+                }}
               >
                 {row.getVisibleCells().map(({ id, column, getContext }) => {
                   const columnPinned = column.getIsPinned();
@@ -308,6 +317,7 @@ export function DataTable<TData>({
   className,
   classNames,
   shortcuts,
+  onRowClick,
   renderRowSelectionButton,
   ...options
 }: DataTableProps<TData> & DataControllerOptions<TData>) {
@@ -319,6 +329,7 @@ export function DataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
+      onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
     />
@@ -331,6 +342,7 @@ export function QueryDataTable<TData>({
   className,
   classNames,
   shortcuts,
+  onRowClick,
   renderRowSelectionButton,
   ...options
 }: DataTableProps<TData> & QueryDataControllerOptions<TData>) {
@@ -342,6 +354,7 @@ export function QueryDataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
+      onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
     />

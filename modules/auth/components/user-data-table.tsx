@@ -44,7 +44,7 @@ export function UserDataTable() {
     <>
       <QueryDataTable
         mode="auto"
-        columns={(result) => getUserColumns(setData, result)}
+        columns={getUserColumns}
         query={{ key: AUTH_KEYS.users, fetcher, immutable: true }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
@@ -56,6 +56,7 @@ export function UserDataTable() {
           reset: "R",
           search: "/",
         }}
+        onRowClick={(row) => setData(row.original)}
         renderRowSelectionButton={({ table, rows }) => {
           const data = rows.map((row) => row.original);
           return (

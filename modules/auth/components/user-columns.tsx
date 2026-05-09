@@ -4,7 +4,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/core/components/ui/avatar";
-import { Button } from "@/core/components/ui/button";
 import {
   ColumnCellCheckbox,
   ColumnCellNumber,
@@ -16,7 +15,6 @@ import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { allRoles } from "@/shared/permission";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
-  ArrowUpRightIcon,
   CalendarCheck2Icon,
   CalendarSyncIcon,
   CircleDotIcon,
@@ -36,10 +34,7 @@ import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
 const createColumn = createColumnHelper<User>();
-export const getUserColumns = (
-  setData: React.Dispatch<React.SetStateAction<User | null>>,
-  result?: DataControllerResult<User>,
-) => [
+export const getUserColumns = (result?: DataControllerResult<User>) => [
   createColumn.display({
     id: "select",
     header: (c) => <ColumnHeaderCheckbox table={c.table} />,
@@ -61,18 +56,12 @@ export const getUserColumns = (
       </ColumnHeader>
     ),
     cell: (c) => (
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <Avatar radius="md">
           <AvatarImage src={c.row.original.image ?? undefined} />
           <AvatarFallback>{c.getValue().slice(0, 2)}</AvatarFallback>
         </Avatar>
-        <Button
-          size="sm"
-          variant="link"
-          onClick={() => setData(c.row.original)}
-        >
-          {c.getValue()} <ArrowUpRightIcon />
-        </Button>
+        <p>{c.getValue()}</p>
       </div>
     ),
     filterFn: filterFn("text"),
