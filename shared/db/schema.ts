@@ -22,7 +22,7 @@ export const user = pgTable(
     updatedAt: timestamp("updated_at")
       .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date()),
+      .$onUpdate(() => new Date()),
     role: text("role", { enum: allRoles }).notNull().default("user"),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
@@ -43,7 +43,7 @@ export const session = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
-      .$onUpdate(() => /* @__PURE__ */ new Date()),
+      .$onUpdate(() => new Date()),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     userId: text("user_id")
@@ -73,7 +73,7 @@ export const account = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
-      .$onUpdate(() => /* @__PURE__ */ new Date()),
+      .$onUpdate(() => new Date()),
   },
   (table) => [index("account_user_id_idx").on(table.userId)],
 );
@@ -89,7 +89,7 @@ export const verification = pgTable(
     updatedAt: timestamp("updated_at")
       .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date()),
+      .$onUpdate(() => new Date()),
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
@@ -111,7 +111,7 @@ export const file = pgTable(
     updatedAt: timestamp("updated_at")
       .notNull()
       .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date()),
+      .$onUpdate(() => new Date()),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [

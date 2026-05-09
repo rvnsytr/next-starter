@@ -116,7 +116,7 @@ export function BanUserDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle className="text-destructive">
+          <DialogTitle className="text-destructive-foreground">
             <TriangleAlertIcon /> Blokir akun atas nama {data.name}
           </DialogTitle>
           <DialogDescription>

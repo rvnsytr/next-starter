@@ -89,7 +89,7 @@ export function DeleteUserDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle className="text-destructive">
+          <DialogTitle className="text-destructive-foreground">
             <TriangleAlertIcon /> Hapus akun atas nama {data.name}
           </DialogTitle>
           <DialogDescription>
@@ -206,7 +206,7 @@ export function ActionDeleteUsersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle className="text-destructive flex items-center gap-x-2">
+          <DialogTitle className="text-destructive-foreground flex items-center gap-x-2">
             <TriangleAlertIcon /> Hapus {userIds.length} Akun
           </DialogTitle>
           <DialogDescription>

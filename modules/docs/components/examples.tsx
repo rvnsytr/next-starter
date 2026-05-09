@@ -78,7 +78,7 @@ export function UseFileUploadExample() {
       ))}
 
       {errors.map((error, index) => (
-        <div key={index} className="text-destructive">
+        <div key={index} className="text-destructive-foreground">
           {error}
         </div>
       ))}
