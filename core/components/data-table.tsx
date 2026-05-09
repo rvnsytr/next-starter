@@ -213,7 +213,10 @@ function BaseDataTable<TData>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={cn(!!onRowClick && "z-0 cursor-pointer select-none")}
+                className={cn(
+                  "group/row",
+                  !!onRowClick && "z-0 cursor-pointer select-none",
+                )}
                 onClick={(e) => {
                   if (!onRowClick) return;
                   const target = e.target as HTMLElement;

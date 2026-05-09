@@ -57,7 +57,10 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
     ),
     cell: (c) => (
       <div className="flex items-center gap-2">
-        <Avatar radius="md">
+        <Avatar
+          radius="md"
+          className="overflow-hidden *:transition-transform *:group-hover/row:scale-105"
+        >
           <AvatarImage src={c.row.original.image ?? undefined} />
           <AvatarFallback>{c.getValue().slice(0, 2)}</AvatarFallback>
         </Avatar>
