@@ -13,6 +13,82 @@ import { headers as nextHeaders } from "next/headers";
 import z from "zod";
 import { AUTH_KEYS } from "./config/keys";
 
+async function listUsers(): Promise<User[]> {
+  "use cache";
+  cacheTag(AUTH_KEYS.users);
+
+  const userData = await db.select().from(user).orderBy(desc(user.createdAt));
+
+  const userImageIds = userData.map((v) => v.image).filter((v) => v !== null);
+  const fileData = await db
+    .select()
+    .from(fileTable)
+    .where(inArray(fileTable.id, userImageIds));
+
+  const fileMap = new Map(fileData.map((f) => [f.id, f]));
+
+  return userData.map((u) => {
+    if (!u.image) return u;
+
+    const imageFile = fileMap.get(u.image);
+    if (!imageFile) return u;
+
+    const [image] = createPublicUrls([imageFile.path]);
+    return { ...u, image };
+  });
+
+  // const countQb = db
+  //   .select({
+  //     total: db.$count(user),
+  //     user: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'user')`,
+  //     admin: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'admin')`,
+  //     banned: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = true)`,
+  //     active: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = false)`,
+  //   })
+  //   .from(user).$dynamic();
+
+  // const dataQb = db.select().from(user).$dynamic();
+
+  // const config = defineWDTConfig({
+  //   columns: {
+  //     name: { column: userTable.name, type: "string" },
+  //     email: { column: userTable.email, type: "string" },
+  //     status: {
+  //       column: userTable.banned,
+  //       type: "boolean",
+  //       parser: (v) => typeof v === "string" && v === "banned",
+  //     },
+  //     role: { column: userTable.role, type: "string" },
+  //     updatedAt: { column: userTable.updatedAt, type: "date" },
+  //     createdAt: { column: userTable.createdAt, type: "date" },
+  //   },
+  //   defaultOrderBy: { id: "createdAt", desc: true },
+  // });
+
+  // const [count] = await withDataTable(countQb, state, {
+  //   ...config,
+  //   disabled: ["sorting", "pagination"],
+  // }).execute();
+
+  // const data = await withDataTable(dataQb, state, config).execute();
+
+  // return { success: true, count, data: data as User[] };
+}
+
+export async function listUsersAction(
+  role: Role,
+): Promise<ActionResponse<User[]>> {
+  const hasPermission = await auth.api.userHasPermission({
+    headers: await nextHeaders(),
+    body: { permissions: { user: ["list"] }, role },
+  });
+
+  if (!hasPermission.success)
+    return { success: false, message: messages.forbidden };
+
+  return { success: true, data: await listUsers() };
+}
+
 export async function updateProfileName(
   userId: string,
   body: { name: string },
@@ -114,82 +190,6 @@ export async function listUserSessions(userId: string) {
   return sessions as Session[];
 }
 
-async function listUsers(): Promise<User[]> {
-  "use cache";
-  cacheTag(AUTH_KEYS.users);
-
-  const userData = await db.select().from(user).orderBy(desc(user.createdAt));
-
-  const userImageIds = userData.map((v) => v.image).filter((v) => v !== null);
-  const fileData = await db
-    .select()
-    .from(fileTable)
-    .where(inArray(fileTable.id, userImageIds));
-
-  const fileMap = new Map(fileData.map((f) => [f.id, f]));
-
-  return userData.map((u) => {
-    if (!u.image) return u;
-
-    const imageFile = fileMap.get(u.image);
-    if (!imageFile) return u;
-
-    const [image] = createPublicUrls([imageFile.path]);
-    return { ...u, image };
-  });
-
-  // const countQb = db
-  //   .select({
-  //     total: db.$count(user),
-  //     user: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'user')`,
-  //     admin: sql<number>`COUNT(*) FILTER (WHERE ${user.role} = 'admin')`,
-  //     banned: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = true)`,
-  //     active: sql<number>`COUNT(*) FILTER (WHERE ${user.banned} = false)`,
-  //   })
-  //   .from(user).$dynamic();
-
-  // const dataQb = db.select().from(user).$dynamic();
-
-  // const config = defineWDTConfig({
-  //   columns: {
-  //     name: { column: userTable.name, type: "string" },
-  //     email: { column: userTable.email, type: "string" },
-  //     status: {
-  //       column: userTable.banned,
-  //       type: "boolean",
-  //       parser: (v) => typeof v === "string" && v === "banned",
-  //     },
-  //     role: { column: userTable.role, type: "string" },
-  //     updatedAt: { column: userTable.updatedAt, type: "date" },
-  //     createdAt: { column: userTable.createdAt, type: "date" },
-  //   },
-  //   defaultOrderBy: { id: "createdAt", desc: true },
-  // });
-
-  // const [count] = await withDataTable(countQb, state, {
-  //   ...config,
-  //   disabled: ["sorting", "pagination"],
-  // }).execute();
-
-  // const data = await withDataTable(dataQb, state, config).execute();
-
-  // return { success: true, count, data: data as User[] };
-}
-
-export async function listUsersAction(
-  role: Role,
-): Promise<ActionResponse<User[]>> {
-  const hasPermission = await auth.api.userHasPermission({
-    headers: await nextHeaders(),
-    body: { permissions: { user: ["list"] }, role },
-  });
-
-  if (!hasPermission.success)
-    return { success: false, message: messages.forbidden };
-
-  return { success: true, data: await listUsers() };
-}
-
 export async function createUser(body: {
   email: string;
   password: string;
@@ -216,6 +216,7 @@ export async function createUser(body: {
   });
 
   updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -240,6 +241,7 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
   });
 
   updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -257,18 +259,14 @@ export async function banUser(body: {
 
     await tx.insert(activity).values([
       { userId: res.user.id, type: "user-banned" },
-      {
-        userId: session.user.id,
-        type: "admin-user-ban",
-        entityId: res.user.id,
-        data: body.banReason,
-      },
+      { userId: session.user.id, type: "admin-user-ban", data: res.user.name },
     ]);
 
     return res;
   });
 
   updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -285,7 +283,7 @@ export async function unbanUser(body: { userId: string }) {
       {
         userId: session.user.id,
         type: "admin-user-unban",
-        entityId: res.user.id,
+        data: res.user.name,
       },
     ]);
 
@@ -293,6 +291,7 @@ export async function unbanUser(body: { userId: string }) {
   });
 
   updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -301,7 +300,9 @@ export async function impersonateUser(userId: string) {
     headers: await nextHeaders(),
     body: { userId },
   });
+
   revalidatePath("/dashboard");
+
   return res;
 }
 
@@ -309,39 +310,9 @@ export async function stopImpersonateUser() {
   const res = await auth.api.stopImpersonating({
     headers: await nextHeaders(),
   });
-  revalidatePath("/dashboard");
-  return res;
-}
 
-export async function deleteUser(body: { userId: string }) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
+  revalidatePath("/dashboard/users");
 
-  const res = await db.transaction(async (tx) => {
-    const [{ name, fileId }] = await tx
-      .select({ name: user.name, fileId: user.image })
-      .from(user)
-      .where(eq(user.id, body.userId));
-
-    if (fileId && !z.url().safeParse(fileId).success) {
-      const [{ path }] = await tx
-        .delete(fileTable)
-        .where(eq(fileTable.id, fileId))
-        .returning({ path: fileTable.path });
-      if (path) await deleteFiles([path], { visibility: "public" });
-    }
-
-    await tx.insert(activity).values({
-      userId: session.user.id,
-      type: "admin-user-delete",
-      data: name,
-    });
-
-    return await auth.api.removeUser({ headers, body });
-  });
-
-  updateTag(AUTH_KEYS.users);
   return res;
 }
 
@@ -351,15 +322,14 @@ export async function deleteUsers(body: { userIds: string[] }) {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = await db.transaction(async (tx) => {
-    const fileIds = await tx
+    const deleted = await tx
       .delete(user)
       .where(inArray(user.id, body.userIds))
-      .returning({ fileId: user.image })
-      .then((res) =>
-        res
-          .map((v) => v.fileId)
-          .filter((id): id is string => !!id && !z.url().safeParse(id).success),
-      );
+      .returning({ name: user.name, fileId: user.image });
+
+    const fileIds = deleted
+      .map((v) => v.fileId)
+      .filter((id) => !!id && !z.url().safeParse(id).success) as string[];
 
     if (fileIds.length > 0) {
       const filePaths = await tx
@@ -374,16 +344,18 @@ export async function deleteUsers(body: { userIds: string[] }) {
         );
     }
 
-    const userCount = body.userIds.length;
+    console.log(deleted[0].name);
+
     await tx.insert(activity).values({
       userId: session.user.id,
-      type: "admin-users-delete",
-      data: userCount.toString(),
+      type: deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
+      data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
     });
 
-    return { userCount, fileCount: fileIds.length };
+    return deleted;
   });
 
   updateTag(AUTH_KEYS.users);
+
   return res;
 }

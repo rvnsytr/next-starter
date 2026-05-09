@@ -142,8 +142,7 @@ export const activityTypeConfig: Record<
     label: "Admin Memblokir Akun",
     description: (
       <span>
-        Admin memblokir akun atas nama <b>{c?.entity}</b> dengan alasan{" "}
-        <b>{c?.data}</b>.
+        Admin memblokir akun atas nama <b>{c?.data}</b>.
       </span>
     ),
     icon: UserRoundXIcon,
@@ -153,7 +152,7 @@ export const activityTypeConfig: Record<
     label: "Admin Membuka Blokir Akun",
     description: (
       <span>
-        Admin membuka blokir akun atas nama <b>{c?.entity}</b>.
+        Admin membuka blokir akun atas nama <b>{c?.data}</b>.
       </span>
     ),
     icon: UserRoundCheckIcon,
@@ -163,7 +162,7 @@ export const activityTypeConfig: Record<
     label: "Admin Menghapus Akun",
     description: (
       <span>
-        Admin menghapus akun atas nama <b>{c?.entity}</b> dari sistem.
+        Admin menghapus akun atas nama <b>{c?.data}</b> dari sistem.
       </span>
     ),
     icon: UserRoundXIcon,

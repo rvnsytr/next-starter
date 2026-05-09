@@ -24,7 +24,7 @@ import { Trash2Icon, TriangleAlertIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
-import { deleteUser, deleteUsers } from "../actions";
+import { deleteUsers } from "../actions";
 import { mutateUserDataTable } from "./user-data-table";
 
 const formId = "delete-user-form";
@@ -62,7 +62,7 @@ export function DeleteUserDialog({
     setIsLoading(true);
     setOpen(false);
 
-    toast.promise(deleteUser({ userId: data.id }), {
+    toast.promise(deleteUsers({ userIds: [data.id] }), {
       loading: { title: messages.loading },
       success: () => {
         form.reset();
@@ -191,7 +191,7 @@ export function ActionDeleteUsersDialog({
         return {
           title: messages.success,
           description: (
-            <span>{res.userCount} akun pengguna berhasil dihapus.</span>
+            <span>{res.length} akun pengguna berhasil dihapus.</span>
           ),
         };
       },
