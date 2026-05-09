@@ -27,6 +27,9 @@ import z from "zod";
 import { deleteUser, deleteUsers } from "../actions";
 import { mutateUserDataTable } from "./user-data-table";
 
+const formId = "delete-user-form";
+const formActionId = "delete-user-action-form";
+
 export function DeleteUserDialog({
   data,
   open,
@@ -96,8 +99,8 @@ export function DeleteUserDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Form onSubmit={form.handleSubmit(formHandler)}>
-          <DialogPanel>
+        <DialogPanel>
+          <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
             <Controller
               name="input"
               control={form.control}
@@ -122,23 +125,22 @@ export function DeleteUserDialog({
                 </Field>
               )}
             />
-          </DialogPanel>
+          </Form>
+        </DialogPanel>
 
-          <DialogFooter>
-            <DialogClose
-              render={
-                <Button variant="ghost">{messages.actions.cancel}</Button>
-              }
-            />
-            <Button
-              type="submit"
-              variant="destructive"
-              disabled={input !== data.name}
-            >
-              {messages.actions.delete}
-            </Button>
-          </DialogFooter>
-        </Form>
+        <DialogFooter>
+          <DialogClose
+            render={<Button variant="ghost">{messages.actions.cancel}</Button>}
+          />
+          <Button
+            type="submit"
+            form={formId}
+            variant="destructive"
+            disabled={input !== data.name}
+          >
+            {messages.actions.delete}
+          </Button>
+        </DialogFooter>
       </DialogPopup>
     </Dialog>
   );
@@ -214,8 +216,8 @@ export function ActionDeleteUsersDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Form onSubmit={form.handleSubmit(formHandler)}>
-          <DialogPanel>
+        <DialogPanel>
+          <Form id={formActionId} onSubmit={form.handleSubmit(formHandler)}>
             <Controller
               name="input"
               control={form.control}
@@ -240,27 +242,23 @@ export function ActionDeleteUsersDialog({
                 </Field>
               )}
             />
-          </DialogPanel>
+          </Form>
+        </DialogPanel>
 
-          <DialogFooter>
-            <DialogClose
-              render={
-                <Button variant="ghost">{messages.actions.cancel}</Button>
-              }
-            />
-            <Button
-              type="submit"
-              variant="destructive"
-              disabled={input !== inputValue || loading}
-            >
-              <LoadingSpinner
-                icon={{ base: <Trash2Icon /> }}
-                loading={loading}
-              />
-              {messages.actions.delete}
-            </Button>
-          </DialogFooter>
-        </Form>
+        <DialogFooter>
+          <DialogClose
+            render={<Button variant="ghost">{messages.actions.cancel}</Button>}
+          />
+          <Button
+            type="submit"
+            form={formActionId}
+            variant="destructive"
+            disabled={input !== inputValue || loading}
+          >
+            <LoadingSpinner icon={{ base: <Trash2Icon /> }} loading={loading} />
+            {messages.actions.delete}
+          </Button>
+        </DialogFooter>
       </DialogPopup>
     </Dialog>
   );

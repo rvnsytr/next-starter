@@ -39,8 +39,6 @@ import { roleConfig } from "../config/role";
 import { passwordSchema, userSchema } from "../schema";
 import { mutateUserDataTable } from "./user-data-table";
 
-const CREATE_USER_DIALOG_HOTKEY: Hotkey = "Alt+N";
-
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = userSchema
   .pick({ name: true, email: true, role: true })
@@ -52,6 +50,9 @@ const formSchema = userSchema
     message: messages.thingNotMatch("Kata sandi"),
     path: ["confirmPassword"],
   });
+
+const CREATE_USER_DIALOG_HOTKEY: Hotkey = "N";
+const formId = "create-user-form";
 
 export function CreateUserDialog() {
   const isMobile = useIsMobile();
@@ -122,8 +123,8 @@ export function CreateUserDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <Form onSubmit={form.handleSubmit(formHandler)}>
-          <DialogPanel>
+        <DialogPanel>
+          <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
             <Controller
               name="name"
               control={form.control}
@@ -231,20 +232,20 @@ export function CreateUserDialog() {
                 </Field>
               )}
             />
-          </DialogPanel>
+          </Form>
+        </DialogPanel>
 
-          <DialogFooter>
-            <DialogClose
-              render={
-                <Button variant="outline">{messages.actions.cancel}</Button>
-              }
-            />
-            <Button type="submit" disabled={isLoading}>
-              <LoadingSpinner loading={isLoading} />
-              {messages.actions.add}
-            </Button>
-          </DialogFooter>
-        </Form>
+        <DialogFooter>
+          <DialogClose
+            render={
+              <Button variant="outline">{messages.actions.cancel}</Button>
+            }
+          />
+          <Button type="submit" form={formId} disabled={isLoading}>
+            <LoadingSpinner loading={isLoading} />
+            {messages.actions.add}
+          </Button>
+        </DialogFooter>
       </DialogPopup>
     </Dialog>
   );

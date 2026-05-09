@@ -25,6 +25,8 @@ import { ProfilePicture } from "./profile-picture";
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = userSchema.pick({ name: true, email: true });
 
+const formId = "profile-form";
+
 export function ProfileForm() {
   const { user } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,11 +58,15 @@ export function ProfileForm() {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <>
       <CardContent>
         <ProfilePicture data={user} />
 
-        <div className="grid gap-x-2 gap-y-4 lg:grid-cols-2">
+        <Form
+          id={formId}
+          onSubmit={form.handleSubmit(formHandler)}
+          className="grid lg:grid-cols-2"
+        >
           <Controller
             name="email"
             control={form.control}
@@ -103,16 +109,16 @@ export function ProfileForm() {
               </Field>
             )}
           />
-        </div>
+        </Form>
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" form={formId} disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>
         <ResetButton onClick={() => form.reset(user)} />
       </CardFooter>
-    </Form>
+    </>
   );
 }

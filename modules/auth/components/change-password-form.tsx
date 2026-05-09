@@ -30,6 +30,8 @@ const formSchema = passwordSchema
     path: ["confirmPassword"],
   });
 
+const formId = "change-password-form";
+
 export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -67,83 +69,85 @@ export function ChangePasswordForm() {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <>
       <CardContent>
-        <Controller
-          name="currentPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Kata sandi saat ini</FieldLabel>
-              <PasswordInput
-                startAddon={<LockKeyholeOpenIcon />}
-                placeholder="Masukan kata sandi saat ini"
-                required
-                {...field}
-              />
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="newPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Kata sandi baru</FieldLabel>
-              <PasswordInput
-                placeholder="Masukan kata sandi baru"
-                required
-                {...field}
-              />
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="confirmPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Konfirmasi kata sandi</FieldLabel>
-              <PasswordInput
-                placeholder="Konfirmasi kata sandi baru anda"
-                required
-                {...field}
-              />
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="revokeOtherSessions"
-          control={form.control}
-          render={({ field: { value, onChange, ...field }, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>
-                <Checkbox
-                  checked={value}
-                  onCheckedChange={onChange}
+        <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+          <Controller
+            name="currentPassword"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>Kata sandi saat ini</FieldLabel>
+                <PasswordInput
+                  startAddon={<LockKeyholeOpenIcon />}
+                  placeholder="Masukan kata sandi saat ini"
+                  required
                   {...field}
                 />
-                Keluar dari perangkat lainnya
-              </FieldLabel>
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="newPassword"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>Kata sandi baru</FieldLabel>
+                <PasswordInput
+                  placeholder="Masukan kata sandi baru"
+                  required
+                  {...field}
+                />
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="confirmPassword"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>Konfirmasi kata sandi</FieldLabel>
+                <PasswordInput
+                  placeholder="Konfirmasi kata sandi baru anda"
+                  required
+                  {...field}
+                />
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="revokeOtherSessions"
+            control={form.control}
+            render={({ field: { value, onChange, ...field }, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>
+                  <Checkbox
+                    checked={value}
+                    onCheckedChange={onChange}
+                    {...field}
+                  />
+                  Keluar dari perangkat lainnya
+                </FieldLabel>
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
+        </Form>
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" form={formId} disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>
         <ResetButton onClick={() => form.reset()} />
       </CardFooter>
-    </Form>
+    </>
   );
 }

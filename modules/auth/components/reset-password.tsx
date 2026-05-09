@@ -43,6 +43,9 @@ import { passwordSchema, userSchema } from "../schema";
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = userSchema.pick({ email: true });
 
+const formId = "reset-password-form";
+const formDialogId = "reset-password-dialog-form";
+
 export function ResetPasswordDialog() {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -93,8 +96,8 @@ export function ResetPasswordDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <Form onSubmit={form.handleSubmit(formHandler)}>
-          <DialogPanel>
+        <DialogPanel>
+          <Form id={formDialogId} onSubmit={form.handleSubmit(formHandler)}>
             <Controller
               name="email"
               control={form.control}
@@ -116,23 +119,21 @@ export function ResetPasswordDialog() {
                 </Field>
               )}
             />
-          </DialogPanel>
+          </Form>
+        </DialogPanel>
 
-          <DialogFooter>
-            <ResetButton onClick={() => form.reset()} />
-            <Button
-              type="submit"
-              disabled={isLoading}
-              onClick={form.handleSubmit(formHandler)}
-            >
-              <LoadingSpinner
-                loading={isLoading}
-                icon={{ base: <SendIcon /> }}
-              />
-              Atur ulang kata sandi
-            </Button>
-          </DialogFooter>
-        </Form>
+        <DialogFooter>
+          <ResetButton onClick={() => form.reset()} />
+          <Button
+            type="submit"
+            form={formDialogId}
+            disabled={isLoading}
+            onClick={form.handleSubmit(formHandler)}
+          >
+            <LoadingSpinner loading={isLoading} icon={{ base: <SendIcon /> }} />
+            Atur ulang kata sandi
+          </Button>
+        </DialogFooter>
       </DialogPopup>
     </Dialog>
   );
@@ -182,39 +183,41 @@ export function ResetPasswordForm({ token }: { token?: string }) {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <>
       <CardContent>
-        <Controller
-          name="newPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Kata sandi baru</FieldLabel>
-              <PasswordInput
-                placeholder="Masukan kata sandi baru"
-                required
-                {...field}
-              />
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
+        <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+          <Controller
+            name="newPassword"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>Kata sandi baru</FieldLabel>
+                <PasswordInput
+                  placeholder="Masukan kata sandi baru"
+                  required
+                  {...field}
+                />
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
 
-        <Controller
-          name="confirmPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field name={field.name} invalid={fieldState.invalid}>
-              <FieldLabel>Konfirmasi kata sandi</FieldLabel>
-              <PasswordInput
-                placeholder="Konfirmasi kata sandi baru anda"
-                required
-                {...field}
-              />
-              <FieldError error={fieldState.error} />
-            </Field>
-          )}
-        />
+          <Controller
+            name="confirmPassword"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field name={field.name} invalid={fieldState.invalid}>
+                <FieldLabel>Konfirmasi kata sandi</FieldLabel>
+                <PasswordInput
+                  placeholder="Konfirmasi kata sandi baru anda"
+                  required
+                  {...field}
+                />
+                <FieldError error={fieldState.error} />
+              </Field>
+            )}
+          />
+        </Form>
       </CardContent>
 
       <CardFooter className="flex-col items-stretch justify-between md:flex-row">
@@ -229,7 +232,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
 
         <div className="flex flex-col gap-2 md:flex-row">
           <ResetButton onClick={() => form.reset()} />
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" form={formId} disabled={isLoading}>
             <LoadingSpinner
               loading={isLoading}
               icon={{ base: <LockKeyholeIcon /> }}
@@ -238,6 +241,6 @@ export function ResetPasswordForm({ token }: { token?: string }) {
           </Button>
         </div>
       </CardFooter>
-    </Form>
+    </>
   );
 }
