@@ -19,7 +19,10 @@ export async function updateProfileName(
 ) {
   const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
   await db.insert(activity).values({ userId, type: "profile-updated" });
+
   revalidatePath("/dashboard/profile");
+  updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -63,6 +66,8 @@ export async function updateProfilePicture(file: File) {
   });
 
   revalidatePath("/dashboard/profile");
+  updateTag(AUTH_KEYS.users);
+
   return res;
 }
 
@@ -92,6 +97,8 @@ export async function deleteProfilePicture() {
   });
 
   revalidatePath("/dashboard/profile");
+  updateTag(AUTH_KEYS.users);
+
   return res;
 }
 

@@ -59,7 +59,7 @@ export function ProfileForm() {
 
   return (
     <>
-      <CardContent>
+      <CardContent className="flex flex-col gap-4">
         <ProfilePicture data={user} />
 
         <Form
