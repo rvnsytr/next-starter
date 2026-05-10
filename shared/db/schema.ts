@@ -94,6 +94,8 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+export type FileTable = typeof file.$inferSelect;
+export type FileVisibility = FileTable["visibility"];
 export const file = pgTable(
   "file",
   {

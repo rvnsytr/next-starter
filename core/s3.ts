@@ -1,4 +1,4 @@
-import { file as fileTable } from "@/shared/db/schema";
+import { FileTable, FileVisibility } from "@/shared/db/schema";
 import {
   DeleteObjectsCommand,
   DeleteObjectsCommandInput,
@@ -19,6 +19,7 @@ const S3_BUCKET = process.env.S3_BUCKET!;
 const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET!;
 
 const defaultDir = "global";
+const defaultFileVisibility: FileVisibility = "private";
 
 const s3 = new S3Client({
   endpoint: process.env.S3_ENDPOINT!,
@@ -30,24 +31,27 @@ const s3 = new S3Client({
   forcePathStyle: true,
 });
 
-export type FileVisibility = "private" | "public";
-
 type ControlledS3Options<T> = Override<
   Omit<T, "Key" | "Bucket">,
-  { visibility: FileVisibility }
+  {
+    /** The visibility of the file. default to `private` */
+    visibility?: FileVisibility;
+  }
 >;
 
-export type UploadFilesPayload = { file: File; path?: string };
+export type UploadFilesPayload = {
+  file: File;
+  path?: string;
+  /** Will override `uploadFiles` visibility option */
+  visibility?: FileVisibility;
+};
 
 export type UploadFilesOptions = ControlledS3Options<
   Omit<PutObjectCommandInput, "Body" | "ContentType">
 >;
 
 export type UploadFilesResponse = {
-  file: Pick<
-    typeof fileTable.$inferSelect,
-    "path" | "name" | "type" | "size" | "visibility"
-  >;
+  file: Pick<FileTable, "path" | "name" | "type" | "size" | "visibility">;
   output: PutObjectCommandOutput;
 };
 
@@ -55,20 +59,22 @@ const getBucket = (v: FileVisibility = "private") =>
   v === "public" ? S3_PUBLIC_BUCKET : S3_BUCKET;
 
 export async function uploadFiles(
-  payload: UploadFilesPayload[],
+  payloads: UploadFilesPayload[],
   options?: UploadFilesOptions,
 ): Promise<UploadFilesResponse[]> {
   "use server";
-  const visibility = options?.visibility ?? "private";
 
   return await Promise.all(
-    payload.map(async ({ file, path }) => {
-      const Key = path ?? `${defaultDir}/${file.name}`;
+    payloads.map(async (payload) => {
+      const Key = payload.path ?? `${defaultDir}/${payload.file.name}`;
+
+      const visibility =
+        payload.visibility ?? options?.visibility ?? defaultFileVisibility;
 
       const command = new PutObjectCommand({
         Key,
-        Body: Buffer.from(await file.arrayBuffer()),
-        ContentType: file.type,
+        Body: Buffer.from(await payload.file.arrayBuffer()),
+        ContentType: payload.file.type,
         Bucket: getBucket(visibility),
         ...options,
       });
@@ -76,9 +82,9 @@ export async function uploadFiles(
       return {
         file: {
           path: Key,
-          name: file.name,
-          type: file.type,
-          size: file.size,
+          name: payload.file.name,
+          type: payload.file.type,
+          size: payload.file.size,
           visibility,
         },
         output: await s3.send(command),
@@ -126,12 +132,9 @@ export function prepareFiles(
   options?: {
     setPath?: (file: FileWithPreview, index: number) => string;
   },
-): {
-  upload: UploadFilesPayload[];
-  db: (typeof fileTable.$inferInsert)[];
-} {
+) {
   const upload: UploadFilesPayload[] = [];
-  const db: (typeof fileTable.$inferInsert)[] = [];
+  const db: Pick<FileTable, "path" | "name" | "type" | "size">[] = [];
 
   files.forEach((item, index) => {
     if (item.file instanceof File) {
