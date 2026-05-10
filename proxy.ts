@@ -7,8 +7,8 @@ export function proxy(req: NextRequest) {
   if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in"))
     return NextResponse.redirect(new URL("/sign-in", req.url));
 
-  if (sessionCookie && req.nextUrl.pathname.startsWith("/sign-in"))
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // if (sessionCookie && req.nextUrl.pathname.startsWith("/sign-in"))
+  //   return NextResponse.redirect(new URL("/dashboard", req.url));
 
   const headers = new Headers(req.headers);
   const nextUrlKeys = [

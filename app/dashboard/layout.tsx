@@ -14,7 +14,7 @@ import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
 import { Metadata } from "next";
 import { cookies, headers as nextHeaders } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import z from "zod";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
@@ -53,6 +53,7 @@ async function DashboardAuthProvider({
 }) {
   const headers = await nextHeaders();
   const session = await auth.api.getSession({ headers });
+  if (!session) redirect("/sign-in");
 
   const pathname = headers.get("x-pathname");
   const isAuthorized = session && authorizedRoute(pathname, session.user.role);
