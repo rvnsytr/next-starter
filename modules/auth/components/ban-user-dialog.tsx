@@ -98,7 +98,7 @@ export function BanUserDialog({
             title: messages.success,
             description: (
               <span>
-                Akun <b>{data.name}</b> berhasil diblokir.
+                Akun atas nama <b>{data.name}</b> berhasil diblokir.
               </span>
             ),
           };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/core/hooks/use-media-query";
 import { cn } from "@/core/utils/index";
 import { Toast } from "@base-ui/react/toast";
 import {
@@ -280,10 +281,15 @@ export function ToastProvider({
   children,
   ...props
 }: ToastProviderProps) {
+  const isMobile = useIsMobile();
+
   return (
     <Toast.Provider toastManager={toast} {...props}>
       {children}
-      <Toasts portalProps={portalProps} position={position} />
+      <Toasts
+        portalProps={portalProps}
+        position={isMobile ? "top-center" : position}
+      />
     </Toast.Provider>
   );
 }

@@ -73,7 +73,7 @@ export function DeleteUserDialog({
           title: messages.success,
           description: (
             <span>
-              Akun <b>{data.name}</b> berhasil dihapus.
+              Akun atas nama <b>{data.name}</b> berhasil dihapus.
             </span>
           ),
         };
