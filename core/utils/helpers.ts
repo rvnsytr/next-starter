@@ -1,5 +1,6 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import z from "zod";
 import { FileMetadata } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -12,6 +13,10 @@ export function delay(seconds: number) {
 
 export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
+}
+
+export function isValidUrl(url: string) {
+  return z.url().safeParse(url).success;
 }
 
 export function getRandomString(length: number) {

@@ -7,9 +7,9 @@ import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, openAPI } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
-import z from "zod";
 import { db } from "./db";
 import { createPublicUrls } from "./s3";
+import { isValidUrl } from "./utils";
 
 export type ACStatements = typeof ac.statements;
 export type Permissions = {
@@ -96,7 +96,7 @@ export const auth = betterAuth({
         const { session: sessionData, user: userData } = session;
         if (!userData.image) return ctx.json(session);
 
-        if (z.url().safeParse(userData.image).success) return ctx.json(session);
+        if (isValidUrl(userData.image)) return ctx.json(session);
 
         const data = await db
           .select({ path: file.path })

@@ -5,12 +5,12 @@ import { db } from "@/core/db";
 import { messages } from "@/core/messages";
 import { createPublicUrls, deleteFiles, uploadFiles } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
+import { isValidUrl } from "@/core/utils";
 import { activity, file as fileTable, user } from "@/shared/db/schema";
 import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
-import z from "zod";
 import { AUTH_KEYS } from "./config/keys";
 
 async function listUsers(): Promise<User[]> {
@@ -19,7 +19,11 @@ async function listUsers(): Promise<User[]> {
 
   const userData = await db.select().from(user).orderBy(desc(user.createdAt));
 
-  const userImageIds = userData.map((v) => v.image).filter((v) => v !== null);
+  const userImageIds = userData
+    .map((v) => v.image)
+    .filter((id) => id !== null)
+    .filter((id) => !isValidUrl(id));
+
   const fileData = await db
     .select()
     .from(fileTable)
@@ -27,14 +31,15 @@ async function listUsers(): Promise<User[]> {
 
   const fileMap = new Map(fileData.map((f) => [f.id, f]));
 
-  return userData.map((u) => {
-    if (!u.image) return u;
+  return userData.map((user) => {
+    if (!user.image) return user;
+    if (isValidUrl(user.image)) return user;
 
-    const imageFile = fileMap.get(u.image);
-    if (!imageFile) return u;
+    const imageFile = fileMap.get(user.image);
+    if (!imageFile) return user;
 
     const [image] = createPublicUrls([imageFile.path]);
-    return { ...u, image };
+    return { ...user, image };
   });
 
   // const countQb = db
@@ -160,7 +165,7 @@ export async function deleteProfilePicture() {
       .from(user)
       .where(eq(user.id, userId));
 
-    if (fileId && !z.url().safeParse(fileId).success) {
+    if (fileId && !isValidUrl(fileId)) {
       const [{ path }] = await tx
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
@@ -296,23 +301,16 @@ export async function unbanUser(body: { userId: string }) {
 }
 
 export async function impersonateUser(userId: string) {
-  const res = await auth.api.impersonateUser({
-    headers: await nextHeaders(),
-    body: { userId },
-  });
-
+  const headers = await nextHeaders();
+  const res = await auth.api.impersonateUser({ headers, body: { userId } });
   revalidatePath("/dashboard");
-
   return res;
 }
 
 export async function stopImpersonateUser() {
-  const res = await auth.api.stopImpersonating({
-    headers: await nextHeaders(),
-  });
-
+  const headers = await nextHeaders();
+  const res = await auth.api.stopImpersonating({ headers });
   revalidatePath("/dashboard/users");
-
   return res;
 }
 
@@ -329,7 +327,7 @@ export async function deleteUsers(body: { userIds: string[] }) {
 
     const fileIds = deleted
       .map((v) => v.fileId)
-      .filter((id) => !!id && !z.url().safeParse(id).success) as string[];
+      .filter((id) => !!id && !isValidUrl(id)) as string[];
 
     if (fileIds.length > 0) {
       const filePaths = await tx
