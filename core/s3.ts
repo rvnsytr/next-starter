@@ -130,11 +130,17 @@ export function createPublicUrls(filePaths: string[]) {
 export function prepareFiles(
   files: FileWithPreview[],
   options?: {
+    visibility?: FileVisibility;
     setPath?: (file: FileWithPreview, index: number) => string;
   },
 ) {
   const upload: UploadFilesPayload[] = [];
-  const db: Pick<FileTable, "path" | "name" | "type" | "size">[] = [];
+  const db: Pick<
+    FileTable,
+    "path" | "name" | "type" | "size" | "visibility"
+  >[] = [];
+
+  const visibility = options?.visibility ?? defaultFileVisibility;
 
   files.forEach((item, index) => {
     if (item.file instanceof File) {
@@ -149,8 +155,9 @@ export function prepareFiles(
         name: item.file.name,
         type: item.file.type,
         size: item.file.size,
+        visibility,
       });
-    } else db.push(item.file);
+    } else db.push({ ...item.file, visibility });
   });
 
   return { upload, db };
