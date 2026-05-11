@@ -33,11 +33,11 @@ function CalendarContent({
   const defaultClassNames = {
     button_previous: cn(
       buttonVariants({ size: "icon", variant: "ghost" }),
-      "z-10 aria-disabled:opacity-50",
+      "z-10 aria-disabled:opacity-64",
     ),
     button_next: cn(
       buttonVariants({ size: "icon", variant: "ghost" }),
-      "z-10 aria-disabled:opacity-50",
+      "z-10 aria-disabled:opacity-64",
     ),
     caption_label: "text-sm font-medium flex items-center gap-2 h-full",
     day: "size-(--cell-size) text-sm py-px",

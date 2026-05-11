@@ -99,7 +99,7 @@ export function FileUpload({
       data-slot="file-upload"
       className={cn(
         "group/file-upload relative flex w-full flex-col gap-y-4",
-        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-64",
         classNames?.container,
       )}
     >
@@ -239,8 +239,8 @@ export function FileUpload({
                       data-slot="file-media"
                       src={file.preview}
                       alt={file.file.name}
-                      width={64}
-                      height={64}
+                      width={1280}
+                      height={720}
                       className={cn(
                         "object-cover object-center",
                         "z-0 size-full opacity-100 transition duration-200",
@@ -394,8 +394,8 @@ export function FileUpload({
             <Image
               src={selectedImage}
               alt={`${displayName} Preview`}
-              width={1280}
-              height={720}
+              width={1920}
+              height={1080}
               className="rounded-lg"
             />
           )}
