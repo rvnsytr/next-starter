@@ -115,8 +115,11 @@ function BaseActivityTimeline({
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-4">
-        <div data-slot="pagination" className="flex items-center gap-x-2">
+      <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+        <div
+          data-slot="pagination"
+          className="order-3 flex items-center gap-x-2 lg:order-1"
+        >
           <Label className="hidden shrink-0 lg:inline-flex">Per halaman</Label>
           <DataControllerPageSize
             table={table}
@@ -125,7 +128,10 @@ function BaseActivityTimeline({
           />
         </div>
 
-        <small data-slot="page-info" className="shrink-0 tabular-nums">
+        <small
+          data-slot="page-info"
+          className="order-1 shrink-0 tabular-nums lg:order-2"
+        >
           Halaman{" "}
           {result.isLoading
             ? "?"
@@ -140,6 +146,7 @@ function BaseActivityTimeline({
           data-slot="pagination-nav"
           table={table}
           size="icon-sm"
+          className="order-2 lg:order-3"
           disabled={result.isLoading}
         />
       </div>

@@ -26,6 +26,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@/core/components/ui/menu";
+import { ScrollArea } from "@/core/components/ui/scroll-area";
 import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
@@ -177,7 +178,7 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
       </DialogHeader>
 
       <DialogPanel className="flex flex-col gap-y-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isCurrentUser && <Badge variant="outline">Pengguna saat ini</Badge>}
           <RoleBadge value={data.role} />
           <UserStatusBadge value={getUserStatus(data)} />
@@ -186,19 +187,21 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
         <Separator />
 
         <Tabs defaultValue="profile">
-          <TabsList>
-            <TabsTab value="profile" className="h-6">
-              <UserRoundIcon /> Informasi Profil
-            </TabsTab>
+          <ScrollArea scrollFade withScrollbar={false}>
+            <TabsList>
+              <TabsTab value="profile">
+                <UserRoundIcon /> Informasi Profil
+              </TabsTab>
 
-            <TabsTab value="activity">
-              <HistoryIcon /> Aktivitas
-            </TabsTab>
+              <TabsTab value="activity">
+                <HistoryIcon /> Aktivitas
+              </TabsTab>
 
-            <TabsTab value="sessions" className="h-6">
-              <CookieIcon /> Sesi Terdaftar
-            </TabsTab>
-          </TabsList>
+              <TabsTab value="sessions">
+                <CookieIcon /> Sesi Terdaftar
+              </TabsTab>
+            </TabsList>
+          </ScrollArea>
 
           <TabsPanel value="profile" className="grid gap-x-2 gap-y-4">
             <DetailList data={profile} />
