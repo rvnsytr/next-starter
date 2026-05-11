@@ -66,6 +66,7 @@ This project uses a **feature-based (module) architecture** where each feature i
   - `components` — React components related to the module
   - `hooks` — Custom hooks related to the module
   - `schema` — Module-specific schemas
+  - `utils` — Module-specific utilities and helpers
 
 ### Import Conventions
 

@@ -99,7 +99,7 @@ export async function updateProfileName(
   body: { name: string },
 ) {
   const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
-  await db.insert(activity).values({ userId, type: "profile-updated" });
+  await db.insert(activity).values({ type: "profile-updated", userId });
 
   revalidatePath("/dashboard/profile");
   updateTag(AUTH_KEYS.users);
@@ -138,7 +138,7 @@ export async function updateProfilePicture(file: File) {
       .values(uploadRes.file)
       .returning();
 
-    await tx.insert(activity).values({ userId, type: "profile-image-updated" });
+    await tx.insert(activity).values({ type: "profile-image-updated", userId });
 
     return await auth.api.updateUser({
       headers,
@@ -173,7 +173,7 @@ export async function deleteProfilePicture() {
       if (path) await deleteFiles([path], { visibility: "public" });
     }
 
-    await tx.insert(activity).values({ userId, type: "profile-image-updated" });
+    await tx.insert(activity).values({ type: "profile-image-updated", userId });
     return await auth.api.updateUser({ headers, body: { image: null } });
   });
 
@@ -209,10 +209,14 @@ export async function createUser(body: {
     const createRes = await auth.api.createUser({ headers, body });
 
     await tx.insert(activity).values([
-      { userId: createRes.user.id, type: "user-created" },
       {
-        userId: session.user.id,
+        type: "user-created",
+        userId: createRes.user.id,
+        entityId: session.user.id,
+      },
+      {
         type: "admin-user-create",
+        userId: session.user.id,
         entityId: createRes.user.id,
       },
     ]);
@@ -234,10 +238,15 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
     const res = await auth.api.setRole({ headers, body });
 
     await tx.insert(activity).values([
-      { userId: res.user.id, type: "user-role-updated", data: body.role },
       {
-        userId: session.user.id,
+        type: "user-role-updated",
+        userId: res.user.id,
+        entityId: session.user.id,
+        data: body.role,
+      },
+      {
         type: "admin-user-update-role",
+        userId: session.user.id,
         entityId: res.user.id,
       },
     ]);
@@ -263,8 +272,8 @@ export async function banUser(body: {
     const res = await auth.api.banUser({ headers, body });
 
     await tx.insert(activity).values([
-      { userId: res.user.id, type: "user-banned" },
-      { userId: session.user.id, type: "admin-user-ban", data: res.user.name },
+      { type: "user-banned", userId: res.user.id },
+      { type: "admin-user-ban", userId: session.user.id, data: res.user.name },
     ]);
 
     return res;
@@ -284,10 +293,10 @@ export async function unbanUser(body: { userId: string }) {
     const res = await auth.api.unbanUser({ headers, body });
 
     await tx.insert(activity).values([
-      { userId: res.user.id, type: "user-unbanned" },
+      { type: "user-unbanned", userId: res.user.id },
       {
-        userId: session.user.id,
         type: "admin-user-unban",
+        userId: session.user.id,
         data: res.user.name,
       },
     ]);
@@ -345,8 +354,8 @@ export async function deleteUsers(body: { userIds: string[] }) {
     console.log(deleted[0].name);
 
     await tx.insert(activity).values({
-      userId: session.user.id,
       type: deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
+      userId: session.user.id,
       data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
     });
 
