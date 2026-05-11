@@ -148,7 +148,7 @@ export function prepareFiles(
         ? options.setPath(item, index)
         : `${defaultDir}/${item.file.name}`;
 
-      upload.push({ file: item.file, path });
+      upload.push({ file: item.file, path, visibility });
 
       db.push({
         path,

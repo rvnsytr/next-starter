@@ -2,12 +2,13 @@ import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  // images: { remotePatterns: [new URL(`${process.env.S3_ENDPOINT}/**`)] },
-  // experimental: {
-  //   serverActions: {
-  //     bodySizeLimit: `${Math.max(...Object.values(fileConfig).map(({ size }) => size.mb))}mb`,
-  //   },
-  // },
+  images: {
+    remotePatterns: [
+      new URL(`${process.env.S3_ENDPOINT}/**`),
+      new URL(`${process.env.S3_PUBLIC_ENDPOINT}/**`),
+    ],
+  },
+  // experimental: { serverActions: { bodySizeLimit: "5mb" } },
 };
 
 export default nextConfig;
