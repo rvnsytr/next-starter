@@ -97,6 +97,7 @@ export function ChangePasswordForm() {
                 <FieldLabel>Kata sandi baru</FieldLabel>
                 <PasswordInput
                   placeholder="Masukan kata sandi baru"
+                  withValidationList
                   required
                   {...field}
                 />
