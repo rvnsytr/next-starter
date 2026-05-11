@@ -143,21 +143,22 @@ export function prepareFiles(
   const visibility = options?.visibility ?? defaultFileVisibility;
 
   files.forEach((item, index) => {
+    let path: string | null = null;
+
     if (item.file instanceof File) {
-      const path = options?.setPath
+      path = options?.setPath
         ? options.setPath(item, index)
         : `${defaultDir}/${item.file.name}`;
-
       upload.push({ file: item.file, path, visibility });
+    } else path = item.file.path;
 
-      db.push({
-        path,
-        name: item.file.name,
-        type: item.file.type,
-        size: item.file.size,
-        visibility,
-      });
-    } else db.push({ ...item.file, visibility });
+    db.push({
+      path,
+      name: item.file.name,
+      type: item.file.type,
+      size: item.file.size,
+      visibility,
+    });
   });
 
   return { upload, db };
