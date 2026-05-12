@@ -4,12 +4,20 @@ import { Button, ButtonProps } from "./button";
 
 export function ResetButton({
   type = "reset",
+  size = "default",
   variant = "outline",
   ...props
 }: Omit<ButtonProps, "children">) {
   return (
-    <Button data-slot="reset-button" type={type} variant={variant} {...props}>
-      <RotateCcwIcon /> {messages.actions.reset}
+    <Button
+      data-slot="reset-button"
+      type={type}
+      size={size}
+      variant={variant}
+      {...props}
+    >
+      <RotateCcwIcon />
+      {!size?.startsWith("icon") && messages.actions.reset}
     </Button>
   );
 }
