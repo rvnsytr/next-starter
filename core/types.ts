@@ -20,6 +20,13 @@ export type ActionResponse<T = unknown> = {
   | { success: false; error?: unknown }
 );
 
+export type ActionSuccess<T = unknown> = Extract<
+  ActionResponse<T>,
+  { success: true }
+>;
+
+export type ActionError = Extract<ActionResponse, { success: false }>;
+
 export type StringCase =
   | "kebab"
   | "snake"
