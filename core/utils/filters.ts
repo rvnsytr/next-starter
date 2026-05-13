@@ -22,7 +22,7 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     /* The label of the column. */
-    label: React.ReactNode;
+    label: string;
     /* The column icon. */
     icon: LucideIcon;
     /* The data type of the column. */
@@ -72,7 +72,7 @@ export const defineMeta = <
  */
 export type DataFilterOption = {
   /* The label to display for the option. */
-  label: string;
+  label: React.ReactNode;
   /* The internal value of the option. */
   value: string;
   /* An optional icon to display next to the label. */
