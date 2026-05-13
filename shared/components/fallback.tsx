@@ -48,6 +48,7 @@ export function ErrorFallback({
       {!hideDesc && (
         <AlertDescription>
           <pre className="whitespace-pre-wrap">{message}</pre>
+          <pre>{JSON.stringify(error, null, 2)}</pre>
         </AlertDescription>
       )}
     </Alert>

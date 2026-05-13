@@ -159,10 +159,6 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
     ),
     cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
-    meta: {
-      label: "Waktu Dibuat",
-      type: "date",
-      icon: CalendarCheck2Icon,
-    },
+    meta: { label: "Waktu Dibuat", type: "date", icon: CalendarCheck2Icon },
   }),
 ];
