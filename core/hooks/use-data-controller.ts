@@ -61,7 +61,8 @@ export type DataControllerOptions<TData> = Pick<
     key: string;
     fetcher: (state: DataControllerState) => Promise<ActionResponse<TData[]>>;
     config?: SWRConfiguration;
-  } & ({ immutable: true } | { immutable?: false; revalidate?: boolean });
+    immutable?: boolean;
+  };
 
   defaultState?: Partial<AllDataControllerState>;
 };
@@ -117,18 +118,14 @@ export function useStatelessDataController<TData>({
     [debouncedSearch, pagination, sorting, columnFilters],
   );
 
-  const shouldRevalidate = !query.immutable && (query.revalidate ?? true);
   const result = useSWR<ActionResponse<TData[]>>(
     mode === "manual" ? [query.key, state] : [query.key],
     () => query.fetcher(state),
     {
+      revalidateIfStale: query.immutable ?? true,
+      revalidateOnFocus: query.immutable ?? true,
+      revalidateOnReconnect: query.immutable ?? true,
       ...query.config,
-      revalidateIfStale:
-        shouldRevalidate && (query.config?.revalidateIfStale ?? true),
-      revalidateOnFocus:
-        shouldRevalidate && (query.config?.revalidateOnFocus ?? true),
-      revalidateOnReconnect:
-        shouldRevalidate && (query.config?.revalidateOnReconnect ?? true),
     },
   );
 
