@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "typegen": "next typegen"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
@@ -14,7 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-hotkeys": "^0.10.0",
     "@tanstack/react-table": "^8.21.3",
-    "better-auth": "^1.6.10",
+    "better-auth": "^1.6.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -41,7 +42,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",
-    "@types/node": "^24.12.3",
+    "@types/node": "^24.12.4",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
