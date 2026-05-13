@@ -48,6 +48,7 @@ export type FileUploadProps = Pick<
       files?: string;
       file?: string;
     };
+    onClear?: () => void;
   };
 
 export function FileUpload({
@@ -64,6 +65,8 @@ export function FileUpload({
   files: filesProp,
   sortable = false,
   classNames,
+
+  onClear,
   ...options
 }: FileUploadProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -195,7 +198,10 @@ export function FileUpload({
             <ResetButton
               size="sm"
               variant="destructive-outline"
-              onClick={clearFiles}
+              onClick={() => {
+                clearFiles();
+                onClear?.();
+              }}
             />
           )}
         </div>
@@ -230,7 +236,10 @@ export function FileUpload({
                 }}
               >
                 {isImage && (
-                  <div className="absolute z-10 size-full bg-black/60 mask-t-from-0 mask-t-to-40%" />
+                  <>
+                    <div className="absolute z-10 size-full bg-black/32 mask-t-from-0 mask-t-to-30%" />
+                    <div className="absolute z-10 size-full bg-black/32 mask-b-from-0 mask-b-to-30%" />
+                  </>
                 )}
 
                 {isImage && !!file.preview && (
@@ -318,8 +327,8 @@ export function FileUpload({
                   data-slot="remove-file"
                   type="button"
                   size="icon-sm"
-                  variant={isImage ? "destructive" : "destructive-outline"}
-                  className="absolute top-2 left-2 z-10"
+                  variant="destructive-outline"
+                  className="dark:border-input border-input/32 absolute top-2 left-2 z-10 bg-transparent"
                   onClick={() => removeFile(file.id)}
                 >
                   <TrashIcon />
@@ -331,22 +340,24 @@ export function FileUpload({
                       data-slot="file-move-up"
                       type="button"
                       size="icon-sm"
-                      variant={isImage ? "default" : "outline"}
+                      variant="outline"
                       onClick={() => moveUp(file.id)}
+                      className="dark:border-input border-input/32 bg-transparent"
                       disabled={files.length === 1}
                     >
-                      <ChevronLeftIcon />
+                      <ChevronLeftIcon className="text-white" />
                     </Button>
                     {/* <ButtonGroupSeparator /> */}
                     <Button
                       data-slot="file-move-down"
                       type="button"
                       size="icon-sm"
-                      variant={isImage ? "default" : "outline"}
+                      variant="outline"
                       onClick={() => moveDown(file.id)}
+                      className="dark:border-input border-input/32 bg-transparent"
                       disabled={files.length === 1}
                     >
-                      <ChevronRightIcon />
+                      <ChevronRightIcon className="text-white" />
                     </Button>
                   </ButtonGroup>
                 )}

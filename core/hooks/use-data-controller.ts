@@ -294,7 +294,14 @@ const columnFiltersSchema = z.object({
   id: z.string(),
   value: z.object({
     operator: z.enum(allFilterOperators),
-    values: z.union([z.string(), z.number(), z.coerce.date()]).array(),
+    values: z
+      .union([
+        z.string(),
+        z.number(),
+        z.coerce.date(),
+        z.union([z.string(), z.number(), z.coerce.date()]).array(),
+      ])
+      .array(),
   }),
 });
 
@@ -315,20 +322,37 @@ function getColumnFiltersParser<TData>(
           const col = resolvedColumns.find((c) => c.id === id);
           if (!col) return null;
 
+          const colType = col.meta?.type;
+
           const values = rawValues
             ? rawValues
                 .split(",")
                 .map((v) => {
-                  if (col.meta?.type === "date") {
+                  if (colType === "date") {
                     const d = parseLocalizedDate(v, "yyyyMMdd'T'HHmm");
                     if (isValid(d)) return d;
                     else return null;
                   }
 
-                  if (col.meta?.type === "number") {
+                  if (colType === "number") {
                     const n = Number(v);
                     if (!Number.isNaN(n)) return n;
                     else return null;
+                  }
+
+                  if (colType === "option" || colType === "multiOption") {
+                    const colOptions =
+                      col.meta?.options ?? col.meta?.transformOptionFn?.(v);
+
+                    if (!colOptions) return null;
+
+                    if (Array.isArray(colOptions)) {
+                      const isValid = colOptions.some((opt) => opt.value === v);
+                      if (!isValid) return null;
+                    } else {
+                      const isValid = colOptions.value === v;
+                      if (!isValid) return null;
+                    }
                   }
 
                   return v;
@@ -343,12 +367,13 @@ function getColumnFiltersParser<TData>(
     },
     serialize: (value) => {
       if (!value?.length) return null as unknown as string;
-      return value
+      const query: string[] = value
         .map(({ id, value: rawValue }) => {
           const parsed = columnFiltersSchema.shape.value.safeParse(rawValue);
-          if (!parsed.success) return null;
+          if (!parsed.success) return "";
 
           const { operator, values } = parsed.data;
+
           const serializedValues = values.map((v) =>
             v instanceof Date
               ? formatLocalizedDate(v, "yyyyMMdd'T'HHmm")
@@ -357,8 +382,10 @@ function getColumnFiltersParser<TData>(
 
           return `${id}:${operator}:${serializedValues.join(",")}`;
         })
-        .filter((v) => !!v)
-        .join(";");
+        .filter((v) => !!v);
+
+      if (!query.length) return null as unknown as string;
+      return query.join(";");
     },
   }).withDefault([]);
 }
