@@ -88,17 +88,12 @@ function BaseDataTable<TData>({
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
   if (result.error) return <ErrorFallback error={result.error} />;
-  if (!result.isLoading && !result.data?.success)
-    return <ErrorFallback error={result.data} />;
 
+  const rowsCount =
+    result.data?.count?.total ?? table.getFilteredRowModel().rows.length;
   const selectedRowsCount =
     Object.keys(table.getState().rowSelection).length ??
     table.getFilteredSelectedRowModel().rows.length;
-
-  const rowsLength = table.getFilteredRowModel().rows.length;
-  const rowsCount = result.data?.success
-    ? (result.data?.count?.total ?? rowsLength)
-    : rowsLength;
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const isSelected = selectedRows.length > 0;

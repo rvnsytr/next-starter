@@ -30,7 +30,7 @@ import { useMemo, useState } from "react";
 import useSWR, { mutate, SWRConfiguration, SWRResponse } from "swr";
 import z from "zod";
 import { DataControllerState } from "../data-controller";
-import { ActionResponse } from "../types";
+import { ActionResponse, ActionSuccess } from "../types";
 import {
   allFilterOperators,
   formatLocalizedDate,
@@ -47,7 +47,7 @@ type AllDataControllerState = DataControllerState & {
   rowSelection: RowSelectionState;
 };
 
-export type DataControllerResult<TData> = SWRResponse<ActionResponse<TData[]>>;
+export type DataControllerResult<TData> = SWRResponse<ActionSuccess<TData[]>>;
 
 export type DataControllerOptions<TData> = Pick<
   TableOptions<TData>,
@@ -118,14 +118,21 @@ export function useStatelessDataController<TData>({
     [debouncedSearch, pagination, sorting, columnFilters],
   );
 
-  const result = useSWR<ActionResponse<TData[]>>(
+  const result = useSWR<ActionSuccess<TData[]>>(
     mode === "manual" ? [query.key, state] : [query.key],
-    () => query.fetcher(state),
+    async () => {
+      const res = await query.fetcher(state);
+      if (!res.success) throw res;
+      return res;
+    },
     {
-      revalidateIfStale: query.immutable ?? true,
-      revalidateOnFocus: query.immutable ?? true,
-      revalidateOnReconnect: query.immutable ?? true,
       ...query.config,
+      revalidateIfStale:
+        query.config?.revalidateIfStale ?? (query.immutable ? false : true),
+      revalidateOnFocus:
+        query.config?.revalidateOnFocus ?? (query.immutable ? false : true),
+      revalidateOnReconnect:
+        query.config?.revalidateOnReconnect ?? (query.immutable ? false : true),
     },
   );
 
@@ -137,7 +144,7 @@ export function useStatelessDataController<TData>({
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns: resolvedColumns,
-    data: result.data?.success ? result.data.data : [],
+    data: result.data?.data ?? [],
 
     state: {
       globalFilter,
@@ -159,12 +166,7 @@ export function useStatelessDataController<TData>({
 
     // * Pagination
     manualPagination: mode === "manual",
-    rowCount:
-      mode === "manual"
-        ? result.data?.success
-          ? (result.data.count?.total ?? 0)
-          : 0
-        : undefined,
+    rowCount: mode === "manual" ? (result.data?.count?.total ?? 0) : undefined,
     onPaginationChange: setPagination,
     getPaginationRowModel:
       mode === "auto" ? getPaginationRowModel() : undefined,
@@ -241,6 +243,8 @@ export function useDataController<TData>({
     },
   });
 }
+
+// #region Query Parsers
 
 export type QueryDataControllerOptions<TData> = DataControllerOptions<TData> & {
   prefix?: string;
@@ -386,6 +390,8 @@ function getColumnFiltersParser<TData>(
     },
   }).withDefault([]);
 }
+
+// #endregion
 
 export function useQueryDataController<TData>({
   prefix = "",

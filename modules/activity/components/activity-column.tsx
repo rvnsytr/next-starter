@@ -32,9 +32,7 @@ export const getActivityColumns = (
       icon: RouteIcon,
       options: allActivityTypes.map((value) => {
         const { label, icon } = getActivityTypeConfig(value);
-        const count = result?.data?.success
-          ? (result?.data.count?.[value] ?? undefined)
-          : undefined;
+        const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),
     },

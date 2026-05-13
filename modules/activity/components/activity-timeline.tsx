@@ -52,8 +52,6 @@ function BaseActivityTimeline({
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
   if (result.error) return <ErrorFallback error={result.error} />;
-  if (!result.isLoading && !result.data?.success)
-    return <ErrorFallback error={result.data} />;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>

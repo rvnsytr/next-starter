@@ -101,9 +101,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       icon: CircleDotIcon,
       options: allUserStatus.map((value) => {
         const { label, icon } = userStatusConfig[value];
-        const count = result?.data?.success
-          ? (result?.data.count?.[value] ?? undefined)
-          : undefined;
+        const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),
     },
@@ -128,9 +126,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       icon: ShieldUserIcon,
       options: allRoles.map((value) => {
         const { label, icon } = roleConfig[value];
-        const count = result?.data?.success
-          ? (result?.data.count?.[value] ?? undefined)
-          : undefined;
+        const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),
     },
