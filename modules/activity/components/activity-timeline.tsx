@@ -53,7 +53,7 @@ function BaseActivityTimeline({
 
   if (result.error) return <ErrorFallback error={result.error} />;
   if (!result.isLoading && !result.data?.success)
-    return <ErrorFallback error={result.data?.message} />;
+    return <ErrorFallback error={result.data} />;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -71,7 +71,7 @@ function BaseActivityTimeline({
       )}
 
       {result.isLoading ? (
-        <LoadingFallback />
+        <LoadingFallback variant="frame" />
       ) : table.getRowModel().rows.length ? (
         <Timeline orientation="vertical" className="px-2">
           {table.getRowModel().rows.map((row, index) => {
@@ -180,3 +180,5 @@ export function UserActivityTimeline({
 
   return <BaseActivityTimeline controller={controller} {...props} />;
 }
+
+// TODO: function ProfileActivityTimeline() {}

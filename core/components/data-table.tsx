@@ -89,7 +89,7 @@ function BaseDataTable<TData>({
 
   if (result.error) return <ErrorFallback error={result.error} />;
   if (!result.isLoading && !result.data?.success)
-    return <ErrorFallback error={result.data?.message} />;
+    return <ErrorFallback error={result.data} />;
 
   const selectedRowsCount =
     Object.keys(table.getState().rowSelection).length ??

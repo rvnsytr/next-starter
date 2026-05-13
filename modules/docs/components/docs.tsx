@@ -884,7 +884,7 @@ const docs: DocProps[] = [
         render: (
           <>
             <LoadingFallback
-              variant="frame"
+              variant="loader"
               containerClassName="h-24 w-full max-w-lg rounded-xl border"
             />
 

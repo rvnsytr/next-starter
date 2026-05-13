@@ -58,7 +58,7 @@ import { ImpersonateUserBadge } from "./impersonate-user-badge";
 export function SessionList() {
   const { data, error, isLoading } = useListSessions();
   if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
+  if (!data && isLoading) return <LoadingFallback variant="frame" />;
   return <SessionListCollapsible data={data ?? []} />;
 }
 
@@ -69,7 +69,7 @@ export function UserDetailSessionList({
 }) {
   const { data, error, isLoading } = useListUserSessions(user.id);
   if (error) return <ErrorFallback error={error} />;
-  if (!data && isLoading) return <LoadingFallback />;
+  if (!data && isLoading) return <LoadingFallback variant="frame" />;
   return <SessionListCollapsible name={user.name} data={data ?? []} />;
 }
 
