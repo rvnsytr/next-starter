@@ -102,7 +102,8 @@ export function FileUpload({
       data-slot="file-upload"
       className={cn(
         "group/file-upload relative flex w-full flex-col gap-y-4",
-        "has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-64",
+        disabled &&
+          "pointer-events-none cursor-not-allowed has-disabled:opacity-64",
         classNames?.container,
       )}
     >
