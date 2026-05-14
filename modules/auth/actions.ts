@@ -15,7 +15,7 @@ import { AUTH_KEYS } from "./config/keys";
 
 async function listUsers(): Promise<User[]> {
   "use cache";
-  cacheTag(AUTH_KEYS.users);
+  cacheTag(AUTH_KEYS["action:users"]);
 
   const userData = await db.select().from(user).orderBy(desc(user.createdAt));
 
@@ -102,7 +102,7 @@ export async function updateProfileName(
   await db.insert(activity).values({ type: "profile-updated", userId });
 
   revalidatePath("/dashboard/profile");
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -147,7 +147,7 @@ export async function updateProfilePicture(file: File) {
   });
 
   revalidatePath("/dashboard/profile");
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -178,7 +178,7 @@ export async function deleteProfilePicture() {
   });
 
   revalidatePath("/dashboard/profile");
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -224,7 +224,7 @@ export async function createUser(body: {
     return createRes;
   });
 
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -254,7 +254,7 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
     return res;
   });
 
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -279,7 +279,7 @@ export async function banUser(body: {
     return res;
   });
 
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -304,7 +304,7 @@ export async function unbanUser(body: { userId: string }) {
     return res;
   });
 
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }
@@ -362,7 +362,7 @@ export async function deleteUsers(body: { userIds: string[] }) {
     return deleted;
   });
 
-  updateTag(AUTH_KEYS.users);
+  updateTag(AUTH_KEYS["action:users"]);
 
   return res;
 }

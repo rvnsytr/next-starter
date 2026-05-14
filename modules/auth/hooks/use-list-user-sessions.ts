@@ -5,10 +5,10 @@ import { listUserSessions } from "../actions";
 import { AUTH_KEYS } from "../config/keys";
 
 export function useListUserSessions(userId: string, config?: SWRConfiguration) {
-  const key = AUTH_KEYS.userSessions(userId);
+  const key = AUTH_KEYS["action:sessions:user-id"](userId);
   const fetcher = async () => await listUserSessions(userId);
   return useSWR(key, fetcher, config);
 }
 
 export const mutateListUserSessions = (userId: string) =>
-  mutate(AUTH_KEYS.userSessions(userId));
+  mutate(AUTH_KEYS["action:sessions:user-id"](userId));

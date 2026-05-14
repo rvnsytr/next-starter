@@ -13,7 +13,7 @@ import { ACTIVITY_KEYS } from "./config/keys";
 
 async function listActivities(): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(ACTIVITY_KEYS.list);
+  cacheTag(ACTIVITY_KEYS["action:list"]);
   return await db.select().from(activity).orderBy(desc(activity.createdAt));
 }
 
@@ -32,9 +32,11 @@ export async function listActivitiesAction(
   return { success: true, data };
 }
 
-async function cachedActivity(userId: string): Promise<ActivityWithEntity[]> {
+async function getUserActivities(
+  userId: string,
+): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(ACTIVITY_KEYS.get(userId));
+  cacheTag(ACTIVITY_KEYS["action:get:user-id"](userId));
   return await db
     .select()
     .from(activity)
@@ -42,13 +44,13 @@ async function cachedActivity(userId: string): Promise<ActivityWithEntity[]> {
     .orderBy(desc(activity.createdAt));
 }
 
-export async function getMyActivities(
+export async function getMyActivitiesAction(
   userId: string,
 ): Promise<ActionResponse<ActivityWithEntity[]>> {
-  return { success: true, data: await cachedActivity(userId) };
+  return { success: true, data: await getUserActivities(userId) };
 }
 
-export async function getActivities(
+export async function getUserActivitiesAction(
   role: Role,
   userId: string,
 ): Promise<ActionResponse<ActivityWithEntity[]>> {
@@ -60,6 +62,6 @@ export async function getActivities(
   if (!hasPermission.success)
     return { success: false, message: messages.forbidden };
 
-  const data = await cachedActivity(userId);
+  const data = await getUserActivities(userId);
   return { success: true, data };
 }

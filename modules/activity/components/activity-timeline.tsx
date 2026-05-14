@@ -33,7 +33,7 @@ import { cn } from "@/core/utils/helpers";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
-import { getActivities } from "../actions";
+import { getUserActivitiesAction } from "../actions";
 import { getActivityTypeConfig } from "../config";
 import { ACTIVITY_KEYS } from "../config/keys";
 import { getActivityColumns } from "./activity-column";
@@ -171,8 +171,8 @@ export function UserActivityTimeline({
   const controller = useDataController({
     ...controllerOptions,
     query: {
-      key: ACTIVITY_KEYS.get(userId),
-      fetcher: async () => await getActivities(user.role, userId),
+      key: ACTIVITY_KEYS["action:get:user-id"](userId),
+      fetcher: async () => await getUserActivitiesAction(user.role, userId),
     },
   });
 

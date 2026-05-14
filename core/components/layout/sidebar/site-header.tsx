@@ -20,9 +20,7 @@ export function SidebarAppSiteHeader() {
             href="/dashboard"
             className="mx-2 font-mono text-sm font-medium tracking-tight"
           >
-            <ShimmerText className="text-sm font-bold">
-              {appConfig.name}
-            </ShimmerText>
+            <ShimmerText>{appConfig.name}</ShimmerText>
           </Link>
 
           <DynamicBreadcrumb className="hidden md:flex" fallback />

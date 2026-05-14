@@ -1,4 +1,4 @@
 export const ACTIVITY_KEYS = {
-  list: "/activities",
-  get: (userId: string) => `/activities/${userId}`,
+  "action:list": "/activities",
+  "action:get:user-id": (userId: string) => `/activities/${userId}`,
 };

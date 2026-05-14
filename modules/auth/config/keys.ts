@@ -1,5 +1,7 @@
+// TODO: component level cache
 export const AUTH_KEYS = {
-  users: "/auth/admin/list-users",
-  sessions: "/auth/list-sessions",
-  userSessions: (userId: string) => `/auth/list-user-sessions?id=${userId}`,
+  "action:users": "/auth/admin/list-users",
+  "action:sessions": "/auth/list-sessions",
+  "action:sessions:user-id": (userId: string) =>
+    `/auth/list-user-sessions?id=${userId}`,
 };
