@@ -1324,7 +1324,7 @@ export function FilterValueOptionController<TData, TValue>({
   }
 
   const optionsCount: Record<DataFilterOption["value"], number> =
-    columnVals.reduce(
+    columnVals.reduce<Record<DataFilterOption["value"], number>>(
       (acc, curr) => {
         const { value } = columnMeta.transformOptionFn
           ? columnMeta.transformOptionFn(
@@ -1335,7 +1335,7 @@ export function FilterValueOptionController<TData, TValue>({
         acc[value] = (acc[value] ?? 0) + 1;
         return acc;
       },
-      {} as Record<DataFilterOption["value"], number>,
+      {},
     );
 
   const handleOptionSelect = (value: string, check: boolean) => {
@@ -1446,7 +1446,7 @@ export function FilterValueMultiOptionController<
   }
 
   const optionsCount: Record<DataFilterOption["value"], number> =
-    columnVals.reduce(
+    columnVals.reduce<Record<DataFilterOption["value"], number>>(
       (acc, curr) => {
         const value = columnMeta.options
           ? (curr as string)
@@ -1457,7 +1457,7 @@ export function FilterValueMultiOptionController<
         acc[value] = (acc[value] ?? 0) + 1;
         return acc;
       },
-      {} as Record<DataFilterOption["value"], number>,
+      {},
     );
 
   // Handles the selection/deselection of an option

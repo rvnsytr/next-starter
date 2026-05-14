@@ -50,13 +50,10 @@ export function PieChart({
     <ChartContainer
       config={{
         dataKey: { label: label },
-        ...data.reduce(
-          (acc, item) => {
-            acc[item.nameKey] = { label: item.nameKey };
-            return acc;
-          },
-          {} as Record<string, { label: string }>,
-        ),
+        ...data.reduce<Record<string, { label: string }>>((acc, item) => {
+          acc[item.nameKey] = { label: item.nameKey };
+          return acc;
+        }, {}),
       }}
       className={cn(
         "aspect-square",

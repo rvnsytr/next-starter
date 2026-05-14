@@ -30,7 +30,7 @@ import { useMemo, useState } from "react";
 import useSWR, { mutate, SWRConfiguration, SWRResponse } from "swr";
 import z from "zod";
 import { DataControllerState } from "../data-controller";
-import { ActionResponse, ActionSuccess } from "../types";
+import { ActionResponse, ActionSuccess, Override } from "../types";
 import {
   allFilterOperators,
   formatLocalizedDate,
@@ -47,6 +47,11 @@ type AllDataControllerState = DataControllerState & {
   rowSelection: RowSelectionState;
 };
 
+export type DataControllerQueryConfig<TData> = Override<
+  SWRConfiguration,
+  { fallbackData?: ActionSuccess<TData[]> }
+>;
+
 export type DataControllerResult<TData> = SWRResponse<ActionSuccess<TData[]>>;
 
 export type DataControllerOptions<TData> = Pick<
@@ -60,7 +65,7 @@ export type DataControllerOptions<TData> = Pick<
   query: {
     key: string;
     fetcher: (state: DataControllerState) => Promise<ActionResponse<TData[]>>;
-    config?: SWRConfiguration;
+    config?: DataControllerQueryConfig<TData>;
     immutable?: boolean;
   };
 
