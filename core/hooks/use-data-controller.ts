@@ -41,7 +41,7 @@ import { useDebounce } from "./use-debounce";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ColumnDef<TData> = ColumnDefType<TData, any>[];
 
-type AllDataControllerState = DataControllerState & {
+export type AllDataControllerState = DataControllerState & {
   columnPinning: ColumnPinningState;
   columnVisibility: VisibilityState;
   rowSelection: RowSelectionState;
@@ -346,20 +346,20 @@ function getColumnFiltersParser<TData>(
                     else return null;
                   }
 
-                  if (colType === "option" || colType === "multiOption") {
-                    const colOptions =
-                      col.meta?.options ?? col.meta?.transformOptionFn?.(v);
+                  // if (colType === "option" || colType === "multiOption") {
+                  //   const colOptions =
+                  //     col.meta?.options ?? col.meta?.transformOptionFn?.(v);
 
-                    if (!colOptions) return null;
+                  //   if (!colOptions) return null;
 
-                    if (Array.isArray(colOptions)) {
-                      const isValid = colOptions.some((opt) => opt.value === v);
-                      if (!isValid) return null;
-                    } else {
-                      const isValid = colOptions.value === v;
-                      if (!isValid) return null;
-                    }
-                  }
+                  //   if (Array.isArray(colOptions)) {
+                  //     const isValid = colOptions.some((opt) => opt.value === v);
+                  //     if (!isValid) return null;
+                  //   } else {
+                  //     const isValid = colOptions.value === v;
+                  //     if (!isValid) return null;
+                  //   }
+                  // }
 
                   return v;
                 })
