@@ -36,7 +36,7 @@ import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { getUserActivitiesAction } from "../actions";
 import { getActivityTypeConfig } from "../config";
-import { ACTIVITY_KEYS } from "../config/keys";
+import { activityKeys } from "../config/keys";
 import { getActivityColumns } from "./activity-column";
 
 export type ActivityTimelineProps = {
@@ -159,7 +159,7 @@ const controllerOptions: Omit<
 };
 
 export const mutateUserActivityTimeline = (userId: string) =>
-  mutateControlledData(ACTIVITY_KEYS.action.getByUser(userId));
+  mutateControlledData(activityKeys.action.getByUser(userId));
 
 export function UserActivityTimeline({
   userId,
@@ -170,7 +170,7 @@ export function UserActivityTimeline({
   const controller = useDataController({
     ...controllerOptions,
     query: {
-      key: ACTIVITY_KEYS.action.getByUser(userId),
+      key: activityKeys.action.getByUser(userId),
       fetcher: async () => await getUserActivitiesAction(user.role, userId),
     },
   });

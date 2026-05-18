@@ -1,4 +1,4 @@
-export const AUTH_KEYS = {
+export const authKeys = {
   action: {
     users: "action:users",
     sessions: "action:sessions",

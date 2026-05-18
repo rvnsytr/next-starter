@@ -18,7 +18,7 @@ import { messages } from "@/core/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsersAction } from "../actions";
-import { AUTH_KEYS } from "../config/keys";
+import { authKeys } from "../config/keys";
 import { useSession } from "../hooks/use-session";
 import { ActionDeleteUsersDialog } from "./delete-user-dialog";
 import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
@@ -26,7 +26,7 @@ import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
 export const mutateUserDataTable = () =>
-  mutateControlledData(AUTH_KEYS.action.users);
+  mutateControlledData(authKeys.action.users);
 
 export function UserDataTable() {
   const { user } = useSession();
@@ -45,7 +45,7 @@ export function UserDataTable() {
         mode="auto"
         columns={getUserColumns}
         query={{
-          key: AUTH_KEYS.action.users,
+          key: authKeys.action.users,
           fetcher: async () => await listUsersAction(user.role),
           immutable: true,
         }}
