@@ -72,31 +72,28 @@ export function CreateUserDialog() {
     },
   });
 
-  const formHandler = ({ newPassword, role: newRole, ...rest }: FormSchema) => {
+  const formHandler = ({ newPassword, ...rest }: FormSchema) => {
     setIsLoading(true);
-    toast.promise(
-      createUser({ password: newPassword, role: newRole, ...rest }),
-      {
-        loading: { title: messages.loading },
-        success: () => {
-          setIsLoading(false);
-          form.reset();
-          mutateUserDataTable();
-          return {
-            title: messages.success,
-            description: (
-              <span>
-                Akun atas nama <b>{rest.name}</b> berhasil dibuat.
-              </span>
-            ),
-          };
-        },
-        error: (e) => {
-          setIsLoading(false);
-          return { title: messages.error, description: e.message };
-        },
+    toast.promise(createUser({ password: newPassword, ...rest }), {
+      loading: { title: messages.loading },
+      success: () => {
+        setIsLoading(false);
+        form.reset();
+        mutateUserDataTable();
+        return {
+          title: messages.success,
+          description: (
+            <span>
+              Akun atas nama <b>{rest.name}</b> berhasil dibuat.
+            </span>
+          ),
+        };
       },
-    );
+      error: (e) => {
+        setIsLoading(false);
+        return { title: messages.error, description: e.message };
+      },
+    });
   };
 
   return (

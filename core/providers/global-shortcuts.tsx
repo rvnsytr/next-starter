@@ -2,7 +2,7 @@
 
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { nextTheme, THEME_TOGGLE_HOTKEY } from "../components/theme";
+import { nextTheme, themeToggleConfig } from "../components/theme";
 import { useViewTransition } from "../hooks/use-view-transition";
 
 export function GlobalShortcuts() {
@@ -12,7 +12,7 @@ export function GlobalShortcuts() {
   useHotkeys(
     [
       {
-        hotkey: THEME_TOGGLE_HOTKEY,
+        hotkey: themeToggleConfig.hotkey,
         callback: () => startTransition(() => setTheme(nextTheme)),
       },
     ],

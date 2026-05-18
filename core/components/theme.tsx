@@ -16,11 +16,20 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export const THEME_TOGGLE_LABEL = "Toggle Theme";
-export const THEME_TOGGLE_HOTKEY: Hotkey = "D";
-
 export type Theme = (typeof allThemes)[number];
 export const allThemes = ["light", "system", "dark"] as const;
+
+export const themeToggleConfig: {
+  label: string;
+  hotkey: Hotkey;
+  hotkeyDisplay: string;
+} = {
+  label: "Toggle Theme",
+  hotkey: "D",
+  get hotkeyDisplay() {
+    return formatForDisplay(this.hotkey);
+  },
+};
 
 export const themeConfig: Record<Theme, { icon: LucideIcon }> = {
   light: { icon: SunIcon },
@@ -71,7 +80,7 @@ export function ThemeToggle({
       {...props}
     >
       <Icon />
-      <span className="sr-only">{THEME_TOGGLE_LABEL}</span>
+      <span className="sr-only">{themeToggleConfig.label}</span>
     </Button>
   );
 
@@ -82,8 +91,7 @@ export function ThemeToggle({
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          {THEME_TOGGLE_LABEL}{" "}
-          <Kbd>{formatForDisplay(THEME_TOGGLE_HOTKEY)}</Kbd>
+          {themeToggleConfig.label} <Kbd>{themeToggleConfig.hotkeyDisplay}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>

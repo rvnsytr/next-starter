@@ -12,8 +12,17 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export const LAYOUT_MODE_TOGGLE_LABEL = "Toggle Layout";
-export const LAYOUT_MODE_TOGGLE_HOTKEY: Hotkey = "Alt+L";
+export const layoutModeToggleConfig: {
+  label: string;
+  hotkey: Hotkey;
+  hotkeyDisplay: string;
+} = {
+  label: "Toggle Layout",
+  hotkey: "L",
+  get hotkeyDisplay() {
+    return formatForDisplay(this.hotkey);
+  },
+};
 
 export function LayoutModeToggle({
   withTooltip = false,
@@ -37,7 +46,7 @@ export function LayoutModeToggle({
   const toggleLayout = () =>
     setLayout((prev) => (prev === "fullwidth" ? "centered" : "fullwidth"));
 
-  useHotkey(LAYOUT_MODE_TOGGLE_HOTKEY, toggleLayout);
+  useHotkey(layoutModeToggleConfig.hotkey, toggleLayout);
 
   if (!isLargeScreen) return null;
   if (!isMounted)
@@ -56,7 +65,7 @@ export function LayoutModeToggle({
       {...props}
     >
       <Icon />
-      <span className="sr-only">{LAYOUT_MODE_TOGGLE_LABEL}</span>
+      <span className="sr-only">{layoutModeToggleConfig.label}</span>
     </Button>
   );
 
@@ -67,8 +76,8 @@ export function LayoutModeToggle({
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          {LAYOUT_MODE_TOGGLE_LABEL}{" "}
-          <Kbd>{formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)}</Kbd>
+          {layoutModeToggleConfig.label}{" "}
+          <Kbd>{layoutModeToggleConfig.hotkeyDisplay}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>

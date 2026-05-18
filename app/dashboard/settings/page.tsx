@@ -1,9 +1,9 @@
 import {
-  LAYOUT_MODE_TOGGLE_HOTKEY,
   LayoutModeSettings,
+  layoutModeToggleConfig,
 } from "@/core/components/layout-mode";
 import { PageContainer } from "@/core/components/layout/page";
-import { THEME_TOGGLE_HOTKEY, ThemeSettings } from "@/core/components/theme";
+import { ThemeSettings, themeToggleConfig } from "@/core/components/theme";
 import {
   Card,
   CardAction,
@@ -49,8 +49,7 @@ export default function Page() {
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {/* {formatForDisplay(THEME_TOGGLE_HOTKEY)} */}
-              {THEME_TOGGLE_HOTKEY}
+              {themeToggleConfig.hotkeyDisplay}
             </Kbd>
           </CardAction>
         </CardHeader>
@@ -76,8 +75,7 @@ export default function Page() {
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {/* {formatForDisplay(LAYOUT_MODE_TOGGLE_HOTKEY)} */}
-              {LAYOUT_MODE_TOGGLE_HOTKEY}
+              {layoutModeToggleConfig.hotkeyDisplay}
             </Kbd>
           </CardAction>
         </CardHeader>
