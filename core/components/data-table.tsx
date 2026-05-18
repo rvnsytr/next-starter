@@ -83,20 +83,18 @@ function BaseDataTable<TData>({
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
   const isMobile = useIsMobile();
-
   const isMounted = useIsMounted();
-  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   if (result.error) return <ErrorFallback error={result.error} />;
+
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const isSelected = selectedRows.length > 0;
 
   const rowsCount =
     result.data?.count?.total ?? table.getFilteredRowModel().rows.length;
   const selectedRowsCount =
     Object.keys(table.getState().rowSelection).length ??
     table.getFilteredSelectedRowModel().rows.length;
-
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const isSelected = selectedRows.length > 0;
 
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
@@ -111,40 +109,30 @@ function BaseDataTable<TData>({
             <FilterSelector
               table={table}
               align="start"
-              disabled={result.isLoading}
               shortcut={shortcuts?.filter}
             />
-            <DataControllerSorting
-              table={table}
-              disabled={result.isLoading}
-              shortcut={shortcuts?.sort}
-            />
+            <DataControllerSorting table={table} shortcut={shortcuts?.sort} />
             <DataControllerVisibility
               table={table}
               align={isMobile ? "end" : "center"}
-              disabled={result.isLoading}
               shortcut={shortcuts?.view}
             />
           </ButtonGroup>
 
-          {isSelected && !isMobile && (
+          {isMounted && isSelected && !isMobile && (
             <Separator orientation="vertical" className="h-4" />
           )}
 
-          {isSelected &&
+          {isMounted &&
+            isSelected &&
             renderRowSelectionButton?.({ table, rows: selectedRows })}
         </div>
 
         <div className="flex gap-x-2 *:grow">
-          <ResetFilters
-            table={table}
-            disabled={result.isLoading}
-            shortcut={shortcuts?.reset}
-          />
+          <ResetFilters table={table} shortcut={shortcuts?.reset} />
           <DataControllerSearch
             table={table}
             placeholder={placeholder?.search}
-            disabled={result.isLoading}
             shortcut={shortcuts?.search}
           />
         </div>
@@ -158,101 +146,108 @@ function BaseDataTable<TData>({
         </ActiveFiltersContainer>
       )}
 
-      <Table
-        className={classNames?.table}
-        containerClassName={cn("rounded-xl border", classNames?.tableContainer)}
-      >
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(
-                ({ id, column, isPlaceholder, getContext }) => {
-                  const columnPinned = column.getIsPinned();
-                  return (
-                    <TableHead
-                      key={id}
-                      className={cn(
-                        "z-10 text-center",
-                        columnPinned && "bg-background/90 sticky z-20",
-                        columnPinned === "left" && "left-0",
-                        columnPinned === "right" && "right-0",
-                      )}
-                      // style={{
-                      //   left: column.getStart("left"),
-                      //   right: column.getAfter("right"),
-                      // }}
-                    >
-                      {!isPlaceholder &&
-                        flexRender(column.columnDef.header, getContext())}
-                    </TableHead>
-                  );
-                },
-              )}
-            </TableRow>
-          ))}
-        </TableHeader>
-
-        <TableBody>
-          {result.isLoading ? (
-            Array.from({ length: table.getState().pagination.pageSize }).map(
-              (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={columns.length}>
-                    <Skeleton className="h-8 w-full" />
-                  </TableCell>
-                </TableRow>
-              ),
-            )
-          ) : table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className={cn(
-                  "group/row",
-                  !!onRowClick && "z-0 cursor-pointer select-none",
-                )}
-                onClick={(e) => {
-                  if (!onRowClick) return;
-                  const target = e.target as HTMLElement;
-                  if (target.closest("[data-no-row-click]")) return;
-                  onRowClick(row);
-                }}
-              >
-                {row.getVisibleCells().map(({ id, column, getContext }) => {
-                  const columnPinned = column.getIsPinned();
-                  return (
-                    <TableCell
-                      key={id}
-                      className={cn(
-                        "z-10",
-                        columnPinned && "bg-background/90 sticky z-20",
-                        columnPinned === "left" && "left-0",
-                        columnPinned === "right" && "right-0",
-                      )}
-                      // style={{
-                      //   left: column.getStart("left"),
-                      //   right: column.getAfter("right"),
-                      // }}
-                    >
-                      {flexRender(column.columnDef.cell, getContext())}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="text-muted-foreground py-4 text-center whitespace-pre-line"
-              >
-                {placeholder?.table ?? messages.empty}
-              </TableCell>
-            </TableRow>
+      {isMounted ? (
+        <Table
+          className={classNames?.table}
+          containerClassName={cn(
+            "rounded-xl border",
+            classNames?.tableContainer,
           )}
-        </TableBody>
-      </Table>
+        >
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(
+                  ({ id, column, isPlaceholder, getContext }) => {
+                    const columnPinned = column.getIsPinned();
+                    return (
+                      <TableHead
+                        key={id}
+                        className={cn(
+                          "z-10 text-center",
+                          columnPinned && "bg-background/90 sticky z-20",
+                          columnPinned === "left" && "left-0",
+                          columnPinned === "right" && "right-0",
+                        )}
+                        // style={{
+                        //   left: column.getStart("left"),
+                        //   right: column.getAfter("right"),
+                        // }}
+                      >
+                        {!isPlaceholder &&
+                          flexRender(column.columnDef.header, getContext())}
+                      </TableHead>
+                    );
+                  },
+                )}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {!result.data && result.isLoading ? (
+              Array.from({ length: table.getState().pagination.pageSize }).map(
+                (_, i) => (
+                  <TableRow key={i}>
+                    <TableCell colSpan={columns.length}>
+                      <Skeleton className="h-8 w-full" />
+                    </TableCell>
+                  </TableRow>
+                ),
+              )
+            ) : table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={cn(
+                    "group/row",
+                    !!onRowClick && "z-0 cursor-pointer select-none",
+                  )}
+                  onClick={(e) => {
+                    if (!onRowClick) return;
+                    const target = e.target as HTMLElement;
+                    if (target.closest("[data-no-row-click]")) return;
+                    onRowClick(row);
+                  }}
+                >
+                  {row.getVisibleCells().map(({ id, column, getContext }) => {
+                    const columnPinned = column.getIsPinned();
+                    return (
+                      <TableCell
+                        key={id}
+                        className={cn(
+                          "z-10",
+                          columnPinned && "bg-background/90 sticky z-20",
+                          columnPinned === "left" && "left-0",
+                          columnPinned === "right" && "right-0",
+                        )}
+                        // style={{
+                        //   left: column.getStart("left"),
+                        //   right: column.getAfter("right"),
+                        // }}
+                      >
+                        {flexRender(column.columnDef.cell, getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-muted-foreground py-4 text-center whitespace-pre-line"
+                >
+                  {placeholder?.table ?? messages.empty}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      ) : (
+        <LoadingFallback variant="frame" />
+      )}
 
       <div
         className={cn(
@@ -265,7 +260,7 @@ function BaseDataTable<TData>({
           className="order-4 flex items-center gap-x-2 lg:order-1"
         >
           <Label className="shrink-0">Baris per halaman</Label>
-          <DataControllerPageSize table={table} disabled={result.isLoading} />
+          <DataControllerPageSize table={table} />
         </div>
 
         <small
@@ -302,7 +297,6 @@ function BaseDataTable<TData>({
           table={table}
           size="icon"
           className="order-3 lg:order-5"
-          disabled={result.isLoading}
         />
       </div>
     </div>

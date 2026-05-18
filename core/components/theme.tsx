@@ -95,7 +95,7 @@ export function ThemeSettings() {
   const { theme, setTheme } = useTheme();
   const { isTransitioning, startTransition } = useViewTransition();
 
-  if (!isMounted) return <LoadingFallback />;
+  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   return (
     <RadioGroup

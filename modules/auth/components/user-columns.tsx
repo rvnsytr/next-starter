@@ -50,11 +50,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   }),
   createColumn.accessor((ac) => ac.name, {
     id: "name",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Nama
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Nama</ColumnHeader>,
     cell: (c) => (
       <div className="flex items-center gap-2">
         <Avatar
@@ -72,11 +68,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   }),
   createColumn.accessor((ac) => ac.email, {
     id: "email",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Alamat Email
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Alamat Email</ColumnHeader>,
     cell: (c) => (
       <div className="flex items-center gap-x-2">
         {c.cell.getValue()}
@@ -88,11 +80,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   }),
   createColumn.accessor((ac) => getUserStatus(ac), {
     id: "status",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Status
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Status</ColumnHeader>,
     cell: (c) => <UserStatusBadge value={c.cell.getValue()} />,
     filterFn: filterFn("option"),
     meta: {
@@ -108,11 +96,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   }),
   createColumn.accessor((ac) => ac.role, {
     id: "role",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Role
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Role</ColumnHeader>,
     cell: (c) => (
       <div className="flex items-center gap-2">
         <UserRoleColumn data={c.row.original} />
@@ -134,9 +118,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   createColumn.accessor((ac) => ac.updatedAt, {
     id: "updatedAt",
     header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Terakhir Diperbarui
-      </ColumnHeader>
+      <ColumnHeader column={c.column}>Terakhir Diperbarui</ColumnHeader>
     ),
     cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
@@ -148,11 +130,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
   }),
   createColumn.accessor((c) => c.createdAt, {
     id: "createdAt",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Waktu Dibuat
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
     cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
     filterFn: filterFn("date"),
     meta: { label: "Waktu Dibuat", type: "date", icon: CalendarCheck2Icon },

@@ -19,11 +19,7 @@ export const getActivityColumns = (
   }),
   createColumn.accessor((ac) => ac.type, {
     id: "type",
-    header: (c) => (
-      <ColumnHeader column={c.column} disabled={result?.isLoading}>
-        Tipe
-      </ColumnHeader>
-    ),
+    header: (c) => <ColumnHeader column={c.column}>Tipe</ColumnHeader>,
     cell: (c) => c.cell.getValue(),
     filterFn: filterFn("option"),
     meta: {

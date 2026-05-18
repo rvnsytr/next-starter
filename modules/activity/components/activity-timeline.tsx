@@ -57,8 +57,8 @@ function BaseActivityTimeline({
   return (
     <div className={cn("flex flex-col gap-y-4", className)}>
       <div className="flex gap-x-2">
-        <FilterSelector table={table} size="sm" disabled={result.isLoading} />
-        <ResetFilters table={table} size="sm" disabled={result.isLoading} />
+        <FilterSelector table={table} size="sm" />
+        <ResetFilters table={table} size="sm" />
       </div>
 
       {table.getState().columnFilters.length > 0 && (
@@ -120,11 +120,7 @@ function BaseActivityTimeline({
           className="order-3 flex items-center gap-x-2 lg:order-1"
         >
           <Label className="hidden shrink-0 lg:inline-flex">Per halaman</Label>
-          <DataControllerPageSize
-            table={table}
-            size="sm"
-            disabled={result.isLoading}
-          />
+          <DataControllerPageSize table={table} size="sm" />
         </div>
 
         <small
@@ -146,7 +142,6 @@ function BaseActivityTimeline({
           table={table}
           size="icon-sm"
           className="order-2 lg:order-3"
-          disabled={result.isLoading}
         />
       </div>
     </div>

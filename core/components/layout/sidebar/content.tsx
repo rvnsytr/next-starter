@@ -20,7 +20,6 @@ import {
   useSidebar,
 } from "@/core/components/ui/sidebar";
 import { LinkSpinner } from "@/core/components/ui/spinner";
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { getActiveRoute, getMenuByRole } from "@/core/route";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
@@ -43,7 +42,6 @@ export function SidebarAppContent() {
   const { isMobile, toggleSidebar } = useSidebar();
 
   const pathname = usePathname();
-  const isMounted = useIsMounted();
 
   const menu = useMemo(
     () => getMenuByRole(menuConfig.dashboard, user.role),
@@ -103,59 +101,54 @@ export function SidebarAppContent() {
                       )}
                     </SidebarMenuButton>
 
-                    {subItems &&
-                      (isMounted ? (
-                        <>
-                          <CollapsibleTrigger
-                            render={
-                              <SidebarMenuAction className="data-panel-open:rotate-90">
-                                <ChevronRightIcon />
-                              </SidebarMenuAction>
-                            }
-                          />
+                    {subItems && (
+                      <>
+                        <CollapsibleTrigger
+                          render={
+                            <SidebarMenuAction className="data-panel-open:rotate-90">
+                              <ChevronRightIcon />
+                            </SidebarMenuAction>
+                          }
+                        />
 
-                          <CollapsiblePanel>
-                            <SidebarMenuSub>
-                              {subItems.map((itm, idx) => {
-                                if (itm.disabled) {
-                                  return (
-                                    <SidebarMenuSubItem key={idx}>
-                                      <SidebarMenuSubButton className="pointer-events-none line-clamp-1 flex justify-between opacity-64">
-                                        {itm.label}
-                                      </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                  );
-                                }
-
+                        <CollapsiblePanel>
+                          <SidebarMenuSub>
+                            {subItems.map((itm, idx) => {
+                              if (itm.disabled) {
                                 return (
                                   <SidebarMenuSubItem key={idx}>
-                                    <SidebarMenuSubButton
-                                      className="flex justify-between"
-                                      render={
-                                        <Link
-                                          href={
-                                            itm.href ??
-                                            `${route}#${toCase(itm.label, "kebab")}`
-                                          }
-                                        >
-                                          <span className="line-clamp-1">
-                                            {itm.label}
-                                          </span>
-                                          <LinkSpinner />
-                                        </Link>
-                                      }
-                                    />
+                                    <SidebarMenuSubButton className="pointer-events-none line-clamp-1 flex justify-between opacity-64">
+                                      {itm.label}
+                                    </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );
-                              })}
-                            </SidebarMenuSub>
-                          </CollapsiblePanel>
-                        </>
-                      ) : (
-                        <SidebarMenuAction disabled>
-                          <ChevronRightIcon />
-                        </SidebarMenuAction>
-                      ))}
+                              }
+
+                              return (
+                                <SidebarMenuSubItem key={idx}>
+                                  <SidebarMenuSubButton
+                                    className="flex justify-between"
+                                    render={
+                                      <Link
+                                        href={
+                                          itm.href ??
+                                          `${route}#${toCase(itm.label, "kebab")}`
+                                        }
+                                      >
+                                        <span className="line-clamp-1">
+                                          {itm.label}
+                                        </span>
+                                        <LinkSpinner />
+                                      </Link>
+                                    }
+                                  />
+                                </SidebarMenuSubItem>
+                              );
+                            })}
+                          </SidebarMenuSub>
+                        </CollapsiblePanel>
+                      </>
+                    )}
                   </SidebarMainContentCollapsible>
                 );
               },
