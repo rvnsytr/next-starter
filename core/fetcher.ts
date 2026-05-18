@@ -1,3 +1,4 @@
+import { apiConfig } from "@/shared/config/api";
 import z from "zod";
 
 export const getApiResponseSchema = <T>(schema: z.ZodType<T>) =>
@@ -53,6 +54,26 @@ fetcher.postJson = async <T>(
   config?: Omit<ApiFetcherConfig<T>, "method">,
 ) =>
   await fetcher(url, {
+    ...config,
+    method: "POST",
+    headers: { ...config?.headers, "Content-Type": "application/json" },
+  });
+
+fetcher.api = async <T>(
+  path: string,
+  config?: ApiFetcherConfig<T>,
+): Promise<ApiResponse<T>> =>
+  await fetcher(`${apiConfig.baseUrl}${path}`, {
+    ...config,
+    credentials: "include",
+    schema: getApiResponseSchema(config?.schema ?? z.any()),
+  });
+
+fetcher.apiPostJson = async <T>(
+  path: string,
+  config?: ApiFetcherConfig<T>,
+): Promise<ApiResponse<T>> =>
+  await fetcher.api(path, {
     ...config,
     method: "POST",
     headers: { ...config?.headers, "Content-Type": "application/json" },
