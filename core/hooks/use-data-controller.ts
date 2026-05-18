@@ -263,12 +263,19 @@ const getSortingParser = (defaultValue: DataControllerState["sorting"]) =>
       return v
         .split(";")
         .map((part) => {
-          const [id, rawDir] = part.split(":");
+          const idx = part.indexOf(":");
+          if (idx === -1) return null;
+
+          const id = part.slice(0, idx).trim();
+          const rawDir = part.slice(idx + 1).trim();
+
+          if (!id || !rawDir) return null;
+
           const parsed = z.enum(["asc", "desc"]).safeParse(rawDir);
           if (!id || !parsed.success) return null;
           return { id, desc: parsed.data === "desc" };
         })
-        .filter((v) => !!v);
+        .filter((v) => v !== null);
     },
     serialize: (v) => {
       if (!v?.length) return null as unknown as string;
@@ -283,7 +290,12 @@ const getRecordParser = (
   createParser<Record<string, boolean>>({
     parse: (v) => {
       if (!v) return defaultValue;
-      return Object.fromEntries(v.split(",").map((v) => [v, value]));
+      return Object.fromEntries(
+        v
+          .split(",")
+          .filter(Boolean)
+          .map((v) => [v.trim(), value]),
+      );
     },
     serialize: (v) => {
       const entries = Object.entries(v);
@@ -317,59 +329,51 @@ function getColumnFiltersParser<TData>(
   return createParser<DataControllerState["columnFilters"]>({
     parse: (value) => {
       if (!value) return [];
+
+      const resolvedColumns =
+        typeof columns === "function" ? columns() : columns;
+
       return value
         .split(";")
         .map((part) => {
-          const [id, operator, rawValues = ""] = part.split(":");
+          const first = part.indexOf(":");
+          const second = part.indexOf(":", first + 1);
+
+          if (first === -1 || second === -1) return null;
+
+          const id = part.slice(0, first);
+          const operator = part.slice(first + 1, second);
+          const rawValues = part.slice(second + 1);
+
           if (!id || !operator || !rawValues) return null;
 
-          const resolvedColumns =
-            typeof columns === "function" ? columns() : columns;
           const col = resolvedColumns.find((c) => c.id === id);
           if (!col) return null;
 
           const colType = col.meta?.type;
 
           const values = rawValues
-            ? rawValues
-                .split(",")
-                .map((v) => {
-                  if (colType === "date") {
-                    const d = parseLocalizedDate(v, "yyyyMMdd'T'HHmm");
-                    if (isValid(d)) return d;
-                    else return null;
-                  }
+            .split(",")
+            .map((v) => {
+              if (colType === "date") {
+                const d = parseLocalizedDate(v, "yyyyMMdd'T'HHmm");
+                return isValid(d) ? d : null;
+              }
 
-                  if (colType === "number") {
-                    const n = Number(v);
-                    if (!Number.isNaN(n)) return n;
-                    else return null;
-                  }
+              if (colType === "number") {
+                const n = Number(v);
+                return Number.isNaN(n) ? null : n;
+              }
 
-                  // if (colType === "option" || colType === "multiOption") {
-                  //   const colOptions =
-                  //     col.meta?.options ?? col.meta?.transformOptionFn?.(v);
-
-                  //   if (!colOptions) return null;
-
-                  //   if (Array.isArray(colOptions)) {
-                  //     const isValid = colOptions.some((opt) => opt.value === v);
-                  //     if (!isValid) return null;
-                  //   } else {
-                  //     const isValid = colOptions.value === v;
-                  //     if (!isValid) return null;
-                  //   }
-                  // }
-
-                  return v;
-                })
-                .filter((v) => !!v)
-            : [];
+              return v;
+            })
+            .filter((v) => v !== null);
 
           if (!values.length) return null;
+
           return { id, value: { operator, values } };
         })
-        .filter((v) => !!v);
+        .filter((v) => v !== null);
     },
     serialize: (value) => {
       if (!value?.length) return null as unknown as string;
