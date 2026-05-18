@@ -26,7 +26,7 @@ import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
 export const mutateUserDataTable = () =>
-  mutateControlledData(AUTH_KEYS["action:users"]);
+  mutateControlledData(AUTH_KEYS.action.users);
 
 export function UserDataTable() {
   const { user } = useSession();
@@ -46,7 +46,7 @@ export function UserDataTable() {
       <QueryDataTable
         mode="auto"
         columns={getUserColumns}
-        query={{ key: AUTH_KEYS["action:users"], fetcher, immutable: true }}
+        query={{ key: AUTH_KEYS.action.users, fetcher, immutable: true }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
         placeholder={{ search: "Cari Pengguna..." }}

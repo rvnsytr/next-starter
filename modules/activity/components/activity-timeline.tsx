@@ -24,6 +24,7 @@ import {
 import {
   DataControllerOptions,
   DataControllerResponse,
+  mutateControlledData,
   useDataController,
 } from "@/core/hooks/use-data-controller";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
@@ -162,6 +163,9 @@ const controllerOptions: Omit<
   defaultState: { pagination: { pageIndex: 0, pageSize: 5 } },
 };
 
+export const mutateUserActivityTimeline = (userId: string) =>
+  mutateControlledData(ACTIVITY_KEYS.action.getByUser(userId));
+
 export function UserActivityTimeline({
   userId,
   ...props
@@ -171,7 +175,7 @@ export function UserActivityTimeline({
   const controller = useDataController({
     ...controllerOptions,
     query: {
-      key: ACTIVITY_KEYS["action:get:user-id"](userId),
+      key: ACTIVITY_KEYS.action.getByUser(userId),
       fetcher: async () => await getUserActivitiesAction(user.role, userId),
     },
   });

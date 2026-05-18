@@ -1,4 +1,6 @@
 export const ACTIVITY_KEYS = {
-  "action:list": "/activities",
-  "action:get:user-id": (userId: string) => `/activities/${userId}`,
-};
+  action: {
+    list: "action:activities",
+    getByUser: (userId: string) => `action:activities:${userId}`,
+  },
+} as const;
