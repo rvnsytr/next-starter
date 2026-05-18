@@ -1,5 +1,5 @@
-export type Language = (typeof allLanguage)[number];
-export const allLanguage = ["en", "id", "es", "fr", "de", "ar"] as const;
+export type Language = (typeof allLanguages)[number];
+export const allLanguages = ["en", "id", "es", "fr", "de", "ar"] as const;
 export const languageConfig: Record<
   Language,
   { locale: string; currency: string; decimal: number; symbol: string }

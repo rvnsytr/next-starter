@@ -3,8 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 
 export function useViewTransition() {
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const activeCount = useRef(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const startTransition = useCallback((callback: () => void) => {
     if (!document.startViewTransition) return callback();

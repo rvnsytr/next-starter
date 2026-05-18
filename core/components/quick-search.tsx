@@ -141,7 +141,7 @@ export function QuickSearch({
 
       setIsOpen(false);
     },
-    [copy, router],
+    [router, copy],
   );
 
   useHotkeys(
