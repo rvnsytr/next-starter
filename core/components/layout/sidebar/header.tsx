@@ -3,6 +3,7 @@
 import {
   QuickSearch,
   QuickSearchDataGroup,
+  QuickSearchItem,
 } from "@/core/components/quick-search";
 import {
   Avatar,
@@ -18,38 +19,46 @@ import {
   SidebarSeparator,
 } from "@/core/components/ui/sidebar";
 import { getMenuByRole } from "@/core/route";
+import { stopImpersonateUser } from "@/modules/auth/actions";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { menuConfig } from "@/shared/menu";
-import { LogOutIcon } from "lucide-react";
+import { Layers2Icon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 export function SidebarAppHeader() {
   const router = useRouter();
-  const { user } = useSession();
+  const { user, session } = useSession();
 
   const data: QuickSearchDataGroup = useMemo(() => {
+    const actionItems: QuickSearchItem[] = [
+      {
+        type: "action",
+        label: "Keluar",
+        // TODO: variant: "destructive",
+        icon: <LogOutIcon />,
+        callback: () =>
+          signOutClient({ onSuccess: () => router.push("/sign-in") }),
+      },
+    ];
+
+    if (!!session.impersonatedBy)
+      actionItems.unshift({
+        type: "action",
+        label: "Kembali ke akun saya",
+        icon: <Layers2Icon />,
+        callback: stopImpersonateUser,
+      });
+
     return [
       ...getMenuByRole(menuConfig.dashboard, user.role),
       { group: "Navigasi", items: menuConfig["dashboard-footer"] },
-      {
-        group: "Aksi",
-        items: [
-          {
-            type: "action",
-            label: "Keluar",
-            // TODO: variant: "destructive",
-            icon: <LogOutIcon />,
-            callback: () =>
-              signOutClient({ onSuccess: () => router.push("/sign-in") }),
-          },
-        ],
-      },
+      { group: "Aksi", items: actionItems },
     ];
-  }, [router, user.role]);
+  }, [router, user.role, session.impersonatedBy]);
 
   return (
     <SidebarHeader>
