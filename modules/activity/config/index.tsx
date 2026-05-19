@@ -9,6 +9,7 @@ import {
   UserRoundXIcon,
   UserSquare2Icon,
 } from "lucide-react";
+import { DeletedEntityIcon } from "../components/deleted-entity-icon";
 import { ActivityType } from "../schema";
 
 type ActivityConfigMetadata = {
@@ -16,6 +17,7 @@ type ActivityConfigMetadata = {
   description: React.ReactNode;
   icon: LucideIcon;
   color?: string;
+  textColor?: string;
 };
 
 type ActivityConfigContext = Pick<ActivityWithEntity, "data" | "entity">;
@@ -30,18 +32,21 @@ export const activityTypeConfig: Record<
   //   description: "Pengguna berhasil mendaftar dan membuat akun baru.",
   //   icon: UserRoundCheckIcon,
   //   color: "var(--color-success)",
+  //   textColor: "var(--color-success-foreground)",
   // },
   "user-created": {
     label: "Akun Dibuat",
     description: "Akun berhasil dibuat dan ditambahkan ke dalam sistem.",
     icon: PlusCircleIcon,
     color: "var(--color-success)",
+    textColor: "var(--color-success-foreground)",
   },
   // "user-imported": {
   //   label: "Akun Diimpor",
   //   description: "Akun berhasil dimuat melalui loader ke dalam sistem.",
   //   icon: PlusCircleIcon,
   //   color: "var(--color-success)",
+  //   textColor: "var(--color-success-foreground)",
   // },
   // "user-verified": {
   //   label: "Akun Diverifikasi",
@@ -49,22 +54,25 @@ export const activityTypeConfig: Record<
   //     "Pengguna memverifikasi akun melalui email dan dapat mengakses sistem.",
   //   icon: UserRoundCheckIcon,
   //   color: "var(--color-success)",
+  //   textColor: "var(--color-success-foreground)",
   // },
   "user-role-updated": (c) => ({
     label: "Role Akun Diperbarui",
     description: (
-      <span>
+      <>
         Role akun diperbarui menjadi <b>{c?.data}</b>.
-      </span>
+      </>
     ),
     icon: UserRoundCogIcon,
     color: "var(--color-info)",
+    textColor: "var(--color-info-foreground)",
   }),
   "user-banned": {
     label: "Akun Diblokir",
     description: "Pengguna diblokir dan tidak dapat mengakses sistem.",
     icon: UserRoundXIcon,
     color: "var(--color-destructive)",
+    textColor: "var(--color-destructive-foreground)",
   },
   "user-unbanned": {
     label: "Blokir Akun Dicabut",
@@ -82,9 +90,9 @@ export const activityTypeConfig: Record<
   // "password-reset": {
   //   label: "Kata Sandi Diatur Ulang",
   //   description: (
-  //     <span>
+  //     <>
   //       Kata sandi diatur ulang melalui fitur <b>Lupa Kata Sandi</b>.
-  //     </span>
+  //     </>
   //   ),
   //   icon: LockKeyholeOpenIcon,
   //   color: "var(--foreground)",
@@ -92,9 +100,9 @@ export const activityTypeConfig: Record<
   // "password-changed": {
   //   label: "Kata Sandi Diperbarui",
   //   description: (
-  //     <span>
+  //     <>
   //       Kata sandi diperbarui melalui fitur <b>Ubah Kata Sandi</b>.
-  //     </span>
+  //     </>
   //   ),
   //   icon: LockKeyholeOpenIcon,
   //   color: "var(--foreground)",
@@ -116,20 +124,22 @@ export const activityTypeConfig: Record<
   "admin-user-create": (c) => ({
     label: "Admin Menambahkan Akun",
     description: (
-      <span>
-        Admin menambahkan akun atas nama <b>{c?.entity}</b> ke dalam sistem.
-      </span>
+      <>
+        Admin menambahkan akun atas nama{" "}
+        {c?.entity ? <b>{c.entity}</b> : <DeletedEntityIcon />} ke dalam sistem.
+      </>
     ),
     icon: UserRoundPlusIcon,
     color: "var(--color-success)",
+    textColor: "var(--color-success-foreground)",
   }),
   // "admin-user-import": (c) => ({
   //   label: "Mengimpor Akun",
   //   description: (
-  //     <span>
+  //     <>
   //       Mengimpor <b>{c?.data} akun</b> ke dalam sistem melalui fitur{" "}
   //       <b>Import User</b>.
-  //     </span>
+  //     </>
   //   ),
   //   icon: ImportIcon,
   //   color: "var(--color-info)",
@@ -137,29 +147,35 @@ export const activityTypeConfig: Record<
   "admin-user-update-role": (c) => ({
     label: "Admin Mengubah Role",
     description: (
-      <span>
-        Admin mengubah role akun <b>{c?.entity}</b>.
-      </span>
+      <>
+        Admin mengubah role akun atas nama{" "}
+        {c?.entity ? <b>{c.entity}</b> : <DeletedEntityIcon />} menjadi{" "}
+        <b>{c?.data}</b>.
+      </>
     ),
     icon: UserRoundCogIcon,
     color: "var(--color-info)",
+    textColor: "var(--color-info-foreground)",
   }),
   "admin-user-ban": (c) => ({
     label: "Admin Memblokir Akun",
     description: (
-      <span>
-        Admin memblokir akun atas nama <b>{c?.data}</b>.
-      </span>
+      <>
+        Admin memblokir akun atas nama{" "}
+        {c?.entity ? <b>{c.entity}</b> : <DeletedEntityIcon />}.
+      </>
     ),
     icon: UserRoundXIcon,
     color: "var(--color-destructive)",
+    textColor: "var(--color-destructive-foreground)",
   }),
   "admin-user-unban": (c) => ({
     label: "Admin Membuka Blokir Akun",
     description: (
-      <span>
-        Admin membuka blokir akun atas nama <b>{c?.data}</b>.
-      </span>
+      <>
+        Admin membuka blokir akun atas nama{" "}
+        {c?.entity ? <b>{c.entity}</b> : <DeletedEntityIcon />}.
+      </>
     ),
     icon: UserRoundCheckIcon,
     color: "var(--color-foreground)",
@@ -167,22 +183,24 @@ export const activityTypeConfig: Record<
   "admin-user-delete": (c) => ({
     label: "Admin Menghapus Akun",
     description: (
-      <span>
+      <>
         Admin menghapus akun atas nama <b>{c?.data}</b> dari sistem.
-      </span>
+      </>
     ),
     icon: UserRoundXIcon,
     color: "var(--color-destructive)",
+    textColor: "var(--color-destructive-foreground)",
   }),
   "admin-users-delete": (c) => ({
     label: "Admin Menghapus Banyak Akun",
     description: (
-      <span>
+      <>
         Admin menghapus <b>{c?.data} akun</b> dari sistem.
-      </span>
+      </>
     ),
     icon: UserRoundXIcon,
     color: "var(--color-destructive)",
+    textColor: "var(--color-destructive-foreground)",
   }),
 };
 

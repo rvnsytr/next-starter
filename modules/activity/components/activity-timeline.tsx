@@ -103,7 +103,9 @@ function BaseActivityTimeline({
                     {label}
                   </TimelineTitle>
                 </TimelineHeader>
-                <TimelineContent>{description}</TimelineContent>
+                <TimelineContent className="*:[svg]:inline-flex *:[svg]:size-3.5">
+                  {description}
+                </TimelineContent>
               </TimelineItem>
             );
           })}
