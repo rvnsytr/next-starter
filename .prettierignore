@@ -1,8 +1,7 @@
 node_modules
-.next
-out
 build
-next-env.d.ts
+dist
+out
 bun.lock
 package-lock.json
 pnpm-lock.yaml

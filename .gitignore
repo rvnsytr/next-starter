@@ -10,8 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
-# local
-/test
+# testing
+/coverage
 
 # next.js
 /.next/
@@ -33,7 +33,6 @@ yarn-error.log*
 
 # env files
 .env*
-!.env.local
 
 # vercel
 .vercel
