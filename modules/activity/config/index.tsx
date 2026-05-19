@@ -25,6 +25,12 @@ export const activityTypeConfig: Record<
   | ActivityConfigMetadata
   | ((ctx?: ActivityConfigContext) => ActivityConfigMetadata)
 > = {
+  // "user-registered": {
+  //   label: "Akun Terdaftar",
+  //   description: "Pengguna berhasil mendaftar dan membuat akun baru.",
+  //   icon: UserRoundCheckIcon,
+  //   color: "var(--color-success)",
+  // },
   "user-created": {
     label: "Akun Dibuat",
     description: "Akun berhasil dibuat dan ditambahkan ke dalam sistem.",
