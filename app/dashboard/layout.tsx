@@ -19,7 +19,7 @@ import z from "zod";
 
 export const metadata: Metadata = { title: getRouteTitle("/dashboard") };
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: LayoutProps<"/dashboard">) {
   return (

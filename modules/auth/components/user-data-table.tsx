@@ -61,7 +61,7 @@ export function UserDataTable() {
         }}
         onRowClick={(row) => setData(row.original)}
         renderRowSelectionButton={({ table, rows }) => {
-          const data = rows.map((row) => row.original);
+          const rowData = rows.map((row) => row.original);
           return (
             <>
               <Menu>
@@ -80,7 +80,7 @@ export function UserDataTable() {
                 <MenuPopup>
                   <MenuGroup>
                     <MenuGroupLabel className="text-center">
-                      Akun dipilih: <b>{data.length}</b>
+                      Akun dipilih: <b>{rowData.length}</b>
                     </MenuGroupLabel>
 
                     <MenuSeparator />
@@ -109,7 +109,7 @@ export function UserDataTable() {
               </Menu>
 
               <ActionRevokeUserSessionsDialog
-                userIds={data.map(({ id }) => id)}
+                userIds={rowData.map(({ id }) => id)}
                 open={isRevokeSessionsDialogOpen}
                 setOpen={setIsRevokeSessionsDialogOpen}
                 setIsLoading={setIsActionLoading}
@@ -121,7 +121,7 @@ export function UserDataTable() {
               />
 
               <ActionDeleteUsersDialog
-                userIds={data.map(({ id }) => id)}
+                userIds={rowData.map(({ id }) => id)}
                 open={isDeleteUserDialogOpen}
                 loading={isActionLoading}
                 setOpen={setIsDeleteUserDialogOpen}

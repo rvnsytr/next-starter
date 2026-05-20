@@ -733,7 +733,7 @@ export function __multiOptionFilterFn<TData>(
   inputData: string[],
   filterValue: FilterModel<"multiOption", TData>,
 ) {
-  if (!inputData) return false;
+  if (!inputData.length) return false;
 
   if (
     filterValue.values.length === 0 ||

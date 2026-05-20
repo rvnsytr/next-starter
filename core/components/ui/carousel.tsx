@@ -59,10 +59,10 @@ export function Carousel({
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const onSelect = useCallback((api: CarouselApi) => {
-    if (!api) return;
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
+  const onSelect = useCallback((caraouselApi: CarouselApi) => {
+    if (!caraouselApi) return;
+    setCanScrollPrev(caraouselApi.canScrollPrev());
+    setCanScrollNext(caraouselApi.canScrollNext());
   }, []);
 
   const scrollPrev = useCallback(() => {

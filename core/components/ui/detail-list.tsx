@@ -39,10 +39,10 @@ export function DetailList({
       >
         {Array.isArray(item.content) ? (
           <ul className="list-inside list-disc">
-            {item.content.map((item) => (
-              <li key={item.label} className="font-normal">
-                {`${item.label}: `}
-                <span className="text-foreground">{item.content ?? "-"}</span>
+            {item.content.map((itm) => (
+              <li key={itm.label} className="font-normal">
+                {`${itm.label}: `}
+                <span className="text-foreground">{itm.content ?? "-"}</span>
               </li>
             ))}
           </ul>

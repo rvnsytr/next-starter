@@ -120,7 +120,7 @@ export function useStatelessFileUpload(
       if (!newFiles || newFiles.length === 0) return;
 
       const newFilesArray = Array.from(newFiles);
-      const errors: string[] = [];
+      const err: string[] = [];
 
       setErrors([]);
 
@@ -131,9 +131,9 @@ export function useStatelessFileUpload(
         maxFiles !== Number.POSITIVE_INFINITY &&
         files.length + newFilesArray.length > maxFiles
       ) {
-        errors.push(`You can only upload a maximum of ${maxFiles} files.`);
-        onError?.(errors);
-        setErrors(errors);
+        err.push(`You can only upload a maximum of ${maxFiles} files.`);
+        onError?.(err);
+        setErrors(err);
         return;
       }
 
@@ -151,7 +151,7 @@ export function useStatelessFileUpload(
 
         const error = validateFile(file);
         if (error) {
-          errors.push(error);
+          err.push(error);
           continue;
         }
 
@@ -163,17 +163,19 @@ export function useStatelessFileUpload(
       }
 
       if (validFiles.length > 0) {
-        const newFiles = !multiple ? validFiles : [...files, ...validFiles];
+        const newValidFiles = !multiple
+          ? validFiles
+          : [...files, ...validFiles];
 
         onFilesAdded?.(validFiles);
-        onFilesChange?.(newFiles);
+        onFilesChange?.(newValidFiles);
 
-        setFiles(newFiles);
-        // setErrors(errors);
-        if (errors.length > 0) setErrors(errors);
-      } else if (errors.length > 0) {
-        onError?.(errors);
-        setErrors(errors);
+        setFiles(newValidFiles);
+        // setErrors(err);
+        if (err.length > 0) setErrors(err);
+      } else if (err.length > 0) {
+        onError?.(err);
+        setErrors(err);
       }
 
       if (inputRef.current) inputRef.current.value = "";
@@ -198,8 +200,7 @@ export function useStatelessFileUpload(
       const fileToRemove = files.find((file) => file.id === id);
 
       if (
-        fileToRemove &&
-        fileToRemove.preview &&
+        fileToRemove?.preview &&
         fileToRemove.file instanceof File &&
         fileToRemove.file.type.startsWith("image/")
       ) {

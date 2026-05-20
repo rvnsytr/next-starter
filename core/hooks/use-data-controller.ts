@@ -146,7 +146,6 @@ export function useStatelessDataController<TData>({
     return columns(result);
   }, [columns, result]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns: resolvedColumns,
     data: result.data?.data ?? [],
@@ -258,9 +257,9 @@ export type QueryDataControllerOptions<TData> = DataControllerOptions<TData> & {
 
 const getSortingParser = (defaultValue: DataControllerState["sorting"]) =>
   createParser<DataControllerState["sorting"]>({
-    parse: (v) => {
-      if (!v) return [];
-      return v
+    parse: (value) => {
+      if (!value) return [];
+      return value
         .split(";")
         .map((part) => {
           const idx = part.indexOf(":");
@@ -277,31 +276,31 @@ const getSortingParser = (defaultValue: DataControllerState["sorting"]) =>
         })
         .filter((v) => v !== null);
     },
-    serialize: (v) => {
-      if (!v?.length) return null as unknown as string;
-      return v.map((s) => `${s.id}:${s.desc ? "desc" : "asc"}`).join(";");
+    serialize: (value) => {
+      if (!value?.length) return null as unknown as string;
+      return value.map((s) => `${s.id}:${s.desc ? "desc" : "asc"}`).join(";");
     },
   }).withDefault(defaultValue);
 
 const getRecordParser = (
-  value: boolean,
+  recordValue: boolean,
   defaultValue: Record<string, boolean>,
 ) =>
   createParser<Record<string, boolean>>({
-    parse: (v) => {
-      if (!v) return defaultValue;
+    parse: (value) => {
+      if (!value) return defaultValue;
       return Object.fromEntries(
-        v
+        value
           .split(",")
           .filter(Boolean)
-          .map((v) => [v.trim(), value]),
+          .map((v) => [v.trim(), recordValue]),
       );
     },
-    serialize: (v) => {
-      const entries = Object.entries(v);
+    serialize: (value) => {
+      const entries = Object.entries(value);
       if (!entries?.length) return null as unknown as string;
       const serialized = entries
-        .map(([k, v]) => (v === value ? k : null))
+        .map(([k, v]) => (v === recordValue ? k : null))
         .filter((v) => !!v)
         .join(",");
       return serialized || (null as unknown as string);

@@ -266,14 +266,14 @@ export function FilterSelector<TData>({
         />
 
         <MenuPopup align={align}>
-          {properties.map((column) => {
-            const columnType = column.columnDef.meta?.type;
-            const Icon = column.columnDef.meta?.icon;
+          {properties.map((col) => {
+            const columnType = col.columnDef.meta?.type;
+            const Icon = col.columnDef.meta?.icon;
             return (
               <MenuItem
-                key={column.id}
+                key={col.id}
                 onClick={() => {
-                  setProperty(column.id);
+                  setProperty(col.id);
                   if (!columnType) return;
                   const setter =
                     columnType === "option" || columnType === "multiOption"
@@ -282,7 +282,7 @@ export function FilterSelector<TData>({
                   setTimeout(() => setter(true), 10);
                 }}
               >
-                {Icon && <Icon />} {column.columnDef.meta?.label}
+                {Icon && <Icon />} {col.columnDef.meta?.label}
                 <ArrowRightIcon className="opacity-0 group-aria-selected:opacity-100" />
               </MenuItem>
             );

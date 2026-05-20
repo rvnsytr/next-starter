@@ -31,15 +31,15 @@ async function listUsers(): Promise<User[]> {
 
   const fileMap = new Map(fileData.map((f) => [f.id, f]));
 
-  return userData.map((user) => {
-    if (!user.image) return user;
-    if (isValidUrl(user.image)) return user;
+  return userData.map((u) => {
+    if (!u.image) return u;
+    if (isValidUrl(u.image)) return u;
 
-    const imageFile = fileMap.get(user.image);
-    if (!imageFile) return user;
+    const imageFile = fileMap.get(u.image);
+    if (!imageFile) return u;
 
     const [image] = createPublicUrls([imageFile.path]);
-    return { ...user, image };
+    return { ...u, image };
   });
 
   // const countQb = db
@@ -235,23 +235,23 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.setRole({ headers, body });
+    const data = await auth.api.setRole({ headers, body });
 
     await tx.insert(activity).values([
       {
         type: "user-role-updated",
-        userId: res.user.id,
+        userId: data.user.id,
         entityId: session.user.id,
         data: body.role,
       },
       {
         type: "admin-user-update-role",
         userId: session.user.id,
-        entityId: res.user.id,
+        entityId: data.user.id,
       },
     ]);
 
-    return res;
+    return data;
   });
 
   updateTag(authKeys.action.users);
@@ -269,14 +269,14 @@ export async function banUser(body: {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.banUser({ headers, body });
+    const data = await auth.api.banUser({ headers, body });
 
     await tx.insert(activity).values([
-      { type: "user-banned", userId: res.user.id },
-      { type: "admin-user-ban", userId: session.user.id, data: res.user.name },
+      { type: "user-banned", userId: data.user.id },
+      { type: "admin-user-ban", userId: session.user.id, data: data.user.name },
     ]);
 
-    return res;
+    return data;
   });
 
   updateTag(authKeys.action.users);
@@ -290,18 +290,18 @@ export async function unbanUser(body: { userId: string }) {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = db.transaction(async (tx) => {
-    const res = await auth.api.unbanUser({ headers, body });
+    const data = await auth.api.unbanUser({ headers, body });
 
     await tx.insert(activity).values([
-      { type: "user-unbanned", userId: res.user.id },
+      { type: "user-unbanned", userId: data.user.id },
       {
         type: "admin-user-unban",
         userId: session.user.id,
-        data: res.user.name,
+        data: data.user.name,
       },
     ]);
 
-    return res;
+    return data;
   });
 
   updateTag(authKeys.action.users);

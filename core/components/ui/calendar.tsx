@@ -103,7 +103,7 @@ function CalendarContent({
       )}
       classNames={mergedClassNames}
       components={{
-        Chevron: ({ className, orientation, ...props }) => {
+        Chevron: ({ className: chevronCn, orientation, ...chevronProps }) => {
           const Icon =
             orientation === "left"
               ? ChevronLeftIcon
@@ -117,9 +117,9 @@ function CalendarContent({
                 "size-4",
                 (orientation === "left" || orientation === "right") &&
                   "rtl:rotate-180",
-                className,
+                chevronCn,
               )}
-              {...props}
+              {...chevronProps}
             />
           );
         },

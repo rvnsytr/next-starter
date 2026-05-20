@@ -7,7 +7,7 @@ import {
   ListObjectsV2Command,
   ListObjectsV2CommandInput,
   PutObjectCommand,
-  type PutObjectCommandInput,
+  PutObjectCommandInput,
   PutObjectCommandOutput,
   S3Client,
 } from "@aws-sdk/client-s3";

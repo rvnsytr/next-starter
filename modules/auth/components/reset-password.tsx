@@ -54,7 +54,7 @@ export function ResetPasswordDialog() {
     defaultValues: { email: "" },
   });
 
-  const formHandler = async ({ email }: FormSchema) => {
+  const formHandler = ({ email }: FormSchema) => {
     setIsLoading(true);
     toast.promise(
       authClient.requestPasswordReset({ email }).then((res) => {
@@ -139,24 +139,24 @@ export function ResetPasswordDialog() {
   );
 }
 
+type FormDialogSchema = z.infer<typeof formDialogSchema>;
+const formDialogSchema = passwordSchema
+  .pick({ newPassword: true, confirmPassword: true })
+  .refine((sc) => sc.newPassword === sc.confirmPassword, {
+    message: messages.thingNotMatch("Kata sandi"),
+    path: ["confirmPassword"],
+  });
+
 export function ResetPasswordForm({ token }: { token?: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  type FormSchema = z.infer<typeof formSchema>;
-  const formSchema = passwordSchema
-    .pick({ newPassword: true, confirmPassword: true })
-    .refine((sc) => sc.newPassword === sc.confirmPassword, {
-      message: messages.thingNotMatch("Kata sandi"),
-      path: ["confirmPassword"],
-    });
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormDialogSchema>({
+    resolver: zodResolver(formDialogSchema),
     defaultValues: { newPassword: "", confirmPassword: "" },
   });
 
-  const formHandler = ({ newPassword }: FormSchema) => {
+  const formHandler = ({ newPassword }: FormDialogSchema) => {
     setIsLoading(true);
     toast.promise(
       authClient.resetPassword({ token, newPassword }).then((res) => {

@@ -160,13 +160,12 @@ export function SessionListCollapsible({
             { label: "User Agent", content: userAgent?.ua },
           ];
 
-          const detailList: DetailListData = sections.map(({ label, key }) => ({
-            label,
-            content: userAgent?.[key]
-              ? Object.entries(userAgent[key]).map(([label, content]) => ({
-                  label,
-                  content,
-                }))
+          const detailList: DetailListData = sections.map((section) => ({
+            label: section.label,
+            content: userAgent?.[section.key]
+              ? Object.entries(userAgent[section.key]).map(
+                  ([label, content]) => ({ label, content }),
+                )
               : undefined,
           }));
 
