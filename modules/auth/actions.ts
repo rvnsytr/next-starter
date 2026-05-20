@@ -128,21 +128,21 @@ export async function updateProfilePicture(file: File) {
       if (path) await deleteFiles([path], { visibility: "public" });
     }
 
-    const [uploadRes] = await uploadFiles(
+    const [uploaded] = await uploadFiles(
       [{ file, path: `avatar/${file.name}` }],
       { visibility: "public" },
     );
 
-    const [insertRes] = await tx
+    const [inserted] = await tx
       .insert(fileTable)
-      .values(uploadRes.file)
+      .values(uploaded.file)
       .returning();
 
     await tx.insert(activity).values({ type: "profile-image-updated", userId });
 
     return await auth.api.updateUser({
       headers,
-      body: { image: insertRes.id },
+      body: { image: inserted.id },
     });
   });
 
@@ -206,22 +206,22 @@ export async function createUser(body: {
   if (!session) throw new Error(messages.unauthorized);
 
   const res = db.transaction(async (tx) => {
-    const createRes = await auth.api.createUser({ headers, body });
+    const data = await auth.api.createUser({ headers, body });
 
     await tx.insert(activity).values([
       {
         type: "user-created",
-        userId: createRes.user.id,
+        userId: data.user.id,
         entityId: session.user.id,
       },
       {
         type: "admin-user-create",
         userId: session.user.id,
-        entityId: createRes.user.id,
+        entityId: data.user.id,
       },
     ]);
 
-    return createRes;
+    return data;
   });
 
   updateTag(authKeys.action.users);
