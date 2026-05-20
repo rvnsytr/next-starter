@@ -324,6 +324,7 @@ const columnFiltersSchema = z.object({
 
 function getColumnFiltersParser<TData>(
   columns: DataControllerOptions<TData>["columns"],
+  defaultValue: DataControllerState["columnFilters"],
 ) {
   return createParser<DataControllerState["columnFilters"]>({
     parse: (value) => {
@@ -396,7 +397,7 @@ function getColumnFiltersParser<TData>(
       if (!query.length) return null as unknown as string;
       return query.join(";");
     },
-  }).withDefault([]);
+  }).withDefault(defaultValue);
 }
 
 // #endregion
@@ -437,7 +438,7 @@ export function useQueryDataController<TData>({
 
   const columnFilters = useQueryState(
     `${prefix}filter${suffix}`,
-    getColumnFiltersParser(props.columns),
+    getColumnFiltersParser(props.columns, defaultState?.columnFilters ?? []),
   );
 
   const columnPinning = useQueryStates(

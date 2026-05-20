@@ -5,13 +5,14 @@ import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
 import { messages } from "./messages";
 
-type FilesSchemaOptions = {
-  minFiles?: number;
-  maxFiles?: number;
+type FileSchemaOptions = {
   maxSize?: number;
 };
 
-type FileSchemaOptions = Pick<FilesSchemaOptions, "maxSize">;
+type FilesSchemaOptions = FileSchemaOptions & {
+  minFiles?: number;
+  maxFiles?: number;
+};
 
 export const sharedSchemas = {
   string: (options?: {
