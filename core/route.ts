@@ -44,10 +44,8 @@ export function getActiveRoute(menu: Menu[], pathname: string) {
 
   paths.push("/");
 
-  for (const path of paths) {
-    const p = path as Route;
-    if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
-  }
+  for (const path of paths)
+    if (allMenuRoutes.includes(path) && allRoutes.includes(path)) return path;
 }
 
 export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {

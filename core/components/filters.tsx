@@ -517,9 +517,6 @@ export function FilterOperatorTextController<TData>({
 function FilterOperatorNumberController<TData>({
   column,
 }: FilterOperatorControllerProps<TData>) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filter = column.getFilterValue() as FilterModel<"number", TData>;
-
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
 
@@ -529,7 +526,7 @@ function FilterOperatorNumberController<TData>({
   const changeOperator = (
     operator: (typeof relatedFilterOperators)[number],
   ) => {
-    column.setFilterValue((old: typeof filter) => {
+    column.setFilterValue((old: FilterModel<"number", TData>) => {
       // Clear out the second value when switching to single-input operators
       const target = numberFilterDetails[operator].target;
       const newValues =

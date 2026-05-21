@@ -1,8 +1,10 @@
 import nextPlugin from "@next/eslint-plugin-next";
 import { tanstackConfig } from "@tanstack/eslint-config";
+import reactHooks from "eslint-plugin-react-hooks";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
+  reactHooks.configs.flat.recommended,
   ...tanstackConfig,
   {
     files: ["**/*.{js,jsx,ts,tsx}"],

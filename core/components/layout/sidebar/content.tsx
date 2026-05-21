@@ -5,7 +5,6 @@ import {
   CollapsiblePanel,
   CollapsibleTrigger,
 } from "@/core/components/ui/collapsible";
-import { Kbd } from "@/core/components/ui/kbd";
 import {
   SidebarContent,
   SidebarGroup,
@@ -21,26 +20,19 @@ import {
 } from "@/core/components/ui/sidebar";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { getActiveRoute, getMenuByRole } from "@/core/route";
+import { MenuItem } from "@/core/types";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { routeConfig } from "@/shared/config/route";
 import { menuConfig } from "@/shared/menu";
-import { formatForDisplay } from "@tanstack/react-hotkeys";
 import { ChevronRightIcon } from "lucide-react";
+import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ComponentProps,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from "react";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
 
 export function SidebarAppContent() {
   const { user } = useSession();
-  const { isMobile, toggleSidebar } = useSidebar();
-
   const pathname = usePathname();
 
   const menu = useMemo(
@@ -57,102 +49,13 @@ export function SidebarAppContent() {
           <SidebarGroupLabel>{group}</SidebarGroupLabel>
 
           <SidebarMenu>
-            {items.map(
-              ({ route, icon: Icon, disabled, shortcut, subItems }) => {
-                const { title } = routeConfig[route];
-
-                const isActive = route === activeRoute;
-                const iconElement = Icon && <Icon />;
-
-                if (disabled) {
-                  return (
-                    <SidebarMenuItem key={route}>
-                      <SidebarMenuButton disabled>
-                        {iconElement}
-                        <span className="line-clamp-1">{title}</span>
-                        {shortcut && (
-                          <Kbd className="ml-auto hidden lg:inline-flex">
-                            {formatForDisplay(shortcut)}
-                          </Kbd>
-                        )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                }
-
-                return (
-                  <SidebarMainContentCollapsible
-                    key={route}
-                    isActive={isActive}
-                    render={<SidebarMenuItem />}
-                  >
-                    <SidebarMenuButton
-                      onClick={() => isMobile && toggleSidebar()}
-                      isActive={isActive}
-                      tooltip={title}
-                      render={<Link href={route} />}
-                    >
-                      <LinkSpinner icon={{ base: iconElement }} />
-                      <span className="line-clamp-1">{title}</span>
-                      {shortcut && (
-                        <Kbd className="ml-auto hidden lg:inline-flex">
-                          {formatForDisplay(shortcut)}
-                        </Kbd>
-                      )}
-                    </SidebarMenuButton>
-
-                    {subItems && (
-                      <>
-                        <CollapsibleTrigger
-                          render={
-                            <SidebarMenuAction className="data-panel-open:rotate-90">
-                              <ChevronRightIcon />
-                            </SidebarMenuAction>
-                          }
-                        />
-
-                        <CollapsiblePanel>
-                          <SidebarMenuSub>
-                            {subItems.map((itm, idx) => {
-                              if (itm.disabled) {
-                                return (
-                                  <SidebarMenuSubItem key={idx}>
-                                    <SidebarMenuSubButton className="pointer-events-none line-clamp-1 flex justify-between opacity-64">
-                                      {itm.label}
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                );
-                              }
-
-                              return (
-                                <SidebarMenuSubItem key={idx}>
-                                  <SidebarMenuSubButton
-                                    className="flex justify-between"
-                                    render={
-                                      <Link
-                                        href={
-                                          itm.href ??
-                                          `${route}#${toCase(itm.label, "kebab")}`
-                                        }
-                                      >
-                                        <span className="line-clamp-1">
-                                          {itm.label}
-                                        </span>
-                                        <LinkSpinner />
-                                      </Link>
-                                    }
-                                  />
-                                </SidebarMenuSubItem>
-                              );
-                            })}
-                          </SidebarMenuSub>
-                        </CollapsiblePanel>
-                      </>
-                    )}
-                  </SidebarMainContentCollapsible>
-                );
-              },
-            )}
+            {items.map((item) => (
+              <SidebarAppContentCollapsible
+                key={item.route}
+                data={item}
+                activeRoute={activeRoute}
+              />
+            ))}
           </SidebarMenu>
         </SidebarGroup>
       ))}
@@ -160,17 +63,93 @@ export function SidebarAppContent() {
   );
 }
 
-function SidebarMainContentCollapsible({
-  isActive,
+function SidebarAppContentCollapsible({
+  data,
+  activeRoute,
   ...props
-}: ComponentProps<typeof Collapsible> & { isActive: boolean }) {
-  const [isOpen, setIsOpen] = useState(isActive);
+}: ComponentProps<typeof Collapsible> & {
+  data: MenuItem;
+  activeRoute?: Route;
+}) {
+  const hasSubItems = !!data.subItems?.length;
+  const isActive = data.route === activeRoute;
 
-  const onActiveRoute = useEffectEvent(() => {
-    if (isActive && !isOpen) setIsOpen(true);
-  });
+  const { isMobile, toggleSidebar } = useSidebar();
+  const { title } = routeConfig[data.route];
 
-  useEffect(() => onActiveRoute(), [isActive]);
+  const iconElement = data.icon && <data.icon />;
 
-  return <Collapsible open={isOpen} onOpenChange={setIsOpen} {...props} />;
+  const [open, setOpen] = useState(isActive);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isActive) setOpen(true);
+  }, [isActive]);
+
+  if (data.disabled) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton disabled>
+          {iconElement}
+          <span className="line-clamp-1">{title}</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <Collapsible
+      open={hasSubItems ? open : false}
+      onOpenChange={setOpen}
+      render={<SidebarMenuItem />}
+      {...props}
+    >
+      <SidebarMenuButton
+        onClick={() => {
+          if (isMobile) toggleSidebar();
+        }}
+        isActive={isActive}
+        tooltip={title}
+        render={<Link href={data.route} />}
+      >
+        <LinkSpinner icon={{ base: iconElement }} />
+
+        <span className="line-clamp-1">{title}</span>
+      </SidebarMenuButton>
+
+      {data.subItems && (
+        <>
+          <CollapsibleTrigger
+            render={
+              <SidebarMenuAction className="data-panel-open:rotate-90">
+                <ChevronRightIcon />
+              </SidebarMenuAction>
+            }
+          />
+
+          <CollapsiblePanel>
+            <SidebarMenuSub>
+              {data.subItems.map((itm, idx) => {
+                const subHref = `${data.route}#${toCase(itm.label, "kebab")}`;
+
+                return (
+                  <SidebarMenuSubItem key={idx}>
+                    <SidebarMenuSubButton
+                      className="flex justify-between"
+                      render={
+                        <Link href={itm.href ?? subHref}>
+                          <span className="line-clamp-1">{itm.label}</span>
+
+                          <LinkSpinner />
+                        </Link>
+                      }
+                    />
+                  </SidebarMenuSubItem>
+                );
+              })}
+            </SidebarMenuSub>
+          </CollapsiblePanel>
+        </>
+      )}
+    </Collapsible>
+  );
 }

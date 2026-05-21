@@ -40,16 +40,13 @@ export default function Page() {
             <SunMoonIcon /> Tema
           </CardTitle>
           <CardDescription>
-            Sesuaikan tampilan dan nuansa{" "}
-            <span className="text-foreground font-medium">
-              {appConfig.name}
-            </span>{" "}
-            sesuai preferensi Anda.
+            Sesuaikan tampilan dan nuansa <b>{appConfig.name}</b> sesuai
+            preferensi Anda.
           </CardDescription>
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {themeToggleConfig.hotkeyDisplay}
+              {themeToggleConfig.hotkey}
             </Kbd>
           </CardAction>
         </CardHeader>
@@ -65,12 +62,9 @@ export default function Page() {
             <FrameIcon /> Layout
           </CardTitle>
           <CardDescription>
-            Sesuaikan tata letak antarmuka{" "}
-            <span className="text-foreground font-medium">
-              {appConfig.name}
-            </span>{" "}
-            sesuai preferensi Anda. Perubahan ini berlaku pada layar dengan
-            lebar lebih dari <code>1024px</code>.
+            Sesuaikan tata letak antarmuka <b>{appConfig.name}</b> sesuai
+            preferensi Anda. Perubahan ini berlaku pada layar dengan lebar lebih
+            dari <code>1024px</code>.
           </CardDescription>
 
           <CardAction>

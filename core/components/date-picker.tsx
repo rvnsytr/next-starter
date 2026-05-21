@@ -6,7 +6,7 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
 } from "lucide-react";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useState } from "react";
 import { DateRange, PropsBase } from "react-day-picker";
 import {
   cn,
@@ -50,14 +50,6 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [strValue, setStrValue] = useState<string>("");
 
-  const onDateSelected = useEffectEvent(() => {
-    if (!selected) return setStrValue("");
-    const formatted = formatLocalizedDate(selected, "ddMMyyyy");
-    if (formatted !== strValue) setStrValue(formatted);
-  });
-
-  useEffect(() => onDateSelected(), [selected]);
-
   return (
     <InputGroup>
       <InputGroupInput
@@ -72,6 +64,7 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
           const sanitized = sanitizeDateStr(raw);
 
           setStrValue(sanitized);
+
           const parsed = parseDDMMYYYY(sanitized);
 
           if (parsed && parsed.getTime() !== selected?.getTime())
@@ -114,7 +107,12 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
             <Calendar
               mode="single"
               selected={selected}
-              onSelect={onSelect}
+              onSelect={(date) => {
+                onSelect(date);
+                if (!date) return setStrValue("");
+                const formatted = formatLocalizedDate(date, "ddMMyyyy");
+                if (formatted !== strValue) setStrValue(formatted);
+              }}
               defaultMonth={selected}
               {...props}
             />

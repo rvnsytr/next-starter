@@ -9,8 +9,8 @@
     "typegen": "next typegen"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1050.0",
-    "@aws-sdk/s3-request-presigner": "^3.1050.0",
+    "@aws-sdk/client-s3": "^3.1051.0",
+    "@aws-sdk/s3-request-presigner": "^3.1051.0",
     "@base-ui/react": "^1.5.0",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-hotkeys": "^0.10.0",
@@ -42,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.2.6",
     "@tailwindcss/postcss": "^4.3.0",
     "@tanstack/eslint-config": "^0.4.0",
     "@types/node": "^24.12.4",
@@ -50,7 +51,7 @@
     "@types/react-dom": "^19.2.3",
     "drizzle-kit": "1.0.0-beta.22",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.6",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "postcss": "^8.5.15",
     "prettier": "^3.8.3",
     "prettier-plugin-organize-imports": "^4.3.0",

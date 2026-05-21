@@ -7,8 +7,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useEffectEvent,
   useMemo,
   useState,
 } from "react";
@@ -18,7 +16,7 @@ type DynamicBreadcrumbContent = { href: Route; label: string };
 
 type DynamicBreadcrumbContextType = {
   breadcrumbs: DynamicBreadcrumbContent[];
-  setBreadcrumbs: React.Dispatch<
+  setDynamicBreadcrumbs: React.Dispatch<
     React.SetStateAction<DynamicBreadcrumbContent[]>
   >;
   resetBreadcrumbs: () => void;
@@ -34,35 +32,34 @@ export function DynamicBreadcrumbProvider({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [breadcrumbs, setBreadcrumbs] = useState<DynamicBreadcrumbContent[]>(
-    [],
+
+  const [dynamicBreadcrumbs, setDynamicBreadcrumbs] = useState<
+    DynamicBreadcrumbContent[]
+  >([]);
+
+  // derived from pathname
+  const routeBreadcrumbs = useMemo(
+    () =>
+      getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
+        const config = r in routeConfig ? routeConfig[r] : null;
+        return config ? [{ href: r, label: config.title }] : [];
+      }),
+    [pathname],
   );
 
-  const setByPathname = useCallback(() => {
-    const crumbs = getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
-      const config = routeConfig[r];
-      return config ? [{ href: r, label: config.title }] : [];
-    });
-    setBreadcrumbs(crumbs);
-  }, [pathname]);
+  const breadcrumbs = useMemo(() => {
+    const crumbs = [...routeBreadcrumbs, ...dynamicBreadcrumbs];
+    return Array.from(new Map(crumbs.map((c) => [c.href, c])).values());
+  }, [routeBreadcrumbs, dynamicBreadcrumbs]);
 
-  const onPathname = useEffectEvent(() => setByPathname());
-  useEffect(() => onPathname(), [pathname]);
-
-  const onBreadcrumb = useEffectEvent(() => {
-    setBreadcrumbs((prev) => {
-      const next = Array.from(new Map(prev.map((c) => [c.href, c])).values());
-      if (next.length === prev.length) return prev;
-      return next;
-    });
-  });
-
-  useEffect(() => onBreadcrumb(), [breadcrumbs]);
-
-  const resetBreadcrumbs = useCallback(() => setByPathname(), [setByPathname]);
+  const resetBreadcrumbs = useCallback(() => setDynamicBreadcrumbs([]), []);
 
   const value = useMemo(
-    () => ({ breadcrumbs, setBreadcrumbs, resetBreadcrumbs }),
+    () => ({
+      breadcrumbs,
+      setDynamicBreadcrumbs,
+      resetBreadcrumbs,
+    }),
     [breadcrumbs, resetBreadcrumbs],
   );
 
@@ -75,10 +72,9 @@ export function DynamicBreadcrumbProvider({
 
 export function useDynamicBreadcrumb() {
   const ctx = useContext(DynamicBreadcrumbContext);
-  if (!ctx) {
-    const error =
-      "useDynamicBreadcrumb must be used in DynamicBreadcrumbProvider";
-    throw new Error(error);
-  }
+  if (!ctx)
+    throw new Error(
+      "useDynamicBreadcrumb must be used in DynamicBreadcrumbProvider",
+    );
   return ctx;
 }

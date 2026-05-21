@@ -146,6 +146,7 @@ export function useStatelessDataController<TData>({
     return columns(result);
   }, [columns, result]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns: resolvedColumns,
     data: result.data?.data ?? [],
