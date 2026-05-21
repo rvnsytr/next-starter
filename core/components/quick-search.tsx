@@ -1,6 +1,6 @@
 "use client";
 
-import { routeConfig } from "@/shared/config/route";
+import { routeConfig } from "@/shared/config";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,

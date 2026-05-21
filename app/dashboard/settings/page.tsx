@@ -1,9 +1,6 @@
-import {
-  LayoutModeSettings,
-  layoutModeToggleConfig,
-} from "@/core/components/layout-mode";
+import { LayoutModeSettings } from "@/core/components/layout-mode";
 import { PageContainer } from "@/core/components/layout/page";
-import { ThemeSettings, themeToggleConfig } from "@/core/components/theme";
+import { ThemeSettings } from "@/core/components/theme";
 import {
   Card,
   CardAction,
@@ -18,7 +15,11 @@ import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
-import { appConfig } from "@/shared/config/app";
+import {
+  appConfig,
+  layoutModeToggleConfig,
+  themeToggleConfig,
+} from "@/shared/config";
 import {
   FrameIcon,
   LockKeyholeIcon,
@@ -46,7 +47,7 @@ export default function Page() {
 
           <CardAction>
             <Kbd className="hidden lg:inline-flex">
-              {themeToggleConfig.hotkey}
+              {themeToggleConfig.hotkeyDisplay}
             </Kbd>
           </CardAction>
         </CardHeader>

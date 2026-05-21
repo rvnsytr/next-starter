@@ -1,20 +1,8 @@
 "use client";
 
-import { LucideIcon, MinimizeIcon, ScanIcon } from "lucide-react";
+import { LayoutMode } from "@/shared/config";
 import { createContext, useContext, useEffect, useState } from "react";
 import { cn } from "../utils";
-
-export type LayoutMode = (typeof allLayoutMode)[number];
-export const allLayoutMode = ["fullwidth", "centered"] as const;
-export const defaultLayout: LayoutMode = "centered";
-
-export const layoutModeConfig: Record<
-  LayoutMode,
-  { label: string; icon: LucideIcon }
-> = {
-  fullwidth: { label: "Fullwidth", icon: ScanIcon },
-  centered: { label: "Centered", icon: MinimizeIcon },
-};
 
 type LayoutModeContextType = {
   layout: LayoutMode;

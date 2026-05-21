@@ -1,8 +1,8 @@
+import { RouteRole } from "@/shared/config";
 import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon } from "lucide-react";
 import { Route } from "next";
 import z from "zod";
-import { RouteRole } from "./route";
 import { sharedSchemas } from "./schema";
 
 export type Override<T, U> = Omit<T, keyof U> & U;

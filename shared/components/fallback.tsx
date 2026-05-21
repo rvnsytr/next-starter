@@ -5,7 +5,7 @@ import {
 } from "@/core/components/ui/alert";
 import { Spinner, SpinnerProps } from "@/core/components/ui/spinner";
 import { cn } from "@/core/utils";
-import { appConfig } from "@/shared/config/app";
+import { appConfig } from "@/shared/config";
 import { TriangleAlertIcon } from "lucide-react";
 
 export function LoadingFallback({

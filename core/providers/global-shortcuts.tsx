@@ -1,8 +1,8 @@
 "use client";
 
+import { nextTheme, themeToggleConfig } from "@/shared/config";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { nextTheme, themeToggleConfig } from "../components/theme";
 import { useViewTransition } from "../hooks/use-view-transition";
 
 export function GlobalShortcuts() {

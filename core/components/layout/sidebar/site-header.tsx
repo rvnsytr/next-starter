@@ -5,7 +5,7 @@ import { Separator } from "@/core/components/ui/separator";
 import { ShimmerText } from "@/core/components/ui/shimmer-text";
 import { SidebarToggle } from "@/core/components/ui/sidebar";
 import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user-badge";
-import { appConfig } from "@/shared/config/app";
+import { appConfig } from "@/shared/config";
 import Link from "next/link";
 import { SidebarAppSiteHeaderAvatar } from "./site-header-avatar";
 

@@ -19,7 +19,7 @@ import {
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
-import { appConfig } from "@/shared/config/app";
+import { appConfig } from "@/shared/config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
 import { useState } from "react";

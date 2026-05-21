@@ -1,4 +1,4 @@
-import { apiConfig } from "@/shared/config/api";
+import { apiConfig } from "@/shared/config";
 import z from "zod";
 
 export const getApiResponseSchema = <T>(schema: z.ZodType<T>) =>

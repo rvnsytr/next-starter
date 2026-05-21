@@ -6,7 +6,7 @@ import {
 import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
-import { appConfig } from "@/shared/config/app";
+import { appConfig } from "@/shared/config";
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";

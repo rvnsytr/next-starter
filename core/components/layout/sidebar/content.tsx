@@ -23,7 +23,7 @@ import { getActiveRoute, getMenuByRole } from "@/core/route";
 import { MenuItem } from "@/core/types";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { routeConfig } from "@/shared/config/route";
+import { routeConfig } from "@/shared/config";
 import { menuConfig } from "@/shared/menu";
 import { ChevronRightIcon } from "lucide-react";
 import { Route } from "next";

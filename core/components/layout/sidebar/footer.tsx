@@ -11,7 +11,7 @@ import {
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
-import { routeConfig } from "@/shared/config/route";
+import { routeConfig } from "@/shared/config";
 import { menuConfig } from "@/shared/menu";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import Link from "next/link";

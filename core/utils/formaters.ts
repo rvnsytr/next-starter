@@ -1,5 +1,4 @@
-import { appConfig } from "@/shared/config/app";
-import { Language, languageConfig } from "@/shared/config/language";
+import { appConfig, Language, languageConfig } from "@/shared/config";
 import z from "zod";
 import { messages } from "../messages";
 import {

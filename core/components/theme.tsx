@@ -1,8 +1,12 @@
 "use client";
 
 import { LoadingFallback } from "@/shared/components/fallback";
-import { formatForDisplay, Hotkey } from "@tanstack/react-hotkeys";
-import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import {
+  nextTheme,
+  Theme,
+  themeConfig,
+  themeToggleConfig,
+} from "@/shared/config";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { useIsMounted } from "../hooks/use-is-mounted";
@@ -15,33 +19,6 @@ import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
-
-export type Theme = (typeof allThemes)[number];
-export const allThemes = ["light", "system", "dark"] as const;
-
-export const themeToggleConfig: {
-  label: string;
-  hotkey: Hotkey;
-  hotkeyDisplay: string;
-} = {
-  label: "Toggle Theme",
-  hotkey: "D",
-  get hotkeyDisplay() {
-    return formatForDisplay(this.hotkey);
-  },
-};
-
-export const themeConfig: Record<Theme, { icon: LucideIcon }> = {
-  light: { icon: SunIcon },
-  system: { icon: MonitorIcon },
-  dark: { icon: MoonIcon },
-};
-
-export function nextTheme(currentTheme?: string) {
-  if (currentTheme === "light") return "dark";
-  if (currentTheme === "dark") return "system";
-  return "light";
-}
 
 export function ThemeToggle({
   withTooltip = true,

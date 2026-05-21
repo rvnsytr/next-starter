@@ -1,4 +1,4 @@
-import { allGenders } from "@/shared/config/gender";
+import { allGenders } from "@/shared/config";
 import { file } from "@/shared/db/schema";
 import { FileType, fileTypeConfig } from "@/shared/file-type";
 import { createSelectSchema } from "drizzle-orm/zod";

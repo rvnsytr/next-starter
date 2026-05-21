@@ -2,27 +2,16 @@
 
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { useMediaQuery } from "@/core/hooks/use-media-query";
-import { layoutModeConfig, useLayoutMode } from "@/core/providers/layout-mode";
+import { useLayoutMode } from "@/core/providers/layout-mode";
 import { cn } from "@/core/utils";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import { layoutModeConfig, layoutModeToggleConfig } from "@/shared/config";
+import { useHotkey } from "@tanstack/react-hotkeys";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
-
-export const layoutModeToggleConfig: {
-  label: string;
-  hotkey: Hotkey;
-  hotkeyDisplay: string;
-} = {
-  label: "Toggle Layout",
-  hotkey: "L",
-  get hotkeyDisplay() {
-    return formatForDisplay(this.hotkey);
-  },
-};
 
 export function LayoutModeToggle({
   withTooltip = false,

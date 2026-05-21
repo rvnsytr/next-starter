@@ -1,6 +1,6 @@
 "use client";
 
-import { routeConfig } from "@/shared/config/route";
+import { routeConfig } from "@/shared/config";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
 import {

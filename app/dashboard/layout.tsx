@@ -6,12 +6,10 @@ import {
 } from "@/core/components/layout/sidebar";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
-import {
-  allLayoutMode,
-  LayoutModeProvider,
-} from "@/core/providers/layout-mode";
+import { LayoutModeProvider } from "@/core/providers/layout-mode";
 import { authorizedRoute, getRouteTitle } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
+import { allLayoutMode } from "@/shared/config";
 import { Metadata } from "next";
 import { cookies, headers as nextHeaders } from "next/headers";
 import { notFound, redirect } from "next/navigation";
