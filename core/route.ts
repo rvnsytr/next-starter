@@ -1,7 +1,7 @@
-import { appConfig, routeConfig, RouteRole } from "@/shared/config";
+import { appConfig, routeConfig } from "@/shared/config";
 import { Role } from "@/shared/permission";
 import { Route } from "next";
-import { Menu } from "./types";
+import { Menu, RouteRole } from "./types";
 
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;

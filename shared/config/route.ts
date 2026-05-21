@@ -1,7 +1,5 @@
+import { RouteRole } from "@/core/types";
 import { Route } from "next";
-import { Role } from "../permission";
-
-export type RouteRole = "all" | Role[];
 
 export const routeConfig: Record<Route, { title: string; role?: RouteRole }> = {
   "/": { title: "Beranda" },

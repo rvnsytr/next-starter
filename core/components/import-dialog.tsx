@@ -1,6 +1,6 @@
 "use client";
 
-import { fileTypeConfig } from "@/shared/file-type";
+import { fileTypeConfig } from "@/shared/config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChevronsUpDown,

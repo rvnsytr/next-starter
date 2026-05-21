@@ -1,6 +1,6 @@
 "use client";
 
-import { fileTypeConfig, FileTypeConfig } from "@/shared/file-type";
+import { fileTypeConfig, FileTypeConfig } from "@/shared/config";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,

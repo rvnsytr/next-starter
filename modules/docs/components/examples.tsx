@@ -34,7 +34,7 @@ import {
 } from "@/core/components/ui/stepper";
 import { toast } from "@/core/components/ui/toast";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
-import { fileTypeConfig } from "@/shared/file-type";
+import { fileTypeConfig } from "@/shared/config";
 import {
   BookUserIcon,
   CheckIcon,

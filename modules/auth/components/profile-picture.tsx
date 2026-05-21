@@ -22,7 +22,7 @@ import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
 import { messages } from "@/core/messages";
-import { fileTypeConfig } from "@/shared/file-type";
+import { fileTypeConfig } from "@/shared/config";
 import { TriangleAlertIcon, UploadIcon } from "lucide-react";
 import { useState } from "react";
 import { deleteProfilePicture, updateProfilePicture } from "../actions";
