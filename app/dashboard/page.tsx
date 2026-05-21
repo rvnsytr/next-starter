@@ -4,7 +4,6 @@ import {
   PageHeader,
   PageTitle,
 } from "@/core/components/layout/page";
-import { FormExample } from "@/modules/docs/components/form-example";
 
 export default function Page() {
   return (
@@ -18,8 +17,6 @@ export default function Page() {
       </PageHeader>
 
       <p>Hello World</p>
-
-      <FormExample />
     </PageContainer>
   );
 }

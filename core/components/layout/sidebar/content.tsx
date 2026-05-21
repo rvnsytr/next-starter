@@ -112,7 +112,6 @@ function SidebarAppContentCollapsible({
         render={<Link href={data.route} />}
       >
         <LinkSpinner icon={{ base: iconElement }} />
-
         <span className="line-clamp-1">{title}</span>
       </SidebarMenuButton>
 
@@ -130,7 +129,6 @@ function SidebarAppContentCollapsible({
             <SidebarMenuSub>
               {data.subItems.map((itm, idx) => {
                 const subHref = `${data.route}#${toCase(itm.label, "kebab")}`;
-
                 return (
                   <SidebarMenuSubItem key={idx}>
                     <SidebarMenuSubButton
@@ -138,7 +136,6 @@ function SidebarAppContentCollapsible({
                       render={
                         <Link href={itm.href ?? subHref}>
                           <span className="line-clamp-1">{itm.label}</span>
-
                           <LinkSpinner />
                         </Link>
                       }
