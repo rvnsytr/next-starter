@@ -84,15 +84,17 @@ export type DataFilterOption = {
 /*
  * Represents the data type of a column.
  */
-export type DataFilterType =
+export type DataFilterType = (typeof allDataFilterType)[number];
+export const allDataFilterType = [
   /* The column value is a string that should be searchable. */
-  | "text"
-  | "number"
-  | "date"
+  "text",
+  "number",
+  "date",
   /* The column value can be a single value from a list of options. */
-  | "option"
+  "option",
   /* The column value can be zero or more values from a list of options. */
-  | "multiOption";
+  "multiOption",
+] as const;
 
 /* Operators for text data */
 export type TextFilterOperator = (typeof allTextFilterOperators)[number];

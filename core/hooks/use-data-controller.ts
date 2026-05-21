@@ -32,6 +32,7 @@ import z from "zod";
 import { DataControllerState } from "../data-controller";
 import { ActionResponse, ActionSuccess, Override } from "../types";
 import {
+  allDataFilterType,
   allFilterOperators,
   formatLocalizedDate,
   parseLocalizedDate,
@@ -68,7 +69,6 @@ export type DataControllerOptions<TData> = Pick<
     config?: DataControllerQueryConfig<TData>;
     immutable?: boolean;
   };
-
   defaultState?: Partial<AllDataControllerState>;
 };
 
@@ -308,67 +308,82 @@ const getRecordParser = (
     },
   }).withDefault(defaultValue);
 
-const columnFiltersSchema = z.object({
-  id: z.string(),
-  value: z.object({
-    operator: z.enum(allFilterOperators),
-    values: z
-      .union([
-        z.string(),
-        z.number(),
-        z.coerce.date(),
-        z.union([z.string(), z.number(), z.coerce.date()]).array(),
-      ])
-      .array(),
+const columnFiltersValueSchema = z.object({
+  operator: z.enum(allFilterOperators),
+  values: z
+    .union([
+      z.string(),
+      z.number(),
+      z.coerce.date(),
+      z.union([z.string(), z.number(), z.coerce.date()]).array(),
+    ])
+    .array(),
+  columnMeta: z.object({
+    label: z.string(),
+    type: z.enum(allDataFilterType),
   }),
 });
 
-function getColumnFiltersParser<TData>(
-  columns: DataControllerOptions<TData>["columns"],
+function getColumnFiltersParser(
   defaultValue: DataControllerState["columnFilters"],
 ) {
   return createParser<DataControllerState["columnFilters"]>({
     parse: (value) => {
       if (!value) return [];
-
-      const resolvedColumns =
-        typeof columns === "function" ? columns() : columns;
-
       return value
         .split(";")
         .map((part) => {
+          /**
+           * format:
+           * type:id:operator:values
+           *
+           * example:
+           * date:createdAt:is:20250101T0000
+           */
+
           const first = part.indexOf(":");
           const second = part.indexOf(":", first + 1);
+          const third = part.indexOf(":", second + 1);
 
-          if (first === -1 || second === -1) return null;
+          if (first === -1 || second === -1 || third === -1) return null;
 
-          const id = part.slice(0, first);
-          const operator = part.slice(first + 1, second);
-          const rawValues = part.slice(second + 1);
+          const rawType = part.slice(0, first);
+          const id = part.slice(first + 1, second);
+          const rawOperator = part.slice(second + 1, third);
+          const rawValues = part.slice(third + 1);
 
-          if (!id || !operator || !rawValues) return null;
+          if (!rawType || !id || !rawOperator || !rawValues) return null;
 
-          const col = resolvedColumns.find((c) => c.id === id);
-          if (!col) return null;
+          const parsedType = z.enum(allDataFilterType).safeParse(rawType);
+          if (!parsedType.success) return null;
 
-          const colType = col.meta?.type;
+          const parsedOperator = z
+            .enum(allFilterOperators)
+            .safeParse(rawOperator);
+          if (!parsedOperator.success) return null;
+
+          const type = parsedType.data;
+          const operator = parsedOperator.data;
 
           const values = rawValues
             .split(",")
             .map((v) => {
-              if (colType === "date") {
-                const d = parseLocalizedDate(v, "yyyyMMdd'T'HHmm");
-                return isValid(d) ? d : null;
-              }
+              switch (type) {
+                case "date": {
+                  const d = parseLocalizedDate(v, "yyyyMMdd'T'HHmm");
+                  return isValid(d) ? d : null;
+                }
 
-              if (colType === "number") {
-                const n = Number(v);
-                return Number.isNaN(n) ? null : n;
-              }
+                case "number": {
+                  const n = Number(v);
+                  return Number.isNaN(n) ? null : n;
+                }
 
-              return v;
+                default:
+                  return v;
+              }
             })
-            .filter((v) => v !== null);
+            .filter((v) => !!v);
 
           if (!values.length) return null;
 
@@ -378,12 +393,13 @@ function getColumnFiltersParser<TData>(
     },
     serialize: (value) => {
       if (!value?.length) return null as unknown as string;
-      const query: string[] = value
+
+      const query = value
         .map(({ id, value: rawValue }) => {
-          const parsed = columnFiltersSchema.shape.value.safeParse(rawValue);
+          const parsed = columnFiltersValueSchema.safeParse(rawValue);
           if (!parsed.success) return "";
 
-          const { operator, values } = parsed.data;
+          const { operator, values, columnMeta } = parsed.data;
 
           const serializedValues = values.map((v) =>
             v instanceof Date
@@ -391,9 +407,14 @@ function getColumnFiltersParser<TData>(
               : String(v),
           );
 
-          return `${id}:${operator}:${serializedValues.join(",")}`;
+          return [
+            columnMeta.type,
+            id,
+            operator,
+            serializedValues.join(","),
+          ].join(":");
         })
-        .filter((v) => !!v);
+        .filter(Boolean);
 
       if (!query.length) return null as unknown as string;
       return query.join(";");
@@ -439,7 +460,7 @@ export function useQueryDataController<TData>({
 
   const columnFilters = useQueryState(
     `${prefix}filter${suffix}`,
-    getColumnFiltersParser(props.columns, defaultState?.columnFilters ?? []),
+    getColumnFiltersParser(defaultState?.columnFilters ?? []),
   );
 
   const columnPinning = useQueryStates(

@@ -86,6 +86,7 @@ function BaseDataTable<TData>({
   const isMounted = useIsMounted();
 
   if (result.error) return <ErrorFallback error={result.error} />;
+  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const isSelected = selectedRows.length > 0;
@@ -119,12 +120,11 @@ function BaseDataTable<TData>({
             />
           </ButtonGroup>
 
-          {isMounted && isSelected && !isMobile && (
+          {isSelected && !isMobile && (
             <Separator orientation="vertical" className="h-4" />
           )}
 
-          {isMounted &&
-            isSelected &&
+          {isSelected &&
             renderRowSelectionButton?.({ table, rows: selectedRows })}
         </div>
 
@@ -146,108 +146,101 @@ function BaseDataTable<TData>({
         </ActiveFiltersContainer>
       )}
 
-      {isMounted ? (
-        <Table
-          className={classNames?.table}
-          containerClassName={cn(
-            "rounded-xl border",
-            classNames?.tableContainer,
-          )}
-        >
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(
-                  ({ id, column, isPlaceholder, getContext }) => {
-                    const columnPinned = column.getIsPinned();
-                    return (
-                      <TableHead
-                        key={id}
-                        className={cn(
-                          "z-10 text-center",
-                          columnPinned && "bg-background/90 sticky z-20",
-                          columnPinned === "left" && "left-0",
-                          columnPinned === "right" && "right-0",
-                        )}
-                        // style={{
-                        //   left: column.getStart("left"),
-                        //   right: column.getAfter("right"),
-                        // }}
-                      >
-                        {!isPlaceholder &&
-                          flexRender(column.columnDef.header, getContext())}
-                      </TableHead>
-                    );
-                  },
-                )}
-              </TableRow>
-            ))}
-          </TableHeader>
+      <Table
+        className={classNames?.table}
+        containerClassName={cn("rounded-xl border", classNames?.tableContainer)}
+      >
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map(
+                ({ id, column, isPlaceholder, getContext }) => {
+                  const columnPinned = column.getIsPinned();
+                  return (
+                    <TableHead
+                      key={id}
+                      className={cn(
+                        "z-10 text-center",
+                        columnPinned && "bg-background/90 sticky z-20",
+                        columnPinned === "left" && "left-0",
+                        columnPinned === "right" && "right-0",
+                      )}
+                      // style={{
+                      //   left: column.getStart("left"),
+                      //   right: column.getAfter("right"),
+                      // }}
+                    >
+                      {!isPlaceholder &&
+                        flexRender(column.columnDef.header, getContext())}
+                    </TableHead>
+                  );
+                },
+              )}
+            </TableRow>
+          ))}
+        </TableHeader>
 
-          <TableBody>
-            {!result.data && result.isLoading ? (
-              Array.from({ length: table.getState().pagination.pageSize }).map(
-                (_, i) => (
-                  <TableRow key={i}>
-                    <TableCell colSpan={columns.length}>
-                      <Skeleton className="h-8 w-full" />
-                    </TableCell>
-                  </TableRow>
-                ),
-              )
-            ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={cn(
-                    "group/row",
-                    !!onRowClick && "z-0 cursor-pointer select-none",
-                  )}
-                  onClick={(e) => {
-                    if (!onRowClick) return;
-                    const target = e.target as HTMLElement;
-                    if (target.closest("[data-no-row-click]")) return;
-                    onRowClick(row);
-                  }}
-                >
-                  {row.getVisibleCells().map(({ id, column, getContext }) => {
-                    const columnPinned = column.getIsPinned();
-                    return (
-                      <TableCell
-                        key={id}
-                        className={cn(
-                          "z-10",
-                          columnPinned && "bg-background/90 sticky z-20",
-                          columnPinned === "left" && "left-0",
-                          columnPinned === "right" && "right-0",
-                        )}
-                        // style={{
-                        //   left: column.getStart("left"),
-                        //   right: column.getAfter("right"),
-                        // }}
-                      >
-                        {flexRender(column.columnDef.cell, getContext())}
-                      </TableCell>
-                    );
-                  })}
+        <TableBody>
+          {!result.data && result.isLoading ? (
+            Array.from({ length: table.getState().pagination.pageSize }).map(
+              (_, i) => (
+                <TableRow key={i}>
+                  <TableCell colSpan={columns.length}>
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-muted-foreground py-4 text-center whitespace-pre-line"
-                >
-                  {placeholder?.table ?? messages.empty}
-                </TableCell>
+              ),
+            )
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className={cn(
+                  "group/row",
+                  !!onRowClick && "z-0 cursor-pointer select-none",
+                )}
+                onClick={(e) => {
+                  if (!onRowClick) return;
+                  const target = e.target as HTMLElement;
+                  if (target.closest("[data-no-row-click]")) return;
+                  onRowClick(row);
+                }}
+              >
+                {row.getVisibleCells().map(({ id, column, getContext }) => {
+                  const columnPinned = column.getIsPinned();
+                  return (
+                    <TableCell
+                      key={id}
+                      className={cn(
+                        "z-10",
+                        columnPinned && "bg-background/90 sticky z-20",
+                        columnPinned === "left" && "left-0",
+                        columnPinned === "right" && "right-0",
+                      )}
+                      // style={{
+                      //   left: column.getStart("left"),
+                      //   right: column.getAfter("right"),
+                      // }}
+                    >
+                      {flexRender(column.columnDef.cell, getContext())}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      ) : (
-        <LoadingFallback variant="frame" />
-      )}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="text-muted-foreground py-4 text-center whitespace-pre-line"
+              >
+                {placeholder?.table ?? messages.empty}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
       <div
         className={cn(
