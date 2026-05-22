@@ -280,9 +280,11 @@ function BaseDataTable<TData>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="text-muted-foreground py-4 text-center whitespace-pre-line"
+                className="text-muted-foreground px-0 py-4 text-center whitespace-pre-line"
               >
-                {placeholder?.table ?? messages.empty}
+                <div className="sticky inset-y-0 left-0 w-screen lg:static lg:w-auto">
+                  {placeholder?.table ?? messages.empty}
+                </div>
               </TableCell>
             </TableRow>
           )}
