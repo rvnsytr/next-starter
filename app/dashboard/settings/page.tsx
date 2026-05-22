@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <PageContainer className="items-center px-0 lg:px-4">
+    <PageContainer className="items-center">
       <Card id="tema" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
