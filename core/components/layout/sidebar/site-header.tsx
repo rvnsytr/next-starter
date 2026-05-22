@@ -11,8 +11,8 @@ import { SidebarAppSiteHeaderAvatar } from "./site-header-avatar";
 
 export function SidebarAppSiteHeader() {
   return (
-    <header className="bg-background sticky top-0 z-50 w-full">
-      <div className="flex h-(--header-height) items-center justify-between gap-2 border-b px-4">
+    <header className="bg-background sticky top-0 z-60 w-full">
+      <div className="flex h-(--header-height) items-center justify-between gap-2 border-b px-2 lg:px-4">
         <div className="flex items-center gap-x-2">
           <SidebarToggle align="start" />
           <Separator orientation="vertical" className="h-4" />

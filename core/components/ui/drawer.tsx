@@ -63,10 +63,10 @@ function DrawerSwipeArea({
       data-slot="drawer-swipe-area"
       className={cn(
         "fixed z-50 touch-none",
-        position === "bottom" && "inset-x-0 bottom-0 h-8",
-        position === "top" && "inset-x-0 top-0 h-8",
-        position === "left" && "inset-y-0 left-0 w-8",
-        position === "right" && "inset-y-0 right-0 w-8",
+        position === "bottom" && "inset-x-0 bottom-0 h-12",
+        position === "top" && "inset-x-0 top-0 h-12",
+        position === "left" && "inset-y-0 left-0 w-12",
+        position === "right" && "inset-y-0 right-0 w-12",
         className,
       )}
       {...props}

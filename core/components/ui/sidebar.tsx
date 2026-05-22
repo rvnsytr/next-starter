@@ -20,6 +20,7 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerPopup,
+  DrawerSwipeArea,
   DrawerTitle,
 } from "./drawer";
 import { Input } from "./input";
@@ -180,6 +181,7 @@ function Sidebar({
         position={side}
         {...props}
       >
+        <DrawerSwipeArea />
         <DrawerPopup
           dir={dir}
           position={side}
