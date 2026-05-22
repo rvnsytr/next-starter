@@ -26,7 +26,7 @@ export default function Page() {
             <UserRoundIcon /> Informasi Pribadi
           </CardTitle>
           <CardDescription>
-            Perbarui dan kelola informasi profil {appConfig.name} Anda.
+            Perbarui dan kelola informasi profil <b>{appConfig.name}</b> Anda.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
             <ProfileBadges />

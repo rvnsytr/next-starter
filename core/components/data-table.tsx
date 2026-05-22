@@ -13,7 +13,7 @@ import {
   useQueryDataController,
 } from "../hooks/use-data-controller";
 import { useIsMounted } from "../hooks/use-is-mounted";
-import { useIsMobile } from "../hooks/use-media-query";
+import { useIsDesktop } from "../hooks/use-media-query";
 import { messages } from "../messages";
 import {
   DataControllerPageSize,
@@ -42,7 +42,7 @@ import {
   TableRow,
 } from "./ui/table";
 
-export type DataTableProps<TData> = {
+export type BaseDataTableProps = {
   caption?: string;
   placeholder?: {
     table?: string;
@@ -52,7 +52,7 @@ export type DataTableProps<TData> = {
   className?: string;
   classNames?: {
     toolbox?: string;
-    filterContainer?: string;
+    activeFiltersContainer?: string;
     tableContainer?: string;
     table?: string;
     footer?: string;
@@ -65,6 +65,11 @@ export type DataTableProps<TData> = {
     search?: Hotkey;
   };
 
+  /** Makes the table stretch edge-to-edge on mobile devices by compensating the horizontal padding of PageContainer. */
+  fullWidthOnMobile?: boolean;
+};
+
+export type DataTableActionProps<TData> = {
   onRowClick?: (row: Row<TData>) => void;
   renderRowSelectionButton?: (props: {
     rows: Row<TData>[];
@@ -72,17 +77,21 @@ export type DataTableProps<TData> = {
   }) => React.ReactNode;
 };
 
+export type DataTableProps<TData> = BaseDataTableProps &
+  DataTableActionProps<TData>;
+
 function BaseDataTable<TData>({
   caption,
   placeholder,
   className,
   classNames,
   shortcuts,
+  fullWidthOnMobile = false,
   onRowClick,
   renderRowSelectionButton,
   controller: { result, table, columns },
 }: DataTableProps<TData> & { controller: DataControllerResponse<TData> }) {
-  const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
   const isMounted = useIsMounted();
 
   if (result.error) return <ErrorFallback error={result.error} />;
@@ -98,10 +107,11 @@ function BaseDataTable<TData>({
     table.getFilteredSelectedRowModel().rows.length;
 
   return (
-    <div className={cn("flex flex-col gap-y-4", className)}>
+    <div className={cn("relative flex flex-col gap-y-4", className)}>
       <div
         className={cn(
           "flex w-full flex-col gap-2 lg:flex-row lg:justify-between",
+          fullWidthOnMobile && "px-4 lg:px-0",
           classNames?.toolbox,
         )}
       >
@@ -115,12 +125,12 @@ function BaseDataTable<TData>({
             <DataControllerSorting table={table} shortcut={shortcuts?.sort} />
             <DataControllerVisibility
               table={table}
-              align={isMobile ? "end" : "center"}
+              align={isDesktop ? "center" : "end"}
               shortcut={shortcuts?.view}
             />
           </ButtonGroup>
 
-          {isSelected && !isMobile && (
+          {isSelected && isDesktop && (
             <Separator orientation="vertical" className="h-4" />
           )}
 
@@ -139,7 +149,12 @@ function BaseDataTable<TData>({
       </div>
 
       {table.getState().columnFilters.length > 0 && (
-        <ActiveFiltersContainer className={classNames?.filterContainer}>
+        <ActiveFiltersContainer
+          className={cn(
+            fullWidthOnMobile && "px-4 lg:px-0",
+            classNames?.activeFiltersContainer,
+          )}
+        >
           <ClearFilters table={table} />
           <Separator orientation="vertical" className="h-4" />
           <ActiveFilters table={table} />
@@ -147,35 +162,53 @@ function BaseDataTable<TData>({
       )}
 
       <Table
+        containerClassName={cn(
+          fullWidthOnMobile
+            ? "border-y lg:rounded-xl lg:border-x"
+            : "rounded-xl border",
+          classNames?.tableContainer,
+        )}
         className={classNames?.table}
-        containerClassName={cn("rounded-xl border", classNames?.tableContainer)}
       >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(
-                ({ id, column, isPlaceholder, getContext }) => {
-                  const columnPinned = column.getIsPinned();
-                  return (
-                    <TableHead
-                      key={id}
-                      className={cn(
-                        "z-10 text-center",
-                        columnPinned && "bg-background/90 sticky z-20",
-                        columnPinned === "left" && "left-0",
-                        columnPinned === "right" && "right-0",
-                      )}
-                      // style={{
-                      //   left: column.getStart("left"),
-                      //   right: column.getAfter("right"),
-                      // }}
-                    >
-                      {!isPlaceholder &&
-                        flexRender(column.columnDef.header, getContext())}
-                    </TableHead>
-                  );
-                },
-              )}
+              {headerGroup.headers.map((header, headerIndex) => {
+                const columnPinned = header.column.getIsPinned();
+                const isFullwidthFirst = fullWidthOnMobile && headerIndex === 0;
+                const isFullwidthLast =
+                  fullWidthOnMobile &&
+                  headerIndex === headerGroup.headers.length - 1;
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      "z-10 text-center",
+                      columnPinned && "bg-background/90 sticky z-20",
+                      columnPinned === "left" && "left-0",
+                      columnPinned === "right" && "right-0",
+                    )}
+                    style={{
+                      left: header.column.getStart("left"),
+                      right: header.column.getAfter("right"),
+                    }}
+                  >
+                    {!header.isPlaceholder && (
+                      <div
+                        className={cn(
+                          isFullwidthFirst && "pl-4 lg:pl-0",
+                          isFullwidthLast && "pr-4 lg:pr-0",
+                        )}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </div>
+                    )}
+                  </TableHead>
+                );
+              })}
             </TableRow>
           ))}
         </TableHeader>
@@ -207,23 +240,37 @@ function BaseDataTable<TData>({
                   onRowClick(row);
                 }}
               >
-                {row.getVisibleCells().map(({ id, column, getContext }) => {
-                  const columnPinned = column.getIsPinned();
+                {row.getVisibleCells().map((cell, cellIndex) => {
+                  const columnPinned = cell.column.getIsPinned();
+                  const isFullwidthFirst = fullWidthOnMobile && cellIndex === 0;
+                  const isFullwidthLast =
+                    fullWidthOnMobile &&
+                    cellIndex === row.getVisibleCells().length - 1;
                   return (
                     <TableCell
-                      key={id}
+                      key={cell.id}
                       className={cn(
                         "z-10",
                         columnPinned && "bg-background/90 sticky z-20",
                         columnPinned === "left" && "left-0",
                         columnPinned === "right" && "right-0",
                       )}
-                      // style={{
-                      //   left: column.getStart("left"),
-                      //   right: column.getAfter("right"),
-                      // }}
+                      style={{
+                        left: cell.column.getStart("left"),
+                        right: cell.column.getAfter("right"),
+                      }}
                     >
-                      {flexRender(column.columnDef.cell, getContext())}
+                      <div
+                        className={cn(
+                          isFullwidthFirst && "pl-4 lg:pl-0",
+                          isFullwidthLast && "pr-4 lg:pr-0",
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </div>
                     </TableCell>
                   );
                 })}
@@ -245,6 +292,7 @@ function BaseDataTable<TData>({
       <div
         className={cn(
           "flex w-full flex-col items-center gap-4 text-center lg:flex-row",
+          fullWidthOnMobile && "px-4 lg:px-0",
           classNames?.footer,
         )}
       >
@@ -264,12 +312,16 @@ function BaseDataTable<TData>({
           {result.isLoading ? "?" : formatNumber(rowsCount)} baris dipilih
         </small>
 
-        <small
-          data-slot="caption"
-          className="text-muted-foreground order-1 mx-auto text-sm lg:order-3"
-        >
-          {caption}
-        </small>
+        {caption ? (
+          <small
+            data-slot="caption"
+            className="text-muted-foreground order-1 mx-auto text-sm lg:order-3"
+          >
+            {caption}
+          </small>
+        ) : (
+          isDesktop && <div className="order-3 mx-auto" />
+        )}
 
         <small
           data-slot="page-info"
@@ -302,6 +354,7 @@ export function DataTable<TData>({
   className,
   classNames,
   shortcuts,
+  fullWidthOnMobile,
   onRowClick,
   renderRowSelectionButton,
   ...options
@@ -314,6 +367,7 @@ export function DataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
+      fullWidthOnMobile={fullWidthOnMobile}
       onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
@@ -327,6 +381,7 @@ export function QueryDataTable<TData>({
   className,
   classNames,
   shortcuts,
+  fullWidthOnMobile,
   onRowClick,
   renderRowSelectionButton,
   ...options
@@ -339,6 +394,7 @@ export function QueryDataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
+      fullWidthOnMobile={fullWidthOnMobile}
       onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}

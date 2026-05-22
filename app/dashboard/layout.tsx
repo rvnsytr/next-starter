@@ -22,7 +22,7 @@ export default function DashboardLayout({
 }: LayoutProps<"/dashboard">) {
   return (
     <DashboardAuthProvider>
-      <DashboardLayoutMode className="[--header-height:calc(--spacing(14))]">
+      <DashboardLayoutMode className="[--header-height:calc(--spacing(12))] lg:[--header-height:calc(--spacing(14))]">
         <SidebarProvider className="flex flex-col">
           <DynamicBreadcrumbProvider>
             <SidebarAppSiteHeader />

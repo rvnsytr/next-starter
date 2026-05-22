@@ -61,6 +61,7 @@ import {
   MenuTrigger,
 } from "./ui/menu";
 import { Popover, PopoverPopup, PopoverTrigger } from "./ui/popover";
+import { ScrollArea } from "./ui/scroll-area";
 import { Slider } from "./ui/slider";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "./ui/tabs";
 
@@ -71,24 +72,24 @@ export function ActiveFiltersContainer({
   className?: string;
   children: React.ReactNode;
 }) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(true);
+  // const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // const [showLeftBlur, setShowLeftBlur] = useState(false);
+  // const [showRightBlur, setShowRightBlur] = useState(true);
 
   // Check if there's content to scroll and update blur states
-  const checkScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
+  // const checkScroll = () => {
+  //   if (scrollContainerRef.current) {
+  //     const { scrollLeft, scrollWidth, clientWidth } =
+  //       scrollContainerRef.current;
 
-      // Show left blur if scrolled to the right
-      setShowLeftBlur(scrollLeft > 0);
+  //     // Show left blur if scrolled to the right
+  //     setShowLeftBlur(scrollLeft > 0);
 
-      // Show right blur if there's more content to scroll to the right
-      // Add a small buffer (1px) to account for rounding errors
-      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
-    }
-  };
+  //     // Show right blur if there's more content to scroll to the right
+  //     // Add a small buffer (1px) to account for rounding errors
+  //     setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
+  //   }
+  // };
 
   // Log blur states for debugging
   // useEffect(() => {
@@ -96,36 +97,48 @@ export function ActiveFiltersContainer({
   // }, [showLeftBlur, showRightBlur]);
 
   // Set up ResizeObserver to monitor container size
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => checkScroll());
-      resizeObserver.observe(scrollContainerRef.current);
-      return () => resizeObserver.disconnect();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (scrollContainerRef.current) {
+  //     const resizeObserver = new ResizeObserver(() => checkScroll());
+  //     resizeObserver.observe(scrollContainerRef.current);
+  //     return () => resizeObserver.disconnect();
+  //   }
+  // }, []);
 
   // Update blur states when children change
-  useEffect(() => checkScroll(), [children]);
+  // useEffect(() => checkScroll(), [children]);
+
+  // return (
+  //   <div
+  //     className={cn(
+  //       "w-full border-t border-b border-dashed shadow-xs",
+  //       className,
+  //     )}
+  //   >
+  //     <div
+  //       ref={scrollContainerRef}
+  //       onScroll={checkScroll}
+  //       className={cn(
+  //         "no-scrollbar flex items-center gap-2 overflow-x-auto py-2",
+  //         showLeftBlur && "mask-l-from-95%",
+  //         showRightBlur && "mask-r-from-95%",
+  //       )}
+  //     >
+  //       {children}
+  //     </div>
+  //   </div>
+  // );
 
   return (
-    <div
-      className={cn(
-        "w-full border-t border-b border-dashed shadow-xs",
-        className,
-      )}
+    <ScrollArea
+      className="border-t border-b border-dashed"
+      scrollFade
+      withScrollbar={false}
     >
-      <div
-        ref={scrollContainerRef}
-        onScroll={checkScroll}
-        className={cn(
-          "no-scrollbar flex items-center gap-2 overflow-x-auto py-2",
-          showLeftBlur && "mask-l-from-95%",
-          showRightBlur && "mask-r-from-95%",
-        )}
-      >
+      <div className={cn("flex items-center gap-2 py-2", className)}>
         {children}
       </div>
-    </div>
+    </ScrollArea>
   );
 }
 

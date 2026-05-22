@@ -1,4 +1,5 @@
 import { cn } from "@/core/utils";
+import { ScrollArea } from "./scroll-area";
 
 export type TableVariant = "default" | "card";
 
@@ -12,10 +13,12 @@ export function Table({
   containerClassName?: string;
 }) {
   return (
-    <div
+    <ScrollArea
       data-slot="table-container"
       data-variant={variant}
-      className={cn("relative w-full overflow-x-auto", containerClassName)}
+      className={cn("relative min-h-auto", containerClassName)}
+      withScrollbar={false}
+      scrollFade
     >
       <table
         data-slot="table"
@@ -25,7 +28,7 @@ export function Table({
         )}
         {...props}
       />
-    </div>
+    </ScrollArea>
   );
 }
 

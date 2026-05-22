@@ -3,16 +3,15 @@
 import { cn } from "@/core/utils";
 
 export function PageContainer({
-  withContainer = true,
   className,
   ...props
-}: React.ComponentProps<"div"> & { withContainer?: boolean }) {
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="page-container"
       className={cn(
-        "relative z-10 flex flex-1 flex-col gap-4 py-4",
-        withContainer && "px-4",
+        "relative z-10 flex flex-1 flex-col gap-4",
+        "px-0 py-4 *:data-[slot=page-header]:px-4 lg:px-4 lg:*:data-[slot=page-header]:px-0",
         "lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4",
         className,
       )}

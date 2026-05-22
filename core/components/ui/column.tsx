@@ -84,7 +84,7 @@ export function ColumnHeader<TData, TValue>({
 
             <PopoverPopup className="*:p-1">
               <Button
-                size="xs"
+                size="icon-xs"
                 variant="ghost"
                 onClick={() => column.pin("left")}
                 disabled={columnPinned === "left"}
@@ -92,7 +92,7 @@ export function ColumnHeader<TData, TValue>({
                 <ArrowLeftIcon />
               </Button>
               <Button
-                size="xs"
+                size="icon-xs"
                 variant="destructive-ghost"
                 onClick={() => column.pin(false)}
                 disabled={columnPinned === false}
@@ -100,7 +100,7 @@ export function ColumnHeader<TData, TValue>({
                 <XIcon />
               </Button>
               <Button
-                size="xs"
+                size="icon-xs"
                 variant="ghost"
                 onClick={() => column.pin("right")}
                 disabled={columnPinned === "right"}
