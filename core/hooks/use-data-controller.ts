@@ -251,15 +251,10 @@ export function useDataController<TData>({
 
 // #region Query Parsers
 
-export type QueryDataControllerOptions<TData> = DataControllerOptions<TData> & {
-  prefix?: string;
-  suffix?: string;
-};
-
 const getSortingParser = (defaultValue: DataControllerState["sorting"]) =>
   createParser<DataControllerState["sorting"]>({
     parse: (value) => {
-      if (!value) return [];
+      if (!value) return defaultValue;
       return value
         .split(";")
         .map((part) => {
@@ -329,7 +324,7 @@ function getColumnFiltersParser(
 ) {
   return createParser<DataControllerState["columnFilters"]>({
     parse: (value) => {
-      if (!value) return [];
+      if (!value) return defaultValue;
       return value
         .split(";")
         .map((part) => {
@@ -423,6 +418,11 @@ function getColumnFiltersParser(
 }
 
 // #endregion
+
+export type QueryDataControllerOptions<TData> = DataControllerOptions<TData> & {
+  prefix?: string;
+  suffix?: string;
+};
 
 export function useQueryDataController<TData>({
   prefix = "",
