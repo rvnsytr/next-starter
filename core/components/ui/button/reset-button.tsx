@@ -6,8 +6,10 @@ export function ResetButton({
   type = "reset",
   size = "default",
   variant = "outline",
+  children,
   ...props
-}: Omit<ButtonProps, "children">) {
+}: ButtonProps) {
+  const isIconSize = size?.startsWith("icon");
   return (
     <Button
       data-slot="reset-button"
@@ -16,8 +18,12 @@ export function ResetButton({
       variant={variant}
       {...props}
     >
-      <RotateCcwIcon />
-      {!size?.startsWith("icon") && messages.actions.reset}
+      {children ?? (
+        <>
+          <RotateCcwIcon />
+          {!isIconSize && messages.actions.reset}
+        </>
+      )}
     </Button>
   );
 }

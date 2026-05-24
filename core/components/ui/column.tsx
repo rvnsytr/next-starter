@@ -29,8 +29,8 @@ export function ColumnHeader<TData, TValue>({
   const columnPinned = column.getIsPinned();
   const ColumnPinIcon = columnPinned ? PinOffIcon : PinIcon;
 
-  const sort = column.getIsSorted();
-  const SortIcon = sort ? SORT_ICONS[sort] : ArrowUpDownIcon;
+  const currentSort = column.getIsSorted();
+  const SortIcon = currentSort ? SORT_ICONS[currentSort] : ArrowUpDownIcon;
 
   const Icon = column.columnDef.meta?.icon;
 
@@ -54,9 +54,9 @@ export function ColumnHeader<TData, TValue>({
                   size="icon-xs"
                   variant="ghost"
                   onClick={() => {
-                    if (sort === "asc") column.toggleSorting(true, isMulti);
-                    else if (sort === "desc") column.clearSorting();
-                    else column.toggleSorting(false, isMulti);
+                    if (!currentSort) return column.clearSorting();
+                    const desc = currentSort !== "desc";
+                    return column.toggleSorting(desc, isMulti);
                   }}
                   disabled={disabled}
                 >
@@ -65,7 +65,7 @@ export function ColumnHeader<TData, TValue>({
               }
             />
             <TooltipPopup className="capitalize">
-              {typeof sort === "string" ? sort : "-"}
+              {typeof currentSort === "string" ? currentSort : "-"}
             </TooltipPopup>
           </Tooltip>
         )}

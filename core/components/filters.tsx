@@ -148,6 +148,7 @@ export function ClearFilters<TData>({
   variant = "destructive-outline",
   ...props
 }: Omit<ButtonProps, "onClick"> & { table: Table<TData> }) {
+  const isIconSize = size?.startsWith("icon") ?? false;
   return (
     <Button
       size={size}
@@ -159,7 +160,7 @@ export function ClearFilters<TData>({
       {...props}
     >
       <FilterXIcon />
-      {!size?.startsWith("icon") && messages.actions.clear}
+      {!isIconSize && messages.actions.clear}
     </Button>
   );
 }
@@ -169,8 +170,11 @@ export function ResetFilters<TData>({
   shortcut,
   size = "default",
   variant = "outline",
+  children,
   ...props
 }: Omit<ButtonProps, "onClick"> & { table: Table<TData>; shortcut?: Hotkey }) {
+  const isIconSize = size?.startsWith("icon") ?? false;
+
   const clear = () => {
     table.reset();
 
@@ -204,12 +208,16 @@ export function ResetFilters<TData>({
 
   return (
     <Button size={size} variant={variant} onClick={() => clear()} {...props}>
-      <RotateCcwSquareIcon />
-      {!size?.startsWith("icon") && messages.actions.reset}
-      {shortcut && (
-        <Kbd className="hidden text-xs lg:inline-flex">
-          {formatForDisplay(shortcut)}
-        </Kbd>
+      {children ?? (
+        <>
+          <RotateCcwSquareIcon />
+          {!isIconSize && messages.actions.reset}
+          {!isIconSize && shortcut && (
+            <Kbd className="hidden text-xs lg:inline-flex">
+              {formatForDisplay(shortcut)}
+            </Kbd>
+          )}
+        </>
       )}
     </Button>
   );
@@ -246,6 +254,8 @@ export function FilterSelector<TData>({
     [table],
   );
 
+  const isIconSize = size?.startsWith("icon") ?? false;
+
   const column = property ? getColumn(table, property) : undefined;
   const columnMeta = property ? getColumnMeta(table, property) : undefined;
 
@@ -268,8 +278,8 @@ export function FilterSelector<TData>({
           render={
             <Button ref={anchor} size={size} variant={variant} {...props}>
               <FilterIcon />
-              {!size?.startsWith("icon") && "Filter"}
-              {shortcut && (
+              {!isIconSize && "Filter"}
+              {!isIconSize && shortcut && (
                 <Kbd className="hidden text-xs lg:inline-flex">
                   {formatForDisplay(shortcut)}
                 </Kbd>

@@ -5,15 +5,17 @@ import { ArrowUpIcon } from "lucide-react";
 import { Button, ButtonProps } from "./button";
 
 export function ScrollToTopButton({
-  size = "icon-lg",
+  size,
   className,
   onClick,
+  children,
   ...props
-}: Omit<ButtonProps, "children">) {
+}: ButtonProps) {
+  const hasChildren = !!children;
   return (
     <Button
       data-slot="scroll-to-top-button"
-      size={size}
+      size={size ?? (hasChildren ? "default" : "icon-lg")}
       className={cn(
         "fixed right-6 bottom-6 z-40 lg:right-10 lg:bottom-8",
         className,
@@ -24,7 +26,7 @@ export function ScrollToTopButton({
       }}
       {...props}
     >
-      <ArrowUpIcon className="size-5" />
+      {children ?? <ArrowUpIcon className="size-5" />}
     </Button>
   );
 }

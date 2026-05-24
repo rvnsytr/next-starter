@@ -51,13 +51,16 @@ export function DataControllerVisibility<TData>({
     { enabled: !!shortcut },
   );
 
+  const isIconSize = size?.startsWith("icon") ?? false;
+
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
       <MenuTrigger
         render={
           <Button size={size} variant={variant} {...props}>
-            <EyeIcon /> {!size?.startsWith("icon") && "Lihat"}{" "}
-            {shortcut && (
+            <EyeIcon />
+            {!isIconSize && "Lihat"}
+            {!isIconSize && shortcut && (
               <Kbd className="hidden text-xs lg:inline-flex">
                 {formatForDisplay(shortcut)}
               </Kbd>
@@ -118,13 +121,16 @@ export function DataControllerSorting<TData>({
     { enabled: !!shortcut },
   );
 
+  const isIconSize = size?.startsWith("icon") ?? false;
+
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
       <MenuTrigger
         render={
           <Button size={size} variant={variant} {...props}>
-            <ArrowUpDownIcon /> {!size?.startsWith("icon") && "Sortir"}{" "}
-            {shortcut && (
+            <ArrowUpDownIcon />
+            {!isIconSize && "Sortir"}
+            {!isIconSize && shortcut && (
               <Kbd className="hidden text-xs lg:inline-flex">
                 {formatForDisplay(shortcut)}
               </Kbd>

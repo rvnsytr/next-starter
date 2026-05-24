@@ -44,7 +44,8 @@ import {
   Button,
   CopyButton,
   PulsatingButton,
-  RefreshButton,
+  PulsatingButtonContent,
+  PulsatingButtonPulse,
   ResetButton,
   ScrollToTopButton,
 } from "@/core/components/ui/button";
@@ -570,10 +571,19 @@ const docs: DocProps[] = [
           {
             label: "Pulsating Button",
             render: (
-              <PulsatingButton href="/">Pulsating Button</PulsatingButton>
+              <PulsatingButton
+                nativeButton={false}
+                render={
+                  <Link href="/about">
+                    <PulsatingButtonContent>
+                      Pulse Button with Navigation
+                    </PulsatingButtonContent>
+                    <PulsatingButtonPulse />
+                  </Link>
+                }
+              />
             ),
           },
-          { label: "Refresh Button", render: <RefreshButton /> },
           { label: "Reset Button", render: <ResetButton /> },
           {
             label: "Scroll To Top Button",
