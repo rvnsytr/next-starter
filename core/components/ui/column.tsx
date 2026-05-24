@@ -8,7 +8,7 @@ import {
   PinOffIcon,
   XIcon,
 } from "lucide-react";
-import { SORT_ICONS } from "../data-controller";
+import { SORT_ICONS } from "../controllers";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
 import { Popover, PopoverPopup, PopoverTrigger } from "./popover";

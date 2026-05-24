@@ -16,19 +16,17 @@ import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsDesktop } from "../hooks/use-media-query";
 import { messages } from "../messages";
 import {
-  DataControllerPageSize,
-  DataControllerPaginationNav,
-  DataControllerSearch,
-  DataControllerSorting,
-  DataControllerVisibility,
-} from "./data-controller";
-import {
   ActiveFilters,
   ActiveFiltersContainer,
   ClearFilters,
   FilterSelector,
+  PageSize,
+  Pagination,
   ResetFilters,
-} from "./filters";
+  Search,
+  Sorting,
+  Visibility,
+} from "./controllers";
 import { ButtonGroup } from "./ui/button-group";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
@@ -122,8 +120,8 @@ function BaseDataTable<TData>({
               align="start"
               shortcut={shortcuts?.filter}
             />
-            <DataControllerSorting table={table} shortcut={shortcuts?.sort} />
-            <DataControllerVisibility
+            <Sorting table={table} shortcut={shortcuts?.sort} />
+            <Visibility
               table={table}
               align={isDesktop ? "center" : "end"}
               shortcut={shortcuts?.view}
@@ -140,7 +138,7 @@ function BaseDataTable<TData>({
 
         <div className="flex gap-x-2 *:grow">
           <ResetFilters table={table} shortcut={shortcuts?.reset} />
-          <DataControllerSearch
+          <Search
             table={table}
             placeholder={placeholder?.search}
             shortcut={shortcuts?.search}
@@ -303,7 +301,7 @@ function BaseDataTable<TData>({
           className="order-4 flex items-center gap-x-2 lg:order-1"
         >
           <Label className="shrink-0">Baris per halaman</Label>
-          <DataControllerPageSize table={table} />
+          <PageSize table={table} />
         </div>
 
         <small
@@ -339,7 +337,7 @@ function BaseDataTable<TData>({
             : formatNumber(table.getPageCount() > 0 ? table.getPageCount() : 1)}
         </small>
 
-        <DataControllerPaginationNav
+        <Pagination
           data-slot="pagination-nav"
           table={table}
           size="icon"
