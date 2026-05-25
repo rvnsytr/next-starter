@@ -55,6 +55,7 @@ export function ComboboxInput({
   showTrigger = true,
   showClear = false,
   startAddon,
+  endAddon,
   inputGroupProps,
   triggerProps,
   clearProps,
@@ -65,6 +66,7 @@ export function ComboboxInput({
   showTrigger?: boolean;
   showClear?: boolean;
   startAddon?: React.ReactNode;
+  endAddon?: React.ReactNode;
   inputGroupProps?: React.ComponentProps<typeof InputGroup>;
   triggerProps?: React.ComponentProps<typeof InputGroupAddon>;
   clearProps?: React.ComponentProps<typeof InputGroupAddon>;
@@ -87,8 +89,22 @@ export function ComboboxInput({
       />
 
       {startAddon && (
-        <InputGroupAddon data-slot="combobox-start-addon" aria-hidden="true">
+        <InputGroupAddon
+          data-slot="combobox-start-addon"
+          aria-hidden="true"
+          align="inline-start"
+        >
           {startAddon}
+        </InputGroupAddon>
+      )}
+
+      {endAddon && (
+        <InputGroupAddon
+          data-slot="combobox-end-addon"
+          aria-hidden="true"
+          align="inline-end"
+        >
+          {endAddon}
         </InputGroupAddon>
       )}
 

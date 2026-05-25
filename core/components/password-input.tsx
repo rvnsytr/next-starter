@@ -15,12 +15,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 
 export function PasswordInput({
   startAddon = <LockKeyholeIcon />,
+  endAddon,
   withValidationList = false,
   value,
   onChange,
   ...props
 }: Omit<React.ComponentProps<typeof InputGroupInput>, "type"> & {
   startAddon?: React.ReactNode;
+  endAddon?: React.ReactNode;
   withValidationList?: boolean;
 }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -49,7 +51,8 @@ export function PasswordInput({
           {...props}
         />
 
-        <InputGroupAddon>{startAddon}</InputGroupAddon>
+        {startAddon && <InputGroupAddon>{startAddon}</InputGroupAddon>}
+        {endAddon && <InputGroupAddon>{endAddon}</InputGroupAddon>}
 
         <InputGroupAddon align="inline-end">
           <Button

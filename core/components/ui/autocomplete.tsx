@@ -15,6 +15,7 @@ export function AutocompleteInput({
   showTrigger = false,
   showClear = false,
   startAddon,
+  endAddon,
   inputGroupProps,
   triggerProps,
   clearProps,
@@ -25,6 +26,7 @@ export function AutocompleteInput({
   showTrigger?: boolean;
   showClear?: boolean;
   startAddon?: React.ReactNode;
+  endAddon?: React.ReactNode;
   inputGroupProps?: React.ComponentProps<typeof InputGroup>;
   triggerProps?: React.ComponentProps<typeof InputGroupAddon>;
   clearProps?: React.ComponentProps<typeof InputGroupAddon>;
@@ -44,8 +46,19 @@ export function AutocompleteInput({
         <InputGroupAddon
           data-slot="autocomplete-start-addon"
           aria-hidden="true"
+          align="inline-start"
         >
           {startAddon}
+        </InputGroupAddon>
+      )}
+
+      {endAddon && (
+        <InputGroupAddon
+          data-slot="autocomplete-end-addon"
+          aria-hidden="true"
+          align="inline-end"
+        >
+          {endAddon}
         </InputGroupAddon>
       )}
 
