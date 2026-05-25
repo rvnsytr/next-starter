@@ -39,6 +39,25 @@ import {
 } from "../utils";
 import { useDebounce } from "./use-debounce";
 
+const columnFiltersSchema = z.object({
+  id: z.string(),
+  value: z.object({
+    operator: z.enum(allFilterOperators),
+    values: z
+      .union([
+        z.string(),
+        z.number(),
+        z.coerce.date(),
+        z.union([z.string(), z.number(), z.coerce.date()]).array(),
+      ])
+      .array(),
+    columnMeta: z.object({
+      label: z.string().exactOptional(),
+      type: z.enum(allDataFilterType),
+    }),
+  }),
+});
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ColumnDef<TData> = ColumnDefType<TData, any>[];
 
@@ -113,15 +132,15 @@ export function useStatelessDataController<TData>({
 }: StatelessDataControllerOptions<TData>): DataControllerResponse<TData> {
   const debouncedSearch = useDebounce(globalFilter);
 
-  const state: DataControllerState = useMemo(
-    () => ({
+  const state: DataControllerState = useMemo(() => {
+    const parsed = columnFiltersSchema.array().safeParse(columnFilters);
+    return {
       globalFilter: debouncedSearch,
       pagination: pagination,
       sorting: sorting,
-      columnFilters: columnFilters,
-    }),
-    [debouncedSearch, pagination, sorting, columnFilters],
-  );
+      columnFilters: parsed.success ? parsed.data : [],
+    };
+  }, [debouncedSearch, pagination, sorting, columnFilters]);
 
   const result = useSWR<ActionSuccess<TData[]>>(
     mode === "manual" ? [query.key, state] : [query.key],
@@ -303,22 +322,6 @@ const getRecordParser = (
     },
   }).withDefault(defaultValue);
 
-const columnFiltersValueSchema = z.object({
-  operator: z.enum(allFilterOperators),
-  values: z
-    .union([
-      z.string(),
-      z.number(),
-      z.coerce.date(),
-      z.union([z.string(), z.number(), z.coerce.date()]).array(),
-    ])
-    .array(),
-  columnMeta: z.object({
-    label: z.string(),
-    type: z.enum(allDataFilterType),
-  }),
-});
-
 function getColumnFiltersParser(
   defaultValue: DataControllerState["columnFilters"],
 ) {
@@ -382,7 +385,7 @@ function getColumnFiltersParser(
 
           if (!values.length) return null;
 
-          return { id, value: { operator, values } };
+          return { id, value: { operator, values, columnMeta: { type } } };
         })
         .filter((v) => v !== null);
     },
@@ -391,7 +394,7 @@ function getColumnFiltersParser(
 
       const query = value
         .map(({ id, value: rawValue }) => {
-          const parsed = columnFiltersValueSchema.safeParse(rawValue);
+          const parsed = columnFiltersSchema.shape.value.safeParse(rawValue);
           if (!parsed.success) return "";
 
           const { operator, values, columnMeta } = parsed.data;
