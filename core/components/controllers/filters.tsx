@@ -1040,6 +1040,7 @@ export function FilterValueTextController<TData, TValue>({
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterModel<"text", TData>)
     : undefined;
+
   const filterValue = filter?.values[0] ?? "";
 
   const [value, setValue] = useState(filterValue);
@@ -1053,13 +1054,13 @@ export function FilterValueTextController<TData, TValue>({
           values: [debouncedValue],
           columnMeta: column.columnDef.meta,
         } satisfies FilterModel<"text", TData>;
-      return { operator: old.operator, values: [debouncedValue] };
+      return { operator: old.operator, values: [debouncedValue], columnMeta };
     });
   });
 
   useEffect(() => onInput(), [debouncedValue]);
 
-  const Icon = column.columnDef.meta?.icon;
+  const Icon = columnMeta?.icon;
 
   return (
     <InputGroup>
@@ -1109,7 +1110,7 @@ export function FilterValueNumberController<TData, TValue>({
 
     column.setFilterValue((old: undefined | FilterModel<"number", TData>) => {
       if (!old || old.values.length === 0)
-        return { operator: "is", values: sortedValues };
+        return { operator: "is", values: sortedValues, columnMeta };
 
       const operator = numberFilterDetails[old.operator];
       let newValues: number[];
@@ -1124,7 +1125,7 @@ export function FilterValueNumberController<TData, TValue>({
         ];
       }
 
-      return { operator: old.operator, values: newValues };
+      return { operator: old.operator, values: newValues, columnMeta };
     });
   };
 
