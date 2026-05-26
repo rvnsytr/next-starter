@@ -1,5 +1,5 @@
 export const activityKeys = {
-  action: {
+  actions: {
     list: "action:activities",
     getByUser: (userId: string) => `action:activities:${userId}`,
   },

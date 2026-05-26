@@ -5,7 +5,7 @@ import { listSessions } from "../actions";
 import { authKeys } from "../config/keys";
 
 export function useListSessions(config?: SWRConfiguration) {
-  return useSWR(authKeys.action.sessions, listSessions, config);
+  return useSWR(authKeys.actions.sessions, listSessions, config);
 }
 
-export const mutateListSessions = () => mutate(authKeys.action.sessions);
+export const mutateListSessions = () => mutate(authKeys.actions.sessions);

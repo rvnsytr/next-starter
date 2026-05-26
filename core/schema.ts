@@ -18,7 +18,9 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
+    /** @default true */
     sanitize?: boolean;
+    /** @default false */
     withRequired?: boolean;
   }) => {
     const { invalid, required } = messages;
@@ -54,6 +56,7 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
+    /** @default false */
     withRequired?: boolean;
   }) => {
     const { invalid, required } = messages;

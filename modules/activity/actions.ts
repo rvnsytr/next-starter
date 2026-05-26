@@ -13,7 +13,7 @@ import { activityKeys } from "./config/keys";
 
 async function listActivities(): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(activityKeys.action.list);
+  cacheTag(activityKeys.actions.list);
   return await db.select().from(activity).orderBy(desc(activity.createdAt));
 }
 
@@ -36,7 +36,7 @@ async function getUserActivities(
   userId: string,
 ): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(activityKeys.action.getByUser(userId));
+  cacheTag(activityKeys.actions.getByUser(userId));
   return await db
     .select()
     .from(activity)

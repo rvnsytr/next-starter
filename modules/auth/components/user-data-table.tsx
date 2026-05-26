@@ -26,7 +26,7 @@ import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
 export const mutateUserDataTable = () =>
-  mutateControlledData(authKeys.action.users);
+  mutateControlledData(authKeys.actions.users);
 
 export function UserDataTable() {
   const { user } = useSession();
@@ -45,7 +45,7 @@ export function UserDataTable() {
         mode="auto"
         columns={getUserColumns}
         query={{
-          key: authKeys.action.users,
+          key: authKeys.actions.users,
           fetcher: async () => await listUsersAction(user.role),
           immutable: true,
         }}

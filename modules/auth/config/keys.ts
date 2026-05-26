@@ -1,5 +1,5 @@
 export const authKeys = {
-  action: {
+  actions: {
     users: "action:users",
     sessions: "action:sessions",
     sessionsByUser: (userId: string) => `action:sessions:${userId}`,

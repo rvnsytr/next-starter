@@ -159,7 +159,7 @@ const controllerOptions: Omit<
 };
 
 export const mutateUserActivityTimeline = (userId: string) =>
-  mutateControlledData(activityKeys.action.getByUser(userId));
+  mutateControlledData(activityKeys.actions.getByUser(userId));
 
 export function UserActivityTimeline({
   userId,
@@ -170,7 +170,7 @@ export function UserActivityTimeline({
   const controller = useDataController({
     ...controllerOptions,
     query: {
-      key: activityKeys.action.getByUser(userId),
+      key: activityKeys.actions.getByUser(userId),
       fetcher: async () => await getUserActivitiesAction(user.role, userId),
     },
   });
