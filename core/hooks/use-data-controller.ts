@@ -30,6 +30,7 @@ import { useMemo, useState } from "react";
 import useSWR, { mutate, SWRConfiguration, SWRResponse } from "swr";
 import z from "zod";
 import { DataControllerState } from "../data-controller";
+import { columnFiltersSchema } from "../schema";
 import { ActionResponse, ActionSuccess, Override } from "../types";
 import {
   allDataFilterType,
@@ -38,25 +39,6 @@ import {
   parseLocalizedDate,
 } from "../utils";
 import { useDebounce } from "./use-debounce";
-
-const columnFiltersSchema = z.object({
-  id: z.string(),
-  value: z.object({
-    operator: z.enum(allFilterOperators),
-    values: z
-      .union([
-        z.string(),
-        z.number(),
-        z.coerce.date(),
-        z.union([z.string(), z.number(), z.coerce.date()]).array(),
-      ])
-      .array(),
-    columnMeta: z.object({
-      label: z.string().exactOptional(),
-      type: z.enum(allDataFilterType),
-    }),
-  }),
-});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ColumnDef<TData> = ColumnDefType<TData, any>[];
