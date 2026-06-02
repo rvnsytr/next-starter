@@ -34,20 +34,20 @@ export default function Page() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-y-4">
-          <Tabs defaultValue="masuk">
+          <Tabs defaultValue="sign-in">
             <TabsList className="w-full">
-              <TabsTab value="masuk">
+              <TabsTab value="sign-in">
                 <LogInIcon /> Masuk
               </TabsTab>
-              <TabsTab value="daftar">
+              <TabsTab value="sign-up">
                 <UserRoundPlusIcon /> Daftar
               </TabsTab>
             </TabsList>
 
-            <TabsPanel value="masuk">
+            <TabsPanel value="sign-in">
               <SignInForm />
             </TabsPanel>
-            <TabsPanel value="daftar">
+            <TabsPanel value="sign-up">
               <SignUpForm />
             </TabsPanel>
           </Tabs>

@@ -4,8 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 export function proxy(req: NextRequest) {
   const sessionCookie = getSessionCookie(req);
 
-  if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in"))
-    return NextResponse.redirect(new URL("/sign-in", req.url));
+  if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in")) {
+    const url = new URL("/sign-in", req.url);
+    const callbackURL = req.nextUrl.pathname + req.nextUrl.search;
+    url.searchParams.set("callbackURL", callbackURL);
+    return NextResponse.redirect(url);
+  }
 
   // if (sessionCookie && req.nextUrl.pathname.startsWith("/sign-in"))
   //   return NextResponse.redirect(new URL("/dashboard", req.url));

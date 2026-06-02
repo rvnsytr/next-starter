@@ -16,6 +16,7 @@ import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogInIcon, MailIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
@@ -29,6 +30,7 @@ const formSchema = userSchema.pick({ email: true }).extend({
 });
 
 export function SignInForm() {
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<FormSchema>({
@@ -38,13 +40,14 @@ export function SignInForm() {
 
   const formHandler = (formData: FormSchema) => {
     setIsLoading(true);
+
+    const callbackURL = searchParams.get("callbackURL") || "/dashboard";
+
     toast.promise(
-      authClient.signIn
-        .email({ ...formData, callbackURL: "/dashboard" })
-        .then((res) => {
-          if (res.error) throw res.error;
-          return res.data;
-        }),
+      authClient.signIn.email({ ...formData, callbackURL }).then((res) => {
+        if (res.error) throw res.error;
+        return res.data;
+      }),
       {
         loading: { title: messages.loading },
         success: (res) => {
