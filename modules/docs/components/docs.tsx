@@ -1620,7 +1620,7 @@ export default function Docs() {
                         key={id}
                         id={id}
                         data={c}
-                        className={cn((c.render || c.variants) && "pb-6")}
+                        className={cn((c.render ?? c.variants) && "pb-6")}
                       >
                         {c.render && (
                           <div className="flex flex-col items-center gap-4">

@@ -41,7 +41,7 @@ export function SignInForm() {
   const formHandler = (formData: FormSchema) => {
     setIsLoading(true);
 
-    const callbackURL = searchParams.get("callbackURL") || "/dashboard";
+    const callbackURL = searchParams.get("callbackURL") ?? "/dashboard";
 
     toast.promise(
       authClient.signIn.email({ ...formData, callbackURL }).then((res) => {
