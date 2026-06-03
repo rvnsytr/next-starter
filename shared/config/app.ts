@@ -3,7 +3,7 @@ export const appConfig = {
   description: "App description...",
   keywords: ["next", "next starter"],
 
-  defaultLanguage: "id",
+  language: "id",
 
   logo: {
     default: "/logo.png",
