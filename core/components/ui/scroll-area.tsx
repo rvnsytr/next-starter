@@ -6,6 +6,7 @@ import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 export function ScrollArea({
   scrollFade = false,
   scrollbarGutter = false,
+  fill = false,
   withScrollbar = true,
   className,
   children,
@@ -13,6 +14,7 @@ export function ScrollArea({
 }: ScrollAreaPrimitive.Root.Props & {
   scrollFade?: boolean;
   scrollbarGutter?: boolean;
+  fill?: boolean;
   withScrollbar?: boolean;
 }) {
   return (
@@ -30,7 +32,12 @@ export function ScrollArea({
             "data-has-overflow-x:pb-2.5 data-has-overflow-y:pe-2.5",
         )}
       >
-        {children}
+        <ScrollAreaPrimitive.Content
+          data-slot="scroll-area-content"
+          className={cn(fill && "size-full")}
+        >
+          {children}
+        </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
 
       {withScrollbar && (
