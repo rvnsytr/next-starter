@@ -3,17 +3,90 @@ import { Role } from "@/shared/permission";
 import { Route } from "next";
 import { Menu, RouteRole } from "./types";
 
+type NormalizeRouteOptions = {
+  /**
+   * Include query string and hash fragment.
+   *
+   * @default false
+   *
+   * @example
+   * normalizeRoute("/users?id=123#profile")
+   * // "/users"
+   *
+   * normalizeRoute("/users?id=123#profile", { withSearch: true })
+   * // "/users?id=123#profile"
+   */
+  withSearch?: boolean;
+
+  /**
+   * Collapse repeated slashes into one.
+   *
+   * @default true
+   *
+   * @example
+   * normalizeRoute("//users///profile")
+   * // "/users/profile"
+   *
+   * normalizeRoute("//users///profile", { collapseSlashes: false })
+   * // "//users///profile"
+   */
+  collapseSlashes?: boolean;
+
+  /**
+   * Remove trailing slash, except for root.
+   *
+   * @default true
+   *
+   * @example
+   * normalizeRoute("/users/")
+   * // "/users"
+   *
+   * normalizeRoute("/users/", { removeTrailingSlash: false })
+   * // "/users/"
+   */
+  removeTrailingSlash?: boolean;
+
+  /**
+   * Ensure route starts with a leading slash.
+   *
+   * @default true
+   *
+   * @example
+   * normalizeRoute("users/profile")
+   * // "/users/profile"
+   *
+   * normalizeRoute("users/profile", { ensureLeadingSlash: false })
+   * // "users/profile"
+   */
+  ensureLeadingSlash?: boolean;
+};
+
+export function normalizeRoute(
+  route?: string | null,
+  options?: NormalizeRouteOptions,
+) {
+  if (!route) return "/";
+
+  let result = route;
+  const withSearch = options?.withSearch ?? false;
+  const collapseSlashes = options?.collapseSlashes ?? true;
+  const removeTrailingSlash = options?.removeTrailingSlash ?? true;
+  const ensureLeadingSlash = options?.ensureLeadingSlash ?? true;
+
+  if (!withSearch) result = result.split(/[?#]/)[0];
+  if (collapseSlashes) result = result.replace(/\/+/g, "/");
+  if (removeTrailingSlash) result = result.replace(/\/+$/, "");
+  if (ensureLeadingSlash) result = "/" + result.replace(/^\/+/, "");
+
+  return (result || "/") as Route;
+}
+
 export function authorizedRoute(route: Route | null, role?: Role) {
   if (!route || !role) return false;
   const meta = routeConfig[route];
   if (!meta) return false;
   if (!meta.role) return true;
   return meta.role && (meta.role === "all" || meta.role.includes(role));
-}
-
-export function normalizeRoute(route?: string | null): Route {
-  if (!route) return "/";
-  return (route.split("?")[0].replace(/\/+$/, "") as Route) || "/";
 }
 
 export function setRouteTitle(title: string) {
