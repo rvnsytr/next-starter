@@ -5,8 +5,9 @@ export function proxy(req: NextRequest) {
   const sessionCookie = getSessionCookie(req);
 
   if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in")) {
+    const { pathname, hash, search } = req.nextUrl;
+    const callbackURL = `${pathname}${hash}${search}`;
     const url = new URL("/sign-in", req.url);
-    const callbackURL = req.nextUrl.pathname + req.nextUrl.search;
     url.searchParams.set("callbackURL", callbackURL);
     return NextResponse.redirect(url);
   }
@@ -24,7 +25,7 @@ export function proxy(req: NextRequest) {
     "hash",
     "search",
   ] as const;
-  nextUrlKeys.map((k) => headers.set(`x-${k}`, req.nextUrl[k]));
+  nextUrlKeys.map((k) => headers.set(`x-nextUrl-${k}`, req.nextUrl[k]));
 
   return NextResponse.next({ request: { headers } });
 }

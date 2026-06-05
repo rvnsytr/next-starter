@@ -40,8 +40,7 @@ export function SidebarAppHeader() {
         label: "Keluar",
         // TODO: variant: "destructive",
         icon: <LogOutIcon />,
-        callback: () =>
-          signOutClient({ onSuccess: () => router.push("/sign-in") }),
+        callback: () => signOutClient({ onSuccess: router.push }),
       },
     ];
 

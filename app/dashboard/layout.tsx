@@ -50,10 +50,18 @@ async function DashboardAuthProvider({
   children?: React.ReactNode;
 }) {
   const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) redirect("/sign-in");
 
-  const pathname = headers.get("x-pathname");
+  const pathname = headers.get("x-nextUrl-pathname");
+  const hash = headers.get("x-nextUrl-hash");
+  const search = headers.get("x-nextUrl-search");
+
+  const session = await auth.api.getSession({ headers });
+  if (!session) {
+    const callbackURL = `${pathname}${hash}${search}`;
+    const params = new URLSearchParams({ callbackURL });
+    redirect(`/sign-in?${params.toString()}`);
+  }
+
   const isAuthorized = session && authorizedRoute(pathname, session.user.role);
   if (!isAuthorized) return notFound();
 

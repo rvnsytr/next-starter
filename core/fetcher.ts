@@ -38,7 +38,7 @@ const fetcher = async <T>(
   config?: FetcherConfig<T>,
 ): Promise<T> => {
   const res = await fetch(url, config);
-  const json = await res.json();
+  const json = await res.json().catch(() => res.text());
 
   if (!res.ok) {
     if (config?.safeFetch) return json;

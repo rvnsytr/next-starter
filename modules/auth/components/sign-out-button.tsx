@@ -13,7 +13,7 @@ export function signOutClient({
   onSuccess,
   onError,
 }: {
-  onSuccess?: () => void;
+  onSuccess?: (url: string) => void;
   onError?: (e: Error) => void;
 } = {}) {
   toast.promise(
@@ -24,7 +24,11 @@ export function signOutClient({
     {
       loading: { title: messages.loading },
       success: () => {
-        onSuccess?.();
+        const { pathname, hash, search } = location;
+        const callbackURL = `${pathname}${hash}${search}`;
+        const url = new URL("/sign-in", location.origin);
+        url.searchParams.set("callbackURL", callbackURL);
+        onSuccess?.(url.toString());
         return { title: "Berhasil keluar - Sampai jumpa!" };
       },
       error: (e) => {
@@ -42,7 +46,7 @@ export function SignOutButton() {
   const clickHandler = () => {
     setIsLoading(true);
     signOutClient({
-      onSuccess: () => router.push("/sign-in"),
+      onSuccess: router.push,
       onError: () => setIsLoading(false),
     });
   };
