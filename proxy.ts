@@ -5,15 +5,13 @@ export function proxy(req: NextRequest) {
   const sessionCookie = getSessionCookie(req);
 
   if (!sessionCookie && !req.nextUrl.pathname.startsWith("/sign-in")) {
+    const url = new URL("/sign-in", req.nextUrl.origin);
+
     const { pathname, hash, search } = req.nextUrl;
-    const callbackURL = `${pathname}${hash}${search}`;
-    const url = new URL("/sign-in", req.url);
-    url.searchParams.set("callbackURL", callbackURL);
+    url.searchParams.set("callbackURL", `${pathname}${hash}${search}`);
+
     return NextResponse.redirect(url);
   }
-
-  // if (sessionCookie && req.nextUrl.pathname.startsWith("/sign-in"))
-  //   return NextResponse.redirect(new URL("/dashboard", req.url));
 
   const headers = new Headers(req.headers);
   const nextUrlKeys = [

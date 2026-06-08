@@ -24,10 +24,11 @@ export function signOutClient({
     {
       loading: { title: messages.loading },
       success: () => {
-        const { pathname, hash, search } = location;
-        const callbackURL = `${pathname}${hash}${search}`;
-        const url = new URL("/sign-in", location.origin);
-        url.searchParams.set("callbackURL", callbackURL);
+        const { origin, pathname, hash, search } = location;
+
+        const url = new URL("/sign-in", origin);
+        url.searchParams.set("callbackURL", `${pathname}${hash}${search}`);
+
         onSuccess?.(url.toString());
         return { title: "Berhasil keluar - Sampai jumpa!" };
       },
