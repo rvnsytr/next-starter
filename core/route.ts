@@ -65,11 +65,11 @@ type NormalizeRouteOptions = {
  * Normalize a route by applying various transformations.
  *
  * @example
- * normalizeRoute("/users///profile/")
- * // "/users/profile"
+ * normalizeRoute("/dashboard///settings/")
+ * // "/dashboard/settings"
  *
- * normalizeRoute("/users#profile?id=123", { withSearch: true })
- * // "/users#profile?id=123"
+ * normalizeRoute("/users?id=123#profile", { withSearch: true })
+ * // "/users?id=123#profile"
  */
 export function normalizeRoute(
   route?: string | null,
@@ -137,6 +137,23 @@ export function getRequestUrl(headers?: Headers) {
      */
     search: h.get("x-nextUrl-search"),
   };
+}
+
+export function createSignInURL({
+  // todo: basePath,
+  origin,
+  pathname,
+  hash,
+  search,
+}: Record<"origin" | "pathname" | "hash" | "search", string | null>) {
+  if (!origin || !pathname) return "/sign-in";
+  const url = new URL("/sign-in", origin);
+
+  const defaultRoutes: Route[] = ["/", "/dashboard"];
+  if (!defaultRoutes.includes(pathname as Route))
+    url.searchParams.set("callbackURL", `${pathname}${search}${hash}`);
+
+  return url.toString();
 }
 
 export function authorizedRoute(route: Route | null, role?: Role) {

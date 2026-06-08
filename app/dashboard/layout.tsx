@@ -7,7 +7,12 @@ import {
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { LayoutModeProvider } from "@/core/providers/layout-mode";
-import { authorizedRoute, getRequestUrl, getRouteTitle } from "@/core/route";
+import {
+  authorizedRoute,
+  createSignInURL,
+  getRequestUrl,
+  getRouteTitle,
+} from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
 import { allLayoutMode } from "@/shared/config";
 import { Metadata } from "next";
@@ -50,16 +55,12 @@ async function DashboardAuthProvider({
   children?: React.ReactNode;
 }) {
   const headers = await nextHeaders();
-  const { pathname, hash, search } = getRequestUrl(headers);
+  const reqUrl = getRequestUrl(headers);
 
   const session = await auth.api.getSession({ headers });
-  if (!session) {
-    const callbackURL = `${pathname}${hash}${search}`;
-    const params = new URLSearchParams({ callbackURL });
-    redirect(`/sign-in?${params.toString()}`);
-  }
+  if (!session) redirect(createSignInURL(reqUrl));
 
-  const isAuthorized = authorizedRoute(pathname, session.user.role);
+  const isAuthorized = authorizedRoute(reqUrl.pathname, session.user.role);
   if (!isAuthorized) return notFound();
 
   return <AuthProvider session={session}>{children}</AuthProvider>;

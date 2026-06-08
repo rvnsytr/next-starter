@@ -5,6 +5,7 @@ import { SidebarMenuButton } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/core/messages";
+import { createSignInURL } from "@/core/route";
 import { LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,12 +25,7 @@ export function signOutClient({
     {
       loading: { title: messages.loading },
       success: () => {
-        const { origin, pathname, hash, search } = location;
-
-        const url = new URL("/sign-in", origin);
-        url.searchParams.set("callbackURL", `${pathname}${hash}${search}`);
-
-        onSuccess?.(url.toString());
+        onSuccess?.(createSignInURL(location));
         return { title: "Berhasil keluar - Sampai jumpa!" };
       },
       error: (e) => {
