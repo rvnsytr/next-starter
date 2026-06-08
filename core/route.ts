@@ -140,14 +140,20 @@ export function getRequestUrl(headers?: Headers) {
 }
 
 export function createSignInURL({
-  // todo: basePath,
+  baseUrl = "/sign-in",
   origin,
   pathname,
   hash,
   search,
-}: Record<"origin" | "pathname" | "hash" | "search", string | null>) {
+}: {
+  baseUrl?: string;
+  origin: string | null;
+  pathname: string | null;
+  hash: string | null;
+  search: string | null;
+}): string {
   if (!origin || !pathname) return "/sign-in";
-  const url = new URL("/sign-in", origin);
+  const url = new URL(baseUrl, origin);
 
   const defaultRoutes: Route[] = ["/", "/dashboard"];
   if (!defaultRoutes.includes(pathname as Route))
