@@ -27,7 +27,7 @@ export const allFileTypes = [
 ] as const;
 
 export type FileTypeConfig = {
-  displayName: string;
+  label: string;
   icon: LucideIcon;
   maxSize: number;
   accept: string;
@@ -36,7 +36,7 @@ export type FileTypeConfig = {
 
 const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   image: {
-    displayName: "gambar",
+    label: "gambar",
     icon: ImageIcon,
     maxSize: toBytes(2),
     accept: "image/png, image/jpeg, image/svg+xml, image/webp",
@@ -44,7 +44,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   pdf: {
-    displayName: "PDF",
+    label: "PDF",
     icon: FileArchiveIcon,
     maxSize: toBytes(2),
     accept: "application/pdf",
@@ -52,7 +52,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   document: {
-    displayName: "dokumen",
+    label: "dokumen",
     icon: FileTextIcon,
     maxSize: toBytes(2),
     accept: [
@@ -63,7 +63,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   spreadsheet: {
-    displayName: "lembar kerja (spreadsheet)",
+    label: "lembar kerja (spreadsheet)",
     icon: FileSpreadsheetIcon,
     maxSize: toBytes(2),
     accept: [
@@ -74,7 +74,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   presentation: {
-    displayName: "presentasi (ppt)",
+    label: "presentasi (ppt)",
     icon: TableIcon,
     maxSize: toBytes(10),
     accept: [
@@ -85,7 +85,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   archive: {
-    displayName: "arsip",
+    label: "arsip",
     icon: FileArchiveIcon,
     maxSize: toBytes(20),
     accept: [
@@ -98,7 +98,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   audio: {
-    displayName: "audio",
+    label: "audio",
     icon: HeadphonesIcon,
     maxSize: toBytes(10),
     accept: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"].join(", "),
@@ -106,7 +106,7 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 
   video: {
-    displayName: "video",
+    label: "video",
     icon: VideoIcon,
     maxSize: toBytes(50),
     accept: [
@@ -126,7 +126,7 @@ export const maxFileSize = Math.max(
 
 export const fileTypeConfig: Record<FileType, FileTypeConfig> = {
   file: {
-    displayName: "berkas",
+    label: "berkas",
     icon: FileIcon,
     maxSize: maxFileSize,
     accept: "*",
@@ -134,7 +134,7 @@ export const fileTypeConfig: Record<FileType, FileTypeConfig> = {
   },
 
   office: {
-    displayName: "dokumen kantor",
+    label: "dokumen kantor",
     icon: FilesIcon,
     maxSize: toBytes(10),
     accept: [

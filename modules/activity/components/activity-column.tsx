@@ -7,17 +7,17 @@ import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
 import { getActivityTypeConfig } from "../config";
 import { allActivityTypes } from "../schema";
 
-const createColumn = createColumnHelper<ActivityWithEntity>();
+const columnHelper = createColumnHelper<ActivityWithEntity>();
 export const getActivityColumns = (
   result?: DataControllerResult<ActivityWithEntity>,
 ) => [
-  createColumn.display({
+  columnHelper.display({
     id: "no",
     header: "No",
     cell: (c) => <ColumnCellNumber table={c.table} row={c.row} />,
     enableHiding: false,
   }),
-  createColumn.accessor((ac) => ac.type, {
+  columnHelper.accessor((ac) => ac.type, {
     id: "type",
     header: (c) => <ColumnHeader column={c.column}>Tipe</ColumnHeader>,
     cell: (c) => c.cell.getValue(),
@@ -33,7 +33,7 @@ export const getActivityColumns = (
       }),
     },
   }),
-  createColumn.accessor((c) => c.createdAt, {
+  columnHelper.accessor((c) => c.createdAt, {
     id: "createdAt",
     header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
     cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),

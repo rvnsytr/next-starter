@@ -152,11 +152,10 @@ export function createSignInURL({
   hash: string | null;
   search: string | null;
 }): string {
-  if (!origin || !pathname) return "/sign-in";
+  if (!origin || !pathname) return baseUrl;
   const url = new URL(baseUrl, origin);
 
-  const defaultRoutes: Route[] = ["/", "/dashboard"];
-  if (!defaultRoutes.includes(pathname as Route))
+  if (!appConfig.default.callbackUrls.includes(pathname as Route))
     url.searchParams.set("callbackURL", `${pathname}${search}${hash}`);
 
   return url.toString();

@@ -1,3 +1,4 @@
+import { appConfig } from "@/shared/config";
 import { FileTable, FileVisibility } from "@/shared/db/schema";
 import {
   DeleteObjectsCommand,
@@ -18,8 +19,8 @@ const S3_PUBLIC_ENDPOINT = process.env.S3_PUBLIC_ENDPOINT!;
 const S3_BUCKET = process.env.S3_BUCKET!;
 const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET!;
 
-const defaultDir = "global";
-const defaultFileVisibility: FileVisibility = "private";
+const defaultFileDirectory = appConfig.default.fileDirectory;
+const defaultFileVisibility: FileVisibility = appConfig.default.fileVisibility;
 
 const s3 = new S3Client({
   endpoint: process.env.S3_ENDPOINT!,
@@ -66,7 +67,8 @@ export async function uploadFiles(
 
   return await Promise.all(
     payloads.map(async (payload) => {
-      const Key = payload.path ?? `${defaultDir}/${payload.file.name}`;
+      const Key =
+        payload.path ?? `${defaultFileDirectory}/${payload.file.name}`;
 
       const visibility =
         payload.visibility ?? options?.visibility ?? defaultFileVisibility;
@@ -148,7 +150,7 @@ export function prepareFiles(
     if (item.file instanceof File) {
       path = options?.setPath
         ? options.setPath(item, index)
-        : `${defaultDir}/${item.file.name}`;
+        : `${defaultFileDirectory}/${item.file.name}`;
       upload.push({ file: item.file, path, visibility });
     } else path = item.file.path;
 

@@ -33,22 +33,22 @@ import { UserRoleColumn } from "./user-role-column";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
-const createColumn = createColumnHelper<User>();
+const columnHelper = createColumnHelper<User>();
 export const getUserColumns = (result?: DataControllerResult<User>) => [
-  createColumn.display({
+  columnHelper.display({
     id: "select",
     header: (c) => <ColumnHeaderCheckbox table={c.table} />,
     cell: (c) => <ColumnCellCheckbox row={c.row} />,
     enableHiding: false,
     enableSorting: false,
   }),
-  createColumn.display({
+  columnHelper.display({
     id: "no",
     header: "No",
     cell: (c) => <ColumnCellNumber table={c.table} row={c.row} />,
     enableHiding: false,
   }),
-  createColumn.accessor((ac) => ac.name, {
+  columnHelper.accessor((ac) => ac.name, {
     id: "name",
     header: (c) => <ColumnHeader column={c.column}>Nama</ColumnHeader>,
     cell: (c) => (
@@ -66,7 +66,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
     filterFn: filterFn("text"),
     meta: { label: "Nama", type: "text", icon: UserRoundIcon },
   }),
-  createColumn.accessor((ac) => ac.email, {
+  columnHelper.accessor((ac) => ac.email, {
     id: "email",
     header: (c) => <ColumnHeader column={c.column}>Alamat Email</ColumnHeader>,
     cell: (c) => (
@@ -78,7 +78,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
     filterFn: filterFn("text"),
     meta: { label: "Alamat Email", type: "text", icon: MailIcon },
   }),
-  createColumn.accessor((ac) => getUserStatus(ac), {
+  columnHelper.accessor((ac) => getUserStatus(ac), {
     id: "status",
     header: (c) => <ColumnHeader column={c.column}>Status</ColumnHeader>,
     cell: (c) => <UserStatusBadge value={c.cell.getValue()} />,
@@ -94,7 +94,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       }),
     },
   }),
-  createColumn.accessor((ac) => ac.role, {
+  columnHelper.accessor((ac) => ac.role, {
     id: "role",
     header: (c) => <ColumnHeader column={c.column}>Role</ColumnHeader>,
     cell: (c) => (
@@ -115,7 +115,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       }),
     },
   }),
-  createColumn.accessor((ac) => ac.updatedAt, {
+  columnHelper.accessor((ac) => ac.updatedAt, {
     id: "updatedAt",
     header: (c) => (
       <ColumnHeader column={c.column}>Terakhir Diperbarui</ColumnHeader>
@@ -128,7 +128,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       icon: CalendarSyncIcon,
     },
   }),
-  createColumn.accessor((c) => c.createdAt, {
+  columnHelper.accessor((c) => c.createdAt, {
     id: "createdAt",
     header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
     cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),

@@ -208,7 +208,7 @@ export function ImportDialog<T, K extends string>({
                 const config = fileTypeConfig.spreadsheet;
                 return (
                   <Field name={field.name} invalid={fieldState.invalid}>
-                    <FieldLabel>{config.displayName}</FieldLabel>
+                    <FieldLabel>{config.label}</FieldLabel>
                     <FileUpload
                       {...config}
                       files={value}

@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang={appConfig.language}
+      lang={appConfig.default.language}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

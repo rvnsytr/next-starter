@@ -37,7 +37,7 @@ export type FileUploadProps = Pick<
   React.ComponentProps<"input">,
   "id" | "name" | "required" | "disabled"
 > &
-  Partial<Pick<FileTypeConfig, "displayName" | "icon" | "extensions">> &
+  Partial<Pick<FileTypeConfig, "label" | "icon" | "extensions">> &
   FileUploadOptions & {
     initialFiles?: FileMetadata[];
     files?: FileWithPreview[];
@@ -57,7 +57,7 @@ export function FileUpload({
   required = false,
   disabled = false,
 
-  displayName = fileTypeConfig.file.displayName,
+  label = fileTypeConfig.file.label,
   icon: Icon = fileTypeConfig.file.icon,
   extensions = [],
 
@@ -141,8 +141,8 @@ export function FileUpload({
           </EmptyMedia>
 
           <EmptyTitle className="text-sm">
-            Seret dan lepaskan {displayName.toLowerCase()} di sini, atau klik
-            untuk mengunggah
+            Seret dan lepaskan {label.toLowerCase()} di sini, atau klik untuk
+            mengunggah
           </EmptyTitle>
 
           <EmptyDescription
@@ -157,7 +157,7 @@ export function FileUpload({
                   Mendukung <b>{extensions.join(", ")}</b>
                 </span>
               ) : (
-                <span>Mendukung berbagai jenis {displayName}</span>
+                <span>Mendukung berbagai jenis {label}</span>
               )}
             </span>
 
@@ -171,7 +171,7 @@ export function FileUpload({
               <span>
                 {`Maksimal `}
                 <b>
-                  {maxFiles} {displayName}
+                  {maxFiles} {label}
                 </b>
               </span>
             )}
@@ -187,7 +187,7 @@ export function FileUpload({
         >
           <div className="flex items-center gap-x-2 tabular-nums">
             <small className="font-normal capitalize">
-              {`${displayName} (${maxFiles ? `${files.length}/${maxFiles}` : files.length})`}
+              {`${label} (${maxFiles ? `${files.length}/${maxFiles}` : files.length})`}
             </small>
             <Separator orientation="vertical" className="h-3.5" />
             <small className="text-muted-foreground text-xs">
@@ -399,13 +399,13 @@ export function FileUpload({
       >
         <DialogPopup className="border-none">
           <DialogHeader className="sr-only">
-            <DialogTitle>{displayName} Preview</DialogTitle>
+            <DialogTitle>{label} Preview</DialogTitle>
           </DialogHeader>
 
           {selectedImage && (
             <Image
               src={selectedImage}
-              alt={`${displayName} Preview`}
+              alt={`${label} Preview`}
               width={1920}
               height={1080}
               className="rounded-lg"

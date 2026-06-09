@@ -118,9 +118,9 @@ export function formatNumber(
   number: number,
   options?: Intl.NumberFormatOptions & { lang?: Language },
 ) {
-  const locale =
-    languageConfig[options?.lang ?? (appConfig.language as Language)].locale;
-  const value = new Intl.NumberFormat(locale, options).format(number);
+  const config =
+    languageConfig[options?.lang ?? (appConfig.default.language as Language)];
+  const value = new Intl.NumberFormat(config.locale, options).format(number);
   return value === "0" ? "0" : value;
 }
 
