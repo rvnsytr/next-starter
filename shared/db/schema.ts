@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 import { allRoles } from "../permission";
@@ -28,30 +29,10 @@ export const user = pgTable(
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),
   },
-  (table) => [
-    index("user_role_idx").on(table.role),
-    index("user_banned_idx").on(table.banned),
+  (t) => [
+    index("IDX_user_role").on(t.role),
+    index("IDX_user_banned").on(t.banned),
   ],
-);
-
-export const session = pgTable(
-  "session",
-  {
-    id: text("id").primaryKey(),
-    expiresAt: timestamp("expires_at").notNull(),
-    token: text("token").notNull().unique(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .notNull()
-      .$onUpdate(() => new Date()),
-    ipAddress: text("ip_address"),
-    userAgent: text("user_agent"),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    impersonatedBy: text("impersonated_by"),
-  },
-  (table) => [index("session_user_id_idx").on(table.userId)],
 );
 
 export const account = pgTable(
@@ -75,7 +56,30 @@ export const account = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => [index("account_user_id_idx").on(table.userId)],
+  (t) => [
+    unique("UQ_account_provider_id_account_id").on(t.providerId, t.accountId),
+    index("IDX_account_user_id").on(t.userId),
+  ],
+);
+
+export const session = pgTable(
+  "session",
+  {
+    id: text("id").primaryKey(),
+    expiresAt: timestamp("expires_at").notNull(),
+    token: text("token").notNull().unique(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date()),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    impersonatedBy: text("impersonated_by"),
+  },
+  (t) => [index("IDX_session_user_id").on(t.userId)],
 );
 
 export const verification = pgTable(
@@ -91,7 +95,7 @@ export const verification = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)],
+  (t) => [unique("UQ_verification_identifier_value").on(t.identifier, t.value)],
 );
 
 export type Activity = typeof activity.$inferSelect;
@@ -110,7 +114,10 @@ export const activity = pgTable(
 
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [index("activity_type_idx").on(table.type)],
+  (t) => [
+    index("IDX_activity_type").on(t.type),
+    index("IDX_activity_user_id_created_at").on(t.userId, t.createdAt),
+  ],
 );
 
 export type FileTable = typeof file.$inferSelect;
@@ -135,8 +142,8 @@ export const file = pgTable(
       .$onUpdate(() => new Date()),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("file_file_path_idx").on(table.path),
-    index("file_visibility_idx").on(table.visibility),
+  (t) => [
+    index("IDX_file_file_path").on(t.path),
+    index("IDX_file_visibility").on(t.visibility),
   ],
 );
