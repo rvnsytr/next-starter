@@ -5,12 +5,12 @@ export const relations = defineRelations(schema, (r) => ({
   user: {
     sessions: r.many.session(),
     accounts: r.many.account(),
+    activities: r.many.activity(),
     file: r.one.file({
       from: r.user.image,
       to: r.file.id,
       optional: true,
     }),
-    activities: r.many.activity(),
   },
 
   session: {

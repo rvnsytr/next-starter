@@ -79,7 +79,7 @@ const getBucket = (v: FileVisibility = "private") =>
  * Prepare files for upload by setting their paths and visibility.
  *
  * @example
- * const { upload, db } = prepareFiles(filesWithPreview, {
+ * const { upload, db } = prepareFiles(files, {
  *   visibility: "public",
  *   setPath: (file) => `public-directory/${file.name}`,
  * });
