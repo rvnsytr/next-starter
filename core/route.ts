@@ -139,6 +139,7 @@ export function getRequestUrl(headers?: Headers) {
   };
 }
 
+/** Create a sign-in URL with the appropriate callback parameters. */
 export function createSignInURL({
   baseUrl = "/sign-in",
   origin,

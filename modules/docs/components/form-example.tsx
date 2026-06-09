@@ -151,8 +151,8 @@ export function FormExample() {
 
     // in server action
     // const preparedFiles = prepareFiles(formData.files);
-    // const uploadRes = await uploadFiles(preparedFiles.upload);
-    // const insertRes = await db.insert(file).values(preparedFiles.upload);
+    // const upload = await uploadFiles(preparedFiles.upload);
+    // const insert = await db.insert(file).values(preparedFiles.upload);
 
     toast.add({
       type: "success",

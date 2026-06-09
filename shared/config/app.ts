@@ -3,7 +3,7 @@ import { Route } from "next";
 export const appConfig = {
   name: "Next Starter",
   description: "App description...",
-  keywords: ["next", "next starter"],
+  keywords: ["next", "next starter"] as string[],
 
   logo: {
     default: "/logo.png",
@@ -18,6 +18,5 @@ export const appConfig = {
 
     /** @see [s3.ts](../../core/s3.ts) */
     fileDirectory: "global",
-    fileVisibility: "private",
   },
 } as const;

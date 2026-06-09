@@ -20,7 +20,7 @@ const S3_BUCKET = process.env.S3_BUCKET!;
 const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET!;
 
 const defaultFileDirectory = appConfig.default.fileDirectory;
-const defaultFileVisibility: FileVisibility = appConfig.default.fileVisibility;
+const defaultFileVisibility: FileVisibility = "private";
 
 const s3 = new S3Client({
   endpoint: process.env.S3_ENDPOINT!,
@@ -32,18 +32,34 @@ const s3 = new S3Client({
   forcePathStyle: true,
 });
 
-type ControlledS3Options<T> = Override<
-  Omit<T, "Key" | "Bucket">,
-  {
-    /** The visibility of the file. default to `private` */
-    visibility?: FileVisibility;
-  }
->;
+type Visibility = {
+  /**
+   * The visibility of the file.
+   *
+   * @default "private"
+   */
+  visibility?: FileVisibility;
+};
+
+type ControlledS3Options<T> = Override<Omit<T, "Key" | "Bucket">, Visibility>;
+
+export type PrepareFilesOptions = Visibility & {
+  /** A function to set the path for each file. */
+  setPath?: (file: FileWithPreview, index: number) => string;
+};
 
 export type UploadFilesPayload = {
+  /** The file to upload. */
   file: File;
+
+  /**
+   * The path where the file will be uploaded.
+   *
+   * @default `${appConfig.default.fileDirectory}/${file.name}`
+   * */
   path?: string;
-  /** Will override `uploadFiles` visibility option */
+
+  /** The visibility of the file. If provided, it overrides the `visibility` value from the upload options. */
   visibility?: FileVisibility;
 };
 
@@ -59,6 +75,63 @@ export type UploadFilesResponse = {
 const getBucket = (v: FileVisibility = "private") =>
   v === "public" ? S3_PUBLIC_BUCKET : S3_BUCKET;
 
+/**
+ * Prepare files for upload by setting their paths and visibility.
+ *
+ * @example
+ * const { upload, db } = prepareFiles(filesWithPreview, {
+ *   visibility: "public",
+ *   setPath: (file) => `public-directory/${file.name}`,
+ * });
+ *
+ */
+export function prepareFiles(
+  files: FileWithPreview[],
+  options?: PrepareFilesOptions,
+) {
+  const upload: UploadFilesPayload[] = [];
+  const db: Pick<
+    FileTable,
+    "path" | "name" | "type" | "size" | "visibility"
+  >[] = [];
+
+  const visibility = options?.visibility ?? defaultFileVisibility;
+
+  files.forEach((item, index) => {
+    let path: string | null = null;
+
+    if (item.file instanceof File) {
+      path = options?.setPath
+        ? options.setPath(item, index)
+        : `${defaultFileDirectory}/${item.file.name}`;
+      upload.push({ file: item.file, path, visibility });
+    } else path = item.file.path;
+
+    db.push({
+      path,
+      name: item.file.name,
+      type: item.file.type,
+      size: item.file.size,
+      visibility,
+    });
+  });
+
+  return { upload, db };
+}
+
+/**
+ * Upload files to S3.
+ *
+ * @example
+ * const { upload, db } = prepareFiles(filesWithPreview, {
+ *   visibility: "public",
+ *   setPath: (file) => `public-directory/${file.name}`,
+ * });
+ *
+ * const results = await uploadFiles(upload, {
+ *   visibility: "public", // Optional, can be overridden by each payload's `visibility` property
+ * });
+ */
 export async function uploadFiles(
   payloads: UploadFilesPayload[],
   options?: UploadFilesOptions,
@@ -129,43 +202,14 @@ export function createPublicUrls(filePaths: string[]) {
   });
 }
 
-export function prepareFiles(
-  files: FileWithPreview[],
-  options?: {
-    visibility?: FileVisibility;
-    setPath?: (file: FileWithPreview, index: number) => string;
-  },
-) {
-  const upload: UploadFilesPayload[] = [];
-  const db: Pick<
-    FileTable,
-    "path" | "name" | "type" | "size" | "visibility"
-  >[] = [];
-
-  const visibility = options?.visibility ?? defaultFileVisibility;
-
-  files.forEach((item, index) => {
-    let path: string | null = null;
-
-    if (item.file instanceof File) {
-      path = options?.setPath
-        ? options.setPath(item, index)
-        : `${defaultFileDirectory}/${item.file.name}`;
-      upload.push({ file: item.file, path, visibility });
-    } else path = item.file.path;
-
-    db.push({
-      path,
-      name: item.file.name,
-      type: item.file.type,
-      size: item.file.size,
-      visibility,
-    });
-  });
-
-  return { upload, db };
-}
-
+/**
+ * Delete files from S3.
+ *
+ * @example
+ * const results = await deleteFiles(["public-directory/photo.jpg"], {
+ *   visibility: "public",
+ * });
+ */
 export async function deleteFiles(
   filePaths: string[],
   options?: ControlledS3Options<Omit<DeleteObjectsCommandInput, "Delete">>,
