@@ -18,23 +18,6 @@ export type OmitByType<T, V> = {
   [K in keyof T as T[K] extends V ? never : K]: T[K];
 };
 
-export type Count = z.infer<typeof countSchema>;
-
-export type ActionResponse<T = unknown> = z.infer<
-  ReturnType<typeof getActionResponseSchema<T>>
->;
-
-export type ActionSuccess<T = unknown> = Extract<
-  ActionResponse<T>,
-  { success: true }
->;
-
-export type ActionError = Extract<ActionResponse, { success: false }>;
-
-export type ApiResponse<T = unknown> = z.infer<
-  ReturnType<typeof getApiResponseSchema<T>>
->;
-
 export type StringCase =
   | "kebab"
   | "snake"
@@ -86,6 +69,34 @@ export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
 export type FileWithPreview = z.infer<
   ReturnType<typeof sharedSchemas.fileWithPreview>
 >;
+
+export type Count = z.infer<typeof countSchema>;
+
+export type ActionResponse<T = unknown> = z.infer<
+  ReturnType<typeof getActionResponseSchema<T>>
+>;
+
+export type ActionSuccess<T = unknown> = Extract<
+  ActionResponse<T>,
+  { success: true }
+>;
+
+export type ActionError = Extract<ActionResponse, { success: false }>;
+
+export type ApiResponse<T = unknown> = z.infer<
+  ReturnType<typeof getApiResponseSchema<T>>
+>;
+
+export type ApiSuccess<T = unknown> = Extract<
+  ApiResponse<T>,
+  { success: true }
+>;
+
+export type ApiSuccessPayload<T = null> = Partial<ApiSuccess<T>>;
+
+export type ApiError = Extract<ApiResponse, { success: false }>;
+
+export type ApiErrorPayload = Partial<ApiError>;
 
 export type Menu = { group: string; items: MenuItem[] };
 
