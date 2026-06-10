@@ -1,4 +1,4 @@
-import { PageContainer } from "@/core/components/layout/page";
+import { PageContainer } from "@/core/components/page";
 import {
   Card,
   CardAction,

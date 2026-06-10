@@ -3,10 +3,10 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
-import { GlobalShortcuts } from "@/core/providers/global-shortcuts";
 import { cn } from "@/core/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/config";
+import { GlobalShortcuts } from "@/shared/providers/global-shortcuts";
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";

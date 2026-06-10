@@ -1,12 +1,12 @@
-import { DynamicBreadcrumb } from "@/core/components/dynamic-breadcrumb";
-import { LayoutModeToggle } from "@/core/components/layout-mode";
-import { ThemeToggle } from "@/core/components/theme";
-import { Separator } from "@/core/components/ui/separator";
-import { ShimmerText } from "@/core/components/ui/shimmer-text";
-import { SidebarToggle } from "@/core/components/ui/sidebar";
 import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user-badge";
 import { appConfig } from "@/shared/config";
 import Link from "next/link";
+import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
+import { LayoutModeToggle } from "../layout-mode";
+import { ThemeToggle } from "../theme";
+import { Separator } from "../ui/separator";
+import { ShimmerText } from "../ui/shimmer-text";
+import { SidebarToggle } from "../ui/sidebar";
 import { SidebarAppSiteHeaderAvatar } from "./site-header-avatar";
 
 export function SidebarAppSiteHeader() {

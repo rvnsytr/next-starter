@@ -1,23 +1,5 @@
 "use client";
 
-import {
-  QuickSearch,
-  QuickSearchDataGroup,
-  QuickSearchItem,
-} from "@/core/components/quick-search";
-import {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarImage,
-} from "@/core/components/ui/avatar";
-import {
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-} from "@/core/components/ui/sidebar";
 import { getMenuByRole } from "@/core/route";
 import { stopImpersonateUser } from "@/modules/auth/actions";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
@@ -28,6 +10,19 @@ import { Layers2Icon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import {
+  QuickSearch,
+  QuickSearchDataGroup,
+  QuickSearchItem,
+} from "../quick-search";
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "../ui/sidebar";
 
 export function SidebarAppHeader() {
   const router = useRouter();

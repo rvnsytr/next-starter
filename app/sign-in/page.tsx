@@ -1,4 +1,3 @@
-import { FooterNote } from "@/core/components/layout/footer-note";
 import {
   Card,
   CardContent,
@@ -12,6 +11,7 @@ import { getRouteTitle } from "@/core/route";
 import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
+import { FooterNote } from "@/shared/components/footer-note";
 import { appConfig } from "@/shared/config";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";

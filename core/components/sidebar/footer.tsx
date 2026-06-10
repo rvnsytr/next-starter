@@ -1,20 +1,20 @@
 "use client";
 
-import { Kbd } from "@/core/components/ui/kbd";
-import {
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-} from "@/core/components/ui/sidebar";
-import { LinkSpinner } from "@/core/components/ui/spinner";
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
 import { routeConfig } from "@/shared/config";
 import { menuConfig } from "@/shared/menu";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import Link from "next/link";
+import { Kbd } from "../ui/kbd";
+import {
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "../ui/sidebar";
+import { LinkSpinner } from "../ui/spinner";
 
 export function SidebarAppFooter() {
   return (

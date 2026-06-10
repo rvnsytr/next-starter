@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarImage,
-} from "@/core/components/ui/avatar";
 import { useSession } from "@/modules/auth/hooks/use-session";
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function SidebarAppSiteHeaderAvatar() {
   const { user } = useSession();

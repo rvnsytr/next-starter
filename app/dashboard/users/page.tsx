@@ -3,7 +3,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/core/components/layout/page";
+} from "@/core/components/page";
 import { CardAction } from "@/core/components/ui/card";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/route";

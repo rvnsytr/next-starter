@@ -1,11 +1,11 @@
 "use client";
 
-import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { useMediaQuery } from "@/core/hooks/use-media-query";
-import { useLayoutMode } from "@/core/providers/layout-mode";
-import { cn } from "@/core/utils";
 import { layoutModeConfig, layoutModeToggleConfig } from "@/shared/config";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import { useIsMounted } from "../hooks/use-is-mounted";
+import { useMediaQuery } from "../hooks/use-media-query";
+import { useLayoutMode } from "../providers/layout-mode";
+import { cn } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Label } from "./ui/label";

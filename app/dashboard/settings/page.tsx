@@ -1,5 +1,5 @@
 import { LayoutModeSettings } from "@/core/components/layout-mode";
-import { PageContainer } from "@/core/components/layout/page";
+import { PageContainer } from "@/core/components/page";
 import { ThemeSettings } from "@/core/components/theme";
 import {
   Card,

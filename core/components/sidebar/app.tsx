@@ -1,4 +1,4 @@
-import { Sidebar, SidebarRail } from "@/core/components/ui/sidebar";
+import { Sidebar, SidebarRail } from "../ui/sidebar";
 import { SidebarAppContent } from "./content";
 import { SidebarAppFooter } from "./footer";
 import { SidebarAppHeader } from "./header";

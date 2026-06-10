@@ -6,8 +6,7 @@
 //   )
 // }
 
-import { FooterNote } from "@/core/components/layout/footer-note";
-import { PageTitle } from "@/core/components/layout/page";
+import { PageTitle } from "@/core/components/page";
 import { PasswordInput } from "@/core/components/password-input";
 import { QuickSearch, QuickSearchGroup } from "@/core/components/quick-search";
 import { Scrollspy } from "@/core/components/scroll-spy";
@@ -173,6 +172,7 @@ import {
 } from "@/core/components/ui/timeline";
 import { cn, toCase } from "@/core/utils";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
+import { FooterNote } from "@/shared/components/footer-note";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,

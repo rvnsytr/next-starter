@@ -1,9 +1,5 @@
 import { auth } from "@/core/auth";
-import { FooterNote } from "@/core/components/layout/footer-note";
-import {
-  SidebarApp,
-  SidebarAppSiteHeader,
-} from "@/core/components/layout/sidebar";
+import { SidebarApp, SidebarAppSiteHeader } from "@/core/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import { LayoutModeProvider } from "@/core/providers/layout-mode";
@@ -14,6 +10,7 @@ import {
   getRouteTitle,
 } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
+import { FooterNote } from "@/shared/components/footer-note";
 import { allLayoutMode } from "@/shared/config";
 import { Metadata } from "next";
 import { cookies, headers as nextHeaders } from "next/headers";

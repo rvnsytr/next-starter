@@ -3,7 +3,7 @@ import {
   PageDescription,
   PageHeader,
   PageTitle,
-} from "@/core/components/layout/page";
+} from "@/core/components/page";
 
 export default function Page() {
   return (

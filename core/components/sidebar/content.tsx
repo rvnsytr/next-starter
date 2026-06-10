@@ -1,10 +1,21 @@
 "use client";
 
+import { getActiveRoute, getMenuByRole } from "@/core/route";
+import { MenuItem } from "@/core/types";
+import { toCase } from "@/core/utils";
+import { useSession } from "@/modules/auth/hooks/use-session";
+import { routeConfig } from "@/shared/config";
+import { menuConfig } from "@/shared/menu";
+import { ChevronRightIcon } from "lucide-react";
+import { Route } from "next";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
 import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
-} from "@/core/components/ui/collapsible";
+} from "../../../../react-starter/src/core/components/ui/collapsible";
 import {
   SidebarContent,
   SidebarGroup,
@@ -17,19 +28,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/core/components/ui/sidebar";
-import { LinkSpinner } from "@/core/components/ui/spinner";
-import { getActiveRoute, getMenuByRole } from "@/core/route";
-import { MenuItem } from "@/core/types";
-import { toCase } from "@/core/utils";
-import { useSession } from "@/modules/auth/hooks/use-session";
-import { routeConfig } from "@/shared/config";
-import { menuConfig } from "@/shared/menu";
-import { ChevronRightIcon } from "lucide-react";
-import { Route } from "next";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ComponentProps, useEffect, useMemo, useState } from "react";
+} from "../../../../react-starter/src/core/components/ui/sidebar";
+import { LinkSpinner } from "../../../../react-starter/src/core/components/ui/spinner";
 
 export function SidebarAppContent() {
   const { user } = useSession();

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/core/components/ui/button";
 import { cn } from "@/core/utils";
 import useEmblaCarousel, { UseEmblaCarouselType } from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -11,6 +10,7 @@ import {
   useEffect,
   useSyncExternalStore,
 } from "react";
+import { Button } from "./button";
 
 export type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;

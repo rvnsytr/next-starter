@@ -27,8 +27,7 @@ import {
 } from "@/core/hooks/use-data-controller";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { messages } from "@/core/messages";
-import { formatLocalizedDate, formatNumber } from "@/core/utils";
-import { cn } from "@/core/utils/helpers";
+import { cn, formatLocalizedDate, formatNumber } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
