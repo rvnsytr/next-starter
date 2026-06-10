@@ -15,7 +15,7 @@ import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
-} from "../../../../react-starter/src/core/components/ui/collapsible";
+} from "../ui/collapsible";
 import {
   SidebarContent,
   SidebarGroup,
@@ -28,8 +28,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "../../../../react-starter/src/core/components/ui/sidebar";
-import { LinkSpinner } from "../../../../react-starter/src/core/components/ui/spinner";
+} from "../ui/sidebar";
+import { LinkSpinner } from "../ui/spinner";
 
 export function SidebarAppContent() {
   const { user } = useSession();

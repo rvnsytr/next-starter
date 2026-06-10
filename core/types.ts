@@ -3,7 +3,12 @@ import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon } from "lucide-react";
 import { Route } from "next";
 import z from "zod";
-import { sharedSchemas } from "./schema";
+import {
+  countSchema,
+  getActionResponseSchema,
+  getApiResponseSchema,
+  sharedSchemas,
+} from "./schema";
 
 export type RouteRole = "all" | Role[];
 
@@ -13,14 +18,11 @@ export type OmitByType<T, V> = {
   [K in keyof T as T[K] extends V ? never : K]: T[K];
 };
 
-export type Count = ({ total: number } & Record<string, number>) | undefined;
+export type Count = z.infer<typeof countSchema>;
 
-export type ActionResponse<T = unknown> = {
-  message?: string;
-} & (
-  | { success: true; count?: Count; data: T }
-  | { success: false; error?: unknown }
-);
+export type ActionResponse<T = unknown> = z.infer<
+  ReturnType<typeof getActionResponseSchema<T>>
+>;
 
 export type ActionSuccess<T = unknown> = Extract<
   ActionResponse<T>,
@@ -28,6 +30,10 @@ export type ActionSuccess<T = unknown> = Extract<
 >;
 
 export type ActionError = Extract<ActionResponse, { success: false }>;
+
+export type ApiResponse<T = unknown> = z.infer<
+  ReturnType<typeof getApiResponseSchema<T>>
+>;
 
 export type StringCase =
   | "kebab"

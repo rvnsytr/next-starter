@@ -1,30 +1,7 @@
 import { apiConfig } from "@/shared/config";
 import z from "zod";
-
-export const getApiResponseSchema = <T>(schema: z.ZodType<T>) =>
-  z.intersection(
-    z.object({
-      code: z.number(),
-      message: z.string(),
-    }),
-    z.discriminatedUnion("success", [
-      z.object({
-        success: z.literal(true),
-        count: z
-          .intersection(
-            z.object({ total: z.number() }),
-            z.record(z.string(), z.number()),
-          )
-          .optional(),
-        data: schema,
-      }),
-      z.object({ success: z.literal(false), error: z.unknown() }),
-    ]),
-  );
-
-export type ApiResponse<T> = z.infer<
-  ReturnType<typeof getApiResponseSchema<T>>
->;
+import { getApiResponseSchema } from "./schema";
+import { ApiResponse } from "./types";
 
 export type FetcherConfig<T> = RequestInit & {
   schema?: z.ZodType<T>;
