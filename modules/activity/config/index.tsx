@@ -48,6 +48,13 @@ export const activityTypeConfig: Record<
   //   color: "var(--color-success)",
   //   textColor: "var(--color-success-foreground)",
   // },
+  // "user-activated": {
+  //   label: "Akun Diaktivasi",
+  //   description:
+  //     "Pengguna mengaktifkan akunnya dan melanjutkan ke proses verifikasi.",
+  //   icon: UserRoundCheckIcon,
+  //   color: "var(--color-success)",
+  // },
   // "user-verified": {
   //   label: "Akun Diverifikasi",
   //   description:
