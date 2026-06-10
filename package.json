@@ -8,8 +8,8 @@
     "typegen": "next typegen"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1064.0",
-    "@aws-sdk/s3-request-presigner": "^3.1064.0",
+    "@aws-sdk/client-s3": "^3.1065.0",
+    "@aws-sdk/s3-request-presigner": "^3.1065.0",
     "@base-ui/react": "^1.5.0",
     "@hookform/resolvers": "^5.4.0",
     "@tanstack/react-hotkeys": "^0.10.0",
@@ -24,7 +24,7 @@
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^1.17.0",
     "motion": "^12.40.0",
-    "next": "^16.2.7",
+    "next": "^16.2.9",
     "next-themes": "^0.4.6",
     "nuqs": "^2.8.9",
     "pg": "^8.21.0",
@@ -41,7 +41,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^16.2.7",
+    "@next/eslint-plugin-next": "^16.2.9",
     "@tailwindcss/postcss": "^4.3.0",
     "@tanstack/eslint-config": "^0.4.0",
     "@types/node": "^25.9.2",
@@ -52,7 +52,7 @@
     "eslint": "^10.4.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "postcss": "^8.5.15",
-    "prettier": "^3.8.3",
+    "prettier": "^3.8.4",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.3.0",
