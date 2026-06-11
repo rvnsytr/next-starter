@@ -2,8 +2,12 @@
   "search.exclude": { "**/api/auth/**": true },
 
   "files.readonlyInclude": {
-    "**/api/auth/**": true,
     "**/core/**": true,
+
+    "**/app/api/auth/**": true,
+    "**/app/layout.tsx": true,
+    "**/app/dashboard/layout.tsx": true,
+
     "**/modules/auth/**": true,
     "**/modules/activity/**": true
   },
