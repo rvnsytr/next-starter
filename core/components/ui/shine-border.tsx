@@ -1,6 +1,6 @@
 import { cn } from "@/core/utils";
 
-type ShineBorderProps = React.HTMLAttributes<HTMLDivElement> & {
+type ShineBorderProps = React.ComponentProps<"div"> & {
   // Width of the border in pixels
   borderWidth?: number;
   // Duration of the animation in seconds

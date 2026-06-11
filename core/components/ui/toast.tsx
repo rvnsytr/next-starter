@@ -4,11 +4,11 @@ import { useIsMobile } from "@/core/hooks/use-media-query";
 import { cn } from "@/core/utils";
 import { Toast } from "@base-ui/react/toast";
 import {
+  AlertTriangleIcon,
   CheckIcon,
   InfoIcon,
   LoaderCircleIcon,
   TriangleAlertIcon,
-  XIcon,
 } from "lucide-react";
 import { buttonVariants } from "./button";
 
@@ -17,11 +17,19 @@ const TOAST_ICONS = {
   success: CheckIcon,
   warning: TriangleAlertIcon,
   info: InfoIcon,
-  error: XIcon,
+  error: AlertTriangleIcon,
 } as const;
 
 type ToastIconType = keyof typeof TOAST_ICONS;
 type SwipeDirection = "up" | "down" | "left" | "right";
+
+type ToastData = {
+  rootProps?: Omit<
+    React.ComponentProps<typeof Toast.Root>,
+    "children" | "className" | "swipeDirection" | "toast"
+  >;
+  tooltipStyle?: boolean;
+};
 
 function getSwipeDirection(position: ToastPosition): SwipeDirection[] {
   const verticalDirection: SwipeDirection = position.startsWith("top")
@@ -76,13 +84,14 @@ function Toasts({
           const Icon = toast.type
             ? TOAST_ICONS[toast.type as ToastIconType]
             : null;
+          const toastData = toast.data as ToastData | undefined;
 
           return (
             <Toast.Root
               key={toast.id}
               data-position={position}
-              swipeDirection={swipeDirection}
               toast={toast}
+              swipeDirection={swipeDirection}
               className={cn(
                 "text-popover-foreground data-expanded:bg-popover dark:data-expanded:bg-popover absolute z-[calc(9999-var(--toast-index))] h-(--toast-calc-height) w-full rounded-lg border bg-[color-mix(in_srgb,var(--popover),var(--color-black)_calc(1%*max(0,var(--toast-index,0))))] shadow-lg/5 select-none [transition:transform_.5s_cubic-bezier(.22,1,.36,1),opacity_.5s,height_.15s,background-color_.5s] not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:bg-[color-mix(in_srgb,var(--popover),var(--color-black)_calc(6%*max(0,var(--toast-index,0))))] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
                 // Base positioning using data-position
@@ -125,6 +134,7 @@ function Toasts({
                 "data-expanded:data-ending-style:data-[swipe-direction=down]:transform-[translateY(calc(var(--toast-swipe-movement-y)+100%+var(--toast-inset)))]",
                 upsertReplayClassName(toast),
               )}
+              {...toastData?.rootProps}
             >
               <Toast.Content className="pointer-events-auto flex items-center justify-between gap-1.5 overflow-hidden px-3.5 py-3 text-sm transition-opacity duration-250 data-behind:opacity-0 data-behind:not-data-expanded:pointer-events-none data-expanded:opacity-100">
                 <div className="flex gap-2">
@@ -182,8 +192,8 @@ function AnchoredToasts({
           const Icon = toast.type
             ? TOAST_ICONS[toast.type as ToastIconType]
             : null;
-          const tooltipStyle =
-            (toast.data as { tooltipStyle?: boolean })?.tooltipStyle ?? false;
+          const toastData = toast.data as ToastData | undefined;
+          const tooltipStyle = toastData?.tooltipStyle ?? false;
           const positionerProps = toast.positionerProps;
 
           if (!positionerProps?.anchor) return null;
@@ -206,6 +216,7 @@ function AnchoredToasts({
                     : "rounded-lg shadow-lg/5 before:rounded-[calc(var(--radius-lg)-1px)]",
                   upsertReplayClassName(toast),
                 )}
+                {...toastData?.rootProps}
               >
                 {tooltipStyle ? (
                   <Toast.Content className="pointer-events-auto px-2 py-1">

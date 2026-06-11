@@ -11,11 +11,10 @@ export function ScrollToTopButton({
   children,
   ...props
 }: ButtonProps) {
-  const hasChildren = !!children;
   return (
     <Button
       data-slot="scroll-to-top-button"
-      size={size ?? (hasChildren ? "default" : "icon-lg")}
+      size={size ?? (!!children ? "default" : "icon-lg")}
       className={cn(
         "fixed right-6 bottom-6 z-40 lg:right-10 lg:bottom-8",
         className,
@@ -26,7 +25,7 @@ export function ScrollToTopButton({
       }}
       {...props}
     >
-      {children ?? <ArrowUpIcon className="size-5" />}
+      {children ?? <ArrowUpIcon />}
     </Button>
   );
 }

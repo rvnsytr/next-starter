@@ -7,6 +7,7 @@ export function ScrollArea({
   scrollFade = false,
   scrollbarGutter = false,
   fill = false,
+  clampContentMinWidth = true,
   withScrollbar = true,
   className,
   children,
@@ -15,6 +16,7 @@ export function ScrollArea({
   scrollFade?: boolean;
   scrollbarGutter?: boolean;
   fill?: boolean;
+  clampContentMinWidth?: boolean;
   withScrollbar?: boolean;
 }) {
   return (
@@ -35,6 +37,7 @@ export function ScrollArea({
         <ScrollAreaPrimitive.Content
           data-slot="scroll-area-content"
           className={cn(fill && "size-full")}
+          style={clampContentMinWidth ? { minWidth: 0 } : undefined}
         >
           {children}
         </ScrollAreaPrimitive.Content>
