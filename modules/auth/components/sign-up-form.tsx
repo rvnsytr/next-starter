@@ -136,6 +136,7 @@ export function SignUpForm() {
 
             <PasswordInput
               placeholder="Masukan kata sandi anda"
+              withValidationList
               required
               {...field}
             />
