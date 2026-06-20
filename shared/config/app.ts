@@ -2,7 +2,8 @@ import { Route } from "next";
 
 export const appConfig = {
   name: "Next Starter",
-  description: "App description...",
+  description:
+    "Personalized Next.js 16 starter template bundled with my go-to tools and configs for kickstarting new projects.",
   keywords: ["next", "next starter"] as string[],
 
   logo: {

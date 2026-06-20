@@ -38,6 +38,7 @@ export function Spinner({
 
   return (
     <Icon
+      data-slot="spinner"
       role="status"
       aria-label="Loading"
       className={cn(
