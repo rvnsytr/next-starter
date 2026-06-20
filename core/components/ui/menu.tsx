@@ -25,6 +25,7 @@ export function MenuPopup({
   align = "center",
   alignOffset,
   anchor,
+  portalProps,
   className,
   children,
   ...props
@@ -32,9 +33,9 @@ export function MenuPopup({
   Pick<
     MenuPrimitive.Positioner.Props,
     "side" | "sideOffset" | "align" | "alignOffset" | "anchor"
-  >) {
+  > & { portalProps?: MenuPrimitive.Portal.Props }) {
   return (
-    <MenuPrimitive.Portal>
+    <MenuPortal {...portalProps}>
       <MenuPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -57,7 +58,7 @@ export function MenuPopup({
           </div>
         </MenuPrimitive.Popup>
       </MenuPrimitive.Positioner>
-    </MenuPrimitive.Portal>
+    </MenuPortal>
   );
 }
 
@@ -80,9 +81,34 @@ export function MenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground flex min-h-7 cursor-default items-center gap-2 rounded-md px-2 py-1 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 *:[svg]:pointer-events-none *:[svg]:-mx-0.5 *:[svg]:shrink-0 *:[svg:not([class*='opacity-'])]:opacity-80 *:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground flex min-h-7 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 *:[svg]:pointer-events-none *:[svg]:-mx-0.5 *:[svg]:shrink-0 *:[svg:not([class*='opacity-'])]:opacity-80 *:[svg:not([class*='size-'])]:size-4",
         className,
       )}
+      {...props}
+    />
+  );
+}
+
+export function MenuLinkItem({
+  inset,
+  variant = "default",
+  closeOnClick = true,
+  className,
+  ...props
+}: MenuPrimitive.LinkItem.Props & {
+  inset?: boolean;
+  variant?: "default" | "destructive";
+}) {
+  return (
+    <MenuPrimitive.LinkItem
+      data-slot="menu-link-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "text-foreground data-highlighted:bg-accent data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground flex min-h-7 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 *:[svg]:pointer-events-none *:[svg]:-mx-0.5 *:[svg]:shrink-0 *:[svg:not([class*='opacity-'])]:opacity-80 *:[svg:not([class*='size-'])]:size-4",
+        className,
+      )}
+      closeOnClick={closeOnClick}
       {...props}
     />
   );
@@ -104,7 +130,7 @@ export function MenuCheckboxItem({
       data-slot="menu-checkbox-item"
       checked={checked}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default items-center gap-2 rounded-md py-1 ps-2 text-sm outline-none select-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default items-center gap-2 rounded-sm py-1 ps-2 text-sm outline-none select-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         variant === "switch"
           ? "grid-cols-[1fr_auto] gap-4 pe-1.5"
           : "grid-cols-[.75rem_1fr] pe-4",
@@ -139,21 +165,24 @@ export function MenuRadioGroup(props: MenuPrimitive.RadioGroup.Props) {
 }
 
 export function MenuRadioItem({
+  checkIcon: Icon = <CheckIcon />,
   className,
   children,
   ...props
-}: MenuPrimitive.RadioItem.Props) {
+}: MenuPrimitive.RadioItem.Props & {
+  checkIcon?: React.ReactNode;
+}) {
   return (
     <MenuPrimitive.RadioItem
       data-slot="menu-radio-item"
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[.75rem_1fr] items-center gap-2 rounded-md py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[.75rem_1fr] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
     >
       <MenuPrimitive.RadioItemIndicator className="col-start-1 -ms-0.5">
-        <CheckIcon />
+        {Icon}
       </MenuPrimitive.RadioItemIndicator>
       <span className="col-start-2">{children}</span>
     </MenuPrimitive.RadioItem>
@@ -185,7 +214,7 @@ export function MenuSeparator({
   return (
     <MenuPrimitive.Separator
       data-slot="menu-separator"
-      className={cn("bg-border my-1 h-px", className)}
+      className={cn("bg-border mx-2 my-1 h-px", className)}
       {...props}
     />
   );
@@ -222,7 +251,7 @@ export function MenuSubTrigger({
       data-slot="menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-7 items-center gap-2 rounded-md px-2 py-1 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 sm:min-h-7 sm:text-sm **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4.5 sm:**:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
