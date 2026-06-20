@@ -76,7 +76,7 @@ function BaseActivityTimeline({
               description,
               icon: Icon,
               color,
-            } = getActivityTypeConfig(row.original.type, row.original);
+            } = getActivityTypeConfig(row.original.eventType, row.original);
 
             return (
               <TimelineItem

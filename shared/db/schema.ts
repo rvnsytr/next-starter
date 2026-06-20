@@ -1,4 +1,4 @@
-import { allActivityTypes } from "@/modules/activity/schema";
+import { allActivityEventTypes } from "@/modules/activity/config";
 import {
   bigint,
   boolean,
@@ -99,6 +99,7 @@ export const verification = pgTable(
 );
 
 export type Activity = typeof activity.$inferSelect;
+export type ActivityEventType = Activity["eventType"];
 export type ActivityWithEntity = Activity & { entity?: string };
 export const activity = pgTable(
   "activity",
@@ -107,15 +108,15 @@ export const activity = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-
-    type: text("type", { enum: allActivityTypes }).notNull(),
     entityId: text("entity_id"),
+
+    eventType: text("event_type", { enum: allActivityEventTypes }).notNull(),
     data: text("data"),
 
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => [
-    index("IDX_activity_type").on(t.type),
+    index("IDX_activity_type").on(t.eventType),
     index("IDX_activity_user_id_created_at").on(t.userId, t.createdAt),
   ],
 );

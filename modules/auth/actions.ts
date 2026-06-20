@@ -99,7 +99,7 @@ export async function updateProfileName(
   body: { name: string },
 ) {
   const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
-  await db.insert(activity).values({ type: "profile-updated", userId });
+  await db.insert(activity).values({ userId, eventType: "profile-updated" });
 
   revalidatePath("/dashboard/profile");
   updateTag(authKeys.actions.users);
@@ -138,7 +138,9 @@ export async function updateProfilePicture(file: File) {
       .values(uploaded.file)
       .returning();
 
-    await tx.insert(activity).values({ type: "profile-image-updated", userId });
+    await tx
+      .insert(activity)
+      .values({ userId, eventType: "profile-image-updated" });
 
     return await auth.api.updateUser({
       headers,
@@ -173,7 +175,9 @@ export async function deleteProfilePicture() {
       if (path) await deleteFiles([path], { visibility: "public" });
     }
 
-    await tx.insert(activity).values({ type: "profile-image-updated", userId });
+    await tx
+      .insert(activity)
+      .values({ userId, eventType: "profile-image-updated" });
     return await auth.api.updateUser({ headers, body: { image: null } });
   });
 
@@ -210,14 +214,14 @@ export async function createUser(body: {
 
     await tx.insert(activity).values([
       {
-        type: "user-created",
         userId: data.user.id,
         entityId: session.user.id,
+        eventType: "user-created",
       },
       {
-        type: "admin-user-create",
         userId: session.user.id,
         entityId: data.user.id,
+        eventType: "admin-user-create",
       },
     ]);
 
@@ -239,15 +243,15 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
 
     await tx.insert(activity).values([
       {
-        type: "user-role-updated",
         userId: data.user.id,
         entityId: session.user.id,
+        eventType: "user-role-updated",
         data: body.role,
       },
       {
-        type: "admin-user-update-role",
         userId: session.user.id,
         entityId: data.user.id,
+        eventType: "admin-user-update-role",
       },
     ]);
 
@@ -272,8 +276,12 @@ export async function banUser(body: {
     const data = await auth.api.banUser({ headers, body });
 
     await tx.insert(activity).values([
-      { type: "user-banned", userId: data.user.id },
-      { type: "admin-user-ban", userId: session.user.id, data: data.user.name },
+      { userId: data.user.id, eventType: "user-banned" },
+      {
+        userId: session.user.id,
+        data: data.user.name,
+        eventType: "admin-user-ban",
+      },
     ]);
 
     return data;
@@ -293,11 +301,11 @@ export async function unbanUser(body: { userId: string }) {
     const data = await auth.api.unbanUser({ headers, body });
 
     await tx.insert(activity).values([
-      { type: "user-unbanned", userId: data.user.id },
+      { userId: data.user.id, eventType: "user-unbanned" },
       {
-        type: "admin-user-unban",
         userId: session.user.id,
         data: data.user.name,
+        eventType: "admin-user-unban",
       },
     ]);
 
@@ -354,8 +362,9 @@ export async function deleteUsers(body: { userIds: string[] }) {
     console.log(deleted[0].name);
 
     await tx.insert(activity).values({
-      type: deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
       userId: session.user.id,
+      eventType:
+        deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
       data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
     });
 

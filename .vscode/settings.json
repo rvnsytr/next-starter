@@ -13,8 +13,7 @@
   },
 
   "files.readonlyExclude": {
-    "**/modules/activity/config/index.tsx": true,
-    "**/modules/activity/schema.ts": true
+    "**/modules/activity/config.tsx": true
   },
 
   "js/ts.preferences.autoImportFileExcludePatterns": [

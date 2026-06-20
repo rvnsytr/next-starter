@@ -4,8 +4,7 @@ import { filterFn, formatLocalizedDate } from "@/core/utils";
 import { ActivityWithEntity } from "@/shared/db/schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
-import { getActivityTypeConfig } from "../config";
-import { allActivityTypes } from "../schema";
+import { allActivityEventTypes, getActivityTypeConfig } from "../config";
 
 const columnHelper = createColumnHelper<ActivityWithEntity>();
 export const getActivityColumns = (
@@ -17,8 +16,8 @@ export const getActivityColumns = (
     cell: (c) => <ColumnCellNumber table={c.table} row={c.row} />,
     enableHiding: false,
   }),
-  columnHelper.accessor((ac) => ac.type, {
-    id: "type",
+  columnHelper.accessor((ac) => ac.eventType, {
+    id: "eventType",
     header: (c) => <ColumnHeader column={c.column}>Tipe</ColumnHeader>,
     cell: (c) => c.cell.getValue(),
     filterFn: filterFn("option"),
@@ -26,7 +25,7 @@ export const getActivityColumns = (
       label: "Tipe",
       type: "option",
       icon: RouteIcon,
-      options: allActivityTypes.map((value) => {
+      options: allActivityEventTypes.map((value) => {
         const { label, icon } = getActivityTypeConfig(value);
         const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };

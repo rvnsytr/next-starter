@@ -1,4 +1,4 @@
-import { ActivityWithEntity } from "@/shared/db/schema";
+import { ActivityEventType, ActivityWithEntity } from "@/shared/db/schema";
 import {
   LucideIcon,
   PlusCircleIcon,
@@ -10,7 +10,32 @@ import {
   UserSquare2Icon,
 } from "lucide-react";
 import { DeletedEntityIcon } from "./components/deleted-entity-icon";
-import { ActivityType } from "./schema";
+
+export const allActivityEventTypes = [
+  // "user-registered",
+  "user-created",
+  // "user-imported",
+  // "user-activated",
+  // "user-verified",
+  "user-role-updated",
+  "user-banned",
+  "user-unbanned",
+  // "user-deleted",
+
+  "profile-updated",
+  "profile-image-updated",
+
+  // "password-reset",
+  // "password-changed",
+
+  "admin-user-create",
+  // "admin-user-import",
+  "admin-user-update-role",
+  "admin-user-ban",
+  "admin-user-unban",
+  "admin-user-delete",
+  "admin-users-delete",
+] as const;
 
 type ActivityConfigMetadata = {
   label: string;
@@ -23,7 +48,7 @@ type ActivityConfigMetadata = {
 type ActivityConfigContext = Pick<ActivityWithEntity, "data" | "entity">;
 
 export const activityTypeConfig: Record<
-  ActivityType,
+  ActivityEventType,
   | ActivityConfigMetadata
   | ((ctx?: ActivityConfigContext) => ActivityConfigMetadata)
 > = {
@@ -212,7 +237,7 @@ export const activityTypeConfig: Record<
 };
 
 export function getActivityTypeConfig(
-  type: ActivityType,
+  type: ActivityEventType,
   ctx?: ActivityConfigContext,
 ) {
   const config = activityTypeConfig[type];
