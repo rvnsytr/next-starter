@@ -11,7 +11,7 @@ A **Next.js 16 App Router** starter template with authentication, database, S3 f
 
 - Styling
   - [Tailwind CSS v4](https://tailwindcss.com)
-  - [coss/ui](https://coss.com/ui), [shadcn/ui](https://ui.shadcn.com) and other mentioned component libraries
+  - [base/ui](https://base-ui.com) with [coss/ui](https://coss.com/ui), [shadcn/ui](https://ui.shadcn.com) and other mentioned component libraries
 
 - Database and ORM
   - [PostgreSQL](https://www.postgresql.org)
@@ -46,6 +46,12 @@ bunx drizzle-kit push
 ```
 
 ### Development Server
+
+```sh
+bun run dev
+```
+
+### Remove Docs
 
 ```sh
 bun run dev
