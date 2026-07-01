@@ -407,7 +407,8 @@
     @apply leading-7;
   } */
 
-  b {
+  b,
+  strong {
     @apply text-foreground font-medium;
   }
 
