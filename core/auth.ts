@@ -1,8 +1,8 @@
 import { appConfig } from "@/shared/config";
-import { file } from "@/shared/db/schema";
+import * as schema from "@/shared/db/schema";
 import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
+import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, openAPI } from "better-auth/plugins";
@@ -26,7 +26,7 @@ export const auth = betterAuth({
   // secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
-  database: drizzleAdapter(db, { provider: "pg" }),
+  database: drizzleAdapter(db, { provider: "pg", schema }),
   // experimental: { joins: true },
 
   plugins: [openAPI(), adminPlugin({ ac, roles, defaultRole }), nextCookies()],
@@ -99,9 +99,9 @@ export const auth = betterAuth({
         if (isValidUrl(userData.image)) return ctx.json(session);
 
         const data = await db
-          .select({ path: file.path })
-          .from(file)
-          .where(eq(file.id, userData.image));
+          .select({ path: schema.file.path })
+          .from(schema.file)
+          .where(eq(schema.file.id, userData.image));
 
         if (!data.length) return ctx.json(session);
 
