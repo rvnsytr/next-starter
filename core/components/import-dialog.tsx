@@ -27,7 +27,7 @@ import {
   getExcelColumnKey,
   sanitizeNumber,
 } from "../utils";
-import { FileUpload } from "./file-upload";
+import { FileDropzone } from "./file-dropzone";
 import { Button } from "./ui/button";
 import {
   Collapsible,
@@ -209,7 +209,7 @@ export function ImportDialog<T, K extends string>({
                 return (
                   <Field name={field.name} invalid={fieldState.invalid}>
                     <FieldLabel>{config.label}</FieldLabel>
-                    <FileUpload
+                    <FileDropzone
                       {...config}
                       files={value}
                       onFilesChange={onChange}

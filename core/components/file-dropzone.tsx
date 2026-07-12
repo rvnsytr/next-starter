@@ -33,7 +33,7 @@ import {
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
 
-export type FileUploadProps = Pick<
+export type FileDropzoneProps = Pick<
   React.ComponentProps<"input">,
   "id" | "name" | "required" | "disabled"
 > &
@@ -51,7 +51,7 @@ export type FileUploadProps = Pick<
     onClear?: () => void;
   };
 
-export function FileUpload({
+export function FileDropzone({
   id,
   name,
   required = false,
@@ -68,7 +68,7 @@ export function FileUpload({
 
   onClear,
   ...options
-}: FileUploadProps) {
+}: FileDropzoneProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [filesHook, setFiles] = useState<FileWithPreview[]>(
     initialFiles.map((file) => ({ file, id: file.id, preview: file.url })),
