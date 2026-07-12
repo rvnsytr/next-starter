@@ -2,7 +2,6 @@
 
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { messages } from "@/shared/messages";
-import { Hotkey } from "@tanstack/react-hotkeys";
 import { flexRender, Row, Table as TableType } from "@tanstack/react-table";
 import {
   DataControllerOptions,
@@ -40,7 +39,9 @@ import {
 } from "./ui/table";
 
 export type BaseDataTableProps = {
+  /** The caption for the table. */
   caption?: string;
+  /** Placeholder texts for the table and search input. */
   placeholder?: {
     table?: string;
     search?: string;
@@ -54,12 +55,19 @@ export type BaseDataTableProps = {
     table?: string;
     footer?: string;
   };
+
+  /** Keyboard shortcuts for table actions. */
   shortcuts?: {
-    filter?: Hotkey;
-    sort?: Hotkey;
-    view?: Hotkey;
-    reset?: Hotkey;
-    search?: Hotkey;
+    /** @default "F" */
+    filter?: React.ComponentProps<typeof FilterSelector>["shortcut"];
+    /** @default "S" */
+    sort?: React.ComponentProps<typeof Sorting>["shortcut"];
+    /** @default "V" */
+    view?: React.ComponentProps<typeof Visibility>["shortcut"];
+    /** @default "R" */
+    reset?: React.ComponentProps<typeof ResetFilters>["shortcut"];
+    /** @default "/" */
+    search?: React.ComponentProps<typeof Search>["shortcut"];
   };
 
   /** Makes the table stretch edge-to-edge by compensating the horizontal padding of DashboardPage. */

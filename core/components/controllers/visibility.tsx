@@ -20,16 +20,16 @@ export function Visibility<TData>({
 }: ButtonProps & {
   table: Table<TData>;
   align?: React.ComponentProps<typeof MenuPopup>["align"];
-  shortcut?: Hotkey;
+  /** @default "V" */
+  shortcut?: Hotkey | "default";
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  useHotkeys(
-    shortcut
-      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
-      : [],
-    { enabled: !!shortcut },
-  );
+  const hotkey = shortcut === "default" ? "V" : shortcut;
+
+  useHotkeys(hotkey ? [{ hotkey, callback: () => setIsOpen((v) => !v) }] : [], {
+    enabled: !!hotkey,
+  });
 
   const isIconSize = size?.startsWith("icon") ?? false;
 
@@ -40,9 +40,9 @@ export function Visibility<TData>({
           <Button size={size} variant={variant} {...props}>
             <Columns3Icon />
             {!isIconSize && "Kolom"}
-            {!isIconSize && shortcut && (
+            {!isIconSize && hotkey && (
               <Kbd className="hidden text-xs lg:inline-flex">
-                {formatForDisplay(shortcut)}
+                {formatForDisplay(hotkey)}
               </Kbd>
             )}
           </Button>

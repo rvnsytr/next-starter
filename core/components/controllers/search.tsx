@@ -21,14 +21,18 @@ export function Search<TData>({
 }: Omit<
   React.ComponentProps<typeof InputGroupInput>,
   "ref" | "value" | "onChange"
-> & { table: Table<TData>; shortcut?: Hotkey }) {
+> & {
+  table: Table<TData>;
+  /** @default "/" */
+  shortcut?: Hotkey | "default";
+}) {
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const hotkey = shortcut === "default" ? "/" : shortcut;
+
   useHotkeys(
-    shortcut
-      ? [{ hotkey: shortcut, callback: () => searchRef.current?.focus() }]
-      : [],
-    { enabled: !!shortcut },
+    hotkey ? [{ hotkey, callback: () => searchRef.current?.focus() }] : [],
+    { enabled: !!hotkey },
   );
 
   return (
@@ -45,9 +49,9 @@ export function Search<TData>({
         <SearchIcon />
       </InputGroupAddon>
 
-      {shortcut && (
+      {hotkey && (
         <InputGroupAddon align="inline-end" className="hidden lg:inline-flex">
-          <Kbd>{formatForDisplay(shortcut)}</Kbd>
+          <Kbd>{formatForDisplay(hotkey)}</Kbd>
         </InputGroupAddon>
       )}
     </InputGroup>

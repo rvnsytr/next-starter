@@ -99,13 +99,17 @@ export function ResetFilters<TData>({
   variant = "outline",
   children,
   ...props
-}: Omit<ButtonProps, "onClick"> & { table: Table<TData>; shortcut?: Hotkey }) {
+}: Omit<ButtonProps, "onClick"> & {
+  table: Table<TData>;
+  /** @default "R" */
+  shortcut?: Hotkey | "default";
+}) {
   const isIconSize = size?.startsWith("icon") ?? false;
+  const hotkey = shortcut === "default" ? "R" : shortcut;
 
-  useHotkeys(
-    shortcut ? [{ hotkey: shortcut, callback: () => resetFilters(table) }] : [],
-    { enabled: !!shortcut },
-  );
+  useHotkeys(hotkey ? [{ hotkey, callback: () => resetFilters(table) }] : [], {
+    enabled: !!hotkey,
+  });
 
   return (
     <Button
@@ -118,9 +122,9 @@ export function ResetFilters<TData>({
         <>
           <RotateCcwSquareIcon />
           {!isIconSize && messages.actions.reset}
-          {!isIconSize && shortcut && (
+          {!isIconSize && hotkey && (
             <Kbd className="hidden text-xs lg:inline-flex">
-              {formatForDisplay(shortcut)}
+              {formatForDisplay(hotkey)}
             </Kbd>
           )}
         </>
@@ -239,7 +243,8 @@ export function FilterSelector<TData>({
 }: ButtonProps & {
   table: Table<TData>;
   align?: React.ComponentProps<typeof PopoverPopup>["align"];
-  shortcut?: Hotkey;
+  /** @default "F" */
+  shortcut?: Hotkey | "default";
 }) {
   const anchor = useRef<HTMLButtonElement>(null);
   const [property, setProperty] = useState<string | undefined>(undefined);
@@ -248,12 +253,11 @@ export function FilterSelector<TData>({
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-  useHotkeys(
-    shortcut
-      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
-      : [],
-    { enabled: !!shortcut },
-  );
+  const hotkey = shortcut === "default" ? "F" : shortcut;
+
+  useHotkeys(hotkey ? [{ hotkey, callback: () => setIsOpen((v) => !v) }] : [], {
+    enabled: !!hotkey,
+  });
 
   const properties = useMemo(
     () => table.getAllColumns().filter(isFilterableColumn),
@@ -285,9 +289,9 @@ export function FilterSelector<TData>({
             <Button ref={anchor} size={size} variant={variant} {...props}>
               <FilterIcon />
               {!isIconSize && "Filter"}
-              {!isIconSize && shortcut && (
+              {!isIconSize && hotkey && (
                 <Kbd className="hidden text-xs lg:inline-flex">
-                  {formatForDisplay(shortcut)}
+                  {formatForDisplay(hotkey)}
                 </Kbd>
               )}
             </Button>

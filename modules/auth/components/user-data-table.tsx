@@ -53,11 +53,11 @@ export function UserDataTable() {
         enableRowSelection={(row) => row.original.id !== user.id}
         placeholder={{ search: "Cari Pengguna..." }}
         shortcuts={{
-          filter: "F",
-          sort: "S",
-          view: "V",
-          reset: "R",
-          search: "/",
+          filter: "default",
+          sort: "default",
+          view: "default",
+          reset: "default",
+          search: "default",
         }}
         fullwidth="always"
         onRowClick={(row) => setData(row.original)}

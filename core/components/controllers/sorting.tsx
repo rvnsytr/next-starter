@@ -24,16 +24,16 @@ export function Sorting<TData>({
   table: Table<TData>;
   align?: React.ComponentProps<typeof MenuPopup>["align"];
   isMulti?: boolean;
-  shortcut?: Hotkey;
+  /** @default "S" */
+  shortcut?: Hotkey | "default";
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  useHotkeys(
-    shortcut
-      ? [{ hotkey: shortcut, callback: () => setIsOpen((v) => !v) }]
-      : [],
-    { enabled: !!shortcut },
-  );
+  const hotkey = shortcut === "default" ? "S" : shortcut;
+
+  useHotkeys(hotkey ? [{ hotkey, callback: () => setIsOpen((v) => !v) }] : [], {
+    enabled: !!hotkey,
+  });
 
   const isIconSize = size?.startsWith("icon") ?? false;
 
@@ -44,9 +44,9 @@ export function Sorting<TData>({
           <Button size={size} variant={variant} {...props}>
             <ArrowUpDownIcon />
             {!isIconSize && "Sortir"}
-            {!isIconSize && shortcut && (
+            {!isIconSize && hotkey && (
               <Kbd className="hidden text-xs lg:inline-flex">
-                {formatForDisplay(shortcut)}
+                {formatForDisplay(hotkey)}
               </Kbd>
             )}
           </Button>
