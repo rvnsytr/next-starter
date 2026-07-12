@@ -78,6 +78,7 @@ export function ProfileForm() {
                     type="email"
                     placeholder="Masukan email anda"
                     required
+                    disabled
                     {...field}
                   />
                   <InputGroupAddon>
