@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/core/components/ui/card";
+import { Marker, MarkerContent } from "@/core/components/ui/marker";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { getRouteTitle } from "@/core/route";
 import { SignInForm } from "@/modules/auth/components/sign-in-form";
@@ -52,13 +53,9 @@ export default function Page() {
             </TabsPanel>
           </Tabs>
 
-          <div className="flex items-center gap-x-4">
-            <div className="grow border-t before:border-t" />
-            <small className="text-muted-foreground text-xs font-medium">
-              Atau
-            </small>
-            <div className="grow border-t after:border-t" />
-          </div>
+          <Marker variant="separator">
+            <MarkerContent className="text-xs">Atau</MarkerContent>
+          </Marker>
 
           <SignOnGithubButton />
         </CardContent>

@@ -227,7 +227,10 @@ export function FileUpload({
                   "group/file relative aspect-square overflow-hidden rounded-xl border",
                   "focus-visible:border-ring focus-visible:ring-ring/50 outline-0 focus-visible:ring-[3px]",
 
-                  isImage ? "bg-black text-white" : "bg-card text-foreground",
+                  isImage
+                    ? "bg-black text-white"
+                    : "bg-card text-foreground pb-8",
+
                   isImage && file.preview && "cursor-pointer",
 
                   classNames?.file,
@@ -398,7 +401,7 @@ export function FileUpload({
         open={!!selectedImage}
         onOpenChange={(open) => !open && setSelectedImage(null)}
       >
-        <DialogPopup className="border-none">
+        <DialogPopup className="overflow-hidden border-none">
           <DialogHeader className="sr-only">
             <DialogTitle>{label} Preview</DialogTitle>
           </DialogHeader>
@@ -409,7 +412,7 @@ export function FileUpload({
               alt={`${label} Preview`}
               width={1920}
               height={1080}
-              className="rounded-lg"
+              className="max-h-[90svh] object-contain"
             />
           )}
         </DialogPopup>
