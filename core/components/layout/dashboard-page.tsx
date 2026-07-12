@@ -3,16 +3,23 @@
 import { cn } from "@/core/utils";
 
 export function DashboardPage({
+  withLayoutMode = true,
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & {
+  withLayoutMode?: boolean;
+}) {
   return (
     <div
       data-slot="dashboard-page"
+      data-with-layout-mode={withLayoutMode}
       className={cn(
-        "relative z-10 flex flex-1 flex-col gap-4 px-0 py-4",
-        "*:data-[slot=dashboard-page-header]:px-4 lg:px-4 lg:*:data-[slot=dashboard-page-header]:px-0",
-        "lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4",
+        "group/dashboard-page relative z-10 flex flex-1 flex-col gap-4 px-0 py-4",
+
+        withLayoutMode
+          ? "lg:px-4 lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4"
+          : "lg:*:data-[slot=dashboard-page-header]:px-4",
+
         className,
       )}
       {...props}
@@ -29,6 +36,7 @@ export function DashboardPageHeader({
       data-slot="dashboard-page-header"
       className={cn(
         "group/dashboard-page-header @container/dashboard-page-header grid auto-rows-min items-start gap-1 has-data-[slot=dashboard-page-action]:grid-cols-[1fr_auto] has-data-[slot=dashboard-page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
+        "px-4 lg:px-0",
         className,
       )}
       {...props}

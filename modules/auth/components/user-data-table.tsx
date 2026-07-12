@@ -59,7 +59,7 @@ export function UserDataTable() {
           reset: "R",
           search: "/",
         }}
-        fullWidthOnMobile
+        fullwidth="always"
         onRowClick={(row) => setData(row.original)}
         renderRowSelectionButton={({ table, rows }) => {
           const rowData = rows.map((row) => row.original);

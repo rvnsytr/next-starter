@@ -62,8 +62,8 @@ export type BaseDataTableProps = {
     search?: Hotkey;
   };
 
-  /** Makes the table stretch edge-to-edge on mobile devices by compensating the horizontal padding of DashboardPage. */
-  fullWidthOnMobile?: boolean;
+  /** Makes the table stretch edge-to-edge by compensating the horizontal padding of DashboardPage. */
+  fullwidth?: "always" | "mobile-only";
 };
 
 export type DataTableActionProps<TData> = {
@@ -83,7 +83,7 @@ function BaseDataTable<TData>({
   className,
   classNames,
   shortcuts,
-  fullWidthOnMobile = false,
+  fullwidth,
   onRowClick,
   renderRowSelectionButton,
   controller: { result, table, columns },
@@ -108,7 +108,8 @@ function BaseDataTable<TData>({
       <div
         className={cn(
           "flex w-full flex-col gap-2 lg:flex-row lg:justify-between",
-          fullWidthOnMobile && "px-4 lg:px-0",
+          fullwidth === "always" && "px-4",
+          fullwidth === "mobile-only" && "px-4 lg:px-0",
           classNames?.toolbox,
         )}
       >
@@ -148,7 +149,8 @@ function BaseDataTable<TData>({
       {table.getState().columnFilters.length > 0 && (
         <ActiveFiltersContainer
           className={cn(
-            fullWidthOnMobile && "px-4 lg:px-0",
+            fullwidth === "always" && "px-4",
+            fullwidth === "mobile-only" && "px-4 lg:px-0",
             classNames?.activeFiltersContainer,
           )}
         >
@@ -160,9 +162,11 @@ function BaseDataTable<TData>({
 
       <Table
         containerClassName={cn(
-          fullWidthOnMobile
-            ? "border-y lg:rounded-xl lg:border-x"
-            : "rounded-xl border",
+          fullwidth === "always"
+            ? "border-y"
+            : fullwidth === "mobile-only"
+              ? "border-y lg:rounded-xl lg:border-x"
+              : "rounded-xl border",
           classNames?.tableContainer,
         )}
         className={classNames?.table}
@@ -172,37 +176,36 @@ function BaseDataTable<TData>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header, headerIndex) => {
                 const columnPinned = header.column.getIsPinned();
-                const isFullwidthFirst = fullWidthOnMobile && headerIndex === 0;
-                const isFullwidthLast =
-                  fullWidthOnMobile &&
-                  headerIndex === headerGroup.headers.length - 1;
+
+                const isFirst = headerIndex === 0;
+                const isLast = headerIndex === headerGroup.headers.length - 1;
+
                 return (
                   <TableHead
                     key={header.id}
                     className={cn(
                       "z-10 text-center",
+
                       columnPinned && "bg-background/90 sticky z-20",
                       columnPinned === "left" && "left-0",
                       columnPinned === "right" && "right-0",
+
+                      isFirst && fullwidth === "always" && "pl-4",
+                      isFirst && fullwidth === "mobile-only" && "pl-4 lg:pl-0",
+
+                      isLast && fullwidth === "always" && "pr-4",
+                      isLast && fullwidth === "mobile-only" && "pr-4 lg:pr-0",
                     )}
                     style={{
                       left: header.column.getStart("left"),
                       right: header.column.getAfter("right"),
                     }}
                   >
-                    {!header.isPlaceholder && (
-                      <div
-                        className={cn(
-                          isFullwidthFirst && "pl-4 lg:pl-0",
-                          isFullwidthLast && "pr-4 lg:pr-0",
-                        )}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                      </div>
-                    )}
+                    {!header.isPlaceholder &&
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 );
               })}
@@ -239,30 +242,34 @@ function BaseDataTable<TData>({
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const columnPinned = cell.column.getIsPinned();
-                  const isFullwidthFirst = fullWidthOnMobile && cellIndex === 0;
-                  const isFullwidthLast =
-                    fullWidthOnMobile &&
-                    cellIndex === row.getVisibleCells().length - 1;
+
+                  const isFirst = cellIndex === 0;
+                  const isLast = cellIndex === row.getVisibleCells().length - 1;
+
                   return (
                     <TableCell
                       key={cell.id}
                       className={cn(
                         "z-10",
+
                         columnPinned && "bg-background/90 sticky z-20",
                         columnPinned === "left" && "left-0",
                         columnPinned === "right" && "right-0",
+
+                        isFirst && fullwidth === "always" && "pl-4",
+                        isFirst &&
+                          fullwidth === "mobile-only" &&
+                          "pl-4 lg:pl-0",
+
+                        isLast && fullwidth === "always" && "pr-4",
+                        isLast && fullwidth === "mobile-only" && "pr-4 lg:pr-0",
                       )}
                       style={{
                         left: cell.column.getStart("left"),
                         right: cell.column.getAfter("right"),
                       }}
                     >
-                      <div
-                        className={cn(
-                          isFullwidthFirst && "pl-4 lg:pl-0",
-                          isFullwidthLast && "pr-4 lg:pr-0",
-                        )}
-                      >
+                      <div className={cn()}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -291,7 +298,8 @@ function BaseDataTable<TData>({
       <div
         className={cn(
           "flex w-full flex-col items-center gap-4 text-center lg:flex-row",
-          fullWidthOnMobile && "px-4 lg:px-0",
+          fullwidth === "always" && "px-4",
+          fullwidth === "mobile-only" && "px-4 lg:px-0",
           classNames?.footer,
         )}
       >
@@ -353,7 +361,7 @@ export function DataTable<TData>({
   className,
   classNames,
   shortcuts,
-  fullWidthOnMobile,
+  fullwidth,
   onRowClick,
   renderRowSelectionButton,
   ...options
@@ -366,7 +374,7 @@ export function DataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
-      fullWidthOnMobile={fullWidthOnMobile}
+      fullwidth={fullwidth}
       onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
@@ -380,7 +388,7 @@ export function QueryDataTable<TData>({
   className,
   classNames,
   shortcuts,
-  fullWidthOnMobile,
+  fullwidth,
   onRowClick,
   renderRowSelectionButton,
   ...options
@@ -393,7 +401,7 @@ export function QueryDataTable<TData>({
       className={className}
       classNames={classNames}
       shortcuts={shortcuts}
-      fullWidthOnMobile={fullWidthOnMobile}
+      fullwidth={fullwidth}
       onRowClick={onRowClick}
       renderRowSelectionButton={renderRowSelectionButton}
       controller={controller}
