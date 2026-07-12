@@ -12,7 +12,7 @@ export function SignOnGithubButton() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // const wasLastUsed = authClient.isLastUsedLoginMethod("github");
 
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(
       authClient.signIn
@@ -53,7 +53,7 @@ export function SignOnGithubButton() {
       variant="outline"
       disabled={isLoading}
       className="relative"
-      onClick={clickHandler}
+      onClick={onClick}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
       Lanjutankan dengan Github

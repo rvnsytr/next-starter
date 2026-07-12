@@ -110,7 +110,7 @@ export function ImportDialog<T, K extends string>({
   source,
   defaultValues,
 
-  onSubmit,
+  onSubmit: onSubmitProp,
   onSuccess,
   onError,
 
@@ -149,11 +149,11 @@ export function ImportDialog<T, K extends string>({
   const parse = (value: string) =>
     formatCsvRange(value, { sort: "asc", distinct: true });
 
-  const formHandler = (formData: ImportDialogFormSchema) => {
+  const onSubmit = (formData: ImportDialogFormSchema) => {
     setIsLoading(true);
 
     toast.promise(
-      onSubmit({
+      onSubmitProp({
         ...formData,
         source: Object.fromEntries(
           formData.source.map((v) => [v.key, v.column]),
@@ -197,7 +197,7 @@ export function ImportDialog<T, K extends string>({
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={id} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={id} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="files"
               control={form.control}

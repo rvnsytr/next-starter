@@ -27,7 +27,7 @@ export function UserRoleColumn({
   const { user } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const clickHandler = (newRole: Role) => {
+  const onClick = (newRole: Role) => {
     const role = newRole ?? defaultRole;
     if (role === data.role)
       return toast.add({
@@ -85,7 +85,7 @@ export function UserRoleColumn({
               key={item}
               style={{ "--item-color": color } as React.CSSProperties}
               className="text-(--item-color) data-highlighted:text-(--item-color)"
-              onClick={() => clickHandler(item)}
+              onClick={() => onClick(item)}
               disabled={isLoading}
               data-no-row-click
             >

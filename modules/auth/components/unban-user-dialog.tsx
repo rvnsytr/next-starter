@@ -30,7 +30,7 @@ export function UnbanUserDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setData: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(unbanUser({ userId: data.id }), {
       loading: { title: messages.loading },
@@ -75,7 +75,7 @@ export function UnbanUserDialog({
           />
           <AlertDialogClose
             render={
-              <Button onClick={clickHandler} autoFocus>
+              <Button onClick={onClick} autoFocus>
                 {messages.actions.confirm}
               </Button>
             }

@@ -58,7 +58,7 @@ export function DeleteUserDialog({
     defaultValues: { input: "" },
   });
 
-  const formHandler = () => {
+  const onSubmit = () => {
     setIsLoading(true);
     setOpen(false);
 
@@ -100,7 +100,7 @@ export function DeleteUserDialog({
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="input"
               control={form.control}
@@ -179,7 +179,7 @@ export function ActionDeleteUsersDialog({
     defaultValues: { input: "" },
   });
 
-  const formHandler = () => {
+  const onSubmit = () => {
     setIsLoading(true);
     setOpen(false);
 
@@ -217,7 +217,7 @@ export function ActionDeleteUsersDialog({
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formActionId} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={formActionId} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="input"
               control={form.control}

@@ -45,7 +45,7 @@ export function ChangePasswordForm() {
     },
   });
 
-  const formHandler = (formData: FormSchema) => {
+  const onSubmit = (formData: FormSchema) => {
     setIsLoading(true);
     toast.promise(
       (async () => {
@@ -71,7 +71,7 @@ export function ChangePasswordForm() {
   return (
     <>
       <CardContent>
-        <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+        <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
           <Controller
             name="currentPassword"
             control={form.control}

@@ -29,7 +29,7 @@ export function RevokeUserSessionsDialog({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(
       authClient.admin.revokeUserSessions({ userId: data.id }).then((res) => {
@@ -77,7 +77,7 @@ export function RevokeUserSessionsDialog({
           />
           <AlertDialogClose
             render={
-              <Button onClick={clickHandler} autoFocus>
+              <Button onClick={onClick} autoFocus>
                 {messages.actions.confirm}
               </Button>
             }
@@ -101,7 +101,7 @@ export function ActionRevokeUserSessionsDialog({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess: () => void;
 }) {
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
 
     toast.promise(
@@ -154,7 +154,7 @@ export function ActionRevokeUserSessionsDialog({
           />
           <AlertDialogClose
             render={
-              <Button onClick={clickHandler} autoFocus>
+              <Button onClick={onClick} autoFocus>
                 {messages.actions.confirm}
               </Button>
             }

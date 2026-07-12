@@ -31,7 +31,7 @@ export function ImpersonateUserDialog({
 }) {
   const router = useRouter();
 
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(impersonateUser(data.id), {
       loading: { title: messages.loading },
@@ -80,7 +80,7 @@ export function ImpersonateUserDialog({
           />
           <AlertDialogClose
             render={
-              <Button onClick={clickHandler} autoFocus>
+              <Button onClick={onClick} autoFocus>
                 {messages.actions.confirm}
               </Button>
             }

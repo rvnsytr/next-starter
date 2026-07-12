@@ -38,7 +38,7 @@ export function SignInForm() {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
-  const formHandler = (formData: FormSchema) => {
+  const onSubmit = (formData: FormSchema) => {
     setIsLoading(true);
 
     const callbackURL = searchParams.get("callbackURL") ?? "/dashboard";
@@ -72,7 +72,7 @@ export function SignInForm() {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <Form onSubmit={form.handleSubmit(onSubmit)}>
       <Controller
         name="email"
         control={form.control}

@@ -36,7 +36,7 @@ export function ProfileForm() {
     defaultValues: user,
   });
 
-  const formHandler = ({ name }: FormSchema) => {
+  const onSubmit = ({ name }: FormSchema) => {
     if (name === user.name)
       return toast.add({
         type: "info",
@@ -64,7 +64,7 @@ export function ProfileForm() {
 
         <Form
           id={formId}
-          onSubmit={form.handleSubmit(formHandler)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="grid lg:grid-cols-2"
         >
           <Controller

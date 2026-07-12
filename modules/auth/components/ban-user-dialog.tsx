@@ -60,7 +60,7 @@ export function BanUserDialog({
     defaultValues: { banReason: "" },
   });
 
-  const formHandler = (formData: FormSchema) => {
+  const onSubmit = (formData: FormSchema) => {
     const { banReason: rawBanReason, banExpiresDate } = formData;
 
     setIsLoading(true);
@@ -126,7 +126,7 @@ export function BanUserDialog({
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="banReason"
               control={form.control}

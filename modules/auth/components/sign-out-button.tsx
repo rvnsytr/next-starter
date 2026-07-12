@@ -40,7 +40,7 @@ export function SignOutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     signOutClient({
       onSuccess: router.push,
@@ -52,7 +52,7 @@ export function SignOutButton() {
     <SidebarMenuButton
       tooltip="Keluar"
       variant="destructive-ghost"
-      onClick={clickHandler}
+      onClick={onClick}
       disabled={isLoading}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <LogOutIcon /> }} />

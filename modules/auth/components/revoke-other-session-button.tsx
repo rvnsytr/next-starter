@@ -22,7 +22,7 @@ import { mutateListSessions } from "../hooks/use-list-sessions";
 export function RevokeOtherSessionsButton() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(
       authClient.revokeOtherSessions().then((res) => {
@@ -73,7 +73,7 @@ export function RevokeOtherSessionsButton() {
           />
           <AlertDialogClose
             render={
-              <Button variant="destructive" onClick={clickHandler} autoFocus>
+              <Button variant="destructive" onClick={onClick} autoFocus>
                 {messages.actions.confirm}
               </Button>
             }

@@ -114,7 +114,7 @@ export function SessionListCollapsible({
     { label: "Operating System", key: "os" },
   ];
 
-  const clickHandler = ({ id, token }: Session) => {
+  const onClick = ({ id, token }: Session) => {
     setRevokingSession(id);
 
     toast.promise(
@@ -237,7 +237,7 @@ export function SessionListCollapsible({
                               render={
                                 <Button
                                   variant="destructive"
-                                  onClick={() => clickHandler(s)}
+                                  onClick={() => onClick(s)}
                                   autoFocus
                                 >
                                   {messages.actions.confirm}

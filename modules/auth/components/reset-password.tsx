@@ -54,7 +54,7 @@ export function ResetPasswordDialog() {
     defaultValues: { email: "" },
   });
 
-  const formHandler = ({ email }: FormSchema) => {
+  const onSubmit = ({ email }: FormSchema) => {
     setIsLoading(true);
     toast.promise(
       authClient.requestPasswordReset({ email }).then((res) => {
@@ -97,7 +97,7 @@ export function ResetPasswordDialog() {
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formDialogId} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={formDialogId} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="email"
               control={form.control}
@@ -128,7 +128,7 @@ export function ResetPasswordDialog() {
             type="submit"
             form={formDialogId}
             disabled={isLoading}
-            onClick={form.handleSubmit(formHandler)}
+            onClick={form.handleSubmit(onSubmit)}
           >
             <LoadingSpinner loading={isLoading} icon={{ base: <SendIcon /> }} />
             Atur ulang kata sandi
@@ -156,7 +156,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
     defaultValues: { newPassword: "", confirmPassword: "" },
   });
 
-  const formHandler = ({ newPassword }: FormDialogSchema) => {
+  const onSubmit = ({ newPassword }: FormDialogSchema) => {
     setIsLoading(true);
     toast.promise(
       authClient.resetPassword({ token, newPassword }).then((res) => {
@@ -185,7 +185,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
   return (
     <>
       <CardContent>
-        <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+        <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
           <Controller
             name="newPassword"
             control={form.control}

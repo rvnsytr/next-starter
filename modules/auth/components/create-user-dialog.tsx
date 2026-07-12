@@ -72,7 +72,7 @@ export function CreateUserDialog() {
     },
   });
 
-  const formHandler = ({ newPassword, ...rest }: FormSchema) => {
+  const onSubmit = ({ newPassword, ...rest }: FormSchema) => {
     setIsLoading(true);
     toast.promise(createUser({ password: newPassword, ...rest }), {
       loading: { title: messages.loading },
@@ -121,7 +121,7 @@ export function CreateUserDialog() {
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(formHandler)}>
+          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="name"
               control={form.control}

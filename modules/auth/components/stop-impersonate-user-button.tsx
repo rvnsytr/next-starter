@@ -21,7 +21,7 @@ export function StopImpersonateUserMenuItem() {
   const { session, user } = useSession();
   if (!session.impersonatedBy) return;
 
-  const clickHandler = () => {
+  const onClick = () => {
     setIsLoading(true);
     toast.promise(stopImpersonateUser(), {
       loading: { title: messages.loading },
@@ -49,7 +49,7 @@ export function StopImpersonateUserMenuItem() {
       <SidebarMenuButton
         tooltip={`Keluar dari sesi ${user.name}`}
         variant="destructive-ghost"
-        onClick={clickHandler}
+        onClick={onClick}
         disabled={isLoading}
       >
         <LoadingSpinner loading={isLoading} icon={{ base: <Layers2Icon /> }} />

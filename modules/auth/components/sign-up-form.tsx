@@ -57,7 +57,7 @@ export function SignUpForm() {
     },
   });
 
-  const formHandler = ({ newPassword: password, ...rest }: FormSchema) => {
+  const onSubmit = ({ newPassword: password, ...rest }: FormSchema) => {
     setIsLoading(true);
     toast.promise(
       authClient.signUp.email({ password, ...rest }).then((res) => {
@@ -83,7 +83,7 @@ export function SignUpForm() {
   };
 
   return (
-    <Form onSubmit={form.handleSubmit(formHandler)}>
+    <Form onSubmit={form.handleSubmit(onSubmit)}>
       <Controller
         name="name"
         control={form.control}
