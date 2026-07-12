@@ -1,7 +1,7 @@
 "use client";
 
+import { messages } from "@/shared/messages";
 import { useCallback, useRef, useState } from "react";
-import { messages } from "../messages";
 import { FileMetadata, FileWithPreview } from "../types";
 import { getFileInfo } from "../utils";
 

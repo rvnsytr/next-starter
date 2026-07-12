@@ -18,8 +18,8 @@ import {
 } from "@/core/components/ui/input-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
 import { appConfig } from "@/shared/config";
+import { messages } from "@/shared/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
 import { useState } from "react";

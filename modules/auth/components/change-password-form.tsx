@@ -9,7 +9,7 @@ import { Field, FieldError, FieldLabel } from "@/core/components/ui/field";
 import { Form } from "@/core/components/ui/form";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockKeyholeOpenIcon, SaveIcon } from "lucide-react";
 import { useState } from "react";

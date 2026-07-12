@@ -1,6 +1,6 @@
 import { appConfig, Language, languageConfig } from "@/shared/config";
+import { messages } from "@/shared/messages";
 import z from "zod";
-import { messages } from "../messages";
 import {
   ActionError,
   StringCase,
@@ -157,7 +157,7 @@ export function formatZodError<T>(
     message = `[${paths.join(".")}] ${firstIssue.message}`;
   }
 
-  return { success, message, error: z.treeifyError(zodError) };
+  return { success, message, error };
 }
 
 export type FormatCsvRangeOptions = {

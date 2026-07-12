@@ -1,7 +1,6 @@
 "use client";
 
 import { useDebounce } from "@/core/hooks/use-debounce";
-import { messages } from "@/core/messages";
 import {
   cn,
   createNumberRange,
@@ -24,6 +23,7 @@ import {
   optionFilterDetails,
   textFilterDetails,
 } from "@/core/utils";
+import { messages } from "@/shared/messages";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { endOfDay, isEqual } from "date-fns";
@@ -1442,8 +1442,7 @@ export function FilterValueMultiOptionController<
   table,
 }: ProperFilterValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue() as
-    | FilterModel<"multiOption", TData>
-    | undefined;
+    FilterModel<"multiOption", TData> | undefined;
 
   let options: DataFilterOption[];
   const columnVals = table

@@ -22,8 +22,8 @@ import {
 import { Form } from "@/core/components/ui/form";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
-import { sharedSchemas } from "@/core/schema";
+import { messages } from "@/shared/messages";
+import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { differenceInSeconds, endOfDay, isBefore } from "date-fns";
 import { TriangleAlertIcon } from "lucide-react";

@@ -1,6 +1,6 @@
 import { apiConfig } from "@/shared/config";
 import z from "zod";
-import { getApiResponseSchema } from "./schema";
+import { getApiResponseSchema } from "../shared/schema";
 import { ApiResponse } from "./types";
 
 export type FetcherConfig<T> = RequestInit & {

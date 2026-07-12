@@ -24,7 +24,7 @@ import {
 import { Label } from "@/core/components/ui/label";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeftIcon,

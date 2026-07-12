@@ -14,7 +14,7 @@ import {
 } from "@/core/components/ui/menu";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { mutateControlledData } from "@/core/hooks/use-data-controller";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { listUsersAction } from "../actions";

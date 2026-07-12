@@ -1,5 +1,6 @@
 "use client";
 
+import { columnFiltersSchema } from "@/shared/schema";
 import {
   ColumnDef as ColumnDefType,
   ColumnPinningState,
@@ -30,7 +31,6 @@ import { useMemo, useState } from "react";
 import useSWR, { mutate, SWRConfiguration, SWRResponse } from "swr";
 import z from "zod";
 import { DataControllerState } from "../data-controller";
-import { columnFiltersSchema } from "../schema";
 import { ActionResponse, ActionSuccess, Override } from "../types";
 import {
   allDataFilterType,

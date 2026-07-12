@@ -13,7 +13,7 @@ import {
 } from "@/core/components/ui/input-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogInIcon, MailIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";

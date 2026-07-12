@@ -26,11 +26,11 @@ import {
   useDataController,
 } from "@/core/hooks/use-data-controller";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
-import { messages } from "@/core/messages";
 import { cn, formatLocalizedDate, formatNumber } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { ActivityWithEntity } from "@/shared/db/schema";
+import { messages } from "@/shared/messages";
 import { getUserActivitiesAction } from "../actions";
 import { getActivityTypeConfig } from "../config";
 import { activityKeys } from "../config/keys";

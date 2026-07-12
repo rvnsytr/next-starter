@@ -12,7 +12,7 @@ import {
 } from "@/core/components/ui/alert-dialog";
 import { Button } from "@/core/components/ui/button";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { LockKeyholeOpenIcon } from "lucide-react";
 import { unbanUser } from "../actions";
 import { mutateUserDataTable } from "./user-data-table";

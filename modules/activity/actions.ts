@@ -2,9 +2,9 @@
 
 import { auth } from "@/core/auth";
 import { db } from "@/core/db";
-import { messages } from "@/core/messages";
 import { ActionResponse } from "@/core/types";
 import { activity, ActivityWithEntity } from "@/shared/db/schema";
+import { messages } from "@/shared/messages";
 import { Role } from "@/shared/permission";
 import { desc, eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";

@@ -6,7 +6,7 @@ import {
 } from "@/core/components/ui/sidebar";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

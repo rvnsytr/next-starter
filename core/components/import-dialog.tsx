@@ -1,6 +1,8 @@
 "use client";
 
 import { fileTypeConfig } from "@/shared/config";
+import { messages } from "@/shared/messages";
+import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChevronsUpDown,
@@ -16,8 +18,6 @@ import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { TextMorph } from "torph/react";
 import z from "zod";
-import { messages } from "../messages";
-import { sharedSchemas } from "../schema";
 import { FileWithPreview } from "../types";
 import {
   cn,

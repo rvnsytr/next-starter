@@ -1,6 +1,7 @@
 "use client";
 
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
+import { messages } from "@/shared/messages";
 import { Hotkey } from "@tanstack/react-hotkeys";
 import { flexRender, Row, Table as TableType } from "@tanstack/react-table";
 import {
@@ -12,7 +13,6 @@ import {
 } from "../hooks/use-data-controller";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsDesktop } from "../hooks/use-media-query";
-import { messages } from "../messages";
 import { cn, formatNumber } from "../utils";
 import {
   ActiveFilters,

@@ -26,7 +26,7 @@ import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { allRoles, defaultRole } from "@/shared/permission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";

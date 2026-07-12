@@ -1,4 +1,4 @@
-import { messages } from "@/core/messages";
+import { messages } from "@/shared/messages";
 import { RotateCcwIcon } from "lucide-react";
 import { Button, ButtonProps } from "./button";
 

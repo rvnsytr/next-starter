@@ -1,6 +1,7 @@
 "use client";
 
 import { fileTypeConfig, FileTypeConfig } from "@/shared/config";
+import { messages } from "@/shared/messages";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -16,7 +17,6 @@ import {
   FileUploadOptions,
   useStatelessFileUpload,
 } from "../hooks/use-file-upload";
-import { messages } from "../messages";
 import { FileMetadata, FileWithPreview } from "../types";
 import { cn, formatBytes } from "../utils";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "./ui/alert";
@@ -386,7 +386,8 @@ export function FileUpload({
               variant="destructive-outline"
               onClick={clearErrors}
             >
-              <BrushCleaningIcon /> {messages.actions.clear}
+              <BrushCleaningIcon />
+              {messages.actions.clear}
             </Button>
           </AlertAction>
         </Alert>

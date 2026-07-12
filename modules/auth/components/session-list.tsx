@@ -31,9 +31,9 @@ import {
 import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { messages } from "@/core/messages";
 import { cn } from "@/core/utils";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
+import { messages } from "@/shared/messages";
 import {
   ChevronsUpDownIcon,
   Gamepad2Icon,

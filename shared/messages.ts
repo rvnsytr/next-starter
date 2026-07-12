@@ -3,7 +3,7 @@ import {
   formatBytes,
   formatDateDistanceToNow,
   formatLocalizedDate,
-} from "./utils";
+} from "@/core/utils";
 
 export const messages = {
   actions: {

@@ -1,5 +1,6 @@
 "use client";
 
+import { messages } from "@/shared/messages";
 import {
   CheckIcon,
   EyeIcon,
@@ -8,7 +9,6 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { messages } from "../messages";
 import { cn } from "../utils";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";

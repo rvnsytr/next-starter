@@ -8,7 +8,7 @@ import {
   getActionResponseSchema,
   getApiResponseSchema,
   sharedSchemas,
-} from "./schema";
+} from "../shared/schema";
 
 export type RouteRole = "all" | Role[];
 
@@ -19,12 +19,7 @@ export type OmitByType<T, V> = {
 };
 
 export type StringCase =
-  | "kebab"
-  | "snake"
-  | "camel"
-  | "pascal"
-  | "constant"
-  | "title";
+  "kebab" | "snake" | "camel" | "pascal" | "constant" | "title";
 
 export type TransformableStringCase = Extract<
   StringCase,
@@ -55,13 +50,15 @@ export type TransformKeys<
     ? T
     : T extends object
       ? {
-          [K in keyof T as K extends string
-            ? C extends "snake"
-              ? SnakeCase<K>
-              : C extends "kebab"
-                ? KebabCase<K>
-                : CamelCase<K>
-            : K]: TransformKeys<T[K], C>;
+          [
+            K in keyof T as K extends string
+              ? C extends "snake"
+                ? SnakeCase<K>
+                : C extends "kebab"
+                  ? KebabCase<K>
+                  : CamelCase<K>
+              : K
+          ]: TransformKeys<T[K], C>;
         }
       : T;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { routeConfig } from "@/shared/config";
+import { messages } from "@/shared/messages";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,
@@ -13,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useMemo, useState, useTransition } from "react";
 import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
 import { useIsMounted } from "../hooks/use-is-mounted";
-import { messages } from "../messages";
 import { Menu, MenuItem } from "../types";
 import { cn, toCase } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
