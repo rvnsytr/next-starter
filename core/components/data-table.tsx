@@ -62,7 +62,7 @@ export type BaseDataTableProps = {
     search?: Hotkey;
   };
 
-  /** Makes the table stretch edge-to-edge on mobile devices by compensating the horizontal padding of PageContainer. */
+  /** Makes the table stretch edge-to-edge on mobile devices by compensating the horizontal padding of DashboardPage. */
   fullWidthOnMobile?: boolean;
 };
 

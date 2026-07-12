@@ -1,17 +1,17 @@
 // ? Sync with [Card Component](../ui/card.tsx)
 
-import { cn } from "../utils";
+import { cn } from "@/core/utils";
 
-export function PageContainer({
+export function DashboardPage({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="page-container"
+      data-slot="dashboard-page"
       className={cn(
         "relative z-10 flex flex-1 flex-col gap-4 px-0 py-4",
-        "*:data-[slot=page-header]:px-4 lg:px-4 lg:*:data-[slot=page-header]:px-0",
+        "*:data-[slot=dashboard-page-header]:px-4 lg:px-4 lg:*:data-[slot=dashboard-page-header]:px-0",
         "lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4",
         className,
       )}
@@ -20,15 +20,15 @@ export function PageContainer({
   );
 }
 
-export function PageHeader({
+export function DashboardPageHeader({
   className,
   ...props
 }: React.ComponentProps<"header">) {
   return (
     <header
-      data-slot="page-header"
+      data-slot="dashboard-page-header"
       className={cn(
-        "group/page-header @container/page-header grid auto-rows-min items-start gap-1 has-data-[slot=page-action]:grid-cols-[1fr_auto] has-data-[slot=page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
+        "group/dashboard-page-header @container/dashboard-page-header grid auto-rows-min items-start gap-1 has-data-[slot=dashboard-page-action]:grid-cols-[1fr_auto] has-data-[slot=dashboard-page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
         className,
       )}
       {...props}
@@ -36,14 +36,14 @@ export function PageHeader({
   );
 }
 
-export function PageTitle({
+export function DashboardPageTitle({
   as: Comp = "h1",
   className,
   ...props
 }: React.ComponentProps<"h1"> & { as?: "h1" | "h2" | "h3" }) {
   return (
     <Comp
-      data-slot="page-title"
+      data-slot="dashboard-page-title"
       className={cn(
         "flex items-center gap-2 text-base leading-tight font-semibold **:[svg:not([class*='size-'])]:size-4",
         className,
@@ -53,13 +53,13 @@ export function PageTitle({
   );
 }
 
-export function PageDescription({
+export function DashboardPageDescription({
   className,
   ...props
 }: React.ComponentProps<"p">) {
   return (
     <p
-      data-slot="page-description"
+      data-slot="dashboard-page-description"
       className={cn(
         "text-muted-foreground *:[a]:hover:text-foreground text-sm text-pretty *:[a]:underline *:[a]:underline-offset-3",
         className,
@@ -69,13 +69,13 @@ export function PageDescription({
   );
 }
 
-export function PageAction({
+export function DashboardPageAction({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="page-action"
+      data-slot="dashboard-page-action"
       className={cn(
         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
         className,

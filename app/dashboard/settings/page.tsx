@@ -1,5 +1,5 @@
 import { LayoutModeSettings } from "@/core/components/layout-mode";
-import { PageContainer } from "@/core/components/page";
+import { DashboardPage } from "@/core/components/layout/dashboard-page";
 import { ThemeSettings } from "@/core/components/theme";
 import {
   Card,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <PageContainer className="items-center">
+    <DashboardPage className="items-center">
       <Card id="tema" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
@@ -111,6 +111,6 @@ export default function Page() {
 
         <ChangePasswordForm />
       </Card>
-    </PageContainer>
+    </DashboardPage>
   );
 }

@@ -1,4 +1,4 @@
-import { PageContainer } from "@/core/components/page";
+import { DashboardPage } from "@/core/components/layout/dashboard-page";
 import {
   Card,
   CardAction,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <PageContainer className="items-center px-0">
+    <DashboardPage className="items-center px-0">
       <Card id="informasi-pribadi" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader className="border-b">
           <CardTitle>
@@ -35,6 +35,6 @@ export default function Page() {
 
         <ProfileForm />
       </Card>
-    </PageContainer>
+    </DashboardPage>
   );
 }

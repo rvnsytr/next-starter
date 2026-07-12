@@ -1,22 +1,22 @@
 import {
-  PageContainer,
-  PageDescription,
-  PageHeader,
-  PageTitle,
-} from "@/core/components/page";
+  DashboardPage,
+  DashboardPageDescription,
+  DashboardPageHeader,
+  DashboardPageTitle,
+} from "@/core/components/layout/dashboard-page";
 
 export default function Page() {
   return (
-    <PageContainer>
-      <PageHeader className="border-b">
-        <PageTitle>Dashboard</PageTitle>
-        <PageDescription>
+    <DashboardPage>
+      <DashboardPageHeader className="border-b">
+        <DashboardPageTitle>Dashboard</DashboardPageTitle>
+        <DashboardPageDescription>
           Welcome to the dashboard! Here you can find an overview of your
           account and access various features.
-        </PageDescription>
-      </PageHeader>
+        </DashboardPageDescription>
+      </DashboardPageHeader>
 
       <p>Hello World</p>
-    </PageContainer>
+    </DashboardPage>
   );
 }

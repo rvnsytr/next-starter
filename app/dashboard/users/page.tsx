@@ -1,9 +1,9 @@
 import {
-  PageContainer,
-  PageDescription,
-  PageHeader,
-  PageTitle,
-} from "@/core/components/page";
+  DashboardPage,
+  DashboardPageDescription,
+  DashboardPageHeader,
+  DashboardPageTitle,
+} from "@/core/components/layout/dashboard-page";
 import { CardAction } from "@/core/components/ui/card";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/route";
@@ -15,21 +15,21 @@ export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };
 
 export default function Page() {
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageTitle>Manajemen Pengguna</PageTitle>
-        <PageDescription>
+    <DashboardPage>
+      <DashboardPageHeader>
+        <DashboardPageTitle>Manajemen Pengguna</DashboardPageTitle>
+        <DashboardPageDescription>
           Kelola dan lihat detail semua pengguna yang telah terdaftar.
-        </PageDescription>
+        </DashboardPageDescription>
 
         <CardAction>
           <CreateUserDialog />
         </CardAction>
-      </PageHeader>
+      </DashboardPageHeader>
 
       <Separator />
 
       <UserDataTable />
-    </PageContainer>
+    </DashboardPage>
   );
 }
