@@ -29,7 +29,6 @@ export const menuConfig = {
           icon: SettingsIcon,
           subItems: [
             { label: "Tema" },
-            { label: "Layout" },
             { label: "Sesi Aktif" },
             { label: "Ubah Kata Sandi" },
           ],

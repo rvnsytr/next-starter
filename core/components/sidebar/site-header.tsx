@@ -2,7 +2,6 @@ import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user
 import { appConfig } from "@/shared/config";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
-import { LayoutModeToggle } from "../layout-mode";
 import { ThemeToggle } from "../theme";
 import { Separator } from "../ui/separator";
 import { ShimmerText } from "../ui/shimmer-text";
@@ -28,7 +27,6 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           <ImpersonateUserBadge />
-          <LayoutModeToggle withTooltip />
           <ThemeToggle align="end" />
 
           <Separator orientation="vertical" className="h-4" />

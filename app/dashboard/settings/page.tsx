@@ -1,4 +1,3 @@
-import { LayoutModeSettings } from "@/core/components/layout-mode";
 import { DashboardPage } from "@/core/components/layout/dashboard-page";
 import { ThemeSettings } from "@/core/components/theme";
 import {
@@ -15,17 +14,8 @@ import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
-import {
-  appConfig,
-  layoutModeToggleConfig,
-  themeToggleConfig,
-} from "@/shared/config";
-import {
-  FrameIcon,
-  LockKeyholeIcon,
-  ShieldIcon,
-  SunMoonIcon,
-} from "lucide-react";
+import { appConfig, themeToggleConfig } from "@/shared/config";
+import { LockKeyholeIcon, ShieldIcon, SunMoonIcon } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -54,29 +44,6 @@ export default function Page() {
 
         <CardContent>
           <ThemeSettings />
-        </CardContent>
-      </Card>
-
-      <Card id="layout" className="w-full lg:max-w-xl" asPageCard>
-        <CardHeader>
-          <CardTitle>
-            <FrameIcon /> Layout
-          </CardTitle>
-          <CardDescription>
-            Sesuaikan tata letak antarmuka <b>{appConfig.name}</b> sesuai
-            preferensi Anda. Perubahan ini berlaku pada layar dengan lebar lebih
-            dari <code>1024px</code>.
-          </CardDescription>
-
-          <CardAction>
-            <Kbd className="hidden lg:inline-flex">
-              {layoutModeToggleConfig.hotkeyDisplay}
-            </Kbd>
-          </CardAction>
-        </CardHeader>
-
-        <CardContent>
-          <LayoutModeSettings />
         </CardContent>
       </Card>
 

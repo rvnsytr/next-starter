@@ -15,8 +15,8 @@ export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };
 
 export default function Page() {
   return (
-    <DashboardPage withLayoutMode={false}>
-      <DashboardPageHeader>
+    <DashboardPage className="px-0">
+      <DashboardPageHeader className="px-4">
         <DashboardPageTitle>Manajemen Pengguna</DashboardPageTitle>
         <DashboardPageDescription>
           Kelola dan lihat detail semua pengguna yang telah terdaftar.

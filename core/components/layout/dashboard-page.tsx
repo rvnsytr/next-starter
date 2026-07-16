@@ -3,23 +3,14 @@
 import { cn } from "@/core/utils";
 
 export function DashboardPage({
-  withLayoutMode = true,
   className,
   ...props
-}: React.ComponentProps<"div"> & {
-  withLayoutMode?: boolean;
-}) {
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dashboard-page"
-      data-with-layout-mode={withLayoutMode}
       className={cn(
-        "group/dashboard-page relative z-10 flex flex-1 flex-col gap-4 px-0 py-4",
-
-        withLayoutMode
-          ? "lg:px-4 lg:group-data-[layout-mode=centered]/layout-mode:container lg:group-data-[layout-mode=fullwidth]/layout-mode:px-4"
-          : "lg:*:data-[slot=dashboard-page-header]:px-4",
-
+        "group/dashboard-page relative z-10 flex flex-1 flex-col gap-4 p-4",
         className,
       )}
       {...props}
