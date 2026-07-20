@@ -3,23 +3,16 @@
 import { routeConfig } from "@/shared/config";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { getRouteHierarchy, normalizeRoute } from "../route";
 
 type DynamicBreadcrumbContent = { href: Route; label: string };
 
 type DynamicBreadcrumbContextType = {
   breadcrumbs: DynamicBreadcrumbContent[];
-  setDynamicBreadcrumbs: React.Dispatch<
+  setBreadcrumbs: React.Dispatch<
     React.SetStateAction<DynamicBreadcrumbContent[]>
   >;
-  resetBreadcrumbs: () => void;
 };
 
 const DynamicBreadcrumbContext = createContext<
@@ -32,12 +25,10 @@ export function DynamicBreadcrumbProvider({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-
-  const [dynamicBreadcrumbs, setDynamicBreadcrumbs] = useState<
+  const [breadcrumbsState, setBreadcrumbs] = useState<
     DynamicBreadcrumbContent[]
   >([]);
 
-  // derived from pathname
   const routeBreadcrumbs = useMemo(
     () =>
       getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
@@ -48,20 +39,11 @@ export function DynamicBreadcrumbProvider({
   );
 
   const breadcrumbs = useMemo(() => {
-    const crumbs = [...routeBreadcrumbs, ...dynamicBreadcrumbs];
+    const crumbs = [...routeBreadcrumbs, ...breadcrumbsState];
     return Array.from(new Map(crumbs.map((c) => [c.href, c])).values());
-  }, [routeBreadcrumbs, dynamicBreadcrumbs]);
+  }, [routeBreadcrumbs, breadcrumbsState]);
 
-  const resetBreadcrumbs = useCallback(() => setDynamicBreadcrumbs([]), []);
-
-  const value = useMemo(
-    () => ({
-      breadcrumbs,
-      setDynamicBreadcrumbs,
-      resetBreadcrumbs,
-    }),
-    [breadcrumbs, resetBreadcrumbs],
-  );
+  const value = useMemo(() => ({ breadcrumbs, setBreadcrumbs }), [breadcrumbs]);
 
   return (
     <DynamicBreadcrumbContext.Provider value={value}>
