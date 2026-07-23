@@ -1,5 +1,6 @@
-import { appConfig, Language, languageConfig } from "@/shared/config";
+import { appConfig } from "@/shared/config";
 import { messages } from "@/shared/messages";
+import { Language, languages } from "@/shared/metadata";
 import z from "zod";
 import {
   ActionError,
@@ -119,7 +120,7 @@ export function formatNumber(
   options?: Intl.NumberFormatOptions & { lang?: Language },
 ) {
   const config =
-    languageConfig[options?.lang ?? (appConfig.default.language as Language)];
+    languages.meta[options?.lang ?? (appConfig.default.language as Language)];
   const value = new Intl.NumberFormat(config.locale, options).format(number);
   return value === "0" ? "0" : value;
 }

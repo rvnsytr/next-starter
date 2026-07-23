@@ -1,7 +1,7 @@
 "use client";
 
-import { fileTypeConfig } from "@/shared/config";
 import { messages } from "@/shared/messages";
+import { fileTypes } from "@/shared/metadata";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -205,7 +205,7 @@ export function ImportDialog<T, K extends string>({
                 field: { value, onChange, ...field },
                 fieldState,
               }) => {
-                const config = fileTypeConfig.spreadsheet;
+                const config = fileTypes.meta.spreadsheet;
                 return (
                   <Field name={field.name} invalid={fieldState.invalid}>
                     <FieldLabel>{config.label}</FieldLabel>

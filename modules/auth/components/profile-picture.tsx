@@ -21,8 +21,8 @@ import { Label } from "@/core/components/ui/label";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
-import { fileTypeConfig } from "@/shared/config";
 import { messages } from "@/shared/messages";
+import { fileTypes } from "@/shared/metadata";
 import { TriangleAlertIcon, UploadIcon } from "lucide-react";
 import { useState } from "react";
 import { deleteProfilePicture, updateProfilePicture } from "../actions";
@@ -42,7 +42,7 @@ export function ProfilePicture({
     handleDragOver,
     handleDrop,
   } = useFileUpload({
-    ...fileTypeConfig.image,
+    ...fileTypes.meta.image,
     onFilesChange: (files) => {
       if (!files.length) return;
       const file = files[0].file;

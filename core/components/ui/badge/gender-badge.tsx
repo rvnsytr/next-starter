@@ -1,8 +1,8 @@
-import { Gender, genderConfig } from "@/shared/config";
+import { Gender, genders } from "@/shared/metadata";
 import { CustomColorBadge } from "./custom-color-badge";
 
 export function GenderBadge({ value }: { value: Gender }) {
-  const { label, icon: Icon, color } = genderConfig[value];
+  const { label, icon: Icon, color } = genders.meta[value];
   return (
     <CustomColorBadge data-slot="gender-badge" color={color}>
       <Icon /> {label}

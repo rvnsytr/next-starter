@@ -4,6 +4,7 @@ export const appConfig = {
   name: "Next Starter",
   description:
     "Personalized Next.js 16 starter template bundled with my go-to tools and configs for kickstarting new projects.",
+
   keywords: ["next", "next starter"] as string[],
 
   logo: {
@@ -15,7 +16,9 @@ export const appConfig = {
     language: "id",
 
     /** @see [route.ts](../../core/route.ts) / createSignInURL */
-    callbackUrls: ["/", "/dashboard"] satisfies Route[] as Route[],
+    get callbackUrls(): Route[] {
+      return ["/", "/dashboard"];
+    },
 
     /** @see [s3.ts](../../core/s3.ts) */
     fileDirectory: "global",

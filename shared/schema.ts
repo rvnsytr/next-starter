@@ -1,9 +1,9 @@
 import { allDataFilterType, allFilterOperators } from "@/core/utils";
-import { allGenders, FileType, fileTypeConfig } from "@/shared/config";
 import { file } from "@/shared/db/schema";
 import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
 import { messages } from "./messages";
+import { FileType, fileTypes, genders } from "./metadata";
 
 type FileSchemaOptions = {
   maxSize?: number;
@@ -96,7 +96,7 @@ export const sharedSchemas = {
 
   file: (type: FileType, options?: FileSchemaOptions) => {
     const { mimeInvalid, tooLarge } = messages.files;
-    const { label, accept, maxSize: defaultMaxSize } = fileTypeConfig[type];
+    const { label, accept, maxSize: defaultMaxSize } = fileTypes.meta[type];
 
     const mimeTypes =
       accept === "*" ? [] : accept.split(",").map((t) => t.trim());
@@ -120,7 +120,7 @@ export const sharedSchemas = {
 
   files(type: FileType, options?: FilesSchemaOptions) {
     const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypeConfig[type];
+    const { label } = fileTypes.meta[type];
 
     const minFiles = options?.minFiles ?? 0;
     const maxFiles = options?.maxFiles ?? 0;
@@ -155,7 +155,7 @@ export const sharedSchemas = {
 
   filesWithPreview(type: FileType, options?: FilesSchemaOptions) {
     const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypeConfig[type];
+    const { label } = fileTypes.meta[type];
 
     const minFiles = options?.minFiles ?? 0;
     const maxFiles = options?.maxFiles ?? 0;
@@ -319,7 +319,7 @@ export const sharedSchemas = {
     .regex(/[0-9]/, { error: messages.password.number })
     .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
 
-  gender: z.enum(allGenders, { error: messages.invalid("Jenis kelamin") }),
+  gender: z.enum(genders.values, { error: messages.invalid("Jenis kelamin") }),
 };
 
 export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(

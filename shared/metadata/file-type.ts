@@ -12,29 +12,30 @@ import {
   VideoIcon,
 } from "lucide-react";
 
-export type FileType = (typeof allFileTypes)[number];
-export const allFileTypes = [
-  "file",
-  "image",
-  "pdf",
-  "document",
-  "spreadsheet",
-  "presentation",
-  "office",
-  "archive",
-  "audio",
-  "video",
-] as const;
+export type FileType =
+  | "image"
+  | "pdf"
+  | "document"
+  | "spreadsheet"
+  | "presentation"
+  | "archive"
+  | "audio"
+  | "video"
+  | "file"
+  | "office-document";
 
-export type FileTypeConfig = {
-  label: string;
-  icon: LucideIcon;
-  maxSize: number;
-  accept: string;
-  extensions: string[];
-};
+export type FileTypeMeta = Record<
+  FileType,
+  {
+    label: string;
+    icon: LucideIcon;
+    maxSize: number;
+    accept: string;
+    extensions: string[];
+  }
+>;
 
-const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
+const meta: Omit<FileTypeMeta, "file" | "office-document"> = {
   image: {
     label: "gambar",
     icon: ImageIcon,
@@ -120,36 +121,40 @@ const config: Record<Exclude<FileType, "file" | "office">, FileTypeConfig> = {
   },
 };
 
-export const maxFileSize = Math.max(
-  ...Object.values(config).map((c) => c.maxSize),
-);
-
-export const fileTypeConfig: Record<FileType, FileTypeConfig> = {
-  file: {
-    label: "berkas",
-    icon: FileIcon,
-    maxSize: maxFileSize,
-    accept: "*",
-    extensions: [],
+export const fileTypes = {
+  get values(): FileType[] {
+    return Object.keys(this.meta) as FileType[];
   },
 
-  office: {
-    label: "dokumen kantor",
-    icon: FilesIcon,
-    maxSize: toBytes(10),
-    accept: [
-      ...config.pdf.accept,
-      ...config.document.accept,
-      ...config.spreadsheet.accept,
-      ...config.presentation.accept,
-    ].join(", "),
-    extensions: [
-      ...config.pdf.extensions,
-      ...config.document.extensions,
-      ...config.spreadsheet.extensions,
-      ...config.presentation.extensions,
-    ],
-  },
+  get meta(): FileTypeMeta {
+    return {
+      file: {
+        label: "berkas",
+        icon: FileIcon,
+        maxSize: Math.max(...Object.values(meta).map((c) => c.maxSize)),
+        accept: "*",
+        extensions: [],
+      },
 
-  ...config,
+      "office-document": {
+        label: "dokumen kantor",
+        icon: FilesIcon,
+        maxSize: toBytes(10),
+        accept: [
+          ...meta.pdf.accept,
+          ...meta.document.accept,
+          ...meta.spreadsheet.accept,
+          ...meta.presentation.accept,
+        ].join(", "),
+        extensions: [
+          ...meta.pdf.extensions,
+          ...meta.document.extensions,
+          ...meta.spreadsheet.extensions,
+          ...meta.presentation.extensions,
+        ],
+      },
+
+      ...meta,
+    };
+  },
 };

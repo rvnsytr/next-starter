@@ -1,7 +1,7 @@
 "use client";
 
-import { fileTypeConfig, FileTypeConfig } from "@/shared/config";
 import { messages } from "@/shared/messages";
+import { FileTypeDef, fileTypes } from "@/shared/metadata";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -37,7 +37,7 @@ export type FileDropzoneProps = Pick<
   React.ComponentProps<"input">,
   "id" | "name" | "required" | "disabled"
 > &
-  Partial<Pick<FileTypeConfig, "label" | "icon" | "extensions">> &
+  Partial<Pick<FileTypeDef, "label" | "icon" | "extensions">> &
   FileUploadOptions & {
     initialFiles?: FileMetadata[];
     files?: FileWithPreview[];
@@ -57,8 +57,8 @@ export function FileDropzone({
   required = false,
   disabled = false,
 
-  label = fileTypeConfig.file.label,
-  icon: Icon = fileTypeConfig.file.icon,
+  label = fileTypes.meta.file.label,
+  icon: Icon = fileTypes.meta.file.icon,
   extensions = [],
 
   initialFiles = [],

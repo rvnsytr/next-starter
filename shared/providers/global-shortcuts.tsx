@@ -1,19 +1,20 @@
 "use client";
 
 import { useViewTransition } from "@/core/hooks/use-view-transition";
-import { nextTheme, themeToggleConfig } from "@/shared/config";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
+import { themes } from "../metadata";
 
 export function GlobalShortcuts() {
-  const { setTheme } = useTheme();
+  const { theme: currentTheme, setTheme } = useTheme();
   const { isTransitioning, startTransition } = useViewTransition();
 
   useHotkeys(
     [
       {
-        hotkey: themeToggleConfig.hotkey,
-        callback: () => startTransition(() => setTheme(nextTheme)),
+        hotkey: themes.hotkey,
+        callback: () =>
+          startTransition(() => setTheme(themes.next(currentTheme))),
       },
     ],
     { enabled: !isTransitioning },
