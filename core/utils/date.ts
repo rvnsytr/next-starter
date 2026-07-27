@@ -9,6 +9,19 @@ export function getTimeOfDay(date = new Date()) {
   return "malam";
 }
 
+export function isDateInRange(from: Date, to: Date, date: Date) {
+  return isBefore(from, date) && isAfter(to, date);
+}
+
+export function mergeDateAndTime(date: Date, time: Date) {
+  return set(date, {
+    hours: time.getHours(),
+    minutes: time.getMinutes(),
+    seconds: time.getSeconds(),
+    milliseconds: time.getMilliseconds(),
+  });
+}
+
 export function sanitizeDateStr(str: string) {
   const digits = str.replace(/\D/g, "");
   if (digits.length <= 8) return digits;
@@ -58,17 +71,4 @@ export function formatSecondsToDHMS(totalSeconds: number) {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
   return { days, hours, minutes, seconds };
-}
-
-export function isDateInRange(from: Date, to: Date, date: Date) {
-  return isBefore(from, date) && isAfter(to, date);
-}
-
-export function mergeDateAndTime(date: Date, time: Date) {
-  return set(date, {
-    hours: time.getHours(),
-    minutes: time.getMinutes(),
-    seconds: time.getSeconds(),
-    milliseconds: time.getMilliseconds(),
-  });
 }
