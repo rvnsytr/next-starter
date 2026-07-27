@@ -1,6 +1,6 @@
 import { appConfig } from "@/shared/config";
 import * as schema from "@/shared/db/schema";
-import { ac, allRoles, defaultRole, roles } from "@/shared/permission";
+import { ac, authRoles, defaultRole, roles } from "@/shared/permission";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
@@ -29,7 +29,11 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   // experimental: { joins: true },
 
-  plugins: [openAPI(), adminPlugin({ ac, roles, defaultRole }), nextCookies()],
+  plugins: [
+    openAPI(),
+    adminPlugin({ ac, roles: authRoles, defaultRole }),
+    nextCookies(),
+  ],
 
   emailAndPassword: {
     enabled: true,
@@ -79,7 +83,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        type: [...allRoles],
+        type: [...roles],
         input: false,
         defaultValue: defaultRole,
       },

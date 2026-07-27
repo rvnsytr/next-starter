@@ -6,8 +6,8 @@ import {
 } from "better-auth/plugins/access";
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
-export type Role = (typeof allRoles)[number];
-export const allRoles = ["user", "admin"] as const;
+export type Role = (typeof roles)[number];
+export const roles = ["user", "admin"] as const;
 export const defaultRole: Role = "user";
 
 export const ac = createAccessControl({
@@ -16,7 +16,7 @@ export const ac = createAccessControl({
   activity: ["list", "get"],
 });
 
-export const roles: Record<Role, BetterAuthRole> = {
+export const authRoles: Record<Role, BetterAuthRole> = {
   user: ac.newRole({
     files: ["create", "get", "delete"],
   }),

@@ -1,6 +1,34 @@
 import { allActivityEventTypes } from "@/modules/activity/config";
 import { index, snakeCase, unique } from "drizzle-orm/pg-core";
-import { allRoles } from "../permission";
+import { roles } from "../permission";
+
+export const file = snakeCase.table(
+  "file",
+  (t) => ({
+    id: t.uuid().primaryKey().defaultRandom(),
+
+    path: t.text().notNull(),
+    name: t.text().notNull(),
+    type: t.text().notNull(),
+    size: t.bigint({ mode: "number" }).notNull(),
+
+    visibility: t
+      .text({ enum: ["private", "public"] })
+      .default("private")
+      .notNull(),
+
+    updatedAt: t
+      .timestamp()
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    createdAt: t.timestamp().notNull().defaultNow(),
+  }),
+  (t) => [
+    index("IDX_file_file_path").on(t.path),
+    index("IDX_file_visibility").on(t.visibility),
+  ],
+);
 
 export const user = snakeCase.table(
   "user",
@@ -16,7 +44,7 @@ export const user = snakeCase.table(
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),
-    role: t.text({ enum: allRoles }).notNull().default("user"),
+    role: t.text({ enum: roles }).notNull().default("user"),
     banned: t.boolean().default(false),
     banReason: t.text(),
     banExpires: t.timestamp(),
@@ -95,9 +123,6 @@ export const verification = snakeCase.table(
   (t) => [unique("UQ_verification_identifier_value").on(t.identifier, t.value)],
 );
 
-export type Activity = typeof activity.$inferSelect;
-export type ActivityEventType = Activity["eventType"];
-export type ActivityWithEntity = Activity & { entity?: string };
 export const activity = snakeCase.table(
   "activity",
   (t) => ({
@@ -116,35 +141,5 @@ export const activity = snakeCase.table(
   (t) => [
     index("IDX_activity_type").on(t.eventType),
     index("IDX_activity_user_id_created_at").on(t.userId, t.createdAt),
-  ],
-);
-
-export type FileTable = typeof file.$inferSelect;
-export type FileVisibility = FileTable["visibility"];
-export const file = snakeCase.table(
-  "file",
-  (t) => ({
-    id: t.uuid().primaryKey().defaultRandom(),
-
-    path: t.text().notNull(),
-    name: t.text().notNull(),
-    type: t.text().notNull(),
-    size: t.bigint({ mode: "number" }).notNull(),
-
-    visibility: t
-      .text({ enum: ["private", "public"] })
-      .default("private")
-      .notNull(),
-
-    updatedAt: t
-      .timestamp()
-      .notNull()
-      .defaultNow()
-      .$onUpdate(() => new Date()),
-    createdAt: t.timestamp().notNull().defaultNow(),
-  }),
-  (t) => [
-    index("IDX_file_file_path").on(t.path),
-    index("IDX_file_visibility").on(t.visibility),
   ],
 );
