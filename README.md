@@ -7,7 +7,7 @@ A **Next.js 16 App Router** starter template with authentication, database, S3 f
 - Framework and Language
   - [Next.js 16](https://nextjs.org)
   - [React 19.2](https://react.dev)
-  - [TypeScript](https://www.typescriptlang.org)
+  - [TypeScript 7](https://www.typescriptlang.org)
 
 - Styling
   - [Tailwind CSS v4](https://tailwindcss.com)
