@@ -1,21 +1,5 @@
-import {
-  format,
-  formatDistanceToNow,
-  isAfter,
-  isBefore,
-  isValid,
-  parse,
-  set,
-} from "date-fns";
+import { format, isAfter, isBefore, isValid, parse, set } from "date-fns";
 import { id } from "date-fns/locale";
-
-const locale = id;
-
-export function sanitizeDateStr(str: string) {
-  const digits = str.replace(/\D/g, "");
-  if (digits.length <= 8) return digits;
-  return digits.slice(0, 7) + digits[digits.length - 1];
-}
 
 export function getTimeOfDay(date = new Date()) {
   const hour = date.getHours();
@@ -23,6 +7,12 @@ export function getTimeOfDay(date = new Date()) {
   if (hour < 15) return "siang";
   if (hour < 18) return "sore";
   return "malam";
+}
+
+export function sanitizeDateStr(str: string) {
+  const digits = str.replace(/\D/g, "");
+  if (digits.length <= 8) return digits;
+  return digits.slice(0, 7) + digits[digits.length - 1];
 }
 
 export function formatDDMMYY(str: string) {
@@ -41,11 +31,11 @@ export function parseDDMMYYYY(str: string) {
 }
 
 export function formatLocalizedDate(date: Date, formatStr: string) {
-  return format(date, formatStr, { locale });
+  return format(date, formatStr, { locale: id });
 }
 
 export function parseLocalizedDate(str: string, formatStr: string) {
-  const parsed = parse(str, formatStr, new Date(), { locale });
+  const parsed = parse(str, formatStr, new Date(), { locale: id });
   return isValid(parsed) ? parsed : undefined;
 }
 
@@ -60,10 +50,6 @@ export function formatDateRange(start: Date, end: Date) {
     return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 
   return `${formatLocalizedDate(start, "MMM d, yyyy")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
-}
-
-export function formatDateDistanceToNow(date: Date) {
-  return formatDistanceToNow(date, { locale });
 }
 
 export function formatSecondsToDHMS(totalSeconds: number) {

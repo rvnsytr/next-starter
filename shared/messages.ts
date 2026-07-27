@@ -1,9 +1,6 @@
-import {
-  capitalize,
-  formatBytes,
-  formatDateDistanceToNow,
-  formatLocalizedDate,
-} from "@/core/utils";
+import { capitalize, formatBytes, formatLocalizedDate } from "@/core/utils";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
 
 export const messages = {
   actions: {
@@ -41,9 +38,9 @@ export const messages = {
     `${capitalize(thing, "first")} tidak cocok - silakan periksa kembali.`,
 
   thingAgo: (thing: string, time: Date) =>
-    `${capitalize(thing, "first")} ${formatDateDistanceToNow(time)} yang lalu.`,
+    `${capitalize(thing, "first")} ${formatDistanceToNow(time, { locale: id })} yang lalu.`,
   dateRelative: (time: Date, mode: "future" | "past" = "past") =>
-    `${formatLocalizedDate(time, "PPPp")} - ${formatDateDistanceToNow(time)} ${mode === "past" ? "yang lalu" : "dari sekarang"}.`,
+    `${formatLocalizedDate(time, "PPPp")} - ${formatDistanceToNow(time, { locale: id })} ${mode === "past" ? "yang lalu" : "dari sekarang"}.`,
 
   // -- Validation
   invalid: (field: string) => `${capitalize(field, "first")} tidak valid.`,

@@ -1,7 +1,8 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import z from "zod";
-import { FileMetadata } from "../types";
+import { ActionError } from "../types";
+import { messages } from "@/shared/messages";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,51 +20,23 @@ export function isValidUrl(url: string) {
   return z.url().safeParse(url).success;
 }
 
-export function getRandomString(length: number) {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
+export function formatZodError<T>(
+  zodError: z.ZodError<T>,
+  options?: { withPath?: boolean },
+): ActionError {
+  const success = false;
+  const error = z.treeifyError(zodError);
 
-  for (let i = 0; i < length; i++)
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  if (!zodError.issues.length)
+    return { success, message: messages.error, error };
 
-  return result;
-}
+  const firstIssue = zodError.issues[0];
+  let message = firstIssue?.message ?? "Validation error";
 
-export function getRandomColor(withHash?: boolean) {
-  const letters = "0123456789ABCDEF";
-  let color = withHash ? "#" : "";
-  for (let i = 0; i < 6; i++) color += letters[Math.floor(Math.random() * 16)];
-  return color;
-}
-
-export function getExcelColumnKey(columnNumber: number): string {
-  if (columnNumber < 0 || !Number.isInteger(columnNumber)) return "-";
-
-  let result = "";
-  let n = columnNumber;
-
-  while (n > 0) {
-    n--;
-    result = String.fromCharCode((n % 26) + 65) + result;
-    n = Math.floor(n / 26);
+  if (options?.withPath && firstIssue?.path.length) {
+    const paths = firstIssue.path.filter(Boolean);
+    message = `[${paths.join(".")}] ${firstIssue.message}`;
   }
 
-  return !!result ? result : "-";
-}
-
-export function getFileInfo(file: File | FileMetadata) {
-  return {
-    name: file.name,
-    size: file.size,
-    type: file.type ?? "",
-    extension: `.${file.name.split(".").pop()}`,
-  };
-}
-
-export function getFileNameParts(originalFileName: string) {
-  const parts = originalFileName.split(".");
-  const fileName = parts.slice(0, -1).join(".");
-  const extension = parts.at(-1) ?? "";
-  return { fileName, extension };
+  return { success, message, error };
 }
