@@ -1,4 +1,5 @@
 import { Route } from "next";
+import { FileVisibility } from "../db/types";
 
 export const appConfig = {
   name: "Next Starter",
@@ -20,7 +21,12 @@ export const appConfig = {
       return ["/", "/dashboard"];
     },
 
-    /** @see [s3.ts](../../core/s3.ts) */
-    fileDirectory: "global",
+    /** @see [s3.ts](../../core/s3/utils.ts) */
+    s3FileDirectory: "global",
+
+    /** @see [s3.ts](../../core/s3/utils.ts) */
+    get s3FileVisibility(): FileVisibility {
+      return "private";
+    },
   },
 } as const;
