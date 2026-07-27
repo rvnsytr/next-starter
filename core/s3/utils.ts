@@ -69,6 +69,40 @@ export type CreateFilePayloadsResponse = {
   records: FileRecord[];
 };
 
+export type UploadFilesPayload = {
+  /** The file to upload. */
+  file: File;
+
+  /**
+   * The storage path for the file.
+   *
+   * Determines where the file will be stored.
+   *
+   * @default `<default-directory>/${file.name}`
+   */
+  path?: string;
+
+  /**
+   * The visibility of the file.
+   *
+   * Determines the file's access level and the storage bucket it will
+   * be uploaded to.
+   *
+   * @default "private"
+   */
+  visibility?: FileVisibility;
+};
+
+export type UploadFilesOptions = Omit<
+  PutObjectCommandInput,
+  "Key" | "Bucket" | "Body" | "ContentType"
+>;
+
+export type UploadFilesResponse = {
+  file: FileRecord;
+  output: PutObjectCommandOutput;
+};
+
 /**
  * Creates upload and database record payloads for a collection of files.
  *
@@ -123,40 +157,6 @@ export function createFilePayloads(
 
   return { upload, records };
 }
-
-export type UploadFilesPayload = {
-  /** The file to upload. */
-  file: File;
-
-  /**
-   * The storage path for the file.
-   *
-   * Determines where the file will be stored.
-   *
-   * @default `<default-directory>/${file.name}`
-   */
-  path?: string;
-
-  /**
-   * The visibility of the file.
-   *
-   * Determines the file's access level and the storage bucket it will
-   * be uploaded to.
-   *
-   * @default "private"
-   */
-  visibility?: FileVisibility;
-};
-
-export type UploadFilesOptions = Omit<
-  PutObjectCommandInput,
-  "Key" | "Bucket" | "Body" | "ContentType"
->;
-
-export type UploadFilesResponse = {
-  file: FileRecord;
-  output: PutObjectCommandOutput;
-};
 
 /**
  * Uploads files to S3.
