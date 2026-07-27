@@ -2,7 +2,12 @@
 
 import { auth, Session, User } from "@/core/auth";
 import { db } from "@/core/db";
-import { createPublicUrls, deleteFiles, uploadFiles } from "@/core/s3";
+import {
+  createFilePayloads,
+  createPublicUrls,
+  deleteFiles,
+  uploadFiles,
+} from "@/core/s3";
 import { ActionResponse } from "@/core/types";
 import { isValidUrl } from "@/core/utils";
 import { activity, file as fileTable, user } from "@/shared/db/schema";
@@ -113,6 +118,12 @@ export async function updateProfilePicture(file: File) {
   if (!session) throw new Error(messages.unauthorized);
 
   const userId = session.user.id;
+  const oldPicturePaths: string[] = [];
+
+  const { upload, records } = createFilePayloads([{ id: userId, file }], {
+    path: `avatar/${file.name}`,
+    visibility: "public",
+  });
 
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
@@ -125,27 +136,25 @@ export async function updateProfilePicture(file: File) {
         .delete(fileTable)
         .where(eq(fileTable.id, fileId))
         .returning({ path: fileTable.path });
-      if (path) await deleteFiles([path], { visibility: "public" });
+      if (path) oldPicturePaths.push(path);
     }
 
-    const [uploaded] = await uploadFiles(
-      [{ file, path: `avatar/${file.name}` }],
-      { visibility: "public" },
-    );
-
-    const [inserted] = await tx
-      .insert(fileTable)
-      .values(uploaded.file)
-      .returning();
+    const [inserted] = await tx.insert(fileTable).values(records).returning();
 
     await tx
       .insert(activity)
       .values({ userId, eventType: "profile-image-updated" });
 
-    return await auth.api.updateUser({
+    const updateUser = await auth.api.updateUser({
       headers,
       body: { image: inserted.id },
     });
+
+    await uploadFiles(upload);
+    if (oldPicturePaths.length > 0)
+      await deleteFiles(oldPicturePaths, { visibility: "public" });
+
+    return updateUser;
   });
 
   revalidatePath("/dashboard/profile");
