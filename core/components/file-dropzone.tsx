@@ -32,6 +32,7 @@ import {
 } from "./ui/empty";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import { Route } from "next";
 
 export type FileDropzoneProps = Pick<
   React.ComponentProps<"input">,
@@ -320,7 +321,7 @@ export function FileDropzone({
             return (
               <div key={index} data-slot="file-container" className="relative">
                 {!isImage && !!file.preview ? (
-                  <Link href={file.preview} target="_blank">
+                  <Link href={file.preview as Route} target="_blank">
                     {Comp}
                   </Link>
                 ) : (

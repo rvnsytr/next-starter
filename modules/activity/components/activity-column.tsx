@@ -1,7 +1,7 @@
 import { ColumnCellNumber, ColumnHeader } from "@/core/components/ui/column";
 import { DataControllerResult } from "@/core/hooks/use-data-controller";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
-import { ActivityWithEntity } from "@/shared/db/schema";
+import { ActivityWithEntity } from "@/shared/db";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
 import { allActivityEventTypes, getActivityTypeConfig } from "../config";

@@ -23,6 +23,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "../ui/sidebar";
+import { Route } from "next";
 
 export function SidebarAppHeader() {
   const router = useRouter();
@@ -35,7 +36,8 @@ export function SidebarAppHeader() {
         label: "Keluar",
         // TODO: variant: "destructive",
         icon: <LogOutIcon />,
-        callback: () => signOutClient({ onSuccess: (url) => router.push(url) }),
+        callback: () =>
+          signOutClient({ onSuccess: (url) => router.push(url as Route) }),
       },
     ];
 

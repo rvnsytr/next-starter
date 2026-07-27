@@ -183,7 +183,7 @@ export function getRouteHierarchy(path: string): Route[] {
   return parts.map((_, i) => "/" + parts.slice(0, i + 1).join("/")) as Route[];
 }
 
-export function getActiveRoute(menu: Menu[], pathname: string) {
+export function getActiveRoute(menu: Menu[], pathname: string): Route | null {
   const allRoutes = Object.keys(routeConfig) as Route[];
   const allMenuRoutes = menu.flatMap((m) => m.items.map((c) => c.route));
 
@@ -195,8 +195,12 @@ export function getActiveRoute(menu: Menu[], pathname: string) {
 
   paths.push("/");
 
-  for (const path of paths)
-    if (allMenuRoutes.includes(path) && allRoutes.includes(path)) return path;
+  for (const path of paths) {
+    const p = path as Route;
+    if (allMenuRoutes.includes(p) && allRoutes.includes(p)) return p;
+  }
+
+  return null;
 }
 
 export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {

@@ -63,6 +63,7 @@ export type TransformKeys<
       : T;
 
 export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
+
 export type FileWithPreview = z.infer<
   ReturnType<typeof sharedSchemas.fileWithPreview>
 >;
@@ -106,7 +107,7 @@ export type MenuItem = {
   // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
   subItems?: {
     label: string;
-    href?: Route | string;
+    href?: Route;
     role?: RouteRole;
     disabled?: boolean;
   }[];

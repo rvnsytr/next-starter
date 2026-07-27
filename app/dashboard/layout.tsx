@@ -10,7 +10,7 @@ import {
 } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
 import { FooterNote } from "@/shared/components/footer-note";
-import { Metadata } from "next";
+import { Metadata, Route } from "next";
 import { headers as nextHeaders } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
@@ -50,9 +50,12 @@ async function DashboardAuthProvider({
   const reqUrl = getRequestUrl(headers);
 
   const session = await auth.api.getSession({ headers });
-  if (!session) redirect(createSignInURL(reqUrl));
+  if (!session) redirect(createSignInURL(reqUrl) as Route);
 
-  const isAuthorized = authorizedRoute(reqUrl.pathname, session.user.role);
+  const isAuthorized = authorizedRoute(
+    reqUrl.pathname as Route,
+    session.user.role,
+  );
   if (!isAuthorized) return notFound();
 
   return <AuthProvider session={session}>{children}</AuthProvider>;

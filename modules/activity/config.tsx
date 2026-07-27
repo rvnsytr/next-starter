@@ -1,4 +1,3 @@
-import { ActivityEventType, ActivityWithEntity } from "@/shared/db/schema";
 import {
   LucideIcon,
   PlusCircleIcon,
@@ -10,6 +9,7 @@ import {
   UserSquare2Icon,
 } from "lucide-react";
 import { DeletedEntityIcon } from "./components/deleted-entity-icon";
+import { ActivityEventType, ActivityWithEntity } from "@/shared/db";
 
 export const allActivityEventTypes = [
   // "user-registered",

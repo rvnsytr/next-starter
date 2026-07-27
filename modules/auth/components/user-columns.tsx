@@ -12,7 +12,7 @@ import {
 } from "@/core/components/ui/column";
 import { DataControllerResult } from "@/core/hooks/use-data-controller";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
-import { allRoles } from "@/shared/permission";
+import { roles } from "@/shared/permission";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   CalendarCheck2Icon,
@@ -108,7 +108,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       label: "Role",
       type: "option",
       icon: ShieldUserIcon,
-      options: allRoles.map((value) => {
+      options: roles.map((value) => {
         const { label, icon } = roleConfig[value];
         const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };

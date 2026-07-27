@@ -3,7 +3,7 @@
 import { auth } from "@/core/auth";
 import { db } from "@/core/db";
 import { ActionResponse } from "@/core/types";
-import { activity, ActivityWithEntity } from "@/shared/db/schema";
+import { activity, ActivityWithEntity } from "@/shared/db";
 import { messages } from "@/shared/messages";
 import { Role } from "@/shared/permission";
 import { desc, eq } from "drizzle-orm";

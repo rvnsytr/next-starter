@@ -11,7 +11,7 @@ import {
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/shared/messages";
-import { allRoles, defaultRole, Role } from "@/shared/permission";
+import { roles, defaultRole, Role } from "@/shared/permission";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { updateUserRole } from "../actions";
@@ -78,7 +78,7 @@ export function UserRoleColumn({
       />
 
       <MenuPopup align="start">
-        {allRoles.map((item) => {
+        {roles.map((item) => {
           const { label, color, icon: Icon } = roleConfig[item];
           return (
             <MenuItem

@@ -38,9 +38,11 @@ import { Kbd, KbdGroup } from "./ui/kbd";
 import { Skeleton } from "./ui/skeleton";
 import { LoadingSpinner } from "./ui/spinner";
 import { toast } from "./ui/toast";
+import { Route } from "next";
 
 export type QuickSearchItemType =
-  | { type: "nav" | "copy"; value: string }
+  | { type: "nav"; value: Route }
+  | { type: "copy"; value: string }
   | { type: "action"; callback: () => void };
 
 export type QuickSearchItem = QuickSearchItemType & {

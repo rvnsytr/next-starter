@@ -69,7 +69,7 @@ function SidebarAppContentCollapsible({
   ...props
 }: ComponentProps<typeof Collapsible> & {
   data: MenuItem;
-  activeRoute?: Route;
+  activeRoute: Route | null;
 }) {
   const hasSubItems = !!data.subItems?.length;
   const isActive = data.route === activeRoute;
@@ -134,7 +134,7 @@ function SidebarAppContentCollapsible({
                     <SidebarMenuSubButton
                       className="flex justify-between"
                       render={
-                        <Link href={itm.href ?? subHref}>
+                        <Link href={(itm.href as Route) ?? subHref}>
                           <span className="line-clamp-1">{itm.label}</span>
                           <LinkSpinner />
                         </Link>

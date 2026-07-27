@@ -24,16 +24,15 @@ export type FileType =
   | "file"
   | "office-document";
 
-export type FileTypeMeta = Record<
-  FileType,
-  {
-    label: string;
-    icon: LucideIcon;
-    maxSize: number;
-    accept: string;
-    extensions: string[];
-  }
->;
+export type FileTypeDef = {
+  label: string;
+  icon: LucideIcon;
+  maxSize: number;
+  accept: string;
+  extensions: string[];
+};
+
+export type FileTypeMeta = Record<FileType, FileTypeDef>;
 
 const meta: Omit<FileTypeMeta, "file" | "office-document"> = {
   image: {

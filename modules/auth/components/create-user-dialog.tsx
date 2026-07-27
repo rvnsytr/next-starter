@@ -27,7 +27,7 @@ import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { messages } from "@/shared/messages";
-import { allRoles, defaultRole } from "@/shared/permission";
+import { roles, defaultRole } from "@/shared/permission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
@@ -210,7 +210,7 @@ export function CreateUserDialog() {
                     required
                     {...field}
                   >
-                    {allRoles.map((role) => {
+                    {roles.map((role) => {
                       const { icon: Icon, ...config } = roleConfig[role];
                       return (
                         <Label key={role} className="w-full flex-col" asCard>

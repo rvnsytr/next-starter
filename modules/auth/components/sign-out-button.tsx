@@ -7,6 +7,7 @@ import { toast } from "@/core/components/ui/toast";
 import { createSignInURL } from "@/core/route";
 import { messages } from "@/shared/messages";
 import { LogOutIcon } from "lucide-react";
+import { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -43,7 +44,7 @@ export function SignOutButton() {
   const onClick = () => {
     setIsLoading(true);
     signOutClient({
-      onSuccess: router.push,
+      onSuccess: (url) => router.push(url as Route),
       onError: () => setIsLoading(false),
     });
   };
