@@ -1,8 +1,8 @@
+import { messages } from "@/shared/messages";
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import z from "zod";
 import { ActionError } from "../types";
-import { messages } from "@/shared/messages";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

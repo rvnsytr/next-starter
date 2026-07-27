@@ -66,11 +66,7 @@ export type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants>;
 
 export type ButtonIconSize =
-  | "icon-xl"
-  | "icon-lg"
-  | "icon"
-  | "icon-sm"
-  | "icon-xs";
+  "icon-xl" | "icon-lg" | "icon" | "icon-sm" | "icon-xs";
 
 export function Button({
   size = "default",
