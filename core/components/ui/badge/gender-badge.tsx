@@ -1,4 +1,4 @@
-import { Gender, genders } from "@/shared/metadata";
+import { Gender, genders } from "@/shared/constants";
 import { CustomColorBadge } from "./custom-color-badge";
 
 export function GenderBadge({ value }: { value: Gender }) {

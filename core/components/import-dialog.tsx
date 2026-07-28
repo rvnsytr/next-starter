@@ -1,7 +1,7 @@
 "use client";
 
+import { fileTypes } from "@/shared/constants";
 import { messages } from "@/shared/messages";
-import { fileTypes } from "@/shared/metadata";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

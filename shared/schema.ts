@@ -2,8 +2,8 @@ import { allDataFilterType, allFilterOperators } from "@/core/utils";
 import { file } from "@/shared/db/schema";
 import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
+import { FileType, fileTypes, genders } from "./constants";
 import { messages } from "./messages";
-import { FileType, fileTypes, genders } from "./metadata";
 
 type FileSchemaOptions = {
   maxSize?: number;

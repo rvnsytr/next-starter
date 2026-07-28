@@ -1,7 +1,7 @@
 "use client";
 
 import { LoadingFallback } from "@/shared/components/fallback";
-import { Theme, themes } from "@/shared/metadata";
+import { Theme, themes } from "@/shared/constants";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";

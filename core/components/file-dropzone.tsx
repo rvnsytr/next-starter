@@ -1,7 +1,7 @@
 "use client";
 
+import { FileTypeDef, fileTypes } from "@/shared/constants";
 import { messages } from "@/shared/messages";
-import { FileTypeDef, fileTypes } from "@/shared/metadata";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -10,6 +10,7 @@ import {
   TrashIcon,
   ZoomInIcon,
 } from "lucide-react";
+import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -32,7 +33,6 @@ import {
 } from "./ui/empty";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
-import { Route } from "next";
 
 export type FileDropzoneProps = Pick<
   React.ComponentProps<"input">,

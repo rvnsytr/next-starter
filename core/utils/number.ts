@@ -1,5 +1,5 @@
 import { appConfig } from "@/shared/config";
-import { Language, languages } from "@/shared/metadata";
+import { Language, languages } from "@/shared/constants";
 
 export function toBytes(mb: number) {
   return mb * 1024 * 1024;
