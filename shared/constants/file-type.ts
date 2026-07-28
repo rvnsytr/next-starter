@@ -12,17 +12,7 @@ import {
   VideoIcon,
 } from "lucide-react";
 
-export type FileType =
-  | "image"
-  | "pdf"
-  | "document"
-  | "spreadsheet"
-  | "presentation"
-  | "archive"
-  | "audio"
-  | "video"
-  | "file"
-  | "office-document";
+export type FileType = (typeof values)[number];
 
 export type FileTypeDef = {
   label: string;
@@ -34,7 +24,20 @@ export type FileTypeDef = {
 
 export type FileTypeMeta = Record<FileType, FileTypeDef>;
 
-const meta: Omit<FileTypeMeta, "file" | "office-document"> = {
+const values = [
+  "image",
+  "pdf",
+  "document",
+  "spreadsheet",
+  "presentation",
+  "archive",
+  "audio",
+  "video",
+  "file",
+  "office-document",
+] as const;
+
+const baseMeta: Omit<FileTypeMeta, "file" | "office-document"> = {
   image: {
     label: "gambar",
     icon: ImageIcon,
@@ -120,40 +123,37 @@ const meta: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 };
 
+const meta: FileTypeMeta = {
+  file: {
+    label: "berkas",
+    icon: FileIcon,
+    maxSize: Math.max(...Object.values(baseMeta).map((c) => c.maxSize)),
+    accept: "*",
+    extensions: [],
+  },
+
+  "office-document": {
+    label: "dokumen kantor",
+    icon: FilesIcon,
+    maxSize: toBytes(10),
+    accept: [
+      ...baseMeta.pdf.accept.split(", "),
+      ...baseMeta.document.accept.split(", "),
+      ...baseMeta.spreadsheet.accept.split(", "),
+      ...baseMeta.presentation.accept.split(", "),
+    ].join(", "),
+    extensions: [
+      ...baseMeta.pdf.extensions,
+      ...baseMeta.document.extensions,
+      ...baseMeta.spreadsheet.extensions,
+      ...baseMeta.presentation.extensions,
+    ],
+  },
+
+  ...baseMeta,
+};
+
 export const fileTypes = {
-  get values(): FileType[] {
-    return Object.keys(this.meta) as FileType[];
-  },
-
-  get meta(): FileTypeMeta {
-    return {
-      file: {
-        label: "berkas",
-        icon: FileIcon,
-        maxSize: Math.max(...Object.values(meta).map((c) => c.maxSize)),
-        accept: "*",
-        extensions: [],
-      },
-
-      "office-document": {
-        label: "dokumen kantor",
-        icon: FilesIcon,
-        maxSize: toBytes(10),
-        accept: [
-          ...meta.pdf.accept,
-          ...meta.document.accept,
-          ...meta.spreadsheet.accept,
-          ...meta.presentation.accept,
-        ].join(", "),
-        extensions: [
-          ...meta.pdf.extensions,
-          ...meta.document.extensions,
-          ...meta.spreadsheet.extensions,
-          ...meta.presentation.extensions,
-        ],
-      },
-
-      ...meta,
-    };
-  },
+  values,
+  meta,
 };
