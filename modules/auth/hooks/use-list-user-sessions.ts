@@ -2,7 +2,7 @@
 
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import { listUserSessions } from "../actions";
-import { authKeys } from "../config/keys";
+import { authKeys } from "../keys";
 
 export function useListUserSessions(userId: string, config?: SWRConfiguration) {
   const key = authKeys.actions.sessionsByUser(userId);

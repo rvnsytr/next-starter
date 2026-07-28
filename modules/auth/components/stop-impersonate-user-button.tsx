@@ -11,7 +11,7 @@ import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { stopImpersonateUser } from "../actions";
-import { roleConfig } from "../config/role";
+import { roleMeta } from "../constants";
 import { useSession } from "../hooks/use-session";
 
 export function StopImpersonateUserMenuItem() {
@@ -32,7 +32,7 @@ export function StopImpersonateUserMenuItem() {
           title: messages.success,
           description: (
             <span>
-              Anda telah kembali ke sesi <b>{roleConfig.admin.label}</b> Anda.
+              Anda telah kembali ke sesi <b>{roleMeta.admin.label}</b> Anda.
             </span>
           ),
         };

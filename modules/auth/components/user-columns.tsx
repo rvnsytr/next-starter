@@ -22,12 +22,7 @@ import {
   ShieldUserIcon,
   UserRoundIcon,
 } from "lucide-react";
-import { roleConfig } from "../config/role";
-import {
-  allUserStatus,
-  getUserStatus,
-  userStatusConfig,
-} from "../config/user-status";
+import { roleMeta, userStatus } from "../constants";
 import { RoleBadge } from "./role-badge";
 import { UserRoleColumn } from "./user-role-column";
 import { UserStatusBadge } from "./user-status-badge";
@@ -78,7 +73,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
     filterFn: filterFn("text"),
     meta: { label: "Alamat Email", type: "text", icon: MailIcon },
   }),
-  columnHelper.accessor((ac) => getUserStatus(ac), {
+  columnHelper.accessor((ac) => userStatus.check(ac), {
     id: "status",
     header: (c) => <ColumnHeader column={c.column}>Status</ColumnHeader>,
     cell: (c) => <UserStatusBadge value={c.cell.getValue()} />,
@@ -87,8 +82,8 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       label: "Status",
       type: "option",
       icon: CircleDotIcon,
-      options: allUserStatus.map((value) => {
-        const { label, icon } = userStatusConfig[value];
+      options: userStatus.values.map((value) => {
+        const { label, icon } = userStatus.meta[value];
         const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),
@@ -109,7 +104,7 @@ export const getUserColumns = (result?: DataControllerResult<User>) => [
       type: "option",
       icon: ShieldUserIcon,
       options: roles.map((value) => {
-        const { label, icon } = roleConfig[value];
+        const { label, icon } = roleMeta[value];
         const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),

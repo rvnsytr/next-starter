@@ -4,7 +4,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { UserStatus, userStatusConfig } from "../config/user-status";
+import { userStatus, UserStatus } from "../constants";
 
 export function UserStatusBadge({
   value,
@@ -13,7 +13,7 @@ export function UserStatusBadge({
   value: UserStatus;
   className?: string;
 }) {
-  const { label, description, icon: Icon, color } = userStatusConfig[value];
+  const { label, description, icon: Icon, color } = userStatus.meta[value];
 
   return (
     <Tooltip>

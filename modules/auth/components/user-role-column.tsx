@@ -11,11 +11,11 @@ import {
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/shared/messages";
-import { roles, defaultRole, Role } from "@/shared/permission";
+import { defaultRole, Role, roles } from "@/shared/permission";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { updateUserRole } from "../actions";
-import { roleConfig } from "../config/role";
+import { roleMeta } from "../constants";
 import { useSession } from "../hooks/use-session";
 import { mutateUserDataTable } from "./user-data-table";
 
@@ -39,7 +39,7 @@ export function UserRoleColumn({
     toast.promise(updateUserRole({ userId: data.id, role }), {
       loading: { title: messages.loading },
       success: () => {
-        const { label } = roleConfig[role];
+        const { label } = roleMeta[role];
         setIsLoading(false);
         mutateUserDataTable();
         return {
@@ -79,7 +79,7 @@ export function UserRoleColumn({
 
       <MenuPopup align="start">
         {roles.map((item) => {
-          const { label, color, icon: Icon } = roleConfig[item];
+          const { label, color, icon: Icon } = roleMeta[item];
           return (
             <MenuItem
               key={item}

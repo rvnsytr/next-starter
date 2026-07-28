@@ -16,7 +16,7 @@ import { messages } from "@/shared/messages";
 import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { impersonateUser } from "../actions";
-import { roleConfig } from "../config/role";
+import { roleMeta } from "../constants";
 
 export function ImpersonateUserDialog({
   data,
@@ -62,8 +62,8 @@ export function ImpersonateUserDialog({
           <div className="grid gap-y-2">
             <AlertDialogDescription>
               <b>Mode Impersonasi</b> adalah fitur khusus{" "}
-              <b>{roleConfig.admin.label}</b> yang memungkinkan Anda masuk ke
-              akun pengguna lain tanpa harus mengetahui kata sandi mereka.
+              <b>{roleMeta.admin.label}</b> yang memungkinkan Anda masuk ke akun
+              pengguna lain tanpa harus mengetahui kata sandi mereka.
             </AlertDialogDescription>
 
             <AlertDialogDescription>

@@ -45,7 +45,7 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { getUserStatus } from "../config/user-status";
+import { userStatus } from "../constants";
 import { useSession } from "../hooks/use-session";
 import { BanUserDialog } from "./ban-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
@@ -181,7 +181,7 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
         <div className="flex flex-wrap items-center gap-2">
           {isCurrentUser && <Badge variant="outline">Pengguna saat ini</Badge>}
           <RoleBadge value={data.role} />
-          <UserStatusBadge value={getUserStatus(data)} />
+          <UserStatusBadge value={userStatus.check(data)} />
         </div>
 
         <Separator />

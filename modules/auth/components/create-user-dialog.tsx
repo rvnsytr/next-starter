@@ -27,7 +27,7 @@ import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { messages } from "@/shared/messages";
-import { roles, defaultRole } from "@/shared/permission";
+import { defaultRole, roles } from "@/shared/permission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
@@ -35,7 +35,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createUser } from "../actions";
-import { roleConfig } from "../config/role";
+import { roleMeta } from "../constants";
 import { passwordSchema, userSchema } from "../schema";
 import { mutateUserDataTable } from "./user-data-table";
 
@@ -211,7 +211,7 @@ export function CreateUserDialog() {
                     {...field}
                   >
                     {roles.map((role) => {
-                      const { icon: Icon, ...config } = roleConfig[role];
+                      const { icon: Icon, ...config } = roleMeta[role];
                       return (
                         <Label key={role} className="w-full flex-col" asCard>
                           <RadioGroupItem value={role} hidden />

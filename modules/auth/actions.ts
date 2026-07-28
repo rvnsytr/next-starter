@@ -16,7 +16,7 @@ import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
-import { authKeys } from "./config/keys";
+import { authKeys } from "./keys";
 
 async function listUsers(): Promise<User[]> {
   "use cache";
