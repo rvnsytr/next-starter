@@ -1,7 +1,10 @@
 {
   "editor.tabSize": 2,
-  "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
 
   "search.exclude": { "**/api/auth/**": true },
 
@@ -20,15 +23,9 @@
     "**/modules/activity/config.tsx": true
   },
 
+  "js/ts.preferences.importModuleSpecifier": "shortest",
   "js/ts.preferences.autoImportFileExcludePatterns": [
     "next/router",
     "@base-ui/react"
-  ],
-
-  "js/ts.preferences.importModuleSpecifier": "shortest",
-
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
-    "source.fixAll.eslint": "explicit"
-  }
+  ]
 }
