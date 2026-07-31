@@ -31,10 +31,9 @@ import { useSession } from "@/modules/auth/hooks/use-session";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { messages } from "@/shared/messages";
 import { getUserActivitiesAction } from "../actions";
-import { getActivityTypeConfig } from "../config";
-import { activityKeys } from "../config/keys";
+import { activities, ActivityWithEntity } from "../constants";
+import { activityKeys } from "../keys";
 import { getActivityColumns } from "./activity-column";
-import { ActivityWithEntity } from "@/shared/db";
 
 export type ActivityTimelineProps = {
   className?: string;
@@ -76,7 +75,7 @@ function BaseActivityTimeline({
               description,
               icon: Icon,
               color,
-            } = getActivityTypeConfig(row.original.eventType, row.original);
+            } = activities.get(row.original.eventType, row.original);
 
             return (
               <TimelineItem

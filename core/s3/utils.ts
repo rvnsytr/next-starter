@@ -1,8 +1,5 @@
 import { appConfig } from "@/shared/config";
 import { FileTable } from "@/shared/db";
-import { FileVisibility } from "@/shared/db/types";
-import { FileWithPreview, Override } from "../types";
-import { s3, S3_BUCKET, S3_PUBLIC_BUCKET, S3_PUBLIC_ENDPOINT } from "./client";
 import {
   DeleteObjectsCommand,
   DeleteObjectsCommandInput,
@@ -15,6 +12,10 @@ import {
   PutObjectCommandOutput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { FileWithPreview, Override } from "../types";
+import { s3, S3_BUCKET, S3_PUBLIC_BUCKET, S3_PUBLIC_ENDPOINT } from "./client";
+
+export type FileVisibility = FileTable["visibility"];
 
 type FileRecord = Pick<
   FileTable,

@@ -1,5 +1,8 @@
+import { FileVisibility } from "@/core/s3";
 import { Route } from "next";
-import { FileVisibility } from "../db/types";
+
+const callbackUrls: Route[] = ["/", "/dashboard"];
+const s3FileVisibility: FileVisibility = "private";
 
 export const appConfig = {
   name: "Next Starter",
@@ -17,16 +20,12 @@ export const appConfig = {
     language: "id",
 
     /** @see [route.ts](../../core/route.ts) / createSignInURL */
-    get callbackUrls(): Route[] {
-      return ["/", "/dashboard"];
-    },
+    callbackUrls,
 
     /** @see [s3.ts](../../core/s3/utils.ts) */
     s3FileDirectory: "global",
 
     /** @see [s3.ts](../../core/s3/utils.ts) */
-    get s3FileVisibility(): FileVisibility {
-      return "private";
-    },
+    s3FileVisibility,
   },
 } as const;

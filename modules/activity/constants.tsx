@@ -1,3 +1,4 @@
+import { activity } from "@/shared/db";
 import {
   LucideIcon,
   PlusCircleIcon,
@@ -9,9 +10,28 @@ import {
   UserSquare2Icon,
 } from "lucide-react";
 import { DeletedEntityIcon } from "./components/deleted-entity-icon";
-import { ActivityEventType, ActivityWithEntity } from "@/shared/db";
 
-export const allActivityEventTypes = [
+export type Activity = typeof activity.$inferSelect;
+export type ActivityWithEntity = Activity & { entity?: string };
+
+export type ActivityEventType = (typeof values)[number];
+
+type ActivityContext = Pick<ActivityWithEntity, "data" | "entity">;
+
+type ActivityDef = {
+  label: string;
+  description: React.ReactNode;
+  icon: LucideIcon;
+  color?: string;
+  textColor?: string;
+};
+
+type ActivityMeta = Record<
+  ActivityEventType,
+  ActivityDef | ((ctx?: ActivityContext) => ActivityDef)
+>;
+
+const values = [
   // "user-registered",
   "user-created",
   // "user-imported",
@@ -37,21 +57,7 @@ export const allActivityEventTypes = [
   "admin-users-delete",
 ] as const;
 
-type ActivityConfigMetadata = {
-  label: string;
-  description: React.ReactNode;
-  icon: LucideIcon;
-  color?: string;
-  textColor?: string;
-};
-
-type ActivityConfigContext = Pick<ActivityWithEntity, "data" | "entity">;
-
-export const activityTypeConfig: Record<
-  ActivityEventType,
-  | ActivityConfigMetadata
-  | ((ctx?: ActivityConfigContext) => ActivityConfigMetadata)
-> = {
+export const meta: ActivityMeta = {
   // "user-registered": {
   //   label: "Akun Terdaftar",
   //   description: "Pengguna berhasil mendaftar dan membuat akun baru.",
@@ -236,10 +242,13 @@ export const activityTypeConfig: Record<
   }),
 };
 
-export function getActivityTypeConfig(
-  type: ActivityEventType,
-  ctx?: ActivityConfigContext,
-) {
-  const config = activityTypeConfig[type];
-  return typeof config === "function" ? config(ctx) : config;
+export function get(type: ActivityEventType, ctx?: ActivityContext) {
+  const m = meta[type];
+  return typeof m === "function" ? m(ctx) : m;
 }
+
+export const activities = {
+  values,
+  meta,
+  get,
+};
