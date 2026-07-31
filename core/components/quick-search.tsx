@@ -1,6 +1,7 @@
 "use client";
 
 import { routeConfig } from "@/shared/config";
+import { Menu, MenuItem } from "@/shared/menu";
 import { messages } from "@/shared/messages";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
@@ -10,11 +11,11 @@ import {
   DotIcon,
   SearchIcon,
 } from "lucide-react";
+import { Route } from "next";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useMemo, useState, useTransition } from "react";
 import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
 import { useIsMounted } from "../hooks/use-is-mounted";
-import { Menu, MenuItem } from "../types";
 import { cn, toCase } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import {
@@ -38,7 +39,6 @@ import { Kbd, KbdGroup } from "./ui/kbd";
 import { Skeleton } from "./ui/skeleton";
 import { LoadingSpinner } from "./ui/spinner";
 import { toast } from "./ui/toast";
-import { Route } from "next";
 
 export type QuickSearchItemType =
   | { type: "nav"; value: Route }
