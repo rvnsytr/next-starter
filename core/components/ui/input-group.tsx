@@ -6,7 +6,7 @@ import { Input, InputProps } from "./input";
 import { Textarea, TextareaProps } from "./textarea";
 
 const inputGroupAddonVariants = cva(
-  "flex h-auto cursor-text select-none items-center justify-center gap-2 leading-none *:[kbd]:rounded-[calc(var(--radius)-5px)] **:[svg:not([class*='size-'])]:size-4 **:[svg]:-mx-0.5 not-has-[button]:**:[svg:not([class*='opacity-'])]:opacity-80",
+  "flex h-auto cursor-text select-none items-center justify-center gap-2 *:[kbd]:rounded-[calc(var(--radius)-5px)] **:[svg:not([class*='size-'])]:size-4 **:[svg]:-mx-0.5 not-has-[button]:**:[svg:not([class*='opacity-'])]:opacity-80",
   {
     variants: {
       align: {
@@ -109,7 +109,7 @@ export function InputGroupText({
   return (
     <span
       className={cn(
-        "text-muted-foreground flex items-center gap-2 leading-none whitespace-nowrap **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
+        "text-muted-foreground flex items-center gap-2 truncate **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
