@@ -1,11 +1,10 @@
 "use client";
 
-import { getActiveRoute, getMenuByRole } from "@/core/route";
-import { MenuItem } from "@/core/types";
+import { getAccessibleMenus, getActiveRoute } from "@/core/route";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { routeConfig } from "@/shared/config";
-import { menuConfig } from "@/shared/menu";
+import { menuConfig, MenuItem } from "@/shared/menu";
 import { ChevronRightIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";
@@ -36,7 +35,7 @@ export function SidebarAppContent() {
   const pathname = usePathname();
 
   const menu = useMemo(
-    () => getMenuByRole(menuConfig.dashboard, user.role),
+    () => getAccessibleMenus(menuConfig.dashboard, user.role),
     [user.role],
   );
 

@@ -1,7 +1,7 @@
-import { appConfig, routeConfig } from "@/shared/config";
+import { appConfig, RouteAccess, routeConfig } from "@/shared/config";
+import { Menu } from "@/shared/menu";
 import { Role } from "@/shared/permission";
 import { Route } from "next";
-import { Menu, RouteRole } from "./types";
 
 type NormalizeRouteOptions = {
   /**
@@ -162,12 +162,19 @@ export function createSignInURL({
   return url.toString();
 }
 
-export function authorizedRoute(route: Route | null, role?: Role) {
-  if (!route || !role) return false;
-  const meta = routeConfig[route];
-  if (!meta) return false;
-  if (!meta.role) return true;
-  return meta.role && (meta.role === "all" || meta.role.includes(role));
+export function hasAccess(access: RouteAccess, role?: Role) {
+  if (access === "public") return true;
+  if (!role) return false;
+  if (access === "authenticated") return true;
+  if (Array.isArray(access)) return access.includes(role);
+  return false;
+}
+
+export function hasRouteAccess(route: Route, role: Role) {
+  if (!route) return false;
+  const config = routeConfig[route];
+  if (!config) return false;
+  return hasAccess(config.access, role);
 }
 
 export function setRouteTitle(title: string) {
@@ -203,31 +210,25 @@ export function getActiveRoute(menu: Menu[], pathname: string): Route | null {
   return null;
 }
 
-export function getMenuByRole(menu: Menu[], currentRole: Role): Menu[] {
-  const checkRole = (role?: RouteRole) => {
-    if (!role) return true;
-    return role === "all" || role?.includes(currentRole);
-  };
+export function getAccessibleMenus(menu: Menu[], role: Role): Menu[] {
+  return menu
+    .map(({ group, items }) => {
+      const filteredItems = items
+        .filter((item) => hasRouteAccess(item.route, role))
+        .map((item) => {
+          if (!item.subItems) return item;
 
-  const filteredMenu = menu.map(({ group, items }) => {
-    const filteredItems = items
-      .filter(({ route }) => {
-        const meta = routeConfig[route];
-        if (!("role" in meta)) return true;
-        return checkRole(meta.role);
-      })
-      .map((item) => {
-        if (!item.subItems) return item;
-        const filteredSubItems = item.subItems.filter((si) =>
-          checkRole(si.role),
-        );
-        if (filteredSubItems.length <= 0) return null;
-        else return { ...item, subItems: filteredSubItems };
-      });
+          const filteredSubItems = item.subItems.filter((sub) => {
+            return hasAccess(sub.access, role);
+          });
 
-    if (filteredItems.length <= 0) return null;
-    else return { group, items: filteredItems } as Menu;
-  });
+          if (filteredSubItems.length <= 0) return null;
+          else return { ...item, subItems: filteredSubItems };
+        })
+        .filter((item) => !!item);
 
-  return filteredMenu.filter((item) => item !== null);
+      if (filteredItems.length <= 0) return null;
+      else return { group, items: filteredItems };
+    })
+    .filter((item) => !!item);
 }

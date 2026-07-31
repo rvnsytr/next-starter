@@ -1,12 +1,33 @@
-import { RouteRole } from "@/core/types";
+import { Role } from "@/shared/permission";
 import { Route } from "next";
 
-export const routeConfig: Record<Route, { title: string; role?: RouteRole }> = {
-  "/": { title: "Beranda" },
-  "/sign-in": { title: "Masuk" },
+export type RouteAccess = "public" | "authenticated" | Role[];
+export type RouteConfig = Record<Route, { title: string; access: RouteAccess }>;
 
-  "/dashboard": { title: "Dashboard", role: "all" },
-  "/dashboard/profile": { title: "Profil Saya", role: "all" },
-  "/dashboard/settings": { title: "Pengaturan", role: "all" },
-  "/dashboard/users": { title: "Pengguna", role: ["admin"] },
+export const routeConfig: RouteConfig = {
+  "/": {
+    title: "Beranda",
+    access: "public",
+  },
+  "/sign-in": {
+    title: "Masuk",
+    access: "public",
+  },
+
+  "/dashboard": {
+    title: "Dashboard",
+    access: "authenticated",
+  },
+  "/dashboard/profile": {
+    title: "Profil Saya",
+    access: "authenticated",
+  },
+  "/dashboard/settings": {
+    title: "Pengaturan",
+    access: "authenticated",
+  },
+  "/dashboard/users": {
+    title: "Pengguna",
+    access: ["admin"],
+  },
 };

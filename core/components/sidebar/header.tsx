@@ -1,12 +1,13 @@
 "use client";
 
-import { getMenuByRole } from "@/core/route";
+import { getAccessibleMenus } from "@/core/route";
 import { stopImpersonateUser } from "@/modules/auth/actions";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useSession } from "@/modules/auth/hooks/use-session";
 import { menuConfig } from "@/shared/menu";
 import { Layers2Icon, LogOutIcon } from "lucide-react";
+import { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -23,7 +24,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "../ui/sidebar";
-import { Route } from "next";
 
 export function SidebarAppHeader() {
   const router = useRouter();
@@ -50,7 +50,7 @@ export function SidebarAppHeader() {
       });
 
     return [
-      ...getMenuByRole(menuConfig.dashboard, user.role),
+      ...getAccessibleMenus(menuConfig.dashboard, user.role),
       { group: "Navigasi", items: menuConfig["dashboard-footer"] },
       { group: "Aksi", items: actionItems },
     ];

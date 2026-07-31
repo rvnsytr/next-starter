@@ -1,7 +1,3 @@
-import { Role } from "@/shared/permission";
-import { Hotkey } from "@tanstack/react-hotkeys";
-import { LucideIcon } from "lucide-react";
-import { Route } from "next";
 import z from "zod";
 import {
   countSchema,
@@ -9,8 +5,6 @@ import {
   getApiResponseSchema,
   sharedSchemas,
 } from "../shared/schema";
-
-export type RouteRole = "all" | Role[];
 
 export type Override<T, U> = Omit<T, keyof U> & U;
 
@@ -95,20 +89,3 @@ export type ApiSuccessPayload<T = null> = Partial<ApiSuccess<T>>;
 export type ApiError = Extract<ApiResponse, { success: false }>;
 
 export type ApiErrorPayload = Partial<ApiError>;
-
-export type Menu = { group: string; items: MenuItem[] };
-
-export type MenuItem = {
-  route: Route;
-  icon?: LucideIcon;
-  disabled?: boolean;
-  shortcut?: Hotkey;
-
-  // if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}`
-  subItems?: {
-    label: string;
-    href?: Route;
-    role?: RouteRole;
-    disabled?: boolean;
-  }[];
-};

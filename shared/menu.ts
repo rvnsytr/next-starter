@@ -1,11 +1,31 @@
-import { Menu, MenuItem } from "@/core/types";
+import { Hotkey } from "@tanstack/react-hotkeys";
 import {
   ExternalLinkIcon,
   LayoutDashboardIcon,
+  LucideIcon,
   SettingsIcon,
   UserRoundIcon,
   UsersRoundIcon,
 } from "lucide-react";
+import { Route } from "next";
+import { RouteAccess } from "./config";
+
+export type Menu = { group: string; items: MenuItem[] };
+
+export type MenuItem = {
+  route: Route;
+  icon?: LucideIcon;
+  disabled?: boolean;
+  shortcut?: Hotkey;
+
+  subItems?: {
+    label: string;
+    access: RouteAccess;
+    /** if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}` */
+    href?: Route;
+    disabled?: boolean;
+  }[];
+};
 
 export const menuConfig = {
   dashboard: [

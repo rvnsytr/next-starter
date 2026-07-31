@@ -3,10 +3,10 @@ import { SidebarApp, SidebarAppSiteHeader } from "@/core/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/core/components/ui/sidebar";
 import { DynamicBreadcrumbProvider } from "@/core/providers/dynamic-breadcrumb";
 import {
-  authorizedRoute,
   createSignInURL,
   getRequestUrl,
   getRouteTitle,
+  hasRouteAccess,
 } from "@/core/route";
 import { AuthProvider } from "@/modules/auth/provider";
 import { FooterNote } from "@/shared/components/footer-note";
@@ -52,7 +52,7 @@ async function DashboardAuthProvider({
   const session = await auth.api.getSession({ headers });
   if (!session) redirect(createSignInURL(reqUrl) as Route);
 
-  const isAuthorized = authorizedRoute(
+  const isAuthorized = hasRouteAccess(
     reqUrl.pathname as Route,
     session.user.role,
   );
