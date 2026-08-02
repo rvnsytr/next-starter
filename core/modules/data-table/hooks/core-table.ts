@@ -9,7 +9,8 @@ import {
   sortFn_text,
   tableFeatures,
 } from "@tanstack/react-table";
-import { DataTableColumnSortingMenu } from "../components/column-sorting-menu";
+import { DataTableColumnSortButton } from "../components/column-sort-button";
+import { DataTableColumnSortMenu } from "../components/column-sort-menu";
 import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
 import { CoreTable } from "../components/tables/core-table";
 import { TableMeta } from "../types";
@@ -31,7 +32,9 @@ export const coreTable = createTableHook({
   tableComponents: {
     Table: CoreTable,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
-    ColumnSortingMenu: DataTableColumnSortingMenu,
+    ColumnSortMenu: DataTableColumnSortMenu,
   },
-  cellComponents: {},
+  headerComponents: {
+    ColumnSortButton: DataTableColumnSortButton,
+  },
 });

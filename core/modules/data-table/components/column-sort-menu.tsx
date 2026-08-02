@@ -19,21 +19,21 @@ import {
 } from "@/core/components/ui/tooltip";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react";
+import { ArrowUpDownIcon } from "lucide-react";
 import React, { useState } from "react";
+import { SORT_ICONS } from "../constants";
 import { coreTable } from "../hooks/core-table";
 import { TableMeta } from "../types";
 
-export type ColumnSortingMenuProps = ButtonProps & {
+export type ColumnSortMenuProps = ButtonProps & {
   size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   shortcut?: "default" | Hotkey;
 };
 
 const DEFAULT_HOTKEY: Hotkey = "S";
-const SORT_ICONS = { asc: ArrowUpIcon, desc: ArrowDownIcon };
 
-export function ColumnSortingMenu({
+export function ColumnSortMenu({
   align,
   shortcut,
   size = "icon",
@@ -41,7 +41,7 @@ export function ColumnSortingMenu({
   className,
   children,
   ...props
-}: ColumnSortingMenuProps & { children: React.ReactNode }) {
+}: ColumnSortMenuProps & { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkey = shortcut === "default" ? DEFAULT_HOTKEY : shortcut;
@@ -77,7 +77,7 @@ export function ColumnSortingMenu({
   );
 }
 
-export function ColumnSortingMenuItem({
+export function ColumnSortMenuItem({
   id: columnId,
   meta,
   ...props
@@ -92,31 +92,31 @@ export function ColumnSortingMenuItem({
   );
 }
 
-export function DataTableColumnSortingMenu(props: ColumnSortingMenuProps) {
+export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
   const table = coreTable.useTableContext();
   return (
-    <ColumnSortingMenu {...props}>
+    <ColumnSortMenu {...props}>
       {table
         .getAllColumns()
         .filter((column) => column.getCanSort() || column.getCanMultiSort())
         .map((column) => {
-          const sort = column.getIsSorted();
-          const SortIcon = sort ? SORT_ICONS[sort] : null;
+          const sortDirection = column.getIsSorted();
+          const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
           return (
-            <ColumnSortingMenuItem
+            <ColumnSortMenuItem
               key={column.id}
               id={column.id}
               meta={column.columnDef.meta}
-              checked={Boolean(sort)}
+              checked={Boolean(sortDirection)}
               onCheckedChange={() => {
-                if (sort === "asc") column.toggleSorting(true, true);
-                else if (sort === "desc") column.clearSorting();
+                if (sortDirection === "asc") column.toggleSorting(true, true);
+                else if (sortDirection === "desc") column.clearSorting();
                 else column.toggleSorting(false, true);
               }}
               checkIcon={SortIcon ? <SortIcon /> : undefined}
             />
           );
         })}
-    </ColumnSortingMenu>
+    </ColumnSortMenu>
   );
 }
