@@ -1,5 +1,5 @@
 import { CustomColorBadge } from "@/core/components/ui/badge";
-import { coreTable } from "@/core/modules/data-table/hooks/core-table";
+import { coreTable } from "@/core/modules/table/hooks/core-table";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
 import { formatDate } from "date-fns";

@@ -1,6 +1,6 @@
 "use client";
 
-import { coreTable } from "@/core/modules/data-table/hooks/core-table";
+import { coreTable } from "@/core/modules/table/hooks/core-table";
 import { employees } from "../data";
 import { employeeColumns } from "./employee-columns";
 

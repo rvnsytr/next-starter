@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { coreTable } from "@/core/modules/table/hooks/core-table";
+import { BaseTableProps } from "@/core/modules/table/types";
 import { messages } from "@/shared/messages";
-import { coreTable } from "../../hooks/core-table";
-import { BaseTableProps } from "../../types";
 
 export function CoreTable({ caption, placeholder, ...props }: BaseTableProps) {
   const table = coreTable.useTableContext();
