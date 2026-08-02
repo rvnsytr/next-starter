@@ -10,11 +10,11 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { messages } from "@/shared/messages";
-import { dataTable } from "../table-hook";
-import { BaseTableProps } from "../types";
+import { coreTable } from "../../hooks/core-table";
+import { BaseTableProps } from "../../types";
 
-export function DataTable({ caption, placeholder, ...props }: BaseTableProps) {
-  const table = dataTable.useTableContext();
+export function CoreTable({ caption, placeholder, ...props }: BaseTableProps) {
+  const table = coreTable.useTableContext();
 
   return (
     <Table {...props}>

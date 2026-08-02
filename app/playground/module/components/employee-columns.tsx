@@ -1,5 +1,5 @@
 import { CustomColorBadge } from "@/core/components/ui/badge";
-import { dataTable } from "@/core/modules/data-table/table-hook";
+import { coreTable } from "@/core/modules/data-table/hooks/core-table";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
 import { formatDate } from "date-fns";
@@ -7,7 +7,7 @@ import { MailIcon, UserRoundIcon } from "lucide-react";
 import { skillMeta, userRoleMeta } from "../constants";
 import { Employee } from "../types";
 
-const columnHelper = dataTable.createAppColumnHelper<Employee>();
+const columnHelper = coreTable.createAppColumnHelper<Employee>();
 
 export const employeeColumns = columnHelper.columns([
   columnHelper.display({
@@ -18,7 +18,7 @@ export const employeeColumns = columnHelper.columns([
     enableHiding: false,
   }),
   columnHelper.accessor("name", {
-    header: "Name",
+    header: (c) => <div className="flex items-center gap-x-2">Name</div>,
     cell: (c) => c.getValue(),
 
     meta: {

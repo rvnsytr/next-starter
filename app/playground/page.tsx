@@ -1,9 +1,9 @@
-import { EmployeeDataTable } from "./module/components/employee-data-table";
+import { EmployeeCoreTable } from "./module/components/employee-tables";
 
 export default function Page() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-y-4 py-20">
-      <EmployeeDataTable />
+      <EmployeeCoreTable />
     </div>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { dataTable } from "@/core/modules/data-table/table-hook";
+import { coreTable } from "@/core/modules/data-table/hooks/core-table";
 import { employees } from "../data";
 import { employeeColumns } from "./employee-columns";
 
-export function EmployeeDataTable() {
-  const table = dataTable.useAppTable({
+export function EmployeeCoreTable() {
+  const table = coreTable.useAppTable({
     columns: employeeColumns,
     data: employees,
     getRowId: (row) => row.id.toString(),
@@ -14,9 +14,9 @@ export function EmployeeDataTable() {
   return (
     <table.AppTable>
       <div className="container">
-        <table.CellVisibilityDropdown align="start" shortcut="default" />
+        <table.ColumnVisibilityMenu align="start" shortcut="default" />
       </div>
-      <table.DataTable />
+      <table.Table />
     </table.AppTable>
   );
 }

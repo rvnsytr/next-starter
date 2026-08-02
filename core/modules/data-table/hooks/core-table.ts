@@ -9,14 +9,12 @@ import {
   // sortFn_text,
   tableFeatures,
 } from "@tanstack/react-table";
-import { CellVisibilityDropdown } from "./components/cell-visibility-dropdown";
-import { DataTable } from "./components/table";
-import { TableMeta } from "./types";
+import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
+import { CoreTable } from "../components/tables/core-table";
+import { TableMeta } from "../types";
 
-export const dataTable = createTableHook({
+export const coreTable = createTableHook({
   features: tableFeatures({
-    // cellSelectionFeature,
-    // columnPinningFeature,
     columnVisibilityFeature,
 
     // rowSortingFeature,
@@ -30,7 +28,8 @@ export const dataTable = createTableHook({
     columnMeta: metaHelper<TableMeta>(),
   }),
   tableComponents: {
-    CellVisibilityDropdown,
-    DataTable,
+    ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
+    Table: CoreTable,
   },
+  cellComponents: {},
 });

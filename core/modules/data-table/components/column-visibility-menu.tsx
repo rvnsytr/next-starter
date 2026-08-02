@@ -20,24 +20,27 @@ import {
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { EyeIcon } from "lucide-react";
-import { useState } from "react";
-import { dataTable } from "../table-hook";
+import React, { useState } from "react";
+import { coreTable } from "../hooks/core-table";
+import { TableMeta } from "../types";
+
+type ColumnVisibilityMenuProps = ButtonProps & {
+  size?: ButtonIconSize;
+  align?: React.ComponentProps<typeof MenuPopup>["align"];
+  shortcut?: "default" | Hotkey;
+};
 
 const DEFAULT_HOTKEY: Hotkey = "V";
 
-export function CellVisibilityDropdown({
+function ColumnVisibilityMenu({
   align,
   shortcut,
   size = "icon",
   variant = "outline",
   className,
+  children,
   ...props
-}: ButtonProps & {
-  size?: ButtonIconSize;
-  align?: React.ComponentProps<typeof MenuPopup>["align"];
-  shortcut?: "default" | Hotkey;
-}) {
-  const table = dataTable.useTableContext();
+}: ColumnVisibilityMenuProps & { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkey = shortcut === "default" ? DEFAULT_HOTKEY : shortcut;
@@ -59,6 +62,7 @@ export function CellVisibilityDropdown({
             />
           }
         />
+
         <TooltipPopup align={align}>
           View Columns
           {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
@@ -66,26 +70,48 @@ export function CellVisibilityDropdown({
       </Tooltip>
 
       <MenuPopup align={align} className={cn(className)}>
-        {table
-          .getAllColumns()
-          .filter((column) => column.getCanHide())
-          .map((column) => {
-            const cbId = `cell-visibility-cb-${column.id}`;
-            const label = column.columnDef.meta?.label ?? column.id;
-            const Icon = column.columnDef.meta?.icon;
-            return (
-              <MenuCheckboxItem
-                key={cbId}
-                checked={column.getIsVisible()}
-                onCheckedChange={() => column.toggleVisibility()}
-              >
-                <div className="flex items-center gap-x-2">
-                  {Icon && <Icon className="text-muted-foreground" />} {label}
-                </div>
-              </MenuCheckboxItem>
-            );
-          })}
+        {children}
       </MenuPopup>
     </Menu>
+  );
+}
+
+function ColumnVisibilityMenuItem({
+  id,
+  meta,
+  ...props
+}: React.ComponentProps<typeof MenuCheckboxItem> & {
+  id: string;
+  meta?: TableMeta;
+}) {
+  return (
+    <MenuCheckboxItem {...props}>
+      <div className="flex items-center gap-x-2">
+        {meta?.icon && <meta.icon className="text-muted-foreground" />}
+        {meta?.label ?? id}
+      </div>
+    </MenuCheckboxItem>
+  );
+}
+
+export function DataTableColumnVisibilityMenu(
+  props: ColumnVisibilityMenuProps,
+) {
+  const table = coreTable.useTableContext();
+  return (
+    <ColumnVisibilityMenu {...props}>
+      {table
+        .getAllColumns()
+        .filter((column) => column.getCanHide())
+        .map((column) => (
+          <ColumnVisibilityMenuItem
+            key={column.id}
+            id={`visibility-cb-${column.id}`}
+            meta={column.columnDef.meta}
+            checked={column.getIsVisible()}
+            onCheckedChange={(value) => column.toggleVisibility(!!value)}
+          />
+        ))}
+    </ColumnVisibilityMenu>
   );
 }
