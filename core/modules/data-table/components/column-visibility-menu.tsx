@@ -24,15 +24,15 @@ import React, { useState } from "react";
 import { coreTable } from "../hooks/core-table";
 import { TableMeta } from "../types";
 
-type ColumnVisibilityMenuProps = ButtonProps & {
+export type ColumnVisibilityMenuProps = ButtonProps & {
   size?: ButtonIconSize;
-  align?: React.ComponentProps<typeof MenuPopup>["align"];
+  align?: React.ComponentProps<typeof TooltipPopup>["align"];
   shortcut?: "default" | Hotkey;
 };
 
 const DEFAULT_HOTKEY: Hotkey = "V";
 
-function ColumnVisibilityMenu({
+export function ColumnVisibilityMenu({
   align,
   shortcut,
   size = "icon",
@@ -76,19 +76,16 @@ function ColumnVisibilityMenu({
   );
 }
 
-function ColumnVisibilityMenuItem({
-  id,
+export function ColumnVisibilityMenuItem({
+  id: columnId,
   meta,
   ...props
-}: React.ComponentProps<typeof MenuCheckboxItem> & {
-  id: string;
-  meta?: TableMeta;
-}) {
+}: React.ComponentProps<typeof MenuCheckboxItem> & { meta?: TableMeta }) {
   return (
-    <MenuCheckboxItem {...props}>
+    <MenuCheckboxItem id={`visibility-cb-${columnId}`} {...props}>
       <div className="flex items-center gap-x-2">
         {meta?.icon && <meta.icon className="text-muted-foreground" />}
-        {meta?.label ?? id}
+        {meta?.label ?? columnId}
       </div>
     </MenuCheckboxItem>
   );
@@ -106,7 +103,7 @@ export function DataTableColumnVisibilityMenu(
         .map((column) => (
           <ColumnVisibilityMenuItem
             key={column.id}
-            id={`visibility-cb-${column.id}`}
+            id={column.id}
             meta={column.columnDef.meta}
             checked={column.getIsVisible()}
             onCheckedChange={(value) => column.toggleVisibility(!!value)}
