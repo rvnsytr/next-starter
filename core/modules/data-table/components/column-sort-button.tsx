@@ -47,7 +47,7 @@ export function ColumnSortButton({
   );
 }
 
-export function DataTableColumnSortButton({
+export function CoreTableColumnSortButton({
   onClick,
   ...props
 }: ColumnSortButtonProps) {

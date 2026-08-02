@@ -91,7 +91,7 @@ export function ColumnVisibilityMenuItem({
   );
 }
 
-export function DataTableColumnVisibilityMenu(
+export function CoreTableColumnVisibilityMenu(
   props: ColumnVisibilityMenuProps,
 ) {
   const table = coreTable.useTableContext();

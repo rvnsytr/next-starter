@@ -92,7 +92,7 @@ export function ColumnSortMenuItem({
   );
 }
 
-export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
+export function CoreTableColumnSortMenu(props: ColumnSortMenuProps) {
   const table = coreTable.useTableContext();
   return (
     <ColumnSortMenu {...props}>
