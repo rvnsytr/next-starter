@@ -1,12 +1,4 @@
 import {
-  AccessorFn,
-  Column,
-  ColumnMeta,
-  Row,
-  RowData,
-  Table,
-} from "@tanstack/react-table";
-import {
   endOfDay,
   isAfter,
   isBefore,
@@ -18,30 +10,30 @@ import { LucideIcon } from "lucide-react";
 
 export type ElementType<T> = T extends (infer U)[] ? U : T;
 
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    /* The label of the column. */
-    label: string;
-    /* The column icon. */
-    icon: LucideIcon;
-    /* The data type of the column. */
-    type: DataFilterType;
-    /* An optional list of options for the column. */
-    /* This is used for columns with type 'option' or 'multiOption'. */
-    /* If the options are known ahead of time, they can be defined here. */
-    /* Otherwise, they will be dynamically generated based on the data. */
-    options?: DataFilterOption[];
-    /* An optional function to transform columns with type 'option' or 'multiOption'. */
-    /* This is used to convert each raw option into a DataFilterOption. */
-    transformOptionFn?: (
-      value: ElementType<NonNullable<TValue>>,
-    ) => DataFilterOption;
-    /* An optional "soft" max for the number range slider. */
-    /* This is used for columns with type 'number'. */
-    max?: number;
-  }
-}
+// declare module "@tanstack/react-table" {
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   interface ColumnMeta<TData extends RowData, TValue> {
+//     /* The label of the column. */
+//     label: string;
+//     /* The column icon. */
+//     icon: LucideIcon;
+//     /* The data type of the column. */
+//     type: DataFilterType;
+//     /* An optional list of options for the column. */
+//     /* This is used for columns with type 'option' or 'multiOption'. */
+//     /* If the options are known ahead of time, they can be defined here. */
+//     /* Otherwise, they will be dynamically generated based on the data. */
+//     options?: DataFilterOption[];
+//     /* An optional function to transform columns with type 'option' or 'multiOption'. */
+//     /* This is used to convert each raw option into a DataFilterOption. */
+//     transformOptionFn?: (
+//       value: ElementType<NonNullable<TValue>>,
+//     ) => DataFilterOption;
+//     /* An optional "soft" max for the number range slider. */
+//     /* This is used for columns with type 'number'. */
+//     max?: number;
+//   }
+// }
 
 /* TODO: Allow both accessorFn and accessorKey */
 export const defineMeta = <
