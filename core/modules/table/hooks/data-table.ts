@@ -10,6 +10,7 @@ import {
   globalFilteringFeature,
   metaHelper,
   rowPaginationFeature,
+  rowSelectionFeature,
   rowSortingFeature,
   sortFn_alphanumeric,
   sortFn_datetime,
@@ -17,6 +18,8 @@ import {
   TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
+import { DataTableColumnCellCheckbox } from "../components/column-cell-checkbox";
+import { DataTableColumnHeaderCheckbox } from "../components/column-header-checkbox";
 import { DataTableColumnSortButton } from "../components/column-sort-button";
 import { DataTableColumnSortMenu } from "../components/column-sort-menu";
 import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
@@ -29,6 +32,7 @@ import { TableMeta } from "../types";
 
 export const dataTableFeatures: TableFeatures = {
   columnVisibilityFeature,
+  rowSelectionFeature,
 
   rowPaginationFeature,
   paginatedRowModel: createPaginatedRowModel(),
@@ -66,5 +70,9 @@ export const dataTable = createTableHook({
   },
   headerComponents: {
     ColumnSortButton: DataTableColumnSortButton,
+    ColumnCheckbox: DataTableColumnHeaderCheckbox,
+  },
+  cellComponents: {
+    ColumnCheckbox: DataTableColumnCellCheckbox,
   },
 });

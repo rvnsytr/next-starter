@@ -11,11 +11,20 @@ const columnHelper = dataTable.createAppColumnHelper<Employee>();
 
 export const employeeColumns = columnHelper.columns([
   columnHelper.display({
-    id: "no",
-    header: "No",
-    cell: (c) => c.row.index + 1,
+    id: "select",
+    header: (c) => <c.header.ColumnCheckbox />,
+    cell: (c) => <c.cell.ColumnCheckbox />,
 
     enableHiding: false,
+    enableSorting: false,
+  }),
+  columnHelper.display({
+    id: "no",
+    header: () => <div className="text-center">No</div>,
+    cell: (c) => <div className="text-center">{c.row.index + 1}</div>,
+
+    enableHiding: false,
+    enableSorting: false,
   }),
   columnHelper.accessor("name", {
     header: (c) => (
