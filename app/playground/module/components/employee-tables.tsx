@@ -19,6 +19,7 @@ export function EmployeeCoreTable() {
         <table.ResetTableButton shortcut="default" />
         <table.Pagination />
         <table.PageSize />
+        <table.Search shortcut="default" />
       </div>
       <table.Table />
     </table.AppTable>

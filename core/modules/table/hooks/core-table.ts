@@ -1,8 +1,13 @@
 import {
+  columnFilteringFeature,
   columnVisibilityFeature,
+  createFilteredRowModel,
   createPaginatedRowModel,
   createSortedRowModel,
   createTableHook,
+  filterFn_includesString,
+  filterFn_inNumberRange,
+  globalFilteringFeature,
   metaHelper,
   rowPaginationFeature,
   rowSortingFeature,
@@ -18,11 +23,15 @@ import { CoreTableColumnVisibilityMenu } from "../components/column-visibility-m
 import { CoreTablePageSize } from "../components/page-size";
 import { CoreTablePagination } from "../components/pagination";
 import { CoreTableResetTableButton } from "../components/reset-table-button";
+import { CoreTableSearch } from "../components/search";
 import { CoreTable } from "../components/tables/core-table";
 import { TableMeta } from "../types";
 
 export const coreTableFeatures: TableFeatures = {
   columnVisibilityFeature,
+
+  rowPaginationFeature,
+  paginatedRowModel: createPaginatedRowModel(),
 
   rowSortingFeature,
   sortedRowModel: createSortedRowModel(),
@@ -32,8 +41,13 @@ export const coreTableFeatures: TableFeatures = {
     datetime: sortFn_datetime,
   },
 
-  rowPaginationFeature,
-  paginatedRowModel: createPaginatedRowModel(),
+  columnFilteringFeature,
+  globalFilteringFeature,
+  filteredRowModel: createFilteredRowModel(),
+  filterFns: {
+    includesString: filterFn_includesString,
+    inNumberRange: filterFn_inNumberRange,
+  },
 };
 
 export const coreTable = createTableHook({
@@ -48,6 +62,7 @@ export const coreTable = createTableHook({
     ResetTableButton: CoreTableResetTableButton,
     Pagination: CoreTablePagination,
     PageSize: CoreTablePageSize,
+    Search: CoreTableSearch,
   },
   headerComponents: {
     ColumnSortButton: CoreTableColumnSortButton,
