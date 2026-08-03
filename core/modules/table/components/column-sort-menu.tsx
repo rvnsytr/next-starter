@@ -22,6 +22,7 @@ import { TableMeta } from "../types";
 
 export type ColumnSortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
+  /** @default "S" */
   shortcut?: "default" | Hotkey;
 };
 
@@ -30,7 +31,7 @@ export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 export function ColumnSortMenu({
   shortcut,
   align = "center",
-  size = "icon",
+  size,
   variant = "outline",
   children,
   renderMenuItems,
@@ -38,7 +39,10 @@ export function ColumnSortMenu({
 }: ColumnSortMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const isIconSize = size?.startsWith("icon");
+  const buttonSize: ButtonProps["size"] =
+    size ?? (children ? "default" : "icon");
+  const isIconSize = buttonSize.startsWith("icon");
+
   const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
 
   useHotkey(
@@ -54,7 +58,7 @@ export function ColumnSortMenu({
           render={
             <MenuTrigger
               render={
-                <Button size={size} variant={variant} {...props}>
+                <Button size={buttonSize} variant={variant} {...props}>
                   {children ?? (isIconSize && <ArrowUpDownIcon />)}
                 </Button>
               }

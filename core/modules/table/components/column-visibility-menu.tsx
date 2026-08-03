@@ -26,6 +26,7 @@ import { TableMeta } from "../types";
 export type ColumnVisibilityMenuProps = ButtonProps & {
   size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
+  /** @default "V" */
   shortcut?: "default" | Hotkey;
 };
 
@@ -34,7 +35,7 @@ const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 export function ColumnVisibilityMenu({
   shortcut,
   align = "center",
-  size = "icon",
+  size,
   variant = "outline",
   children,
   renderMenuItems,
@@ -42,7 +43,10 @@ export function ColumnVisibilityMenu({
 }: ColumnVisibilityMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const isIconSize = size?.startsWith("icon");
+  const buttonSize: ButtonProps["size"] =
+    size ?? (children ? "default" : "icon");
+  const isIconSize = buttonSize.startsWith("icon");
+
   const hotkey =
     shortcut === "default" ? COLUMN_VISIBILITY_DEFAULT_HOTKEY : shortcut;
 
@@ -59,7 +63,7 @@ export function ColumnVisibilityMenu({
           render={
             <MenuTrigger
               render={
-                <Button size={size} variant={variant} {...props}>
+                <Button size={buttonSize} variant={variant} {...props}>
                   {children ?? (isIconSize && <EyeIcon />)}
                 </Button>
               }

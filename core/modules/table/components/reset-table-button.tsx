@@ -11,8 +11,9 @@ import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { coreTable } from "../hooks/core-table";
 
 export type ResetTableButtonProps = ButtonProps & {
-  shortcut?: "default" | Hotkey;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
+  /** @default "R" */
+  shortcut?: "default" | Hotkey;
 };
 
 export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
@@ -20,14 +21,22 @@ export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
 export function ResetTableButton({
   hotkey,
   align = "center",
-  size = "icon",
+  size,
   variant = "outline",
+  children,
   ...props
 }: ResetTableButtonProps & { hotkey?: Hotkey }) {
+  const buttonSize: ButtonProps["size"] =
+    size ?? (children ? "default" : "icon");
+
   return (
     <Tooltip>
       <TooltipTrigger
-        render={<ResetButton size={size} variant={variant} {...props} />}
+        render={
+          <ResetButton size={buttonSize} variant={variant} {...props}>
+            {children}
+          </ResetButton>
+        }
       />
 
       <TooltipPopup align={align}>
