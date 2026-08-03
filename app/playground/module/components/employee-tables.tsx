@@ -13,10 +13,12 @@ export function EmployeeCoreTable() {
 
   return (
     <table.AppTable>
-      <div className="container">
+      <div className="container flex gap-x-2">
         <table.ColumnVisibilityMenu align="start" shortcut="default" />
         <table.ColumnSortMenu shortcut="default" />
         <table.ResetTableButton shortcut="default" />
+        <table.Pagination />
+        <table.PageSize />
       </div>
       <table.Table />
     </table.AppTable>
