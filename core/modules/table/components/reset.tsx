@@ -10,7 +10,7 @@ import {
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { dataTable } from "../hooks/data-table";
 
-export type ResetTableButtonProps = ButtonProps & {
+export type ResetProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "R" */
   shortcut?: "default" | Hotkey;
@@ -18,14 +18,14 @@ export type ResetTableButtonProps = ButtonProps & {
 
 export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
 
-export function ResetTableButton({
+export function Reset({
   hotkey,
   align = "center",
   size,
   variant = "outline",
   children,
   ...props
-}: ResetTableButtonProps & { hotkey?: Hotkey }) {
+}: ResetProps & { hotkey?: Hotkey }) {
   const buttonSize: ButtonProps["size"] =
     size ?? (children ? "default" : "icon");
 
@@ -47,11 +47,7 @@ export function ResetTableButton({
   );
 }
 
-export function DataTableResetTableButton({
-  shortcut,
-  onClick,
-  ...props
-}: ResetTableButtonProps) {
+export function DataTableReset({ shortcut, onClick, ...props }: ResetProps) {
   const table = dataTable.useTableContext();
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
@@ -66,7 +62,7 @@ export function DataTableResetTableButton({
   );
 
   return (
-    <ResetTableButton
+    <Reset
       shortcut={shortcut}
       hotkey={hotkey}
       onClick={(e) => {

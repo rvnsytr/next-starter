@@ -34,7 +34,7 @@ export function DataTable({
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((h, hidx) => (
+            {headerGroup.headers.map((h) => (
               <table.AppHeader key={h.id} header={h}>
                 {(header) => {
                   if (header.rowSpan <= 0) return null;
@@ -48,15 +48,14 @@ export function DataTable({
                     >
                       <header.FlexRender />
 
-                      {hidx < headerGroup.headers.length - 1 && (
+                      {header.column.getCanResize() && (
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                           className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none"
                         >
                           <div className="bg-border h-full w-px" />
-                          <div className="bg-border h-full w-px" />
-                          <div />
+                          <div className="not-in-data-[variant=bordered]:hidden" />
                         </div>
                       )}
                     </TableHead>

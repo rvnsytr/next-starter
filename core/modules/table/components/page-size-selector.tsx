@@ -11,13 +11,15 @@ import { cn, formatNumber } from "@/core/utils";
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "../constants";
 import { dataTable } from "../hooks/data-table";
 
-export type PageSizeProps = React.ComponentProps<typeof SelectTrigger>;
+export type PageSizeSelectorProps = React.ComponentProps<typeof SelectTrigger>;
 
-export function PageSize({
+export function PageSizeSelector({
   selectProps,
   className,
   ...props
-}: PageSizeProps & { selectProps: React.ComponentProps<typeof Select> }) {
+}: PageSizeSelectorProps & {
+  selectProps: React.ComponentProps<typeof Select>;
+}) {
   return (
     <Select {...selectProps}>
       <SelectTrigger className={cn("w-fit min-w-fit", className)} {...props}>
@@ -39,10 +41,10 @@ export function PageSize({
   );
 }
 
-export function DataTablePageSize(props: PageSizeProps) {
+export function DataTablePageSizeSelector(props: PageSizeSelectorProps) {
   const table = dataTable.useTableContext();
   return (
-    <PageSize
+    <PageSizeSelector
       selectProps={{
         value: String(table.atoms.pagination.get().pageSize),
         onValueChange: (v) => table.setPageSize(Number(v)),

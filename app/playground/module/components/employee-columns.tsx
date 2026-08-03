@@ -12,8 +12,8 @@ const columnHelper = dataTable.createAppColumnHelper<Employee>();
 export const employeeColumns = columnHelper.columns([
   columnHelper.display({
     id: "select",
-    header: (c) => <c.header.ColumnCheckbox />,
-    cell: (c) => <c.cell.ColumnCheckbox />,
+    header: (c) => <c.header.SelectAllCheckbox />,
+    cell: (c) => <c.cell.RowCheckbox />,
 
     size: 50,
     enableHiding: false,

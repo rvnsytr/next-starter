@@ -16,9 +16,9 @@ export function EmployeeDataTable() {
       <div className="container flex gap-x-2">
         <table.ColumnVisibilityMenu align="start" shortcut="default" />
         <table.ColumnSortMenu shortcut="default" />
-        <table.ResetTableButton shortcut="default" />
+        <table.Reset shortcut="default" />
         <table.Pagination />
-        <table.PageSize />
+        <table.PageSizeSelector />
         <table.Search shortcut="default" />
       </div>
       <table.Table

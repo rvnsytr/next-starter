@@ -25,9 +25,9 @@ import { DataTableColumnHeaderCheckbox } from "../components/column-header-check
 import { DataTableColumnSortButton } from "../components/column-sort-button";
 import { DataTableColumnSortMenu } from "../components/column-sort-menu";
 import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
-import { DataTablePageSize } from "../components/page-size";
+import { DataTablePageSizeSelector } from "../components/page-size-selector";
 import { DataTablePagination } from "../components/pagination";
-import { DataTableResetTableButton } from "../components/reset-table-button";
+import { DataTableReset } from "../components/reset";
 import { DataTableSearch } from "../components/search";
 import { DataTable } from "../components/tables/data-table";
 import { TableMeta } from "../types";
@@ -66,18 +66,18 @@ export const dataTable = createTableHook({
   }),
   tableComponents: {
     Table: DataTable,
+    Search: DataTableSearch,
+    Pagination: DataTablePagination,
+    PageSizeSelector: DataTablePageSizeSelector,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
     ColumnSortMenu: DataTableColumnSortMenu,
-    ResetTableButton: DataTableResetTableButton,
-    Pagination: DataTablePagination,
-    PageSize: DataTablePageSize,
-    Search: DataTableSearch,
+    Reset: DataTableReset,
   },
   headerComponents: {
     ColumnSortButton: DataTableColumnSortButton,
-    ColumnCheckbox: DataTableColumnHeaderCheckbox,
+    SelectAllCheckbox: DataTableColumnHeaderCheckbox,
   },
   cellComponents: {
-    ColumnCheckbox: DataTableColumnCellCheckbox,
+    RowCheckbox: DataTableColumnCellCheckbox,
   },
 });
