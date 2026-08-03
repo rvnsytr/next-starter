@@ -458,3 +458,13 @@ export const employees: Employee[] = [
     projects: ["Billing", "Analytics"],
   },
 ];
+
+export const extremeEmployees = Array.from({ length: 1000 }, (_, i) => {
+  const baseEmployee = employees[i % employees.length];
+  return {
+    ...baseEmployee,
+    id: i + 1,
+    name: `${baseEmployee.name} ${i + 1}`,
+    email: `user${i + 1}@example.com`,
+  };
+});

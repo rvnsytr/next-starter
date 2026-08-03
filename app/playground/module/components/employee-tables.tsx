@@ -1,13 +1,13 @@
 "use client";
 
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { employees } from "../data";
+import { extremeEmployees } from "../data";
 import { employeeColumns } from "./employee-columns";
 
 export function EmployeeDataTable() {
   const table = dataTable.useAppTable({
     columns: employeeColumns,
-    data: employees,
+    data: extremeEmployees,
     getRowId: (row) => row.id.toString(),
   });
 
