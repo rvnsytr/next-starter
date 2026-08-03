@@ -16,6 +16,7 @@ export function EmployeeCoreTable() {
       <div className="container">
         <table.ColumnVisibilityMenu align="start" shortcut="default" />
         <table.ColumnSortMenu shortcut="default" />
+        <table.ResetTableButton shortcut="default" />
       </div>
       <table.Table />
     </table.AppTable>
