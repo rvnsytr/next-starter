@@ -1,7 +1,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { dataTable } from "../hooks/data-table";
 
-export function DataTableColumnCellCheckbox({
+export function DataTableRowCheckbox({
   disabled,
   ...props
 }: React.ComponentProps<typeof Checkbox>) {

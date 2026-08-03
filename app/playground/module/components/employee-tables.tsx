@@ -14,8 +14,8 @@ export function EmployeeDataTable() {
   return (
     <table.AppTable>
       <div className="container flex gap-x-2">
-        <table.ColumnVisibilityMenu align="start" shortcut="default" />
-        <table.ColumnSortMenu shortcut="default" />
+        <table.VisibilityMenu align="start" shortcut="default" />
+        <table.SortMenu shortcut="default" />
         <table.Reset shortcut="default" />
         <table.Pagination />
         <table.PageSizeSelector />

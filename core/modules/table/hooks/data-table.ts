@@ -20,15 +20,15 @@ import {
   TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-import { DataTableColumnCellCheckbox } from "../components/column-cell-checkbox";
-import { DataTableColumnHeaderCheckbox } from "../components/column-header-checkbox";
-import { DataTableColumnSortButton } from "../components/column-sort-button";
-import { DataTableColumnSortMenu } from "../components/column-sort-menu";
-import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
+import { DataTableVisibilityMenu } from "../components/column-visibility-menu";
 import { DataTablePageSizeSelector } from "../components/page-size-selector";
 import { DataTablePagination } from "../components/pagination";
 import { DataTableReset } from "../components/reset";
+import { DataTableRowCheckbox } from "../components/row-checkbox";
 import { DataTableSearch } from "../components/search";
+import { DataTableSelectAllCheckbox } from "../components/select-all-checkbox";
+import { DataTableSortButton } from "../components/sort-button";
+import { DataTableSortMenu } from "../components/sort-menu";
 import { DataTable } from "../components/tables/data-table";
 import { TableMeta } from "../types";
 
@@ -65,19 +65,19 @@ export const dataTable = createTableHook({
     columnMeta: metaHelper<TableMeta>(),
   }),
   tableComponents: {
-    Table: DataTable,
-    Search: DataTableSearch,
-    Pagination: DataTablePagination,
     PageSizeSelector: DataTablePageSizeSelector,
-    ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
-    ColumnSortMenu: DataTableColumnSortMenu,
+    Pagination: DataTablePagination,
     Reset: DataTableReset,
+    Search: DataTableSearch,
+    SortMenu: DataTableSortMenu,
+    Table: DataTable,
+    VisibilityMenu: DataTableVisibilityMenu,
   },
   headerComponents: {
-    ColumnSortButton: DataTableColumnSortButton,
-    SelectAllCheckbox: DataTableColumnHeaderCheckbox,
+    SelectAllCheckbox: DataTableSelectAllCheckbox,
+    SortButton: DataTableSortButton,
   },
   cellComponents: {
-    RowCheckbox: DataTableColumnCellCheckbox,
+    RowCheckbox: DataTableRowCheckbox,
   },
 });

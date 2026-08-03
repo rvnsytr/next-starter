@@ -31,7 +31,7 @@ export const employeeColumns = columnHelper.columns([
   columnHelper.accessor("name", {
     header: (c) => (
       <div className="flex items-center gap-x-2">
-        Name <c.header.ColumnSortButton />
+        Name <c.header.SortButton />
       </div>
     ),
     cell: (c) => c.getValue(),

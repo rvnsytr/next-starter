@@ -10,18 +10,18 @@ import { SortDirection } from "@tanstack/react-table";
 import { SORT_ICONS } from "../constants";
 import { dataTable } from "../hooks/data-table";
 
-export type ColumnSortButtonProps = ButtonProps & {
+export type SortButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 };
 
-export function ColumnSortButton({
+export function SortButton({
   sortDirection,
   align = "center",
   size = "icon-xs",
   variant = "ghost",
   children,
   ...props
-}: ColumnSortButtonProps & { sortDirection?: SortDirection | false }) {
+}: SortButtonProps & { sortDirection?: SortDirection | false }) {
   const isIconSize = size?.startsWith("icon");
   const SortIcon = sortDirection
     ? SORT_ICONS[sortDirection]
@@ -44,10 +44,7 @@ export function ColumnSortButton({
   );
 }
 
-export function DataTableColumnSortButton({
-  onClick,
-  ...props
-}: ColumnSortButtonProps) {
+export function DataTableSortButton({ onClick, ...props }: SortButtonProps) {
   const header = dataTable.useHeaderContext();
 
   if (!header.column.getCanSort()) return null;
@@ -55,7 +52,7 @@ export function DataTableColumnSortButton({
   const sortDirection = header.column.getIsSorted();
 
   return (
-    <ColumnSortButton
+    <SortButton
       sortDirection={sortDirection}
       onClick={(e) => {
         if (!sortDirection) header.column.toggleSorting();

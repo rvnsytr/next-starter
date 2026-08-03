@@ -20,7 +20,7 @@ import { SORT_ICONS } from "../constants";
 import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
-export type ColumnSortMenuProps = ButtonProps & {
+export type SortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "S" */
   shortcut?: "default" | Hotkey;
@@ -28,7 +28,7 @@ export type ColumnSortMenuProps = ButtonProps & {
 
 export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 
-export function ColumnSortMenu({
+export function SortMenu({
   shortcut,
   align = "center",
   size,
@@ -36,7 +36,7 @@ export function ColumnSortMenu({
   children,
   renderMenuItems,
   ...props
-}: ColumnSortMenuProps & { renderMenuItems: React.ReactNode }) {
+}: SortMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const buttonSize: ButtonProps["size"] =
@@ -77,7 +77,7 @@ export function ColumnSortMenu({
   );
 }
 
-export function ColumnSortMenuItem({
+export function SortMenuItem({
   id: columnId,
   meta,
   ...props
@@ -92,10 +92,10 @@ export function ColumnSortMenuItem({
   );
 }
 
-export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
+export function DataTableSortMenu(props: SortMenuProps) {
   const table = dataTable.useTableContext();
   return (
-    <ColumnSortMenu
+    <SortMenu
       renderMenuItems={table
         .getAllColumns()
         .filter((column) => column.getCanSort() || column.getCanMultiSort())
@@ -103,7 +103,7 @@ export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
           const sortDirection = column.getIsSorted();
           const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
           return (
-            <ColumnSortMenuItem
+            <SortMenuItem
               key={column.id}
               id={column.id}
               meta={column.columnDef.meta}

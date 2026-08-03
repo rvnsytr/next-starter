@@ -23,7 +23,7 @@ import { useState } from "react";
 import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
-export type ColumnVisibilityMenuProps = ButtonProps & {
+export type VisibilityMenuProps = ButtonProps & {
   size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "V" */
@@ -32,7 +32,7 @@ export type ColumnVisibilityMenuProps = ButtonProps & {
 
 const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 
-export function ColumnVisibilityMenu({
+export function VisibilityMenu({
   shortcut,
   align = "center",
   size,
@@ -40,7 +40,7 @@ export function ColumnVisibilityMenu({
   children,
   renderMenuItems,
   ...props
-}: ColumnVisibilityMenuProps & { renderMenuItems: React.ReactNode }) {
+}: VisibilityMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const buttonSize: ButtonProps["size"] =
@@ -82,7 +82,7 @@ export function ColumnVisibilityMenu({
   );
 }
 
-export function ColumnVisibilityMenuItem({
+export function VisibilityMenuItem({
   id: columnId,
   meta,
   ...props
@@ -97,17 +97,15 @@ export function ColumnVisibilityMenuItem({
   );
 }
 
-export function DataTableColumnVisibilityMenu(
-  props: ColumnVisibilityMenuProps,
-) {
+export function DataTableVisibilityMenu(props: VisibilityMenuProps) {
   const table = dataTable.useTableContext();
   return (
-    <ColumnVisibilityMenu
+    <VisibilityMenu
       renderMenuItems={table
         .getAllColumns()
         .filter((column) => column.getCanHide())
         .map((column) => (
-          <ColumnVisibilityMenuItem
+          <VisibilityMenuItem
             key={column.id}
             id={column.id}
             meta={column.columnDef.meta}

@@ -1,7 +1,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { dataTable } from "../hooks/data-table";
 
-export function DataTableColumnHeaderCheckbox({
+export function DataTableSelectAllCheckbox({
   ...props
 }: React.ComponentProps<typeof Checkbox>) {
   const table = dataTable.useTableContext();
