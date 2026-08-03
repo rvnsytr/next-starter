@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Button,
-  ButtonIconSize,
-  ButtonProps,
-} from "@/core/components/ui/button";
+import { Button, ButtonProps } from "@/core/components/ui/button";
 import { Kbd } from "@/core/components/ui/kbd";
 import {
   Menu,
@@ -17,37 +13,39 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ArrowUpDownIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { SORT_ICONS } from "../constants";
 import { coreTable } from "../hooks/core-table";
 import { TableMeta } from "../types";
 
 export type ColumnSortMenuProps = ButtonProps & {
-  size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   shortcut?: "default" | Hotkey;
 };
 
-const DEFAULT_HOTKEY: Hotkey = "S";
+export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 
 export function ColumnSortMenu({
-  align,
   shortcut,
+  align = "center",
   size = "icon",
   variant = "outline",
-  className,
   children,
+  renderMenuItems,
   ...props
-}: ColumnSortMenuProps & { children: React.ReactNode }) {
+}: ColumnSortMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const hotkey = shortcut === "default" ? DEFAULT_HOTKEY : shortcut;
-  useHotkey(hotkey ?? DEFAULT_HOTKEY, () => setIsOpen((prev) => !prev), {
-    enabled: !!hotkey,
-  });
+  const isIconSize = size?.startsWith("icon");
+  const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
+
+  useHotkey(
+    hotkey ?? COLUMN_SORT_DEFAULT_HOTKEY,
+    () => setIsOpen((prev) => !prev),
+    { enabled: !!hotkey },
+  );
 
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
@@ -57,7 +55,7 @@ export function ColumnSortMenu({
             <MenuTrigger
               render={
                 <Button size={size} variant={variant} {...props}>
-                  <ArrowUpDownIcon />
+                  {children ?? (isIconSize && <ArrowUpDownIcon />)}
                 </Button>
               }
             />
@@ -70,9 +68,7 @@ export function ColumnSortMenu({
         </TooltipPopup>
       </Tooltip>
 
-      <MenuPopup align={align} className={cn(className)}>
-        {children}
-      </MenuPopup>
+      <MenuPopup align={align}>{renderMenuItems}</MenuPopup>
     </Menu>
   );
 }
@@ -95,8 +91,8 @@ export function ColumnSortMenuItem({
 export function CoreTableColumnSortMenu(props: ColumnSortMenuProps) {
   const table = coreTable.useTableContext();
   return (
-    <ColumnSortMenu {...props}>
-      {table
+    <ColumnSortMenu
+      renderMenuItems={table
         .getAllColumns()
         .filter((column) => column.getCanSort() || column.getCanMultiSort())
         .map((column) => {
@@ -117,6 +113,7 @@ export function CoreTableColumnSortMenu(props: ColumnSortMenuProps) {
             />
           );
         })}
-    </ColumnSortMenu>
+      {...props}
+    />
   );
 }

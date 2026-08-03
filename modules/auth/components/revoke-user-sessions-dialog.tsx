@@ -15,7 +15,6 @@ import { Button } from "@/core/components/ui/button";
 import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/shared/messages";
 import { MonitorOffIcon } from "lucide-react";
-import React from "react";
 import { mutateListUserSessions } from "../hooks/use-list-user-sessions";
 
 export function RevokeUserSessionsDialog({

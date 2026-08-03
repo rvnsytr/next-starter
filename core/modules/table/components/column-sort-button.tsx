@@ -1,32 +1,28 @@
 "use client";
 
-import {
-  Button,
-  ButtonIconSize,
-  ButtonProps,
-} from "@/core/components/ui/button";
+import { Button, ButtonProps } from "@/core/components/ui/button";
 import {
   Tooltip,
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { SortDirection } from "@tanstack/react-table";
-import React from "react";
 import { SORT_ICONS } from "../constants";
 import { coreTable } from "../hooks/core-table";
 
 export type ColumnSortButtonProps = ButtonProps & {
-  size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 };
 
 export function ColumnSortButton({
   sortDirection,
-  align,
+  align = "center",
   size = "icon-xs",
   variant = "ghost",
+  children,
   ...props
 }: ColumnSortButtonProps & { sortDirection?: SortDirection | false }) {
+  const isIconSize = size?.startsWith("icon");
   const SortIcon = sortDirection
     ? SORT_ICONS[sortDirection]
     : SORT_ICONS.default;
@@ -36,10 +32,11 @@ export function ColumnSortButton({
       <TooltipTrigger
         render={
           <Button size={size} variant={variant} {...props}>
-            <SortIcon />
+            {children ?? (isIconSize && <SortIcon />)}
           </Button>
         }
       />
+
       <TooltipPopup align={align} className="capitalize">
         {typeof sortDirection === "string" ? sortDirection : "-"}
       </TooltipPopup>
@@ -60,10 +57,11 @@ export function CoreTableColumnSortButton({
   return (
     <ColumnSortButton
       sortDirection={sortDirection}
-      onClick={() => {
-        if (!sortDirection) return header.column.toggleSorting();
-        if (sortDirection === "asc") return header.column.toggleSorting(true);
-        return header.column.clearSorting();
+      onClick={(e) => {
+        if (!sortDirection) header.column.toggleSorting();
+        else if (sortDirection === "asc") header.column.toggleSorting(true);
+        else header.column.clearSorting();
+        onClick?.(e);
       }}
       {...props}
     />

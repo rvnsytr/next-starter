@@ -17,10 +17,9 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { EyeIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { coreTable } from "../hooks/core-table";
 import { TableMeta } from "../types";
 
@@ -30,23 +29,28 @@ export type ColumnVisibilityMenuProps = ButtonProps & {
   shortcut?: "default" | Hotkey;
 };
 
-const DEFAULT_HOTKEY: Hotkey = "V";
+const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 
 export function ColumnVisibilityMenu({
-  align,
   shortcut,
+  align = "center",
   size = "icon",
   variant = "outline",
-  className,
   children,
+  renderMenuItems,
   ...props
-}: ColumnVisibilityMenuProps & { children: React.ReactNode }) {
+}: ColumnVisibilityMenuProps & { renderMenuItems: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const hotkey = shortcut === "default" ? DEFAULT_HOTKEY : shortcut;
-  useHotkey(hotkey ?? DEFAULT_HOTKEY, () => setIsOpen((prev) => !prev), {
-    enabled: !!hotkey,
-  });
+  const isIconSize = size?.startsWith("icon");
+  const hotkey =
+    shortcut === "default" ? COLUMN_VISIBILITY_DEFAULT_HOTKEY : shortcut;
+
+  useHotkey(
+    hotkey ?? COLUMN_VISIBILITY_DEFAULT_HOTKEY,
+    () => setIsOpen((prev) => !prev),
+    { enabled: !!hotkey },
+  );
 
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
@@ -56,7 +60,7 @@ export function ColumnVisibilityMenu({
             <MenuTrigger
               render={
                 <Button size={size} variant={variant} {...props}>
-                  <EyeIcon />
+                  {children ?? (isIconSize && <EyeIcon />)}
                 </Button>
               }
             />
@@ -69,9 +73,7 @@ export function ColumnVisibilityMenu({
         </TooltipPopup>
       </Tooltip>
 
-      <MenuPopup align={align} className={cn(className)}>
-        {children}
-      </MenuPopup>
+      <MenuPopup align={align}>{renderMenuItems}</MenuPopup>
     </Menu>
   );
 }
@@ -96,8 +98,8 @@ export function CoreTableColumnVisibilityMenu(
 ) {
   const table = coreTable.useTableContext();
   return (
-    <ColumnVisibilityMenu {...props}>
-      {table
+    <ColumnVisibilityMenu
+      renderMenuItems={table
         .getAllColumns()
         .filter((column) => column.getCanHide())
         .map((column) => (
@@ -109,6 +111,7 @@ export function CoreTableColumnVisibilityMenu(
             onCheckedChange={(value) => column.toggleVisibility(!!value)}
           />
         ))}
-    </ColumnVisibilityMenu>
+      {...props}
+    />
   );
 }
