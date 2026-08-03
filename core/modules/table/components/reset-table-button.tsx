@@ -56,9 +56,14 @@ export function DataTableResetTableButton({
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
 
-  useHotkey(hotkey ?? TABLE_RESET_DEFAULT_HOTKEY, () => table.reset(), {
-    enabled: !!hotkey,
-  });
+  useHotkey(
+    hotkey ?? TABLE_RESET_DEFAULT_HOTKEY,
+    () => {
+      table.reset();
+      table.setGlobalFilter("");
+    },
+    { enabled: !!hotkey },
+  );
 
   return (
     <ResetTableButton
@@ -66,6 +71,7 @@ export function DataTableResetTableButton({
       hotkey={hotkey}
       onClick={(e) => {
         table.reset();
+        table.setGlobalFilter("");
         onClick?.(e);
       }}
       {...props}
