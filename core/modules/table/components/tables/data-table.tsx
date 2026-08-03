@@ -13,17 +13,28 @@ import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { BaseTableProps } from "@/core/modules/table/types";
 import { messages } from "@/shared/messages";
 
-export function DataTable({ caption, placeholder, ...props }: BaseTableProps) {
+export function DataTable({
+  caption,
+  placeholder,
+  style,
+  ...props
+}: BaseTableProps) {
   const table = dataTable.useTableContext();
 
   return (
-    <Table {...props}>
+    <Table
+      style={{
+        width: table.getTotalSize(),
+        ...style,
+      }}
+      {...props}
+    >
       {caption && <TableCaption>{caption}</TableCaption>}
 
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((h) => (
+            {headerGroup.headers.map((h, hidx) => (
               <table.AppHeader key={h.id} header={h}>
                 {(header) => {
                   if (header.rowSpan <= 0) return null;
@@ -32,8 +43,22 @@ export function DataTable({ caption, placeholder, ...props }: BaseTableProps) {
                       key={header.id}
                       colSpan={header.colSpan}
                       rowSpan={header.rowSpan}
+                      style={{ width: header.getSize() }}
+                      className="relative"
                     >
                       <header.FlexRender />
+
+                      {hidx < headerGroup.headers.length - 1 && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none"
+                        >
+                          <div className="bg-border h-full w-px" />
+                          <div className="bg-border h-full w-px" />
+                          <div />
+                        </div>
+                      )}
                     </TableHead>
                   );
                 }}
@@ -63,6 +88,7 @@ export function DataTable({ caption, placeholder, ...props }: BaseTableProps) {
                         //   cell.getIsFocused() && "ring-ring ring-1 outline-none",
                         //   edges.left && "border-l",
                         // )}
+                        style={{ width: cell.column.getSize() }}
                       >
                         <cell.FlexRender />
                       </TableCell>

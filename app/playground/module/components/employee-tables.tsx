@@ -21,7 +21,10 @@ export function EmployeeDataTable() {
         <table.PageSize />
         <table.Search shortcut="default" />
       </div>
-      <table.Table />
+      <table.Table
+        variant="bordered"
+        containerClassName="rounded-none border-x-0"
+      />
     </table.AppTable>
   );
 }

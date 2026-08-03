@@ -1,5 +1,7 @@
 import {
   columnFilteringFeature,
+  columnResizingFeature,
+  columnSizingFeature,
   columnVisibilityFeature,
   createFilteredRowModel,
   createPaginatedRowModel,
@@ -33,6 +35,9 @@ import { TableMeta } from "../types";
 export const dataTableFeatures: TableFeatures = {
   columnVisibilityFeature,
   rowSelectionFeature,
+
+  columnSizingFeature,
+  columnResizingFeature,
 
   rowPaginationFeature,
   paginatedRowModel: createPaginatedRowModel(),

@@ -15,6 +15,7 @@ export const employeeColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnCheckbox />,
     cell: (c) => <c.cell.ColumnCheckbox />,
 
+    size: 50,
     enableHiding: false,
     enableSorting: false,
   }),
@@ -23,6 +24,7 @@ export const employeeColumns = columnHelper.columns([
     header: () => <div className="text-center">No</div>,
     cell: (c) => <div className="text-center">{c.row.index + 1}</div>,
 
+    size: 50,
     enableHiding: false,
     enableSorting: false,
   }),

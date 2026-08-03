@@ -1,9 +1,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
-import { cn } from "@/core/utils";
 import { dataTable } from "../hooks/data-table";
 
 export function DataTableColumnHeaderCheckbox({
-  className,
   ...props
 }: React.ComponentProps<typeof Checkbox>) {
   const table = dataTable.useTableContext();
@@ -16,7 +14,6 @@ export function DataTableColumnHeaderCheckbox({
       indeterminate={!isAllRowsSelected && table.getIsSomePageRowsSelected()}
       checked={isAllRowsSelected}
       onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
-      className={cn("mx-auto", className)}
       {...props}
     />
   );
