@@ -34,7 +34,6 @@ export function ThemeToggle({
   const isMobile = useIsMobile();
   const isMounted = useIsMounted();
   const { theme: currentTheme, setTheme } = useTheme();
-  const { isTransitioning, startTransition } = useViewTransition();
 
   const { icon: Icon } = themes.meta[(currentTheme ?? "system") as Theme];
 
@@ -47,10 +46,10 @@ export function ThemeToggle({
       variant={variant}
       onClick={(e) => {
         onClick?.(e);
-        startTransition(() => setTheme(themes.next(currentTheme)));
+        setTheme(themes.next(currentTheme));
       }}
       className={className}
-      disabled={disabled || isTransitioning}
+      disabled={disabled}
       {...props}
     >
       <Icon />
