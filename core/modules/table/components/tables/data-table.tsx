@@ -52,6 +52,7 @@ export function DataTable({
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
+                          onDoubleClick={() => header.column.resetSize()}
                           className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none"
                         >
                           <div className="bg-border h-full w-px" />

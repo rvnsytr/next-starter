@@ -25,6 +25,7 @@ import { DataTablePageSizeSelector } from "../components/page-size-selector";
 import { DataTablePagination } from "../components/pagination";
 import { DataTableReset } from "../components/reset";
 import { DataTableRowCheckbox } from "../components/row-checkbox";
+import { DataTableRowNumber } from "../components/row-number";
 import { DataTableSearch } from "../components/search";
 import { DataTableSelectAllCheckbox } from "../components/select-all-checkbox";
 import { DataTableSortButton } from "../components/sort-button";
@@ -79,5 +80,6 @@ export const dataTable = createTableHook({
   },
   cellComponents: {
     RowCheckbox: DataTableRowCheckbox,
+    RowNumber: DataTableRowNumber,
   },
 });

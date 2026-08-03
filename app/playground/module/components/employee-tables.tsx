@@ -9,6 +9,12 @@ export function EmployeeDataTable() {
     columns: employeeColumns,
     data: extremeEmployees,
     getRowId: (row) => row.id.toString(),
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 100,
+      },
+    },
   });
 
   return (
@@ -23,7 +29,7 @@ export function EmployeeDataTable() {
       </div>
       <table.Table
         variant="bordered"
-        containerClassName="rounded-none border-x-0"
+        containerClassName=" rounded-none border-x-0"
       />
     </table.AppTable>
   );
