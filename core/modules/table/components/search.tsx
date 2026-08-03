@@ -6,10 +6,11 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
+import { useDebounce } from "@/core/hooks/use-debounce";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dataTable } from "../hooks/data-table";
 
 export type SearchProps = Omit<
@@ -58,10 +59,17 @@ export function Search({
 
 export function DataTableSearch(props: SearchProps) {
   const table = dataTable.useTableContext();
+  const defaultValue = table.atoms.globalFilter.get() ?? "";
+
+  const [value, setValue] = useState<string>(defaultValue);
+  const debouncedSearch = useDebounce(value);
+
+  useEffect(() => table.setGlobalFilter(value), [debouncedSearch]);
+
   return (
     <Search
-      value={table.atoms.globalFilter.get() ?? ""}
-      onChange={(e) => table.setGlobalFilter(String(e.target.value))}
+      value={value}
+      onChange={(e) => setValue(String(e.target.value))}
       {...props}
     />
   );
