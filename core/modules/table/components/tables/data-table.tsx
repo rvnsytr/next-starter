@@ -9,12 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
-import { coreTable } from "@/core/modules/table/hooks/core-table";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { BaseTableProps } from "@/core/modules/table/types";
 import { messages } from "@/shared/messages";
 
-export function CoreTable({ caption, placeholder, ...props }: BaseTableProps) {
-  const table = coreTable.useTableContext();
+export function DataTable({ caption, placeholder, ...props }: BaseTableProps) {
+  const table = dataTable.useTableContext();
 
   return (
     <Table {...props}>

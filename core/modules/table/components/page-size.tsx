@@ -8,12 +8,10 @@ import {
   SelectValue,
 } from "@/core/components/ui/select";
 import { cn, formatNumber } from "@/core/utils";
-import { coreTable } from "../hooks/core-table";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "../constants";
+import { dataTable } from "../hooks/data-table";
 
 export type PageSizeProps = React.ComponentProps<typeof SelectTrigger>;
-
-export const pageSizes = [5, 10, 20, 30, 40, 50, 100];
-export const defaultPageSize = pageSizes[1];
 
 export function PageSize({
   selectProps,
@@ -27,11 +25,11 @@ export function PageSize({
       </SelectTrigger>
 
       <SelectPopup>
-        {pageSizes.map((v) => (
+        {PAGE_SIZES.map((v) => (
           <SelectItem
             key={v}
             value={String(v)}
-            className={cn(v === defaultPageSize && "font-semibold")}
+            className={cn(v === DEFAULT_PAGE_SIZE && "font-semibold")}
           >
             {formatNumber(v)}
           </SelectItem>
@@ -41,8 +39,8 @@ export function PageSize({
   );
 }
 
-export function CoreTablePageSize(props: PageSizeProps) {
-  const table = coreTable.useTableContext();
+export function DataTablePageSize(props: PageSizeProps) {
+  const table = dataTable.useTableContext();
   return (
     <PageSize
       selectProps={{

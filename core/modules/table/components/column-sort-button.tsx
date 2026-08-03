@@ -8,7 +8,7 @@ import {
 } from "@/core/components/ui/tooltip";
 import { SortDirection } from "@tanstack/react-table";
 import { SORT_ICONS } from "../constants";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 
 export type ColumnSortButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -44,11 +44,11 @@ export function ColumnSortButton({
   );
 }
 
-export function CoreTableColumnSortButton({
+export function DataTableColumnSortButton({
   onClick,
   ...props
 }: ColumnSortButtonProps) {
-  const header = coreTable.useHeaderContext();
+  const header = dataTable.useHeaderContext();
 
   if (!header.column.getCanSort()) return null;
 

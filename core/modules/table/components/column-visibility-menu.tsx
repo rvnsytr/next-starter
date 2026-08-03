@@ -20,7 +20,7 @@ import {
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
 export type ColumnVisibilityMenuProps = ButtonProps & {
@@ -97,10 +97,10 @@ export function ColumnVisibilityMenuItem({
   );
 }
 
-export function CoreTableColumnVisibilityMenu(
+export function DataTableColumnVisibilityMenu(
   props: ColumnVisibilityMenuProps,
 ) {
-  const table = coreTable.useTableContext();
+  const table = dataTable.useTableContext();
   return (
     <ColumnVisibilityMenu
       renderMenuItems={table

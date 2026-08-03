@@ -1,5 +1,5 @@
 import { CustomColorBadge } from "@/core/components/ui/badge";
-import { coreTable } from "@/core/modules/table/hooks/core-table";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
 import { formatDate } from "date-fns";
@@ -7,7 +7,7 @@ import { MailIcon, UserRoundIcon } from "lucide-react";
 import { skillMeta, userRoleMeta } from "../constants";
 import { Employee } from "../types";
 
-const columnHelper = coreTable.createAppColumnHelper<Employee>();
+const columnHelper = dataTable.createAppColumnHelper<Employee>();
 
 export const employeeColumns = columnHelper.columns([
   columnHelper.display({

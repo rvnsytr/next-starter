@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 
 export type ResetTableButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -47,12 +47,12 @@ export function ResetTableButton({
   );
 }
 
-export function CoreTableResetTableButton({
+export function DataTableResetTableButton({
   shortcut,
   onClick,
   ...props
 }: ResetTableButtonProps) {
-  const table = coreTable.useTableContext();
+  const table = dataTable.useTableContext();
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
 

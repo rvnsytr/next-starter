@@ -8,7 +8,7 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
 } from "lucide-react";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 
 export type PaginationProps = React.ComponentProps<typeof ButtonGroup> & {
   buttonsProps?: ButtonProps;
@@ -92,8 +92,8 @@ export function Pagination({
   );
 }
 
-export function CoreTablePagination() {
-  const table = coreTable.useTableContext();
+export function DataTablePagination() {
+  const table = dataTable.useTableContext();
   return (
     <Pagination
       firstButton={{

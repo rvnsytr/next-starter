@@ -10,7 +10,7 @@ import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
 import { useRef } from "react";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 
 export type SearchProps = Omit<
   React.ComponentProps<typeof InputGroupInput>,
@@ -56,8 +56,8 @@ export function Search({
   );
 }
 
-export function CoreTableSearch(props: SearchProps) {
-  const table = coreTable.useTableContext();
+export function DataTableSearch(props: SearchProps) {
+  const table = dataTable.useTableContext();
   return (
     <Search
       value={table.atoms.globalFilter.get() ?? ""}

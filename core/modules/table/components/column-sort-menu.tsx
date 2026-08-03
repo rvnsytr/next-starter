@@ -17,7 +17,7 @@ import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { SORT_ICONS } from "../constants";
-import { coreTable } from "../hooks/core-table";
+import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
 export type ColumnSortMenuProps = ButtonProps & {
@@ -92,8 +92,8 @@ export function ColumnSortMenuItem({
   );
 }
 
-export function CoreTableColumnSortMenu(props: ColumnSortMenuProps) {
-  const table = coreTable.useTableContext();
+export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
+  const table = dataTable.useTableContext();
   return (
     <ColumnSortMenu
       renderMenuItems={table

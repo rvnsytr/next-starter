@@ -17,17 +17,17 @@ import {
   TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-import { CoreTableColumnSortButton } from "../components/column-sort-button";
-import { CoreTableColumnSortMenu } from "../components/column-sort-menu";
-import { CoreTableColumnVisibilityMenu } from "../components/column-visibility-menu";
-import { CoreTablePageSize } from "../components/page-size";
-import { CoreTablePagination } from "../components/pagination";
-import { CoreTableResetTableButton } from "../components/reset-table-button";
-import { CoreTableSearch } from "../components/search";
-import { CoreTable } from "../components/tables/core-table";
+import { DataTableColumnSortButton } from "../components/column-sort-button";
+import { DataTableColumnSortMenu } from "../components/column-sort-menu";
+import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
+import { DataTablePageSize } from "../components/page-size";
+import { DataTablePagination } from "../components/pagination";
+import { DataTableResetTableButton } from "../components/reset-table-button";
+import { DataTableSearch } from "../components/search";
+import { DataTable } from "../components/tables/data-table";
 import { TableMeta } from "../types";
 
-export const coreTableFeatures: TableFeatures = {
+export const dataTableFeatures: TableFeatures = {
   columnVisibilityFeature,
 
   rowPaginationFeature,
@@ -50,21 +50,21 @@ export const coreTableFeatures: TableFeatures = {
   },
 };
 
-export const coreTable = createTableHook({
+export const dataTable = createTableHook({
   features: tableFeatures({
-    ...coreTableFeatures,
+    ...dataTableFeatures,
     columnMeta: metaHelper<TableMeta>(),
   }),
   tableComponents: {
-    Table: CoreTable,
-    ColumnVisibilityMenu: CoreTableColumnVisibilityMenu,
-    ColumnSortMenu: CoreTableColumnSortMenu,
-    ResetTableButton: CoreTableResetTableButton,
-    Pagination: CoreTablePagination,
-    PageSize: CoreTablePageSize,
-    Search: CoreTableSearch,
+    Table: DataTable,
+    ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
+    ColumnSortMenu: DataTableColumnSortMenu,
+    ResetTableButton: DataTableResetTableButton,
+    Pagination: DataTablePagination,
+    PageSize: DataTablePageSize,
+    Search: DataTableSearch,
   },
   headerComponents: {
-    ColumnSortButton: CoreTableColumnSortButton,
+    ColumnSortButton: DataTableColumnSortButton,
   },
 });

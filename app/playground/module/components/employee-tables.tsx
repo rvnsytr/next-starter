@@ -1,11 +1,11 @@
 "use client";
 
-import { coreTable } from "@/core/modules/table/hooks/core-table";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { employees } from "../data";
 import { employeeColumns } from "./employee-columns";
 
-export function EmployeeCoreTable() {
-  const table = coreTable.useAppTable({
+export function EmployeeDataTable() {
+  const table = dataTable.useAppTable({
     columns: employeeColumns,
     data: employees,
     getRowId: (row) => row.id.toString(),
