@@ -13,7 +13,7 @@ import {
 import { CoreTableColumnSortButton } from "../components/column-sort-button";
 import { CoreTableColumnSortMenu } from "../components/column-sort-menu";
 import { CoreTableColumnVisibilityMenu } from "../components/column-visibility-menu";
-import { CoreTableResetTableButton } from "../components/table-reset-button";
+import { CoreTableResetTableButton } from "../components/reset-table-button";
 import { CoreTable } from "../components/tables/core-table";
 import { TableMeta } from "../types";
 

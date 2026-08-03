@@ -10,20 +10,20 @@ import {
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { coreTable } from "../hooks/core-table";
 
-export type TableResetButtonProps = ButtonProps & {
+export type ResetTableButtonProps = ButtonProps & {
   shortcut?: "default" | Hotkey;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 };
 
 export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
 
-export function TableResetButton({
+export function ResetTableButton({
   hotkey,
   align = "center",
   size = "icon",
   variant = "outline",
   ...props
-}: TableResetButtonProps & { hotkey?: Hotkey }) {
+}: ResetTableButtonProps & { hotkey?: Hotkey }) {
   return (
     <Tooltip>
       <TooltipTrigger
@@ -42,7 +42,7 @@ export function CoreTableResetTableButton({
   shortcut,
   onClick,
   ...props
-}: TableResetButtonProps) {
+}: ResetTableButtonProps) {
   const table = coreTable.useTableContext();
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
@@ -52,7 +52,7 @@ export function CoreTableResetTableButton({
   });
 
   return (
-    <TableResetButton
+    <ResetTableButton
       shortcut={shortcut}
       hotkey={hotkey}
       onClick={(e) => {
