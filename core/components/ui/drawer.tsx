@@ -342,7 +342,11 @@ export function DrawerPanel({
 
   if (scrollable) {
     return (
-      <ScrollArea className="touch-auto" scrollFade={scrollFade}>
+      <ScrollArea
+        className="touch-auto"
+        scrollFade={scrollFade}
+        overscrollContain
+      >
         {content}
       </ScrollArea>
     );

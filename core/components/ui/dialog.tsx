@@ -187,7 +187,7 @@ function DialogPanel({
   ...props
 }: useRender.ComponentProps<"div"> & { scrollFade?: boolean }) {
   return (
-    <ScrollArea scrollFade={scrollFade}>
+    <ScrollArea scrollFade={scrollFade} overscrollContain>
       {useRender({
         defaultTagName: "div",
         props: mergeProps<"div">(

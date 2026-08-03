@@ -95,7 +95,7 @@ export function NumberFieldInput({
     <NumberFieldPrimitive.Input
       data-slot="number-field-input"
       className={cn(
-        "h-8 w-full min-w-0 grow bg-transparent px-[calc(--spacing(3)-1px)] leading-7.5 tabular-nums outline-none [transition:background-color_5000000s_ease-in-out_0s] in-data-[size=lg]:h-9 in-data-[size=lg]:leading-8.5 in-data-[size=sm]:h-7 in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:leading-8.5",
+        "text-foreground h-8 w-full min-w-0 grow bg-transparent px-[calc(--spacing(3)-1px)] leading-7.5 tabular-nums outline-none in-data-[size=lg]:h-9 in-data-[size=lg]:leading-8.5 in-data-[size=sm]:h-7 in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:leading-8.5",
         className,
       )}
       {...props}

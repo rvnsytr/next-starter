@@ -8,6 +8,7 @@ export function ScrollArea({
   scrollbarGutter = false,
   fill = false,
   clampContentMinWidth = true,
+  overscrollContain = false,
   withScrollbar = true,
   className,
   children,
@@ -17,6 +18,7 @@ export function ScrollArea({
   scrollbarGutter?: boolean;
   fill?: boolean;
   clampContentMinWidth?: boolean;
+  overscrollContain?: boolean;
   withScrollbar?: boolean;
 }) {
   return (
@@ -27,7 +29,9 @@ export function ScrollArea({
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
         className={cn(
-          "transition-shadows focus-visible:ring-ring focus-visible:ring-offset-background h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-offset-1 data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain",
+          "transition-shadows focus-visible:ring-ring focus-visible:ring-offset-background h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
+          overscrollContain &&
+            "data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain",
           scrollFade &&
             "mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] [--fade-size:1.5rem]",
           scrollbarGutter &&
