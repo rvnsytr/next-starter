@@ -40,8 +40,8 @@ export function DataTable({
                 {(header) => {
                   if (header.rowSpan <= 0) return null;
 
-                  const pinningPosition = header.column.getIsPinned();
-                  const isPinned = !!pinningPosition;
+                  const pinPosition = header.column.getIsPinned();
+                  const isPinned = !!pinPosition;
 
                   return (
                     <TableHead
@@ -57,8 +57,8 @@ export function DataTable({
                         "relative z-10",
 
                         isPinned && "bg-background/90 sticky z-20",
-                        pinningPosition === "start" && "left-0 pl-4",
-                        pinningPosition === "end" && "right-0 pr-4",
+                        pinPosition === "start" && "left-0 pl-4",
+                        pinPosition === "end" && "right-0 pr-4",
                       )}
                     >
                       <header.FlexRender />
@@ -90,7 +90,8 @@ export function DataTable({
                     // const isSelected = cell.getIsSelected();
                     // const edges = cell.getSelectionEdges();
 
-                    const pinningPosition = cell.column.getIsPinned();
+                    const pinPosition = cell.column.getIsPinned();
+                    const isPinned = !!pinPosition;
 
                     return (
                       <TableCell
@@ -110,9 +111,9 @@ export function DataTable({
                         className={cn(
                           "z-10",
 
-                          !!pinningPosition && "bg-background/90 sticky z-20",
-                          pinningPosition === "start" && "left-0 pl-4",
-                          pinningPosition === "end" && "right-0 pr-4",
+                          isPinned && "bg-background/90 sticky z-20",
+                          pinPosition === "start" && "left-0 pl-4",
+                          pinPosition === "end" && "right-0 pr-4",
                         )}
                       >
                         <cell.FlexRender />

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Button,
-  ButtonIconSize,
-  ButtonProps,
-} from "@/core/components/ui/button";
+import { Button, ButtonProps } from "@/core/components/ui/button";
 import { Kbd } from "@/core/components/ui/kbd";
 import {
   Menu,
@@ -24,11 +20,14 @@ import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
 export type VisibilityMenuProps = ButtonProps & {
-  size?: ButtonIconSize;
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "V" */
   shortcut?: "default" | Hotkey;
 };
+
+export type VisibilityCheckboxProps = React.ComponentProps<
+  typeof MenuCheckboxItem
+> & { id: string; meta?: TableMeta };
 
 const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 
@@ -38,9 +37,11 @@ export function VisibilityMenu({
   size,
   variant = "outline",
   children,
-  renderMenuItems,
+  checkboxesProps,
   ...props
-}: VisibilityMenuProps & { renderMenuItems: React.ReactNode }) {
+}: VisibilityMenuProps & {
+  checkboxesProps: VisibilityCheckboxProps[];
+}) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const buttonSize: ButtonProps["size"] =
@@ -77,23 +78,17 @@ export function VisibilityMenu({
         </TooltipPopup>
       </Tooltip>
 
-      <MenuPopup align={align}>{renderMenuItems}</MenuPopup>
+      <MenuPopup align={align}>
+        {checkboxesProps.map(({ id, meta, ...itemProps }) => (
+          <MenuCheckboxItem key={id} id={`visibility-cb-${id}`} {...itemProps}>
+            <div className="flex items-center gap-x-2">
+              {meta?.icon && <meta.icon className="text-muted-foreground" />}
+              {meta?.label ?? id}
+            </div>
+          </MenuCheckboxItem>
+        ))}
+      </MenuPopup>
     </Menu>
-  );
-}
-
-export function VisibilityMenuItem({
-  id: columnId,
-  meta,
-  ...props
-}: React.ComponentProps<typeof MenuCheckboxItem> & { meta?: TableMeta }) {
-  return (
-    <MenuCheckboxItem id={`visibility-cb-${columnId}`} {...props}>
-      <div className="flex items-center gap-x-2">
-        {meta?.icon && <meta.icon className="text-muted-foreground" />}
-        {meta?.label ?? columnId}
-      </div>
-    </MenuCheckboxItem>
   );
 }
 
@@ -101,18 +96,15 @@ export function DataTableVisibilityMenu(props: VisibilityMenuProps) {
   const table = dataTable.useTableContext();
   return (
     <VisibilityMenu
-      renderMenuItems={table
+      checkboxesProps={table
         .getAllColumns()
         .filter((column) => column.getCanHide())
-        .map((column) => (
-          <VisibilityMenuItem
-            key={column.id}
-            id={column.id}
-            meta={column.columnDef.meta}
-            checked={column.getIsVisible()}
-            onCheckedChange={(value) => column.toggleVisibility(!!value)}
-          />
-        ))}
+        .map((column) => ({
+          id: column.id,
+          meta: column.columnDef.meta,
+          checked: column.getIsVisible(),
+          onCheckedChange: (value) => column.toggleVisibility(!!value),
+        }))}
       {...props}
     />
   );

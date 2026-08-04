@@ -29,9 +29,7 @@ export function Search({
   className,
   ...props
 }: SearchProps &
-  Required<
-    Pick<React.ComponentProps<typeof InputGroupInput>, "value" | "onChange">
-  >) {
+  Pick<React.ComponentProps<typeof InputGroupInput>, "value" | "onChange">) {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;

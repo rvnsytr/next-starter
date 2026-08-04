@@ -17,12 +17,14 @@ export type SortButtonProps = ButtonProps & {
 export function SortButton({
   sortDirection,
   align = "center",
-  size = "icon-xs",
+  size,
   variant = "ghost",
   children,
   ...props
 }: SortButtonProps & { sortDirection?: SortDirection | false }) {
-  const isIconSize = size?.startsWith("icon");
+  const buttonSize: ButtonProps["size"] = size ?? (children ? "xs" : "icon-xs");
+  const isIconSize = buttonSize?.startsWith("icon");
+
   const SortIcon = sortDirection
     ? SORT_ICONS[sortDirection]
     : SORT_ICONS.default;
@@ -31,14 +33,14 @@ export function SortButton({
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button size={size} variant={variant} {...props}>
+          <Button size={buttonSize} variant={variant} {...props}>
             {children ?? (isIconSize && <SortIcon />)}
           </Button>
         }
       />
 
       <TooltipPopup align={align} className="capitalize">
-        {typeof sortDirection === "string" ? sortDirection : "-"}
+        {typeof sortDirection === "string" ? sortDirection : "Sort Column"}
       </TooltipPopup>
     </Tooltip>
   );

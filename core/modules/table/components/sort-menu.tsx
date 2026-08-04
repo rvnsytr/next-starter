@@ -26,6 +26,10 @@ export type SortMenuProps = ButtonProps & {
   shortcut?: "default" | Hotkey;
 };
 
+export type SortCheckboxProps = React.ComponentProps<
+  typeof MenuCheckboxItem
+> & { id: string; meta?: TableMeta };
+
 export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 
 export function SortMenu({
@@ -34,9 +38,9 @@ export function SortMenu({
   size,
   variant = "outline",
   children,
-  renderMenuItems,
+  checkboxesProps,
   ...props
-}: SortMenuProps & { renderMenuItems: React.ReactNode }) {
+}: SortMenuProps & { checkboxesProps: SortCheckboxProps[] }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const buttonSize: ButtonProps["size"] =
@@ -72,23 +76,17 @@ export function SortMenu({
         </TooltipPopup>
       </Tooltip>
 
-      <MenuPopup align={align}>{renderMenuItems}</MenuPopup>
+      <MenuPopup align={align}>
+        {checkboxesProps.map(({ id, meta, ...itemProps }) => (
+          <MenuCheckboxItem key={id} id={`sorting-cb-${id}`} {...itemProps}>
+            <div className="flex items-center gap-x-2">
+              {meta?.icon && <meta.icon className="text-muted-foreground" />}
+              {meta?.label ?? id}
+            </div>
+          </MenuCheckboxItem>
+        ))}
+      </MenuPopup>
     </Menu>
-  );
-}
-
-export function SortMenuItem({
-  id: columnId,
-  meta,
-  ...props
-}: React.ComponentProps<typeof MenuCheckboxItem> & { meta?: TableMeta }) {
-  return (
-    <MenuCheckboxItem id={`sorting-cb-${columnId}`} {...props}>
-      <div className="flex items-center gap-x-2">
-        {meta?.icon && <meta.icon className="text-muted-foreground" />}
-        {meta?.label ?? columnId}
-      </div>
-    </MenuCheckboxItem>
   );
 }
 
@@ -96,26 +94,23 @@ export function DataTableSortMenu(props: SortMenuProps) {
   const table = dataTable.useTableContext();
   return (
     <SortMenu
-      renderMenuItems={table
+      checkboxesProps={table
         .getAllColumns()
         .filter((column) => column.getCanSort() || column.getCanMultiSort())
         .map((column) => {
           const sortDirection = column.getIsSorted();
           const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
-          return (
-            <SortMenuItem
-              key={column.id}
-              id={column.id}
-              meta={column.columnDef.meta}
-              checked={Boolean(sortDirection)}
-              onCheckedChange={() => {
-                if (sortDirection === "asc") column.toggleSorting(true, true);
-                else if (sortDirection === "desc") column.clearSorting();
-                else column.toggleSorting(false, true);
-              }}
-              checkIcon={SortIcon ? <SortIcon /> : undefined}
-            />
-          );
+          return {
+            id: column.id,
+            meta: column.columnDef.meta,
+            checked: Boolean(sortDirection),
+            onCheckedChange: () => {
+              if (sortDirection === "asc") column.toggleSorting(true, true);
+              else if (sortDirection === "desc") column.clearSorting();
+              else column.toggleSorting(false, true);
+            },
+            checkIcon: SortIcon ? <SortIcon /> : undefined,
+          };
         })}
       {...props}
     />

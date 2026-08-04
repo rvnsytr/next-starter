@@ -91,22 +91,22 @@ export function DataTablePinMenu({ onClick, ...props }: PinMenuProps) {
 
   if (!header.column.getCanPin()) return null;
 
-  const pinnningPosition = header.column.getIsPinned();
+  const pinPosition = header.column.getIsPinned();
 
   return (
     <PinMenu
-      pinPosition={pinnningPosition}
+      pinPosition={pinPosition}
       unpinButtonProps={{
         onClick: () => header.column.pin(false),
-        disabled: pinnningPosition === false,
+        disabled: pinPosition === false,
       }}
       pinStartButtonProps={{
         onClick: () => header.column.pin("start"),
-        disabled: pinnningPosition === "start",
+        disabled: pinPosition === "start",
       }}
       pinEndButtonProps={{
         onClick: () => header.column.pin("end"),
-        disabled: pinnningPosition === "end",
+        disabled: pinPosition === "end",
       }}
       {...props}
     />
