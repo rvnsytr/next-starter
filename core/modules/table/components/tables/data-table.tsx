@@ -53,11 +53,8 @@ export function DataTable({
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                           onDoubleClick={() => header.column.resetSize()}
-                          className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none"
-                        >
-                          <div className="bg-border h-full w-px" />
-                          <div className="not-in-data-[variant=bordered]:hidden" />
-                        </div>
+                          className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none in-data-[variant=bordered]:border-s"
+                        />
                       )}
                     </TableHead>
                   );
@@ -71,7 +68,7 @@ export function DataTable({
       <TableBody>
         {table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id} data-selected={row.getIsSelected()}>
               {row.getVisibleCells().map((cell) => (
                 <table.AppCell key={cell.id} cell={cell}>
                   {(cell) => {
