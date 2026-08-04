@@ -1,5 +1,6 @@
 import {
   columnFilteringFeature,
+  columnPinningFeature,
   columnResizingFeature,
   columnSizingFeature,
   columnVisibilityFeature,
@@ -23,6 +24,7 @@ import {
 import { DataTableVisibilityMenu } from "../components/column-visibility-menu";
 import { DataTablePageSizeSelector } from "../components/page-size-selector";
 import { DataTablePagination } from "../components/pagination";
+import { DataTablePinMenu } from "../components/pin-menu";
 import { DataTableReset } from "../components/reset";
 import { DataTableRowCheckbox } from "../components/row-checkbox";
 import { DataTableRowNumber } from "../components/row-number";
@@ -34,7 +36,9 @@ import { DataTable } from "../components/tables/data-table";
 import { TableMeta } from "../types";
 
 export const dataTableFeatures: TableFeatures = {
+  columnPinningFeature,
   columnVisibilityFeature,
+
   rowSelectionFeature,
 
   columnSizingFeature,
@@ -77,6 +81,7 @@ export const dataTable = createTableHook({
   headerComponents: {
     SelectAllCheckbox: DataTableSelectAllCheckbox,
     SortButton: DataTableSortButton,
+    PinMenu: DataTablePinMenu,
   },
   cellComponents: {
     RowCheckbox: DataTableRowCheckbox,

@@ -11,6 +11,7 @@ import {
 } from "@/core/components/ui/table";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { BaseTableProps } from "@/core/modules/table/types";
+import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 
 export function DataTable({
@@ -38,13 +39,27 @@ export function DataTable({
               <table.AppHeader key={h.id} header={h}>
                 {(header) => {
                   if (header.rowSpan <= 0) return null;
+
+                  const pinningPosition = header.column.getIsPinned();
+                  const isPinned = !!pinningPosition;
+
                   return (
                     <TableHead
                       key={header.id}
                       colSpan={header.colSpan}
                       rowSpan={header.rowSpan}
-                      style={{ width: header.getSize() }}
-                      className="relative"
+                      style={{
+                        width: header.getSize(),
+                        left: header.column.getStart("start"),
+                        right: header.column.getAfter("end"),
+                      }}
+                      className={cn(
+                        "relative z-10",
+
+                        isPinned && "bg-background/90 sticky z-20",
+                        pinningPosition === "start" && "left-0 pl-4",
+                        pinningPosition === "end" && "right-0 pr-4",
+                      )}
                     >
                       <header.FlexRender />
 
@@ -53,7 +68,7 @@ export function DataTable({
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                           onDoubleClick={() => header.column.resetSize()}
-                          className="absolute top-0 right-0 flex h-full w-1 cursor-col-resize touch-none justify-between gap-px select-none in-data-[variant=bordered]:border-s"
+                          className="absolute top-0 right-0 flex h-full w-2 cursor-col-resize touch-none justify-between gap-px select-none"
                         />
                       )}
                     </TableHead>
@@ -75,6 +90,8 @@ export function DataTable({
                     // const isSelected = cell.getIsSelected();
                     // const edges = cell.getSelectionEdges();
 
+                    const pinningPosition = cell.column.getIsPinned();
+
                     return (
                       <TableCell
                         key={cell.id}
@@ -85,7 +102,18 @@ export function DataTable({
                         //   cell.getIsFocused() && "ring-ring ring-1 outline-none",
                         //   edges.left && "border-l",
                         // )}
-                        style={{ width: cell.column.getSize() }}
+                        style={{
+                          width: cell.column.getSize(),
+                          left: cell.column.getStart("start"),
+                          right: cell.column.getAfter("end"),
+                        }}
+                        className={cn(
+                          "z-10",
+
+                          !!pinningPosition && "bg-background/90 sticky z-20",
+                          pinningPosition === "start" && "left-0 pl-4",
+                          pinningPosition === "end" && "right-0 pr-4",
+                        )}
                       >
                         <cell.FlexRender />
                       </TableCell>
