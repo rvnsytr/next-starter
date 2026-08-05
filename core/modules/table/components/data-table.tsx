@@ -16,7 +16,7 @@ import { Pagination, PaginationProps } from "./base/pagination";
 import { PinMenu, PinMenuProps } from "./base/pin-menu";
 import { Reset, ResetProps } from "./base/reset";
 import { RowCheckbox, RowCheckboxProps } from "./base/row-checkbox";
-import { RowNumber } from "./base/row-number";
+import { RowNumber, RowNumberProps } from "./base/row-number";
 import { Search, SearchProps } from "./base/search";
 import {
   SelectAllCheckbox,
@@ -72,8 +72,8 @@ export function DataTableRowCheckbox(props: RowCheckboxProps) {
   return <RowCheckbox tableType={tableType} {...props} />;
 }
 
-export function DataTableRowNumber() {
-  return <RowNumber tableType={tableType} />;
+export function DataTableRowNumber(props: RowNumberProps) {
+  return <RowNumber tableType={tableType} {...props} />;
 }
 
 export function DataTableSortButton(props: SortButtonProps) {

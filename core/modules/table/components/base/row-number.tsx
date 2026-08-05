@@ -2,8 +2,16 @@
 
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
+import React from "react";
 
-export function RowNumber({ tableType }: { tableType: DataTableType }) {
+export type RowNumberProps = React.ComponentProps<"div">;
+
+export function RowNumber({
+  tableType,
+  ...props
+}: {
+  tableType: DataTableType;
+}) {
   const tableHook = getTableHook(tableType);
   const table = tableHook.useTableContext();
   const cell = tableHook.useCellContext();
@@ -13,5 +21,9 @@ export function RowNumber({ tableType }: { tableType: DataTableType }) {
   const rowNumber = cell.row.index + 1;
   const globalRowNumber = pageIndex * pageSize + rowNumber;
 
-  return table.options.manualPagination ? globalRowNumber : rowNumber;
+  return (
+    <div {...props}>
+      {table.options.manualPagination ? globalRowNumber : rowNumber}
+    </div>
+  );
 }

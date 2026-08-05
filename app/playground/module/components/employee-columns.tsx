@@ -22,7 +22,7 @@ export const employeeColumns = columnHelper.columns([
   columnHelper.display({
     id: "no",
     header: () => <div className="text-center">No</div>,
-    cell: (c) => <c.cell.RowNumber />,
+    cell: (c) => <c.cell.RowNumber className="text-center" />,
 
     size: 50,
     enableHiding: false,
