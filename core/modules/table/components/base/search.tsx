@@ -32,14 +32,17 @@ export function Search({
   ...props
 }: SearchProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
-  const defaultValue = table.atoms.globalFilter.get() ?? "";
+  const defaultValue = table.baseAtoms.globalFilter.get() ?? "";
 
   const searchRef = useRef<HTMLInputElement>(null);
 
   const [value, setValue] = useState<string>(defaultValue);
   const debouncedSearch = useDebounce(value);
 
-  useEffect(() => table.setGlobalFilter(value), [debouncedSearch]);
+  useEffect(
+    () => table.setGlobalFilter(debouncedSearch),
+    [table, debouncedSearch],
+  );
 
   const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
 

@@ -18,7 +18,7 @@ export function RowCheckbox({
       aria-label="Select row"
       checked={cell.row.getIsSelected()}
       onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
-      disabled={disabled || !cell.row.getCanSelect()}
+      disabled={disabled ?? !cell.row.getCanSelect()}
       {...props}
     />
   );

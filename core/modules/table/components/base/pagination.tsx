@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export type PaginationProps = React.ComponentProps<typeof ButtonGroup> & {
-  buttonsProps?: ButtonProps;
+  buttonsProps?: Pick<ButtonProps, "size" | "variant" | "disabled" | "onClick">;
 };
 
 export function Pagination({
@@ -27,7 +27,6 @@ export function Pagination({
     variant = "outline",
     disabled = false,
     onClick,
-    ...restButtonProps
   } = buttonsProps;
 
   return (
@@ -40,7 +39,6 @@ export function Pagination({
           onClick?.(e);
         }}
         disabled={disabled || !table.getCanPreviousPage()}
-        {...restButtonProps}
       >
         <ChevronsLeftIcon />
       </Button>
@@ -53,7 +51,6 @@ export function Pagination({
           onClick?.(e);
         }}
         disabled={disabled || !table.getCanPreviousPage()}
-        {...restButtonProps}
       >
         <ChevronLeftIcon />
       </Button>
@@ -66,7 +63,6 @@ export function Pagination({
           onClick?.(e);
         }}
         disabled={disabled || !table.getCanNextPage()}
-        {...restButtonProps}
       >
         <ChevronRightIcon />
       </Button>
@@ -79,7 +75,6 @@ export function Pagination({
           onClick?.(e);
         }}
         disabled={disabled || !table.getCanNextPage()}
-        {...restButtonProps}
       >
         <ChevronsRightIcon />
       </Button>

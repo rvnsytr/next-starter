@@ -126,7 +126,7 @@ export function createFilePayloads(
   const { s3FileDirectory, s3FileVisibility } = appConfig.default;
 
   files.forEach((item, index) => {
-    let path: string = `${s3FileDirectory}/${item.file.name}`;
+    let path = `${s3FileDirectory}/${item.file.name}`;
     let visibility: FileVisibility = s3FileVisibility;
 
     if (item.file instanceof File) {

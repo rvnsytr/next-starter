@@ -9,10 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
-import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
+import { useEffect } from "react";
 
 export type BaseTableProps = React.ComponentProps<typeof Table> & {
   /** The caption for the table. */
@@ -29,15 +30,19 @@ export function BaseTable({
   style,
   ...props
 }: BaseTableProps & { tableType: DataTableType }) {
-  const table = dataTable.useTableContext();
+  const table = getTableHook(tableType).useTableContext();
 
   const resizing = table.atoms.columnResizing.get();
   const withPreview = table.options.columnResizeMode !== "onChange";
 
-  table.atoms.columnResizing.subscribe((state) => {
-    const isResizing = !!state.isResizingColumn;
+  useEffect(() => {
+    if (!withPreview) return;
+    const isResizing = !!resizing.isResizingColumn;
     document.body.style.cursor = isResizing ? "col-resize" : "";
-  });
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, [withPreview, resizing]);
 
   return (
     <Table
@@ -126,8 +131,8 @@ export function BaseTable({
         {table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow key={row.id} data-selected={row.getIsSelected()}>
-              {row.getVisibleCells().map((cell) => (
-                <table.AppCell key={cell.id} cell={cell}>
+              {row.getVisibleCells().map((c) => (
+                <table.AppCell key={c.id} cell={c}>
                   {(cell) => {
                     // const isSelected = cell.getIsSelected();
                     // const edges = cell.getSelectionEdges();
