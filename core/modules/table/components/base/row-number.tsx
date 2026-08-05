@@ -2,7 +2,6 @@
 
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
-import React from "react";
 
 export type RowNumberProps = React.ComponentProps<"div">;
 

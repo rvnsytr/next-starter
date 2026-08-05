@@ -18,6 +18,7 @@ import { getTableHook } from "@/core/modules/table/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useState } from "react";
+import { SORT_ICONS } from "../../constants";
 
 export type ColumnSortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -78,11 +79,25 @@ export function ColumnSortMenu({
           .getAllColumns()
           .filter((column) => column.getCanSort() || column.getCanMultiSort())
           .map((column) => {
-            const { meta } = column.columnDef;
+            const Icon = column.columnDef.meta?.icon;
+            const sortDirection = column.getIsSorted();
+            const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
             return (
-              <MenuCheckboxItem key={column.id} id={`sorting-btn-${column.id}`}>
-                {meta?.icon && <meta.icon className="text-muted-foreground" />}
-                {meta?.label ?? column.id}
+              <MenuCheckboxItem
+                key={column.id}
+                id={`sorting-btn-${column.id}`}
+                checked={Boolean(sortDirection)}
+                onCheckedChange={() => {
+                  if (sortDirection === "asc") column.toggleSorting(true, true);
+                  else if (sortDirection === "desc") column.clearSorting();
+                  else column.toggleSorting(false, true);
+                }}
+                checkIcon={SortIcon ? <SortIcon /> : undefined}
+              >
+                <div className="flex gap-2">
+                  {Icon && <Icon className="text-muted-foreground" />}
+                  {column.columnDef.meta?.label ?? column.id}
+                </div>
               </MenuCheckboxItem>
             );
           })}

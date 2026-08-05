@@ -79,7 +79,7 @@ export function ColumnVisibilityMenu({
           .getAllColumns()
           .filter((column) => column.getCanHide())
           .map((column) => {
-            const { meta } = column.columnDef;
+            const Icon = column.columnDef.meta?.icon;
             return (
               <MenuCheckboxItem
                 key={column.id}
@@ -87,8 +87,10 @@ export function ColumnVisibilityMenu({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {meta?.icon && <meta.icon className="text-muted-foreground" />}
-                {meta?.label ?? column.id}
+                <div className="flex gap-2">
+                  {Icon && <Icon className="text-muted-foreground" />}
+                  {column.columnDef.meta?.label ?? column.id}
+                </div>
               </MenuCheckboxItem>
             );
           })}
