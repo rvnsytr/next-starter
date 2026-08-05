@@ -8,11 +8,14 @@
 
 import { ThemeToggle } from "@/core/components/theme";
 import { Button } from "@/core/components/ui/button";
-import { Separator } from "@/core/components/ui/separator";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { GithubIcon } from "@/shared/components/icons";
 import { appConfig } from "@/shared/config";
-import { ArrowRightIcon, ExternalLinkIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  ExternalLinkIcon,
+  TestTubeDiagonalIcon,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
@@ -26,7 +29,7 @@ export default function Page() {
         <p className="text-muted-foreground text-sm">{appConfig.description}</p>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex gap-2">
         <ThemeToggle variant="outline" />
 
         <Button
@@ -42,9 +45,9 @@ export default function Page() {
             </Link>
           }
         />
+      </div>
 
-        <Separator orientation="vertical" className="h-4" />
-
+      <div className="flex gap-2">
         {/* <Button
           nativeButton={false}
           render={
@@ -58,6 +61,17 @@ export default function Page() {
         <Button disabled>
           Docs <ExternalLinkIcon />
         </Button>
+
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={
+            <Link href="/playground">
+              <LinkSpinner icon={{ base: <TestTubeDiagonalIcon /> }} />
+              Playground
+            </Link>
+          }
+        />
 
         <Button
           variant="outline"
