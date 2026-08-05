@@ -85,7 +85,7 @@ export function ColumnFilters({
           .map((column) => {
             const { meta } = column.columnDef;
             return (
-              <MenuItem id={`filter-btn-${column.id}`}>
+              <MenuItem key={column.id} id={`filter-btn-${column.id}`}>
                 {meta?.icon && <meta.icon className="text-muted-foreground" />}
                 {meta?.label ?? column.id}
               </MenuItem>

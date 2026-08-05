@@ -80,7 +80,7 @@ export function ColumnSortMenu({
           .map((column) => {
             const { meta } = column.columnDef;
             return (
-              <MenuCheckboxItem id={`sorting-btn-${column.id}`}>
+              <MenuCheckboxItem key={column.id} id={`sorting-btn-${column.id}`}>
                 {meta?.icon && <meta.icon className="text-muted-foreground" />}
                 {meta?.label ?? column.id}
               </MenuCheckboxItem>
