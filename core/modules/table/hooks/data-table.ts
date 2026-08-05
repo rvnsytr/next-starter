@@ -1,25 +1,4 @@
-import {
-  columnFilteringFeature,
-  columnPinningFeature,
-  columnResizingFeature,
-  columnSizingFeature,
-  columnVisibilityFeature,
-  createFilteredRowModel,
-  createPaginatedRowModel,
-  createSortedRowModel,
-  createTableHook,
-  filterFn_includesString,
-  filterFn_inNumberRange,
-  globalFilteringFeature,
-  metaHelper,
-  rowPaginationFeature,
-  rowSelectionFeature,
-  rowSortingFeature,
-  sortFn_alphanumeric,
-  sortFn_datetime,
-  sortFn_text,
-  tableFeatures,
-} from "@tanstack/react-table";
+import { createTableHook, tableFeatures } from "@tanstack/react-table";
 import {
   DataTable,
   DataTableColumnFilters,
@@ -35,44 +14,11 @@ import {
   DataTableSelectAllCheckbox,
   DataTableSortButton,
 } from "../components/data-table";
-import {
-  CellComponents,
-  HeaderComponents,
-  TableComponents,
-  TableMeta,
-} from "../types";
+import { dataTableFeatures } from "../features/data-table";
+import { CellComponents, HeaderComponents, TableComponents } from "../types";
 
 export const dataTable = createTableHook({
-  features: tableFeatures({
-    columnPinningFeature,
-    columnVisibilityFeature,
-
-    rowSelectionFeature,
-
-    columnSizingFeature,
-    columnResizingFeature,
-
-    rowPaginationFeature,
-    paginatedRowModel: createPaginatedRowModel(),
-
-    rowSortingFeature,
-    sortedRowModel: createSortedRowModel(),
-    sortFns: {
-      alphanumeric: sortFn_alphanumeric,
-      text: sortFn_text,
-      datetime: sortFn_datetime,
-    },
-
-    columnFilteringFeature,
-    globalFilteringFeature,
-    filteredRowModel: createFilteredRowModel(),
-    filterFns: {
-      includesString: filterFn_includesString,
-      inNumberRange: filterFn_inNumberRange,
-    },
-
-    columnMeta: metaHelper<TableMeta>(),
-  }),
+  features: tableFeatures(dataTableFeatures),
   tableComponents: {
     Table: DataTable,
     ColumnFilters: DataTableColumnFilters,
