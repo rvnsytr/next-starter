@@ -19,7 +19,7 @@ import { useState } from "react";
 import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
-export type VisibilityMenuProps = ButtonProps & {
+export type ColumnVisibilityMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "V" */
   shortcut?: "default" | Hotkey;
@@ -31,7 +31,7 @@ export type VisibilityCheckboxProps = React.ComponentProps<
 
 const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 
-export function VisibilityMenu({
+export function ColumnVisibilityMenu({
   shortcut,
   align = "center",
   size,
@@ -39,7 +39,7 @@ export function VisibilityMenu({
   children,
   checkboxesProps,
   ...props
-}: VisibilityMenuProps & {
+}: ColumnVisibilityMenuProps & {
   checkboxesProps: VisibilityCheckboxProps[];
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -92,10 +92,12 @@ export function VisibilityMenu({
   );
 }
 
-export function DataTableVisibilityMenu(props: VisibilityMenuProps) {
+export function DataTableColumnVisibilityMenu(
+  props: ColumnVisibilityMenuProps,
+) {
   const table = dataTable.useTableContext();
   return (
-    <VisibilityMenu
+    <ColumnVisibilityMenu
       checkboxesProps={table
         .getAllColumns()
         .filter((column) => column.getCanHide())

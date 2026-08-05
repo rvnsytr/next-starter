@@ -20,7 +20,7 @@ import { SORT_ICONS } from "../constants";
 import { dataTable } from "../hooks/data-table";
 import { TableMeta } from "../types";
 
-export type SortMenuProps = ButtonProps & {
+export type ColumnSortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "S" */
   shortcut?: "default" | Hotkey;
@@ -32,7 +32,7 @@ export type SortCheckboxProps = React.ComponentProps<
 
 export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 
-export function SortMenu({
+export function ColumnSortMenu({
   shortcut,
   align = "center",
   size,
@@ -40,7 +40,7 @@ export function SortMenu({
   children,
   checkboxesProps,
   ...props
-}: SortMenuProps & { checkboxesProps: SortCheckboxProps[] }) {
+}: ColumnSortMenuProps & { checkboxesProps: SortCheckboxProps[] }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const buttonSize: ButtonProps["size"] =
@@ -90,10 +90,10 @@ export function SortMenu({
   );
 }
 
-export function DataTableSortMenu(props: SortMenuProps) {
+export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
   const table = dataTable.useTableContext();
   return (
-    <SortMenu
+    <ColumnSortMenu
       checkboxesProps={table
         .getAllColumns()
         .filter((column) => column.getCanSort() || column.getCanMultiSort())

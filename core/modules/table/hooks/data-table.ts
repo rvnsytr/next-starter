@@ -21,7 +21,9 @@ import {
   TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-import { DataTableVisibilityMenu } from "../components/column-visibility-menu";
+import { DataTableColumnSortMenu } from "../components/column-sort-menu";
+import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
+import { DataTableFilters } from "../components/filters";
 import { DataTablePageSizeSelector } from "../components/page-size-selector";
 import { DataTablePagination } from "../components/pagination";
 import { DataTablePinMenu } from "../components/pin-menu";
@@ -31,7 +33,6 @@ import { DataTableRowNumber } from "../components/row-number";
 import { DataTableSearch } from "../components/search";
 import { DataTableSelectAllCheckbox } from "../components/select-all-checkbox";
 import { DataTableSortButton } from "../components/sort-button";
-import { DataTableSortMenu } from "../components/sort-menu";
 import { DataTable } from "../components/tables/data-table";
 import { TableMeta } from "../types";
 
@@ -70,13 +71,14 @@ export const dataTable = createTableHook({
     columnMeta: metaHelper<TableMeta>(),
   }),
   tableComponents: {
+    ColumnSortMenu: DataTableColumnSortMenu,
+    ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
+    Filters: DataTableFilters,
     PageSizeSelector: DataTablePageSizeSelector,
     Pagination: DataTablePagination,
     Reset: DataTableReset,
     Search: DataTableSearch,
-    SortMenu: DataTableSortMenu,
     Table: DataTable,
-    VisibilityMenu: DataTableVisibilityMenu,
   },
   headerComponents: {
     SelectAllCheckbox: DataTableSelectAllCheckbox,
