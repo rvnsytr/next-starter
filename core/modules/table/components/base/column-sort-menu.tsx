@@ -41,12 +41,11 @@ export function ColumnSortMenu({
 
   const table = getTableHook(tableType).useTableContext();
 
-  const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
-
   const buttonSize: ButtonProps["size"] =
     size ?? (children ? "default" : "icon");
   const isIconSize = buttonSize.startsWith("icon");
 
+  const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
   useHotkey(
     hotkey ?? COLUMN_SORT_DEFAULT_HOTKEY,
     () => setIsOpen((prev) => !prev),

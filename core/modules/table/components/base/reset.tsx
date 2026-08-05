@@ -35,7 +35,6 @@ export function Reset({
     size ?? (children ? "default" : "icon");
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
-
   useHotkey(
     hotkey ?? TABLE_RESET_DEFAULT_HOTKEY,
     () => {

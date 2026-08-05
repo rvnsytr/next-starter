@@ -39,16 +39,15 @@ export function Search({
   const [value, setValue] = useState<string>(defaultValue);
   const debouncedSearch = useDebounce(value);
 
+  const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
+  useHotkey(hotkey ?? SEARCH_DEFAULT_HOTKEY, () => searchRef.current?.focus(), {
+    enabled: !!hotkey,
+  });
+
   useEffect(
     () => table.setGlobalFilter(debouncedSearch),
     [table, debouncedSearch],
   );
-
-  const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
-
-  useHotkey(hotkey ?? SEARCH_DEFAULT_HOTKEY, () => searchRef.current?.focus(), {
-    enabled: !!hotkey,
-  });
 
   return (
     <InputGroup className={cn(className)}>

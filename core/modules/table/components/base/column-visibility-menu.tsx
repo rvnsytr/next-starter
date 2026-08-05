@@ -46,7 +46,6 @@ export function ColumnVisibilityMenu({
 
   const hotkey =
     shortcut === "default" ? COLUMN_VISIBILITY_DEFAULT_HOTKEY : shortcut;
-
   useHotkey(
     hotkey ?? COLUMN_VISIBILITY_DEFAULT_HOTKEY,
     () => setIsOpen((prev) => !prev),
