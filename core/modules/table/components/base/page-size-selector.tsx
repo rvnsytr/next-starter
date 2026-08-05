@@ -7,21 +7,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "@/core/modules/table/constants";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import { cn, formatNumber } from "@/core/utils";
-import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "../constants";
-import { dataTable } from "../hooks/data-table";
 
 export type PageSizeSelectorProps = React.ComponentProps<typeof SelectTrigger>;
 
 export function PageSizeSelector({
-  selectProps,
+  tableType,
   className,
   ...props
-}: PageSizeSelectorProps & {
-  selectProps: React.ComponentProps<typeof Select>;
-}) {
+}: PageSizeSelectorProps & { tableType: DataTableType }) {
+  const table = getTableHook(tableType).useTableContext();
+
   return (
-    <Select {...selectProps}>
+    <Select
+      value={String(table.atoms.pagination.get().pageSize)}
+      onValueChange={(v) => table.setPageSize(Number(v))}
+    >
       <SelectTrigger className={cn("w-fit min-w-fit", className)} {...props}>
         <SelectValue />
       </SelectTrigger>
@@ -38,18 +42,5 @@ export function PageSizeSelector({
         ))}
       </SelectPopup>
     </Select>
-  );
-}
-
-export function DataTablePageSizeSelector(props: PageSizeSelectorProps) {
-  const table = dataTable.useTableContext();
-  return (
-    <PageSizeSelector
-      selectProps={{
-        value: String(table.atoms.pagination.get().pageSize),
-        onValueChange: (v) => table.setPageSize(Number(v)),
-      }}
-      {...props}
-    />
   );
 }

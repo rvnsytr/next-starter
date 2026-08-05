@@ -11,39 +11,34 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { ColumnPinningPosition } from "@tanstack/react-table";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
+  ArrowLeftToLineIcon,
+  ArrowRightToLineIcon,
   PinIcon,
   PinOffIcon,
-  XIcon,
 } from "lucide-react";
-import { dataTable } from "../hooks/data-table";
 
 export type PinMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 };
 
 export function PinMenu({
-  pinPosition,
-  unpinButtonProps,
-  pinStartButtonProps,
-  pinEndButtonProps,
+  tableType,
   align = "center",
   size,
   variant = "ghost",
   children,
   ...props
-}: PinMenuProps & {
-  pinPosition: ColumnPinningPosition;
-  unpinButtonProps: Pick<ButtonProps, "onClick" | "disabled">;
-  pinStartButtonProps: Pick<ButtonProps, "onClick" | "disabled">;
-  pinEndButtonProps: Pick<ButtonProps, "onClick" | "disabled">;
-}) {
+}: PinMenuProps & { tableType: DataTableType }) {
+  const header = getTableHook(tableType).useHeaderContext();
+  if (!header.column.getCanPin()) return null;
+
   const buttonSize: ButtonProps["size"] = size ?? (children ? "xs" : "icon-xs");
   const isIconSize = buttonSize.startsWith("icon");
 
+  const pinPosition = header.column.getIsPinned();
   const popupAlign =
     pinPosition === "start" ? "start" : pinPosition === "end" ? "end" : align;
 
@@ -68,47 +63,33 @@ export function PinMenu({
       </Tooltip>
 
       <PopoverPopup className="*:p-1" align={popupAlign}>
-        <Button size="icon-xs" variant="ghost" {...pinStartButtonProps}>
-          <ArrowLeftIcon />
+        <Button
+          size="icon-xs"
+          variant="ghost"
+          onClick={() => header.column.pin("start")}
+          disabled={pinPosition === "start"}
+        >
+          <ArrowLeftToLineIcon />
         </Button>
+
         <Button
           size="icon-xs"
           variant="destructive-ghost"
-          {...unpinButtonProps}
+          onClick={() => header.column.pin(false)}
+          disabled={!pinPosition}
         >
-          <XIcon />
+          <PinOffIcon />
         </Button>
-        <Button size="icon-xs" variant="ghost" {...pinEndButtonProps}>
-          <ArrowRightIcon />
+
+        <Button
+          size="icon-xs"
+          variant="ghost"
+          onClick={() => header.column.pin("end")}
+          disabled={pinPosition === "end"}
+        >
+          <ArrowRightToLineIcon />
         </Button>
       </PopoverPopup>
     </Popover>
-  );
-}
-
-export function DataTablePinMenu({ onClick, ...props }: PinMenuProps) {
-  const header = dataTable.useHeaderContext();
-
-  if (!header.column.getCanPin()) return null;
-
-  const pinPosition = header.column.getIsPinned();
-
-  return (
-    <PinMenu
-      pinPosition={pinPosition}
-      unpinButtonProps={{
-        onClick: () => header.column.pin(false),
-        disabled: pinPosition === false,
-      }}
-      pinStartButtonProps={{
-        onClick: () => header.column.pin("start"),
-        disabled: pinPosition === "start",
-      }}
-      pinEndButtonProps={{
-        onClick: () => header.column.pin("end"),
-        disabled: pinPosition === "end",
-      }}
-      {...props}
-    />
   );
 }

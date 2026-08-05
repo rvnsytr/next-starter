@@ -7,8 +7,9 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { dataTable } from "../hooks/data-table";
 
 export type ResetProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -19,36 +20,19 @@ export type ResetProps = ButtonProps & {
 export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
 
 export function Reset({
-  hotkey,
+  tableType,
+  shortcut,
   align = "center",
   size,
   variant = "outline",
+  onClick,
   children,
   ...props
-}: ResetProps & { hotkey?: Hotkey }) {
+}: ResetProps & { tableType: DataTableType }) {
+  const table = getTableHook(tableType).useTableContext();
+
   const buttonSize: ButtonProps["size"] =
     size ?? (children ? "default" : "icon");
-
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <ResetButton size={buttonSize} variant={variant} {...props}>
-            {children}
-          </ResetButton>
-        }
-      />
-
-      <TooltipPopup align={align}>
-        Reset Table
-        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
-      </TooltipPopup>
-    </Tooltip>
-  );
-}
-
-export function DataTableReset({ shortcut, onClick, ...props }: ResetProps) {
-  const table = dataTable.useTableContext();
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
 
@@ -62,15 +46,28 @@ export function DataTableReset({ shortcut, onClick, ...props }: ResetProps) {
   );
 
   return (
-    <Reset
-      shortcut={shortcut}
-      hotkey={hotkey}
-      onClick={(e) => {
-        table.reset();
-        table.setGlobalFilter("");
-        onClick?.(e);
-      }}
-      {...props}
-    />
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <ResetButton
+            size={buttonSize}
+            variant={variant}
+            onClick={(e) => {
+              table.reset();
+              table.setGlobalFilter("");
+              onClick?.(e);
+            }}
+            {...props}
+          >
+            {children}
+          </ResetButton>
+        }
+      />
+
+      <TooltipPopup align={align}>
+        Reset Table
+        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
+      </TooltipPopup>
+    </Tooltip>
   );
 }

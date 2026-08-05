@@ -20,6 +20,7 @@ export function EmployeeDataTable() {
   return (
     <table.AppTable>
       <div className="container flex gap-x-2">
+        <table.ColumnFilters shortcut="default" align="start" />
         <table.ColumnVisibilityMenu shortcut="default" />
         <table.ColumnSortMenu shortcut="default" />
         <table.Reset shortcut="default" />

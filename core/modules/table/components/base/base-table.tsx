@@ -10,16 +10,25 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { BaseTableProps } from "@/core/modules/table/types";
+import { DataTableType } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 
-export function DataTable({
+export type BaseTableProps = React.ComponentProps<typeof Table> & {
+  /** The caption for the table. */
+  caption?: string;
+
+  /** The placeholder message to display when the table has no data. */
+  placeholder?: string;
+};
+
+export function BaseTable({
+  tableType,
   caption,
   placeholder,
   style,
   ...props
-}: BaseTableProps) {
+}: BaseTableProps & { tableType: DataTableType }) {
   const table = dataTable.useTableContext();
 
   return (

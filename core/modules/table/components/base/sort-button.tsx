@@ -6,24 +6,31 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { SortDirection } from "@tanstack/react-table";
-import { SORT_ICONS } from "../constants";
-import { dataTable } from "../hooks/data-table";
+import { SORT_ICONS } from "@/core/modules/table/constants";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 
 export type SortButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 };
 
 export function SortButton({
-  sortDirection,
+  tableType,
   align = "center",
   size,
   variant = "ghost",
+  onClick,
   children,
   ...props
-}: SortButtonProps & { sortDirection?: SortDirection | false }) {
+}: SortButtonProps & { tableType: DataTableType }) {
+  const header = getTableHook(tableType).useHeaderContext();
+
+  if (!header.column.getCanSort()) return null;
+
   const buttonSize: ButtonProps["size"] = size ?? (children ? "xs" : "icon-xs");
   const isIconSize = buttonSize?.startsWith("icon");
+
+  const sortDirection = header.column.getIsSorted();
 
   const SortIcon = sortDirection
     ? SORT_ICONS[sortDirection]
@@ -33,7 +40,19 @@ export function SortButton({
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button size={buttonSize} variant={variant} {...props}>
+          <Button
+            size={buttonSize}
+            variant={variant}
+
+            onClick={(e) => {
+              if (!sortDirection) header.column.toggleSorting();
+              else if (sortDirection === "asc")
+                header.column.toggleSorting(true);
+              else header.column.clearSorting();
+              onClick?.(e);
+            }}
+            {...props}
+          >
             {children ?? (isIconSize && <SortIcon />)}
           </Button>
         }
@@ -43,26 +62,5 @@ export function SortButton({
         {typeof sortDirection === "string" ? sortDirection : "Sort Column"}
       </TooltipPopup>
     </Tooltip>
-  );
-}
-
-export function DataTableSortButton({ onClick, ...props }: SortButtonProps) {
-  const header = dataTable.useHeaderContext();
-
-  if (!header.column.getCanSort()) return null;
-
-  const sortDirection = header.column.getIsSorted();
-
-  return (
-    <SortButton
-      sortDirection={sortDirection}
-      onClick={(e) => {
-        if (!sortDirection) header.column.toggleSorting();
-        else if (sortDirection === "asc") header.column.toggleSorting(true);
-        else header.column.clearSorting();
-        onClick?.(e);
-      }}
-      {...props}
-    />
   );
 }

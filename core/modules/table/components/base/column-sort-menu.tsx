@@ -13,12 +13,11 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useState } from "react";
-import { SORT_ICONS } from "../constants";
-import { dataTable } from "../hooks/data-table";
-import { TableMeta } from "../types";
 
 export type ColumnSortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -26,28 +25,26 @@ export type ColumnSortMenuProps = ButtonProps & {
   shortcut?: "default" | Hotkey;
 };
 
-export type SortCheckboxProps = React.ComponentProps<
-  typeof MenuCheckboxItem
-> & { id: string; meta?: TableMeta };
-
 export const COLUMN_SORT_DEFAULT_HOTKEY: Hotkey = "S";
 
 export function ColumnSortMenu({
+  tableType,
   shortcut,
   align = "center",
   size,
   variant = "outline",
   children,
-  checkboxesProps,
   ...props
-}: ColumnSortMenuProps & { checkboxesProps: SortCheckboxProps[] }) {
+}: ColumnSortMenuProps & { tableType: DataTableType }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const table = getTableHook(tableType).useTableContext();
+
+  const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
 
   const buttonSize: ButtonProps["size"] =
     size ?? (children ? "default" : "icon");
   const isIconSize = buttonSize.startsWith("icon");
-
-  const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
 
   useHotkey(
     hotkey ?? COLUMN_SORT_DEFAULT_HOTKEY,
@@ -77,42 +74,19 @@ export function ColumnSortMenu({
       </Tooltip>
 
       <MenuPopup align={align}>
-        {checkboxesProps.map(({ id, meta, ...itemProps }) => (
-          <MenuCheckboxItem key={id} id={`sorting-cb-${id}`} {...itemProps}>
-            <div className="flex items-center gap-x-2">
-              {meta?.icon && <meta.icon className="text-muted-foreground" />}
-              {meta?.label ?? id}
-            </div>
-          </MenuCheckboxItem>
-        ))}
+        {table
+          .getAllColumns()
+          .filter((column) => column.getCanSort() || column.getCanMultiSort())
+          .map((column) => {
+            const { meta } = column.columnDef;
+            return (
+              <MenuCheckboxItem id={`sorting-btn-${column.id}`}>
+                {meta?.icon && <meta.icon className="text-muted-foreground" />}
+                {meta?.label ?? column.id}
+              </MenuCheckboxItem>
+            );
+          })}
       </MenuPopup>
     </Menu>
-  );
-}
-
-export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
-  const table = dataTable.useTableContext();
-  return (
-    <ColumnSortMenu
-      checkboxesProps={table
-        .getAllColumns()
-        .filter((column) => column.getCanSort() || column.getCanMultiSort())
-        .map((column) => {
-          const sortDirection = column.getIsSorted();
-          const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
-          return {
-            id: column.id,
-            meta: column.columnDef.meta,
-            checked: Boolean(sortDirection),
-            onCheckedChange: () => {
-              if (sortDirection === "asc") column.toggleSorting(true, true);
-              else if (sortDirection === "desc") column.clearSorting();
-              else column.toggleSorting(false, true);
-            },
-            checkIcon: SortIcon ? <SortIcon /> : undefined,
-          };
-        })}
-      {...props}
-    />
   );
 }

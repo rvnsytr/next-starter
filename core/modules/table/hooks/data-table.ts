@@ -18,75 +18,78 @@ import {
   sortFn_alphanumeric,
   sortFn_datetime,
   sortFn_text,
-  TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-import { DataTableColumnSortMenu } from "../components/column-sort-menu";
-import { DataTableColumnVisibilityMenu } from "../components/column-visibility-menu";
-import { DataTableFilters } from "../components/filters";
-import { DataTablePageSizeSelector } from "../components/page-size-selector";
-import { DataTablePagination } from "../components/pagination";
-import { DataTablePinMenu } from "../components/pin-menu";
-import { DataTableReset } from "../components/reset";
-import { DataTableRowCheckbox } from "../components/row-checkbox";
-import { DataTableRowNumber } from "../components/row-number";
-import { DataTableSearch } from "../components/search";
-import { DataTableSelectAllCheckbox } from "../components/select-all-checkbox";
-import { DataTableSortButton } from "../components/sort-button";
-import { DataTable } from "../components/tables/data-table";
-import { TableMeta } from "../types";
-
-export const dataTableFeatures: TableFeatures = {
-  columnPinningFeature,
-  columnVisibilityFeature,
-
-  rowSelectionFeature,
-
-  columnSizingFeature,
-  columnResizingFeature,
-
-  rowPaginationFeature,
-  paginatedRowModel: createPaginatedRowModel(),
-
-  rowSortingFeature,
-  sortedRowModel: createSortedRowModel(),
-  sortFns: {
-    alphanumeric: sortFn_alphanumeric,
-    text: sortFn_text,
-    datetime: sortFn_datetime,
-  },
-
-  columnFilteringFeature,
-  globalFilteringFeature,
-  filteredRowModel: createFilteredRowModel(),
-  filterFns: {
-    includesString: filterFn_includesString,
-    inNumberRange: filterFn_inNumberRange,
-  },
-};
+import {
+  DataTable,
+  DataTableColumnFilters,
+  DataTableColumnSortMenu,
+  DataTableColumnVisibilityMenu,
+  DataTablePageSizeSelector,
+  DataTablePagination,
+  DataTablePinMenu,
+  DataTableReset,
+  DataTableRowCheckbox,
+  DataTableRowNumber,
+  DataTableSearch,
+  DataTableSelectAllCheckbox,
+  DataTableSortButton,
+} from "../components/data-table";
+import {
+  CellComponents,
+  HeaderComponents,
+  TableComponents,
+  TableMeta,
+} from "../types";
 
 export const dataTable = createTableHook({
   features: tableFeatures({
-    ...dataTableFeatures,
+    columnPinningFeature,
+    columnVisibilityFeature,
+
+    rowSelectionFeature,
+
+    columnSizingFeature,
+    columnResizingFeature,
+
+    rowPaginationFeature,
+    paginatedRowModel: createPaginatedRowModel(),
+
+    rowSortingFeature,
+    sortedRowModel: createSortedRowModel(),
+    sortFns: {
+      alphanumeric: sortFn_alphanumeric,
+      text: sortFn_text,
+      datetime: sortFn_datetime,
+    },
+
+    columnFilteringFeature,
+    globalFilteringFeature,
+    filteredRowModel: createFilteredRowModel(),
+    filterFns: {
+      includesString: filterFn_includesString,
+      inNumberRange: filterFn_inNumberRange,
+    },
+
     columnMeta: metaHelper<TableMeta>(),
   }),
   tableComponents: {
+    Table: DataTable,
+    ColumnFilters: DataTableColumnFilters,
     ColumnSortMenu: DataTableColumnSortMenu,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
-    Filters: DataTableFilters,
     PageSizeSelector: DataTablePageSizeSelector,
     Pagination: DataTablePagination,
     Reset: DataTableReset,
     Search: DataTableSearch,
-    Table: DataTable,
-  },
+  } satisfies TableComponents,
   headerComponents: {
+    PinMenu: DataTablePinMenu,
     SelectAllCheckbox: DataTableSelectAllCheckbox,
     SortButton: DataTableSortButton,
-    PinMenu: DataTablePinMenu,
-  },
+  } satisfies HeaderComponents,
   cellComponents: {
     RowCheckbox: DataTableRowCheckbox,
     RowNumber: DataTableRowNumber,
-  },
+  } satisfies CellComponents,
 });

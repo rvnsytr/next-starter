@@ -7,11 +7,12 @@ import {
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
 import { useDebounce } from "@/core/hooks/use-debounce";
+import { DataTableType } from "@/core/modules/table/types";
+import { getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { dataTable } from "../hooks/data-table";
 
 export type SearchProps = Omit<
   React.ComponentProps<typeof InputGroupInput>,
@@ -24,13 +25,21 @@ export type SearchProps = Omit<
 export const SEARCH_DEFAULT_HOTKEY: Hotkey = "/";
 
 export function Search({
+  tableType,
   shortcut,
   placeholder = "Cari...",
   className,
   ...props
-}: SearchProps &
-  Pick<React.ComponentProps<typeof InputGroupInput>, "value" | "onChange">) {
+}: SearchProps & { tableType: DataTableType }) {
+  const table = getTableHook(tableType).useTableContext();
+  const defaultValue = table.atoms.globalFilter.get() ?? "";
+
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const [value, setValue] = useState<string>(defaultValue);
+  const debouncedSearch = useDebounce(value);
+
+  useEffect(() => table.setGlobalFilter(value), [debouncedSearch]);
 
   const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
 
@@ -40,7 +49,13 @@ export function Search({
 
   return (
     <InputGroup className={cn(className)}>
-      <InputGroupInput ref={searchRef} placeholder={placeholder} {...props} />
+      <InputGroupInput
+        ref={searchRef}
+        value={value}
+        onChange={(e) => setValue(String(e.target.value))}
+        placeholder={placeholder}
+        {...props}
+      />
 
       <InputGroupAddon>
         <SearchIcon />
@@ -52,23 +67,5 @@ export function Search({
         </InputGroupAddon>
       )}
     </InputGroup>
-  );
-}
-
-export function DataTableSearch(props: SearchProps) {
-  const table = dataTable.useTableContext();
-  const defaultValue = table.atoms.globalFilter.get() ?? "";
-
-  const [value, setValue] = useState<string>(defaultValue);
-  const debouncedSearch = useDebounce(value);
-
-  useEffect(() => table.setGlobalFilter(value), [debouncedSearch]);
-
-  return (
-    <Search
-      value={value}
-      onChange={(e) => setValue(String(e.target.value))}
-      {...props}
-    />
   );
 }
