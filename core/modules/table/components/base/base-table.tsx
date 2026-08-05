@@ -31,6 +31,14 @@ export function BaseTable({
 }: BaseTableProps & { tableType: DataTableType }) {
   const table = dataTable.useTableContext();
 
+  const resizing = table.atoms.columnResizing.get();
+  const withPreview = table.options.columnResizeMode !== "onChange";
+
+  table.atoms.columnResizing.subscribe((state) => {
+    const isResizing = !!state.isResizingColumn;
+    document.body.style.cursor = isResizing ? "col-resize" : "";
+  });
+
   return (
     <Table
       style={{
@@ -49,8 +57,18 @@ export function BaseTable({
                 {(header) => {
                   if (header.rowSpan <= 0) return null;
 
+                  const {
+                    style: headerStyle,
+                    className: headerClassName,
+                    ...restHeaderProps
+                  } = header.column.columnDef.meta?.headerProps ?? {};
+
                   const pinPosition = header.column.getIsPinned();
                   const isPinned = !!pinPosition;
+
+                  const isResizing =
+                    withPreview &&
+                    header.column.id === resizing.isResizingColumn;
 
                   return (
                     <TableHead
@@ -61,6 +79,7 @@ export function BaseTable({
                         width: header.getSize(),
                         left: header.column.getStart("start"),
                         right: header.column.getAfter("end"),
+                        ...headerStyle,
                       }}
                       className={cn(
                         "relative z-10",
@@ -68,17 +87,31 @@ export function BaseTable({
                         isPinned && "bg-background/90 sticky z-20",
                         pinPosition === "start" && "left-0 pl-4",
                         pinPosition === "end" && "right-0 pr-4",
+
+                        headerClassName,
                       )}
+                      {...restHeaderProps}
                     >
                       <header.FlexRender />
 
                       {header.column.getCanResize() && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          onDoubleClick={() => header.column.resetSize()}
-                          className="absolute top-0 right-0 flex h-full w-2 cursor-col-resize touch-none justify-between gap-px select-none"
-                        />
+                        <>
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            onDoubleClick={() => header.column.resetSize()}
+                            className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none"
+                          />
+
+                          {isResizing && (
+                            <div
+                              className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
+                              style={{
+                                transform: `translateX(${resizing.deltaOffset}px)`,
+                              }}
+                            />
+                          )}
+                        </>
                       )}
                     </TableHead>
                   );
@@ -99,6 +132,12 @@ export function BaseTable({
                     // const isSelected = cell.getIsSelected();
                     // const edges = cell.getSelectionEdges();
 
+                    const {
+                      style: cellStyle,
+                      className: cellClassName,
+                      ...restCellProps
+                    } = cell.column.columnDef.meta?.cellProps ?? {};
+
                     const pinPosition = cell.column.getIsPinned();
                     const isPinned = !!pinPosition;
 
@@ -116,6 +155,7 @@ export function BaseTable({
                           width: cell.column.getSize(),
                           left: cell.column.getStart("start"),
                           right: cell.column.getAfter("end"),
+                          ...cellStyle,
                         }}
                         className={cn(
                           "z-10",
@@ -123,7 +163,10 @@ export function BaseTable({
                           isPinned && "bg-background/90 sticky z-20",
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
+
+                          cellClassName,
                         )}
+                        {...restCellProps}
                       >
                         <cell.FlexRender />
                       </TableCell>

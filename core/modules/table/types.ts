@@ -6,6 +6,7 @@ export type DataTableType = "data-table" | "data-table-server";
 // export type TabulatorType = "tabulator" | "tabulator-server";
 
 export type TableComponents = {
+  Table: React.ComponentType<any>;
   ColumnFilters: React.ComponentType<any>;
   ColumnSortMenu: React.ComponentType<any>;
   ColumnVisibilityMenu: React.ComponentType<any>;
@@ -13,7 +14,6 @@ export type TableComponents = {
   Pagination: React.ComponentType<any>;
   Reset: React.ComponentType<any>;
   Search: React.ComponentType<any>;
-  Table: React.ComponentType<any>;
 };
 
 export type HeaderComponents = {
@@ -31,4 +31,8 @@ export type TableMeta = {
   label?: string;
   icon?: LucideIcon;
   count?: number;
+
+  headerProps?: React.ComponentProps<"th">;
+  cellProps?: React.ComponentProps<"td">;
+  // footerProps?: React.ComponentProps<"th">;
 };
