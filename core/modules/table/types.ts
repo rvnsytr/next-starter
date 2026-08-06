@@ -12,7 +12,7 @@ export type TableComponents = {
   ColumnVisibilityMenu: React.ComponentType<any>;
   PageSizeSelector: React.ComponentType<any>;
   Pagination: React.ComponentType<any>;
-  Reset: React.ComponentType<any>;
+  ResetTableButton: React.ComponentType<any>;
   Search: React.ComponentType<any>;
 };
 

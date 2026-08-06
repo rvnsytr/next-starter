@@ -7,7 +7,7 @@ import {
   DataTablePageSizeSelector,
   DataTablePagination,
   DataTablePinMenu,
-  DataTableReset,
+  DataTableResetTableButton,
   DataTableRowCheckbox,
   DataTableRowNumber,
   DataTableSearch,
@@ -26,7 +26,7 @@ export const dataTable = createTableHook({
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
     PageSizeSelector: DataTablePageSizeSelector,
     Pagination: DataTablePagination,
-    Reset: DataTableReset,
+    ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
   } satisfies TableComponents,
   headerComponents: {

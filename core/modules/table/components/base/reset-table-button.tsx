@@ -11,7 +11,7 @@ import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 
-export type ResetProps = ButtonProps & {
+export type ResetTableButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "R" */
   shortcut?: "default" | Hotkey;
@@ -19,7 +19,7 @@ export type ResetProps = ButtonProps & {
 
 export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
 
-export function Reset({
+export function ResetTableButton({
   tableType,
   shortcut,
   align = "center",
@@ -28,7 +28,7 @@ export function Reset({
   onClick,
   children,
   ...props
-}: ResetProps & { tableType: DataTableType }) {
+}: ResetTableButtonProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
 
   const buttonSize: ButtonProps["size"] =

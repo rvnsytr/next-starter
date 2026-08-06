@@ -23,7 +23,7 @@ export function EmployeeDataTable() {
         <table.ColumnFilters shortcut="default" align="start" />
         <table.ColumnVisibilityMenu shortcut="default" />
         <table.ColumnSortMenu shortcut="default" />
-        <table.Reset shortcut="default" />
+        <table.ResetTableButton shortcut="default" />
         <table.Pagination />
         <table.PageSizeSelector />
         <table.Search shortcut="default" />

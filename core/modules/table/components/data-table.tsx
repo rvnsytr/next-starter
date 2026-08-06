@@ -14,7 +14,10 @@ import {
 } from "./base/page-size-selector";
 import { Pagination, PaginationProps } from "./base/pagination";
 import { PinMenu, PinMenuProps } from "./base/pin-menu";
-import { Reset, ResetProps } from "./base/reset";
+import {
+  ResetTableButton,
+  ResetTableButtonProps,
+} from "./base/reset-table-button";
 import { RowCheckbox, RowCheckboxProps } from "./base/row-checkbox";
 import { RowNumber, RowNumberProps } from "./base/row-number";
 import { Search, SearchProps } from "./base/search";
@@ -56,8 +59,8 @@ export function DataTablePinMenu(props: PinMenuProps) {
   return <PinMenu tableType={tableType} {...props} />;
 }
 
-export function DataTableReset(props: ResetProps) {
-  return <Reset tableType={tableType} {...props} />;
+export function DataTableResetTableButton(props: ResetTableButtonProps) {
+  return <ResetTableButton tableType={tableType} {...props} />;
 }
 
 export function DataTableSearch(props: SearchProps) {
