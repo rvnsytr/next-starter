@@ -1,9 +1,10 @@
 import { createTableHook, tableFeatures } from "@tanstack/react-table";
 import {
   DataTable,
-  DataTableColumnFilters,
+  DataTableActiveFilters,
   DataTableColumnSortMenu,
   DataTableColumnVisibilityMenu,
+  DataTableFilterSelector,
   DataTablePageSizeSelector,
   DataTablePagination,
   DataTablePinMenu,
@@ -21,7 +22,8 @@ export const dataTable = createTableHook({
   features: tableFeatures(dataTableFeatures),
   tableComponents: {
     Table: DataTable,
-    ColumnFilters: DataTableColumnFilters,
+    ActiveFilters: DataTableActiveFilters,
+    ColumnFilters: DataTableFilterSelector,
     ColumnSortMenu: DataTableColumnSortMenu,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
     PageSizeSelector: DataTablePageSizeSelector,

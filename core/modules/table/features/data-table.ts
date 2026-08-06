@@ -7,8 +7,6 @@ import {
   createFilteredRowModel,
   createPaginatedRowModel,
   createSortedRowModel,
-  filterFn_includesString,
-  filterFn_inNumberRange,
   globalFilteringFeature,
   metaHelper,
   rowPaginationFeature,
@@ -19,6 +17,7 @@ import {
   sortFn_text,
   TableFeatures,
 } from "@tanstack/react-table";
+import { filterFns } from "../filters";
 import { TableMeta } from "../types";
 
 export const serverDataTableFeatures = {
@@ -39,10 +38,7 @@ export const serverDataTableFeatures = {
 
   columnFilteringFeature,
   globalFilteringFeature,
-  filterFns: {
-    includesString: filterFn_includesString,
-    inNumberRange: filterFn_inNumberRange,
-  },
+  filterFns,
 
   columnMeta: metaHelper<TableMeta>(),
 } satisfies TableFeatures;

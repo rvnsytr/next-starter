@@ -40,6 +40,7 @@ export const employeeColumns = columnHelper.columns([
     ),
     cell: (c) => c.getValue(),
 
+    filterFn: "string",
     meta: {
       label: "Name",
       icon: UserRoundIcon,
@@ -49,6 +50,7 @@ export const employeeColumns = columnHelper.columns([
     header: "Email",
     cell: (c) => c.getValue(),
 
+    filterFn: "string",
     meta: {
       label: "Email Address",
       icon: MailIcon,
@@ -130,17 +132,16 @@ export const employeeColumns = columnHelper.columns([
   }),
   columnHelper.group({
     header: "Address",
-    columns: [
-      columnHelper.accessor((ac) => ac.address.city as unknown, {
+    columns: columnHelper.columns([
+      columnHelper.accessor("address.city", {
         id: "city",
         header: "City",
         cell: (c) => c.getValue(),
-
         meta: {
           label: "City",
         },
       }),
-      columnHelper.accessor((ac) => ac.address.country as unknown, {
+      columnHelper.accessor("address.country", {
         id: "country",
         header: "Country",
         cell: (c) => c.getValue(),
@@ -148,7 +149,7 @@ export const employeeColumns = columnHelper.columns([
           label: "Country",
         },
       }),
-    ],
+    ]),
 
     meta: {
       label: "Address",

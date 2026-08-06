@@ -28,9 +28,14 @@ export function EmployeeDataTable() {
         <table.PageSizeSelector />
         <table.Search shortcut="default" />
       </div>
+
+      <pre>{JSON.stringify(table.atoms.columnFilters.get(), null, 2)}</pre>
+
+      <table.ActiveFilters />
+
       <table.Table
         variant="bordered"
-        containerClassName=" rounded-none border-x-0"
+        containerClassName="rounded-none border-x-0"
       />
     </table.AppTable>
   );

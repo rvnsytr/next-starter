@@ -13,12 +13,12 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
+import { SORT_ICONS } from "@/core/modules/table/constants";
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useState } from "react";
-import { SORT_ICONS } from "../../constants";
 
 export type ColumnSortMenuProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];

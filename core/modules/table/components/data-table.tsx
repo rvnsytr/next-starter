@@ -2,12 +2,17 @@
 
 import { DataTableType } from "../types";
 import { BaseTable, BaseTableProps } from "./base/base-table";
-import { ColumnFilters, ColumnFiltersProps } from "./base/column-filters";
 import { ColumnSortMenu, ColumnSortMenuProps } from "./base/column-sort-menu";
 import {
   ColumnVisibilityMenu,
   ColumnVisibilityMenuProps,
 } from "./base/column-visibility-menu";
+import {
+  ActiveFilters,
+  ActiveFiltersProps,
+  FilterSelector,
+  FilterSelectorProps,
+} from "./base/filters";
 import {
   PageSizeSelector,
   PageSizeSelectorProps,
@@ -33,8 +38,8 @@ export function DataTable(props: BaseTableProps) {
   return <BaseTable tableType={tableType} {...props} />;
 }
 
-export function DataTableColumnFilters(props: ColumnFiltersProps) {
-  return <ColumnFilters tableType={tableType} {...props} />;
+export function DataTableActiveFilters(props: ActiveFiltersProps) {
+  return <ActiveFilters tableType={tableType} {...props} />;
 }
 
 export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
@@ -45,6 +50,10 @@ export function DataTableColumnVisibilityMenu(
   props: ColumnVisibilityMenuProps,
 ) {
   return <ColumnVisibilityMenu tableType={tableType} {...props} />;
+}
+
+export function DataTableFilterSelector(props: FilterSelectorProps) {
+  return <FilterSelector tableType={tableType} {...props} />;
 }
 
 export function DataTablePageSizeSelector(props: PageSizeSelectorProps) {
