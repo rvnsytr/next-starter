@@ -228,7 +228,7 @@ export function MenuShortcut({
     <kbd
       data-slot="menu-shortcut"
       className={cn(
-        "text-muted-foreground/72 ms-auto font-sans text-xs font-medium tracking-widest",
+        "text-muted-foreground/72 ms-auto font-sans text-xs font-medium tracking-widest **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -251,7 +251,7 @@ export function MenuSubTrigger({
       data-slot="menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 sm:min-h-7 sm:text-sm **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4.5 sm:**:[svg:not([class*='size-'])]:size-4",
+        "text-foreground data-highlighted:bg-accent data-popup-open:bg-accent data-highlighted:text-accent-foreground data-popup-open:text-accent-foreground flex min-h-7 items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-64 data-inset:ps-8 **:[svg]:pointer-events-none *:[svg:not(:last-child)]:-mx-0.5 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
