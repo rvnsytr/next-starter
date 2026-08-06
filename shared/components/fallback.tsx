@@ -28,6 +28,7 @@ export type ErrorFallbackProps = {
   error: any;
   hideDescription?: boolean;
   hideError?: boolean;
+  hideCode?: boolean;
   className?: string;
 };
 
@@ -35,6 +36,7 @@ export function ErrorFallback({
   error,
   hideDescription = false,
   hideError = false,
+  hideCode = false,
   className,
 }: ErrorFallbackProps) {
   let errorData = error;
@@ -50,12 +52,16 @@ export function ErrorFallback({
   return (
     <Alert variant="destructive" className={className}>
       <TriangleAlertIcon />
-      <AlertTitle>
-        {`${appConfig.name} / `}
-        <code className="bg-destructive/10 text-xs tabular-nums">
-          {errorData?.code ?? 500}
-        </code>
-      </AlertTitle>
+      {hideCode ? (
+        <AlertTitle>{appConfig.name}</AlertTitle>
+      ) : (
+        <AlertTitle>
+          {`${appConfig.name} / `}
+          <code className="bg-destructive/10 text-xs tabular-nums">
+            {errorData?.code ?? 500}
+          </code>
+        </AlertTitle>
+      )}
 
       {!(hideDescription && hideError) && (
         <AlertDescription>
