@@ -39,6 +39,9 @@ export function DataTableTemplate({
   const startRowNumber = pageIndex * pageSize + 1;
   const endRowNumber = Math.min(startRowNumber + pageSize - 1, rowsCount);
 
+  const { align: clearFiltersAlign = "start", ...restClearFiltersProps } =
+    clearFiltersProps ?? {};
+
   const {
     align: filterSelectorAlign = "start",
     shortcut: filterSelectorShortcut = "default",
@@ -111,7 +114,10 @@ export function DataTableTemplate({
 
       {table.atoms.columnFilters.get().length > 0 && (
         <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
-          <table.ClearFilters {...clearFiltersProps} />
+          <table.ClearFilters
+            align={clearFiltersAlign}
+            {...restClearFiltersProps}
+          />
           <table.ActiveFilters {...activeFiltersProps} />
         </table.ActiveFiltersContainer>
       )}
@@ -153,7 +159,7 @@ export function DataTableTemplate({
 
         <span className="order-2 shrink-0 tabular-nums lg:order-4">
           <span className="text-foreground">
-            {formatNumber(startRowNumber)} - {formatNumber(endRowNumber)}
+            {formatNumber(startRowNumber)}-{formatNumber(endRowNumber)}
           </span>
           {` of ${formatNumber(rowsCount)}`}
         </span>

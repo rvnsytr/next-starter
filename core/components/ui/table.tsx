@@ -24,8 +24,8 @@ export function Table({
       data-slot="table-container"
       data-variant={variant}
       className={cn(
-        "relative min-h-auto",
-        variant === "bordered" && "overflow-hidden rounded-lg border",
+        "relative",
+        variant === "bordered" && "rounded-lg border",
         containerClassName,
       )}
       withScrollbar={withScrollbar}

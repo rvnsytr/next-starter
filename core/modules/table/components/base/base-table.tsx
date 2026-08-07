@@ -45,13 +45,7 @@ export function BaseTable({
   }, [withPreview, resizing]);
 
   return (
-    <Table
-      style={{
-        width: table.getTotalSize(),
-        ...style,
-      }}
-      {...props}
-    >
+    <Table style={{ width: table.getTotalSize(), ...style }} {...props}>
       {caption && <TableCaption>{caption}</TableCaption>}
 
       <TableHeader>
@@ -145,12 +139,17 @@ export function BaseTable({
 
                     const pinPosition = cell.column.getIsPinned();
                     const isPinned = !!pinPosition;
-
                     return (
                       <TableCell
                         key={cell.id}
-                        // onMouseDown={cell.getSelectionStartHandler()}
-                        // onMouseEnter={cell.getSelectionExtendHandler()}
+                        // onMouseDown={(e) => {
+                        //   e.stopPropagation();
+                        //   cell.getSelectionStartHandler();
+                        // }}
+                        // onMouseEnter={(e) => {
+                        //   e.stopPropagation();
+                        //   cell.getSelectionExtendHandler();
+                        // }}
                         // className={cn(
                         //   isSelected && "bg-muted",
                         //   cell.getIsFocused() && "ring-ring ring-1 outline-none",
