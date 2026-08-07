@@ -17,8 +17,14 @@ import {
   DataTableSelectAllCheckbox,
   DataTableSortButton,
 } from "../components/data-table";
+import { DataTableTemplate } from "../components/data-table-template";
 import { dataTableFeatures } from "../features/data-table";
-import { CellComponents, HeaderComponents, TableComponents } from "../types";
+import {
+  CellComponents,
+  DataTableTableTemplate,
+  HeaderComponents,
+  TableComponents,
+} from "../types";
 
 export const dataTable = createTableHook({
   features: tableFeatures(dataTableFeatures),
@@ -27,14 +33,15 @@ export const dataTable = createTableHook({
     ActiveFilters: DataTableActiveFilters,
     ActiveFiltersContainer,
     ClearFilters: DataTableClearFilters,
-    ColumnFilters: DataTableFilterSelector,
     ColumnSortMenu: DataTableColumnSortMenu,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
+    FilterSelector: DataTableFilterSelector,
     PageSizeSelector: DataTablePageSizeSelector,
     Pagination: DataTablePagination,
     ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
-  } satisfies TableComponents,
+    Template: DataTableTemplate,
+  } satisfies TableComponents & DataTableTableTemplate,
   headerComponents: {
     PinMenu: DataTablePinMenu,
     SelectAllCheckbox: DataTableSelectAllCheckbox,

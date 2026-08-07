@@ -1,5 +1,3 @@
-"use client";
-
 import { DataTableType } from "../types";
 import { BaseTable, BaseTableProps } from "./base/base-table";
 import { ColumnSortMenu, ColumnSortMenuProps } from "./base/column-sort-menu";

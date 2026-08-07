@@ -19,26 +19,13 @@ export function EmployeeDataTable() {
 
   return (
     <table.AppTable>
-      <div className="container flex gap-x-2">
-        <table.ColumnFilters shortcut="default" align="start" />
-        <table.ColumnVisibilityMenu shortcut="default" />
-        <table.ColumnSortMenu shortcut="default" />
-        <table.ResetTableButton shortcut="default" />
-        <table.Pagination />
-        <table.PageSizeSelector />
-        <table.Search shortcut="default" />
-      </div>
-
-      {table.atoms.columnFilters.get().length > 0 && (
-        <table.ActiveFiltersContainer>
-          <table.ClearFilters />
-          <table.ActiveFilters />
-        </table.ActiveFiltersContainer>
-      )}
-
-      <table.Table
-        variant="bordered"
-        containerClassName="rounded-none border-x-0"
+      <table.Template
+        tableProps={{
+          variant: "bordered",
+          containerProps: {
+            className: "rounded-none border-x-0",
+          },
+        }}
       />
     </table.AppTable>
   );

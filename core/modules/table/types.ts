@@ -1,16 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { LucideIcon } from "lucide-react";
-
-export type DataTableType = "data-table" | "data-table-server";
-// export type TabulatorType = "tabulator" | "tabulator-server";
+import { BaseTableProps } from "./components/base/base-table";
+import { ColumnSortMenuProps } from "./components/base/column-sort-menu";
+import { ColumnVisibilityMenuProps } from "./components/base/column-visibility-menu";
+import {
+  ActiveFiltersContainerProps,
+  ActiveFiltersProps,
+  ClearFiltersProps,
+  FilterSelectorProps,
+} from "./components/base/filters";
+import { PageSizeSelectorProps } from "./components/base/page-size-selector";
+import { PaginationProps } from "./components/base/pagination";
+import { ResetTableButtonProps } from "./components/base/reset-table-button";
+import { SearchProps } from "./components/base/search";
 
 export type TableComponents = {
   Table: React.ComponentType<any>;
   ActiveFilters: React.ComponentType<any>;
   ActiveFiltersContainer: React.ComponentType<any>;
   ClearFilters: React.ComponentType<any>;
-  ColumnFilters: React.ComponentType<any>;
+  FilterSelector: React.ComponentType<any>;
   ColumnSortMenu: React.ComponentType<any>;
   ColumnVisibilityMenu: React.ComponentType<any>;
   PageSizeSelector: React.ComponentType<any>;
@@ -30,6 +40,20 @@ export type CellComponents = {
   RowNumber: React.ComponentType<any>;
 };
 
+export type TableTemplateProps = React.ComponentProps<"div"> & {
+  tableProps?: BaseTableProps;
+  activeFiltersProps?: ActiveFiltersProps;
+  activeFiltersContainerProps?: ActiveFiltersContainerProps;
+  clearFiltersProps?: ClearFiltersProps;
+  columnSortMenuProps?: ColumnSortMenuProps;
+  columnVisibilityMenuProps?: ColumnVisibilityMenuProps;
+  filterSelectorProps?: FilterSelectorProps;
+  pageSizeSelectorProps?: PageSizeSelectorProps;
+  paginationProps?: PaginationProps;
+  resetTableButtonProps?: ResetTableButtonProps;
+  searchProps?: SearchProps;
+};
+
 export type TableMeta = {
   label?: string;
   icon?: LucideIcon;
@@ -39,4 +63,11 @@ export type TableMeta = {
   headerProps?: React.ComponentProps<"th">;
   cellProps?: React.ComponentProps<"td">;
   // footerProps?: React.ComponentProps<"th">;
+};
+
+export type DataTableType = "data-table" | "data-table-server";
+// export type TabulatorType = "tabulator" | "tabulator-server";
+
+export type DataTableTableTemplate = {
+  Template: React.ComponentType<any>;
 };
