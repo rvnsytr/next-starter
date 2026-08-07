@@ -20,7 +20,6 @@ export function PageSizeSelector({
   ...props
 }: PageSizeSelectorProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
-
   return (
     <Select
       value={String(table.atoms.pagination.get().pageSize)}

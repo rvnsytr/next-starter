@@ -23,16 +23,12 @@ export function ResetTableButton({
   tableType,
   shortcut,
   align = "center",
-  size,
+  size = "default",
   variant = "outline",
   onClick,
-  children,
   ...props
 }: ResetTableButtonProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
-
-  const buttonSize: ButtonProps["size"] =
-    size ?? (children ? "default" : "icon");
 
   const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
   useHotkey(
@@ -49,7 +45,7 @@ export function ResetTableButton({
       <TooltipTrigger
         render={
           <ResetButton
-            size={buttonSize}
+            size={size}
             variant={variant}
             onClick={(e) => {
               table.reset();
@@ -57,9 +53,7 @@ export function ResetTableButton({
               onClick?.(e);
             }}
             {...props}
-          >
-            {children}
-          </ResetButton>
+          />
         }
       />
 

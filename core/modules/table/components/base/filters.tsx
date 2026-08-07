@@ -69,7 +69,7 @@ export function FilterSelector({
   tableType,
   shortcut,
   align = "center",
-  size,
+  size = "default",
   variant = "outline",
   children,
   ...props
@@ -80,10 +80,6 @@ export function FilterSelector({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filterSelector, setFilterSelector] =
     useState<FilterSelectorState>(null);
-
-  const buttonSize: ButtonProps["size"] =
-    size ?? (children ? "default" : "icon");
-  const isIconSize = buttonSize.startsWith("icon");
 
   const hotkey = shortcut === "default" ? FILTERS_DEFAULT_HOTKEY : shortcut;
   useHotkey(
@@ -106,13 +102,12 @@ export function FilterSelector({
             render={
               <MenuTrigger
                 render={
-                  <Button
-                    ref={anchor}
-                    size={buttonSize}
-                    variant={variant}
-                    {...props}
-                  >
-                    {children ?? (isIconSize && <FilterIcon />)}
+                  <Button ref={anchor} size={size} variant={variant} {...props}>
+                    {children ?? (
+                      <>
+                        <FilterIcon /> Filter
+                      </>
+                    )}
                   </Button>
                 }
               />
@@ -451,23 +446,19 @@ export type ClearFiltersProps = ButtonProps & {
 export function ClearFilters({
   tableType,
   align,
-  size,
+  size = "sm",
   variant = "destructive-outline",
   onClick,
   children,
   ...props
 }: TableTypeProp & ClearFiltersProps) {
   const table = getTableHook(tableType).useTableContext();
-
-  const buttonSize: ButtonProps["size"] = size ?? (children ? "sm" : "icon-sm");
-  const isIconSize = buttonSize?.startsWith("icon") ?? false;
-
   return (
     <Tooltip>
       <TooltipTrigger
         render={
           <Button
-            size={buttonSize}
+            size={size}
             variant={variant}
             onClick={(e) => {
               table.setColumnFilters([]);
@@ -476,7 +467,11 @@ export function ClearFilters({
             }}
             {...props}
           >
-            {children ?? (isIconSize && <FilterXIcon />)}
+            {children ?? (
+              <>
+                <FilterXIcon /> Clear
+              </>
+            )}
           </Button>
         }
       />

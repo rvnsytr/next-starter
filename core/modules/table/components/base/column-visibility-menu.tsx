@@ -31,18 +31,14 @@ export function ColumnVisibilityMenu({
   tableType,
   shortcut,
   align = "center",
-  size,
+  size = "default",
   variant = "outline",
   children,
   ...props
 }: ColumnVisibilityMenuProps & { tableType: DataTableType }) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const table = getTableHook(tableType).useTableContext();
 
-  const buttonSize: ButtonProps["size"] =
-    size ?? (children ? "default" : "icon");
-  const isIconSize = buttonSize.startsWith("icon");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkey =
     shortcut === "default" ? COLUMN_VISIBILITY_DEFAULT_HOTKEY : shortcut;
@@ -59,8 +55,12 @@ export function ColumnVisibilityMenu({
           render={
             <MenuTrigger
               render={
-                <Button size={buttonSize} variant={variant} {...props}>
-                  {children ?? (isIconSize && <EyeIcon />)}
+                <Button size={size} variant={variant} {...props}>
+                  {children ?? (
+                    <>
+                      <EyeIcon /> Columns
+                    </>
+                  )}
                 </Button>
               }
             />

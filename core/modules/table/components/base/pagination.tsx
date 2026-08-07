@@ -17,7 +17,7 @@ export type PaginationProps = React.ComponentProps<typeof ButtonGroup> & {
 
 export function Pagination({
   tableType,
-  buttonsProps = {},
+  buttonsProps,
   ...props
 }: PaginationProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
@@ -27,7 +27,7 @@ export function Pagination({
     variant = "outline",
     disabled = false,
     onClick,
-  } = buttonsProps;
+  } = buttonsProps ?? {};
 
   return (
     <ButtonGroup {...props}>

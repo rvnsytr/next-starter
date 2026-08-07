@@ -32,18 +32,14 @@ export function ColumnSortMenu({
   tableType,
   shortcut,
   align = "center",
-  size,
+  size = "default",
   variant = "outline",
   children,
   ...props
 }: ColumnSortMenuProps & { tableType: DataTableType }) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const table = getTableHook(tableType).useTableContext();
 
-  const buttonSize: ButtonProps["size"] =
-    size ?? (children ? "default" : "icon");
-  const isIconSize = buttonSize.startsWith("icon");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkey = shortcut === "default" ? COLUMN_SORT_DEFAULT_HOTKEY : shortcut;
   useHotkey(
@@ -59,8 +55,12 @@ export function ColumnSortMenu({
           render={
             <MenuTrigger
               render={
-                <Button size={buttonSize} variant={variant} {...props}>
-                  {children ?? (isIconSize && <ArrowUpDownIcon />)}
+                <Button size={size} variant={variant} {...props}>
+                  {children ?? (
+                    <>
+                      <ArrowUpDownIcon /> Sort
+                    </>
+                  )}
                 </Button>
               }
             />
