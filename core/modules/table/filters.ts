@@ -18,7 +18,11 @@ export type FilterMeta = {
 export const filterMeta: FilterMeta = {
   string: {
     popupType: "popover",
-    defaultValue: { type: "string", value: "" },
+    defaultValue: {
+      type: "string",
+      operator: "contains",
+      value: "",
+    },
   },
 };
 

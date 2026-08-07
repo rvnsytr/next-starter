@@ -34,12 +34,12 @@ import {
 } from "@/core/modules/table/filters";
 import { filterValueSchema } from "@/core/modules/table/schema";
 import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
+import { getFilterOperators, getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ChevronRightIcon, FilterIcon, XIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 type TableTypeProp = { tableType: DataTableType };
 
@@ -50,9 +50,9 @@ export type FilterSelectorProps = ButtonProps & {
 };
 
 type FilterSelectorState = {
+  columnId: string;
   filterType: FilterType;
   popupType: FilterPopupType;
-  columnId: string;
 } | null;
 
 const FILTERS_DEFAULT_HOTKEY: Hotkey = "F";
@@ -67,6 +67,8 @@ export function FilterSelector({
   children,
   ...props
 }: FilterSelectorProps & TableTypeProp) {
+  const table = getTableHook(tableType).useTableContext();
+
   const anchor = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filterSelector, setFilterSelector] =
@@ -118,13 +120,43 @@ export function FilterSelector({
 
         <MenuPopup align={align}>
           {filterSelector?.popupType === "menu" ? (
-            <FilterController tableType={tableType} {...filterSelector} />
+            <FilterValueController tableType={tableType} {...filterSelector} />
           ) : (
-            <FilterSelectorItems
-              tableType={tableType}
-              setIsMenuOpen={setIsOpen}
-              setFilterSelector={setFilterSelector}
-            />
+            table
+              .getAllColumns()
+              .filter((column) => column.getCanFilter())
+              .map((column) => {
+                const { filterFn, meta } = column.columnDef;
+
+                const Icon = meta?.icon;
+                const columnId = column.id;
+
+                let filterType: FilterType = "string";
+                if (typeof filterFn === "string" && filterFn !== "auto")
+                  filterType = filterFn;
+
+                const popupType = filterMeta[filterType].popupType;
+
+                return (
+                  <MenuItem
+                    key={columnId}
+                    id={`filter-btn-${columnId}`}
+                    onClick={() => {
+                      if (popupType === "popover") setIsOpen(false);
+                      setTimeout(() => {
+                        setFilterSelector({ columnId, filterType, popupType });
+                      }, ANIMATION_DELAY);
+                    }}
+                    closeOnClick={false}
+                  >
+                    {Icon && <Icon className="text-muted-foreground" />}
+                    {meta?.label ?? columnId}
+                    <MenuShortcut>
+                      <ChevronRightIcon />
+                    </MenuShortcut>
+                  </MenuItem>
+                );
+              })
           )}
         </MenuPopup>
       </Menu>
@@ -137,7 +169,7 @@ export function FilterSelector({
       >
         <PopoverPopup anchor={anchor} align={align} className="*:p-1">
           {filterSelector ? (
-            <FilterController tableType={tableType} {...filterSelector} />
+            <FilterValueController tableType={tableType} {...filterSelector} />
           ) : (
             <ErrorFallback error="Invalid Filter Selector State" hideCode />
           )}
@@ -147,73 +179,24 @@ export function FilterSelector({
   );
 }
 
-function FilterSelectorItems({
-  tableType,
-  setIsMenuOpen,
-  setFilterSelector,
-}: TableTypeProp & {
-  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setFilterSelector: React.Dispatch<React.SetStateAction<FilterSelectorState>>;
-}) {
-  const table = getTableHook(tableType).useTableContext();
+type FilterValueControllerProps = TableTypeProp & { columnId: string };
 
-  return table
-    .getAllColumns()
-    .filter((column) => column.getCanFilter())
-    .map((column) => {
-      const { filterFn, meta } = column.columnDef;
-
-      const Icon = meta?.icon;
-      const columnId = column.id;
-
-      let filterType: FilterType = "string";
-      if (typeof filterFn === "string" && filterFn !== "auto")
-        filterType = filterFn;
-
-      const popupType = filterMeta[filterType].popupType;
-
-      return (
-        <MenuItem
-          key={columnId}
-          id={`filter-btn-${columnId}`}
-          onClick={() => {
-            if (popupType === "popover") setIsMenuOpen(false);
-            setTimeout(
-              () => setFilterSelector({ filterType, popupType, columnId }),
-              ANIMATION_DELAY,
-            );
-          }}
-          closeOnClick={false}
-        >
-          {Icon && <Icon className="text-muted-foreground" />}
-          {meta?.label ?? columnId}
-
-          <MenuShortcut>
-            <ChevronRightIcon />
-          </MenuShortcut>
-        </MenuItem>
-      );
-    });
-}
-
-type FilterControllerProps = TableTypeProp & { columnId: string };
-
-function FilterController({
+function FilterValueController({
   filterType,
   ...props
-}: FilterControllerProps & { filterType: FilterType }) {
+}: FilterValueControllerProps & { filterType: FilterType }) {
   switch (filterType) {
     case "string":
-      return <FilterControllerString {...props} />;
+      return <FilterValueControllerString {...props} />;
     default:
-      return <FilterControllerString {...props} />;
+      return <FilterValueControllerString {...props} />;
   }
 }
 
-function FilterControllerString({
+function FilterValueControllerString({
   tableType,
   columnId,
-}: FilterControllerProps) {
+}: FilterValueControllerProps) {
   const table = getTableHook(tableType).useTableContext();
   const column = table.getColumn(columnId);
 
@@ -233,13 +216,15 @@ function FilterControllerString({
 
     const columnFilterValue: FilterValue = {
       type: "string",
+      operator: filterValue.operator,
       value: debouncedSearch,
     };
 
     column.setFilterValue(columnFilterValue);
-  }, [column, debouncedSearch]);
+  }, [column, filterValue.operator, debouncedSearch]);
 
-  if (!column) return <ErrorFallback error="Invalid Column Id" hideCode />;
+  if (!column)
+    return <ErrorFallback error={`Invalid Column Id: ${columnId}`} hideCode />;
 
   const columnMeta = column.columnDef.meta;
   const Icon = columnMeta?.icon;
@@ -318,17 +303,27 @@ export function ActiveFilters({
           {columnMeta?.label ?? column.id}
         </Button>
 
-        {/* <FilterOperator column={column} columnMeta={meta} filter={value} /> */}
-        {/* <FilterValue id={id} column={column} columnMeta={meta} table={table} /> */}
-
-        <FilterValueController
-          tableType={tableType}
-          filterValue={filterValue}
-          popupType={popupType}
-          columnId={column.id}
+        <FilterOperatorSelector
           size="sm"
           variant="outline"
+          filterValue={filterValue}
+          onOperatorChange={(newOperator) =>
+            column.setFilterValue({ ...filterValue, operator: newOperator })
+          }
         />
+
+        <FilterValueDisplayPopup
+          size="sm"
+          variant="outline"
+          filterValue={filterValue}
+          popupType={popupType}
+        >
+          <FilterValueController
+            tableType={tableType}
+            columnId={column.id}
+            filterType={filterValue.type}
+          />
+        </FilterValueDisplayPopup>
 
         <Button
           size="icon-sm"
@@ -342,46 +337,70 @@ export function ActiveFilters({
   });
 }
 
-type FilterControllerWrapperProps = Omit<ButtonProps, "children"> &
-  TableTypeProp & {
-    filterValue: FilterValue;
-    popupType: FilterPopupType;
-    columnId: string;
-  };
+type FilterOperatorSelectorProps = Omit<ButtonProps, "children"> & {
+  filterValue: FilterValue;
+  onOperatorChange: (newOperator: FilterValue["operator"]) => void;
+};
 
-function FilterValueController({
-  tableType,
+function FilterOperatorSelector({
+  filterValue,
+  onOperatorChange,
+  ...props
+}: FilterOperatorSelectorProps) {
+  const operators = useMemo(
+    () => getFilterOperators(filterValue.type),
+    [filterValue.type],
+  );
+
+  const selectedOperator = operators.find(
+    (op) => op.value === filterValue.operator,
+  );
+
+  const label = selectedOperator?.label ?? filterValue.operator;
+
+  return (
+    <Menu>
+      <MenuTrigger render={<Button {...props}>{label}</Button>} />
+      <MenuPopup>
+        {operators.map((op) => (
+          <MenuItem key={op.value} onClick={() => onOperatorChange(op.value)}>
+            {op.label}
+          </MenuItem>
+        ))}
+      </MenuPopup>
+    </Menu>
+  );
+}
+
+type FilterValueDisplayPopupProps = ButtonProps & {
+  filterValue: FilterValue;
+  popupType: FilterPopupType;
+};
+
+function FilterValueDisplayPopup({
   filterValue,
   popupType,
-  columnId,
+  children,
   ...props
-}: FilterControllerWrapperProps) {
+}: FilterValueDisplayPopupProps) {
   const trigger = (
     <Button {...props}>
       <FilterValueDisplay filterValue={filterValue} />
     </Button>
   );
 
-  const filterController = (
-    <FilterController
-      tableType={tableType}
-      filterType={filterValue.type}
-      columnId={columnId}
-    />
-  );
-
   if (popupType === "menu")
     return (
       <Menu>
         <MenuTrigger render={trigger} />
-        <MenuPopup>{filterController}</MenuPopup>
+        <MenuPopup>{children}</MenuPopup>
       </Menu>
     );
 
   return (
     <Popover>
       <PopoverTrigger render={trigger} />
-      <PopoverPopup className="*:p-1">{filterController}</PopoverPopup>
+      <PopoverPopup className="*:p-1">{children}</PopoverPopup>
     </Popover>
   );
 }
@@ -407,6 +426,6 @@ function FilterValueDisplayString({
   const displayValue =
     value.length > maxStringLength
       ? `${value.slice(0, maxStringLength)}...`
-      : value;
+      : (value ?? "...");
   return displayValue;
 }

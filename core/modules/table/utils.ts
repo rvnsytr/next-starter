@@ -2,6 +2,7 @@ import { ActionResponse } from "@/core/types";
 import { formatZodError } from "@/core/utils";
 import { FilterType, FilterValue } from "./filters";
 import { dataTable } from "./hooks/data-table";
+import { STRING_FILTER_OPERATORS } from "./operators";
 import { filterValueSchema } from "./schema";
 import { DataTableType } from "./types";
 
@@ -9,9 +10,17 @@ export function getTableHook(tableType: DataTableType) {
   switch (tableType) {
     case "data-table-server":
       return dataTable;
-
     default:
       return dataTable;
+  }
+}
+
+export function getFilterOperators(filterType: FilterType) {
+  switch (filterType) {
+    case "string":
+      return STRING_FILTER_OPERATORS;
+    default:
+      return STRING_FILTER_OPERATORS;
   }
 }
 
