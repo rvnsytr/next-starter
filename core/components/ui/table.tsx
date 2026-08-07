@@ -5,13 +5,20 @@ export type TableVariant = "default" | "card" | "bordered";
 
 export function Table({
   variant = "default",
-  containerClassName,
   className,
+  containerProps,
   ...props
 }: React.ComponentProps<"table"> & {
   variant?: TableVariant;
-  containerClassName?: string;
+  containerProps?: React.ComponentProps<typeof ScrollArea>;
 }) {
+  const {
+    className: containerClassName,
+    withScrollbar = false,
+    scrollFade = true,
+    ...restContainerProps
+  } = containerProps ?? {};
+
   return (
     <ScrollArea
       data-slot="table-container"
@@ -21,8 +28,9 @@ export function Table({
         variant === "bordered" && "overflow-hidden rounded-lg border",
         containerClassName,
       )}
-      withScrollbar={false}
-      scrollFade
+      withScrollbar={withScrollbar}
+      scrollFade={scrollFade}
+      {...restContainerProps}
     >
       <table
         data-slot="table"
