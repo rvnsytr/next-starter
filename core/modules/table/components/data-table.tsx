@@ -10,6 +10,8 @@ import {
 import {
   ActiveFilters,
   ActiveFiltersProps,
+  ClearFilters,
+  ClearFiltersProps,
   FilterSelector,
   FilterSelectorProps,
 } from "./base/filters";
@@ -40,6 +42,10 @@ export function DataTable(props: BaseTableProps) {
 
 export function DataTableActiveFilters(props: ActiveFiltersProps) {
   return <ActiveFilters tableType={tableType} {...props} />;
+}
+
+export function DataTableClearFilters(props: ClearFiltersProps) {
+  return <ClearFilters tableType={tableType} {...props} />;
 }
 
 export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {

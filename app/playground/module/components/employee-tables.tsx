@@ -29,9 +29,12 @@ export function EmployeeDataTable() {
         <table.Search shortcut="default" />
       </div>
 
-      <pre>{JSON.stringify(table.atoms.columnFilters.get(), null, 2)}</pre>
-
-      <table.ActiveFilters />
+      {table.atoms.columnFilters.get().length > 0 && (
+        <table.ActiveFiltersContainer>
+          <table.ClearFilters />
+          <table.ActiveFilters />
+        </table.ActiveFiltersContainer>
+      )}
 
       <table.Table
         variant="bordered"

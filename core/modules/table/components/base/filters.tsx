@@ -20,6 +20,7 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
+import { ScrollArea } from "@/core/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipPopup,
@@ -38,8 +39,14 @@ import { getFilterOperators, getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
-import { ChevronRightIcon, FilterIcon, XIcon } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChevronRightIcon,
+  EllipsisIcon,
+  FilterIcon,
+  FilterXIcon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 type TableTypeProp = { tableType: DataTableType };
 
@@ -66,7 +73,7 @@ export function FilterSelector({
   variant = "outline",
   children,
   ...props
-}: FilterSelectorProps & TableTypeProp) {
+}: TableTypeProp & FilterSelectorProps) {
   const table = getTableHook(tableType).useTableContext();
 
   const anchor = useRef<HTMLButtonElement>(null);
@@ -167,7 +174,11 @@ export function FilterSelector({
           if (!v) setFilterSelector(null);
         }}
       >
-        <PopoverPopup anchor={anchor} align={align} className="*:p-1">
+        <PopoverPopup
+          anchor={anchor}
+          align={align}
+          className="rounded-xl *:p-1"
+        >
           {filterSelector ? (
             <FilterValueController tableType={tableType} {...filterSelector} />
           ) : (
@@ -207,12 +218,12 @@ function FilterValueControllerString({
 
   const defaultValue =
     typeof filterValue.value === "string" ? filterValue.value : "";
+
   const [value, setValue] = useState<string>(defaultValue);
   const debouncedSearch = useDebounce(value);
 
   useEffect(() => {
     if (!column) return;
-    if (!debouncedSearch) return column.setFilterValue(undefined);
 
     const columnFilterValue: FilterValue = {
       type: "string",
@@ -250,13 +261,33 @@ function FilterValueControllerString({
   );
 }
 
+export type ActiveFiltersContainerProps = React.ComponentProps<"div">;
+
+export function ActiveFiltersContainer({
+  className,
+  ...props
+}: ActiveFiltersContainerProps) {
+  return (
+    <ScrollArea
+      className="border-t border-b border-dashed"
+      scrollFade
+      withScrollbar={false}
+    >
+      <div
+        className={cn("flex items-center gap-2 p-2", className)}
+        {...props}
+      />
+    </ScrollArea>
+  );
+}
+
 export type ActiveFiltersProps = React.ComponentProps<typeof ButtonGroup>;
 
 export function ActiveFilters({
   tableType,
   className,
   ...props
-}: ActiveFiltersProps & TableTypeProp) {
+}: TableTypeProp & ActiveFiltersProps) {
   const table = getTableHook(tableType).useTableContext();
   const filters = table.atoms.columnFilters.get();
   return filters.map((f) => {
@@ -288,6 +319,11 @@ export function ActiveFilters({
     const filterValue = filterValueResult.data;
     const popupType = filterMeta[filterValue.type].popupType;
 
+    const operators = getFilterOperators(filterValue.type);
+    const selectedOperator =
+      operators.find((op) => op.value === filterValue.operator)?.label ??
+      filterValue.operator;
+
     const columnMeta = column.columnDef.meta;
     const Icon = columnMeta?.icon;
 
@@ -303,14 +339,27 @@ export function ActiveFilters({
           {columnMeta?.label ?? column.id}
         </Button>
 
-        <FilterOperatorSelector
-          size="sm"
-          variant="outline"
-          filterValue={filterValue}
-          onOperatorChange={(newOperator) =>
-            column.setFilterValue({ ...filterValue, operator: newOperator })
-          }
-        />
+        <Menu>
+          <MenuTrigger
+            render={
+              <Button size="sm" variant="outline">
+                {selectedOperator}
+              </Button>
+            }
+          />
+          <MenuPopup>
+            {operators.map((op) => (
+              <MenuItem
+                key={op.value}
+                onClick={() =>
+                  column.setFilterValue({ ...filterValue, operator: op.value })
+                }
+              >
+                {op.label}
+              </MenuItem>
+            ))}
+          </MenuPopup>
+        </Menu>
 
         <FilterValueDisplayPopup
           size="sm"
@@ -335,41 +384,6 @@ export function ActiveFilters({
       </ButtonGroup>
     );
   });
-}
-
-type FilterOperatorSelectorProps = Omit<ButtonProps, "children"> & {
-  filterValue: FilterValue;
-  onOperatorChange: (newOperator: FilterValue["operator"]) => void;
-};
-
-function FilterOperatorSelector({
-  filterValue,
-  onOperatorChange,
-  ...props
-}: FilterOperatorSelectorProps) {
-  const operators = useMemo(
-    () => getFilterOperators(filterValue.type),
-    [filterValue.type],
-  );
-
-  const selectedOperator = operators.find(
-    (op) => op.value === filterValue.operator,
-  );
-
-  const label = selectedOperator?.label ?? filterValue.operator;
-
-  return (
-    <Menu>
-      <MenuTrigger render={<Button {...props}>{label}</Button>} />
-      <MenuPopup>
-        {operators.map((op) => (
-          <MenuItem key={op.value} onClick={() => onOperatorChange(op.value)}>
-            {op.label}
-          </MenuItem>
-        ))}
-      </MenuPopup>
-    </Menu>
-  );
 }
 
 type FilterValueDisplayPopupProps = ButtonProps & {
@@ -400,7 +414,7 @@ function FilterValueDisplayPopup({
   return (
     <Popover>
       <PopoverTrigger render={trigger} />
-      <PopoverPopup className="*:p-1">{children}</PopoverPopup>
+      <PopoverPopup className="rounded-xl *:p-1">{children}</PopoverPopup>
     </Popover>
   );
 }
@@ -426,6 +440,47 @@ function FilterValueDisplayString({
   const displayValue =
     value.length > maxStringLength
       ? `${value.slice(0, maxStringLength)}...`
-      : (value ?? "...");
-  return displayValue;
+      : value;
+  return !!displayValue ? displayValue : <EllipsisIcon />;
+}
+
+export type ClearFiltersProps = ButtonProps & {
+  align?: React.ComponentProps<typeof TooltipPopup>["align"];
+};
+
+export function ClearFilters({
+  tableType,
+  align,
+  size,
+  variant = "destructive-outline",
+  onClick,
+  children,
+  ...props
+}: TableTypeProp & ClearFiltersProps) {
+  const table = getTableHook(tableType).useTableContext();
+
+  const buttonSize: ButtonProps["size"] = size ?? (children ? "sm" : "icon-sm");
+  const isIconSize = buttonSize?.startsWith("icon") ?? false;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            size={buttonSize}
+            variant={variant}
+            onClick={(e) => {
+              table.setColumnFilters([]);
+              table.setGlobalFilter("");
+              onClick?.(e);
+            }}
+            {...props}
+          >
+            {children ?? (isIconSize && <FilterXIcon />)}
+          </Button>
+        }
+      />
+      <TooltipPopup align={align}>Clear All Filters</TooltipPopup>
+    </Tooltip>
+  );
 }

@@ -8,6 +8,8 @@ export type DataTableType = "data-table" | "data-table-server";
 export type TableComponents = {
   Table: React.ComponentType<any>;
   ActiveFilters: React.ComponentType<any>;
+  ActiveFiltersContainer: React.ComponentType<any>;
+  ClearFilters: React.ComponentType<any>;
   ColumnFilters: React.ComponentType<any>;
   ColumnSortMenu: React.ComponentType<any>;
   ColumnVisibilityMenu: React.ComponentType<any>;

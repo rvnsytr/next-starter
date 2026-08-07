@@ -1,7 +1,9 @@
 import { createTableHook, tableFeatures } from "@tanstack/react-table";
+import { ActiveFiltersContainer } from "../components/base/filters";
 import {
   DataTable,
   DataTableActiveFilters,
+  DataTableClearFilters,
   DataTableColumnSortMenu,
   DataTableColumnVisibilityMenu,
   DataTableFilterSelector,
@@ -23,6 +25,8 @@ export const dataTable = createTableHook({
   tableComponents: {
     Table: DataTable,
     ActiveFilters: DataTableActiveFilters,
+    ActiveFiltersContainer,
+    ClearFilters: DataTableClearFilters,
     ColumnFilters: DataTableFilterSelector,
     ColumnSortMenu: DataTableColumnSortMenu,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
