@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/core/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,28 +22,33 @@ export type BaseTableProps = React.ComponentProps<typeof Table> & {
 
   /** The placeholder message to display when the table has no data. */
   placeholder?: string;
+
+  /** Whether the table is in a loading state. */
+  loading?: boolean;
 };
 
 export function BaseTable({
   tableType,
   caption,
   placeholder,
+  loading = false,
   style,
   ...props
 }: BaseTableProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
 
+  const allLeafColumnsLength = table.getAllLeafColumns().length;
   const resizing = table.atoms.columnResizing.get();
-  const withPreview = table.options.columnResizeMode !== "onChange";
+  const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
   useEffect(() => {
-    if (!withPreview) return;
+    if (!withResizeIndicator) return;
     const isResizing = !!resizing.isResizingColumn;
     document.body.style.cursor = isResizing ? "col-resize" : "";
     return () => {
       document.body.style.cursor = "";
     };
-  }, [withPreview, resizing]);
+  }, [withResizeIndicator, resizing]);
 
   return (
     <Table style={{ width: table.getTotalSize(), ...style }} {...props}>
@@ -66,8 +72,7 @@ export function BaseTable({
                   const isPinned = !!pinPosition;
 
                   const isResizing =
-                    withPreview &&
-                    header.column.id === resizing.isResizingColumn;
+                    withResizeIndicator && header.column.getIsResizing();
 
                   return (
                     <TableHead
@@ -106,7 +111,7 @@ export function BaseTable({
                             <div
                               className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
                               style={{
-                                transform: `translateX(${resizing.deltaOffset}px)`,
+                                transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
                               }}
                             />
                           )}
@@ -122,7 +127,17 @@ export function BaseTable({
       </TableHeader>
 
       <TableBody>
-        {table.getRowModel().rows.length ? (
+        {loading ? (
+          Array.from({ length: table.atoms.pagination.get().pageSize }).map(
+            (_, i) => (
+              <TableRow key={i}>
+                <TableCell colSpan={allLeafColumnsLength}>
+                  <Skeleton className="h-8 w-full" />
+                </TableCell>
+              </TableRow>
+            ),
+          )
+        ) : table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow key={row.id} data-selected={row.getIsSelected()}>
               {row.getVisibleCells().map((c) => (
@@ -139,6 +154,7 @@ export function BaseTable({
 
                     const pinPosition = cell.column.getIsPinned();
                     const isPinned = !!pinPosition;
+
                     return (
                       <TableCell
                         key={cell.id}
@@ -183,7 +199,7 @@ export function BaseTable({
         ) : (
           <TableRow>
             <TableCell
-              colSpan={table.getAllColumns().length}
+              colSpan={allLeafColumnsLength}
               className="text-muted-foreground px-0 py-4 text-center whitespace-pre-line"
             >
               {placeholder ?? messages.empty}

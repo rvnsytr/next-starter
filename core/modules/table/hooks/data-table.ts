@@ -7,15 +7,14 @@ import {
   DataTableColumnSortMenu,
   DataTableColumnVisibilityMenu,
   DataTableFilterSelector,
+  DataTableHeader,
   DataTablePageSizeSelector,
   DataTablePagination,
-  DataTablePinMenu,
   DataTableResetTableButton,
   DataTableRowCheckbox,
   DataTableRowNumber,
   DataTableSearch,
   DataTableSelectAllCheckbox,
-  DataTableSortButton,
 } from "../components/data-table";
 import { DataTableTemplate } from "../components/data-table-template";
 import { dataTableFeatures } from "../features/data-table";
@@ -43,9 +42,8 @@ export const dataTable = createTableHook({
     Template: DataTableTemplate,
   } satisfies TableComponents & DataTableTableTemplate,
   headerComponents: {
-    PinMenu: DataTablePinMenu,
+    Header: DataTableHeader,
     SelectAllCheckbox: DataTableSelectAllCheckbox,
-    SortButton: DataTableSortButton,
   } satisfies HeaderComponents,
   cellComponents: {
     RowCheckbox: DataTableRowCheckbox,

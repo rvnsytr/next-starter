@@ -4,12 +4,10 @@ import { FilterType, FilterValue } from "./filters";
 import { dataTable } from "./hooks/data-table";
 import { STRING_FILTER_OPERATORS } from "./operators";
 import { filterValueSchema } from "./schema";
-import { DataTableType } from "./types";
+import { TableType } from "./types";
 
-export function getTableHook(tableType: DataTableType) {
+export function getTableHook(tableType: TableType) {
   switch (tableType) {
-    case "data-table-server":
-      return dataTable;
     default:
       return dataTable;
   }

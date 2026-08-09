@@ -76,7 +76,7 @@ export function ColumnSortMenu({
       <MenuPopup align={align}>
         {table
           .getAllColumns()
-          .filter((column) => column.getCanSort() || column.getCanMultiSort())
+          .filter((column) => column.getCanSort())
           .map((column) => {
             const Icon = column.columnDef.meta?.icon;
             const sortDirection = column.getIsSorted();

@@ -1,3 +1,5 @@
+"use client";
+
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
@@ -159,9 +161,11 @@ export function DataTableTemplate({
 
         <span className="order-2 shrink-0 tabular-nums lg:order-4">
           <span className="text-foreground">
-            {formatNumber(startRowNumber)}-{formatNumber(endRowNumber)}
+            {tableProps?.loading
+              ? "?"
+              : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
           </span>
-          {` of ${formatNumber(rowsCount)}`}
+          {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
         </span>
 
         <table.Pagination

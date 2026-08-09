@@ -13,12 +13,12 @@ import {
   FilterSelector,
   FilterSelectorProps,
 } from "./base/filters";
+import { Header, HeaderProps } from "./base/header";
 import {
   PageSizeSelector,
   PageSizeSelectorProps,
 } from "./base/page-size-selector";
 import { Pagination, PaginationProps } from "./base/pagination";
-import { PinMenu, PinMenuProps } from "./base/pin-menu";
 import {
   ResetTableButton,
   ResetTableButtonProps,
@@ -33,6 +33,8 @@ import {
 import { SortButton, SortButtonProps } from "./base/sort-button";
 
 const tableType: DataTableType = "data-table";
+
+// --- Table Components
 
 export function DataTable(props: BaseTableProps) {
   return <BaseTable tableType={tableType} {...props} />;
@@ -68,10 +70,6 @@ export function DataTablePagination(props: PaginationProps) {
   return <Pagination tableType={tableType} {...props} />;
 }
 
-export function DataTablePinMenu(props: PinMenuProps) {
-  return <PinMenu tableType={tableType} {...props} />;
-}
-
 export function DataTableResetTableButton(props: ResetTableButtonProps) {
   return <ResetTableButton tableType={tableType} {...props} />;
 }
@@ -80,9 +78,17 @@ export function DataTableSearch(props: SearchProps) {
   return <Search tableType={tableType} {...props} />;
 }
 
+// --- Header Components
+
+export function DataTableHeader(props: HeaderProps) {
+  return <Header tableType={tableType} {...props} />;
+}
+
 export function DataTableSelectAllCheckbox(props: SelectAllCheckboxProps) {
   return <SelectAllCheckbox tableType={tableType} {...props} />;
 }
+
+// --- Cell Components
 
 export function DataTableRowCheckbox(props: RowCheckboxProps) {
   return <RowCheckbox tableType={tableType} {...props} />;
@@ -90,8 +96,4 @@ export function DataTableRowCheckbox(props: RowCheckboxProps) {
 
 export function DataTableRowNumber(props: RowNumberProps) {
   return <RowNumber tableType={tableType} {...props} />;
-}
-
-export function DataTableSortButton(props: SortButtonProps) {
-  return <SortButton tableType={tableType} {...props} />;
 }

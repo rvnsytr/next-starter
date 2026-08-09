@@ -17,8 +17,7 @@ import {
   sortFn_text,
   TableFeatures,
 } from "@tanstack/react-table";
-import { filterFns } from "../filters";
-import { TableMeta } from "../types";
+import { ColumnMeta } from "../types";
 
 export const serverDataTableFeatures = {
   columnPinningFeature,
@@ -40,12 +39,16 @@ export const serverDataTableFeatures = {
   globalFilteringFeature,
   filterFns,
 
-  columnMeta: metaHelper<TableMeta>(),
+  columnMeta: metaHelper<ColumnMeta>(),
+} satisfies TableFeatures;
+
+export const clientDataTableFeatures = {
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
 } satisfies TableFeatures;
 
 export const dataTableFeatures = {
   ...serverDataTableFeatures,
-  filteredRowModel: createFilteredRowModel(),
-  sortedRowModel: createSortedRowModel(),
-  paginatedRowModel: createPaginatedRowModel(),
+  ...clientDataTableFeatures,
 } satisfies TableFeatures;
