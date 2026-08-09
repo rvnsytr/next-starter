@@ -30,14 +30,13 @@ import {
   SelectAllCheckbox,
   SelectAllCheckboxProps,
 } from "./base/select-all-checkbox";
-import { SortButton, SortButtonProps } from "./base/sort-button";
 
 const tableType: DataTableType = "data-table";
 
 // --- Table Components
 
 export function DataTable(props: BaseTableProps) {
-  return <BaseTable tableType={tableType} {...props} />;
+  return <BaseTable {...props} />;
 }
 
 export function DataTableActiveFilters(props: ActiveFiltersProps) {

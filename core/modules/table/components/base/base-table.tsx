@@ -10,8 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
-import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { useEffect } from "react";
@@ -28,27 +27,25 @@ export type BaseTableProps = React.ComponentProps<typeof Table> & {
 };
 
 export function BaseTable({
-  tableType,
   caption,
   placeholder,
   loading = false,
   style,
   ...props
-}: BaseTableProps & { tableType: DataTableType }) {
-  const table = getTableHook(tableType).useTableContext();
+}: BaseTableProps) {
+  const table = dataTable.useTableContext();
 
   const allLeafColumnsLength = table.getAllLeafColumns().length;
   const resizing = table.atoms.columnResizing.get();
   const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
   useEffect(() => {
-    if (!withResizeIndicator) return;
     const isResizing = !!resizing.isResizingColumn;
     document.body.style.cursor = isResizing ? "col-resize" : "";
     return () => {
       document.body.style.cursor = "";
     };
-  }, [withResizeIndicator, resizing]);
+  }, [resizing]);
 
   return (
     <Table style={{ width: table.getTotalSize(), ...style }} {...props}>

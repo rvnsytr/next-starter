@@ -55,13 +55,22 @@ export type TableTemplateProps = React.ComponentProps<"div"> & {
 };
 
 export type ColumnMeta = {
+  /** The label displayed in the column header */
   label?: string;
+
+  /** The icon displayed alongside the column header label */
   icon?: LucideIcon;
-  count?: number;
+
+  /** The maximum value allowed for number-based filters */
   max?: number;
 
+  /** Props applied to the column's header cell (`<th>`) */
   headerProps?: React.ComponentProps<"th">;
+
+  /** Props applied to the column's data cell (`<td>`) */
   cellProps?: React.ComponentProps<"td">;
+
+  /** Props applied to the column's footer cell (`<th>`) */
   // footerProps?: React.ComponentProps<"th">;
 };
 

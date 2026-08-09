@@ -54,6 +54,7 @@ export function Header({
   const popupAlign =
     pinPosition === "start" ? "start" : pinPosition === "end" ? "end" : align;
 
+  const ColumnIcon = header.column.columnDef.meta?.icon ?? null;
   const TriggerIcon = canSort ? SortIcon : PinIcon;
 
   return (
@@ -70,11 +71,12 @@ export function Header({
                 ? "justify-center"
                 : "justify-end"),
 
+          "*:[svg]:size-3.5",
           className,
         )}
         {...props}
       >
-        {label} <TriggerIcon className="size-3.5" />
+        {ColumnIcon && <ColumnIcon />} {label} <TriggerIcon />
       </MenuTrigger>
 
       <MenuPopup align={popupAlign}>
