@@ -30,10 +30,12 @@ import { useDebounce } from "@/core/hooks/use-debounce";
 import {
   filterMeta,
   FilterPopupType,
-  FilterType,
   FilterValue,
 } from "@/core/modules/table/filters";
-import { filterValueSchema } from "@/core/modules/table/schema";
+import {
+  filterValueSchema,
+  stringFilterValueSchema,
+} from "@/core/modules/table/schema";
 import { DataTableType } from "@/core/modules/table/types";
 import { getFilterOperators, getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
@@ -58,7 +60,7 @@ export type FilterSelectorProps = ButtonProps & {
 
 type FilterSelectorState = {
   columnId: string;
-  filterType: FilterType;
+  filterType: FilterValue["type"];
   popupType: FilterPopupType;
 } | null;
 
@@ -135,7 +137,7 @@ export function FilterSelector({
                 const Icon = meta?.icon;
                 const columnId = column.id;
 
-                let filterType: FilterType = "string";
+                let filterType: FilterValue["type"] = "string";
                 if (typeof filterFn === "string" && filterFn !== "auto")
                   filterType = filterFn;
 
@@ -193,7 +195,7 @@ type FilterValueControllerProps = TableTypeProp & { columnId: string };
 function FilterValueController({
   filterType,
   ...props
-}: FilterValueControllerProps & { filterType: FilterType }) {
+}: FilterValueControllerProps & { filterType: FilterValue["type"] }) {
   switch (filterType) {
     case "string":
       return <FilterValueControllerString {...props} />;
@@ -209,7 +211,7 @@ function FilterValueControllerString({
   const table = getTableHook(tableType).useTableContext();
   const column = table.getColumn(columnId);
 
-  const filterValue = filterValueSchema
+  const filterValue = stringFilterValueSchema
     .default(filterMeta.string.defaultValue)
     .catch(filterMeta.string.defaultValue)
     .parse(column?.getFilterValue());
@@ -423,7 +425,7 @@ function FilterValueDisplayPopup({
   );
 }
 
-type FilterValueDisplayProps<T extends FilterType> = Pick<
+type FilterValueDisplayProps<T extends FilterValue["type"]> = Pick<
   Extract<FilterValue, { type: T }>,
   "value"
 >;

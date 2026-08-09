@@ -22,80 +22,248 @@ export type DateMultipleFilterOperator =
 export type DateRangeFilterOperator =
   (typeof DATE_RANGE_FILTER_OPERATORS)[number]["value"];
 
+const emptyFilterOperators = [
+  {
+    value: "is_empty",
+    label: "is empty",
+    withValue: false,
+  },
+  {
+    value: "is_not_empty",
+    label: "is not empty",
+    withValue: false,
+  },
+] as const;
+
 export const STRING_FILTER_OPERATORS = [
-  { value: "contains", label: "contains" },
-  { value: "not_contains", label: "does not contain" },
-  { value: "equals", label: "equals" },
-  { value: "not_equals", label: "does not equal" },
-  { value: "starts_with", label: "starts with" },
-  { value: "ends_with", label: "ends with" },
-  { value: "is_empty", label: "is empty" },
-  { value: "is_not_empty", label: "is not empty" },
+  {
+    value: "contains",
+    label: "contains",
+    withValue: true,
+  },
+  {
+    value: "not_contains",
+    label: "does not contain",
+    withValue: true,
+  },
+  {
+    value: "equals",
+    label: "equals",
+    withValue: true,
+  },
+  {
+    value: "not_equals",
+    label: "does not equal",
+    withValue: true,
+  },
+  {
+    value: "starts_with",
+    label: "starts with",
+    withValue: true,
+  },
+  {
+    value: "ends_with",
+    label: "ends with",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const NUMBER_FILTER_OPERATORS = [
-  { value: "equals", label: "equals" },
-  { value: "not_equals", label: "does not equal" },
-  { value: "greater_than", label: "greater than" },
-  { value: "greater_than_or_equal", label: "greater than or equal" },
-  { value: "less_than", label: "less than" },
-  { value: "less_than_or_equal", label: "less than or equal" },
-  { value: "between", label: "between" },
-  { value: "not_between", label: "not between" },
-  { value: "is_empty", label: "is empty" },
-  { value: "is_not_empty", label: "is not empty" },
+  {
+    value: "equals",
+    label: "equals",
+    withValue: true,
+  },
+  {
+    value: "not_equals",
+    label: "does not equal",
+    withValue: true,
+  },
+  {
+    value: "greater_than",
+    label: "greater than",
+    withValue: true,
+  },
+  {
+    value: "greater_than_or_equal",
+    label: "greater than or equal",
+    withValue: true,
+  },
+  {
+    value: "less_than",
+    label: "less than",
+    withValue: true,
+  },
+  {
+    value: "less_than_or_equal",
+    label: "less than or equal",
+    withValue: true,
+  },
+  {
+    value: "between",
+    label: "between",
+    withValue: true,
+  },
+  {
+    value: "not_between",
+    label: "not between",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const BOOLEAN_FILTER_OPERATORS = [
-  { value: "is", label: "is" },
-  { value: "is_empty", label: "is empty" },
-  { value: "is_not_empty", label: "is not empty" },
+  {
+    value: "is",
+    label: "is",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const OPTION_FILTER_OPERATORS = [
-  { value: "equals", label: "equals" },
-  { value: "not_equals", label: "does not equal" },
-  { value: "is_empty", label: "is empty" },
-  { value: "is_not_empty", label: "is not empty" },
+  {
+    value: "equals",
+    label: "equals",
+    withValue: true,
+  },
+  {
+    value: "not_equals",
+    label: "does not equal",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const MULTI_OPTION_FILTER_OPERATORS = [
-  { value: "contains", label: "contains" },
-  { value: "not_contains", label: "does not contain" },
-  { value: "contains_any", label: "contains any" },
-  { value: "contains_all", label: "contains all" },
-  { value: "exactly_equals", label: "exactly matches" },
-  { value: "is_empty", label: "is empty" },
+  {
+    value: "contains",
+    label: "contains",
+    withValue: true,
+  },
+  {
+    value: "not_contains",
+    label: "does not contain",
+    withValue: true,
+  },
+  {
+    value: "contains_any",
+    label: "contains any",
+    withValue: true,
+  },
+  {
+    value: "contains_all",
+    label: "contains all",
+    withValue: true,
+  },
+  {
+    value: "exactly_equals",
+    label: "exactly matches",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const DATE_TIME_FILTER_OPERATORS = [
-  { value: "is", label: "is" },
-  { value: "is_not", label: "is not" },
-  { value: "before", label: "before" },
-  { value: "after", label: "after" },
-  { value: "on_or_before", label: "on or before" },
-  { value: "on_or_after", label: "on or after" },
-  { value: "between", label: "between" },
-  { value: "not_between", label: "not between" },
-  { value: "is_empty", label: "is empty" },
-  { value: "is_not_empty", label: "is not empty" },
+  {
+    value: "is",
+    label: "is",
+    withValue: true,
+  },
+  {
+    value: "is_not",
+    label: "is not",
+    withValue: true,
+  },
+  {
+    value: "before",
+    label: "before",
+    withValue: true,
+  },
+  {
+    value: "after",
+    label: "after",
+    withValue: true,
+  },
+  {
+    value: "on_or_before",
+    label: "on or before",
+    withValue: true,
+  },
+  {
+    value: "on_or_after",
+    label: "on or after",
+    withValue: true,
+  },
+  {
+    value: "between",
+    label: "between",
+    withValue: true,
+  },
+  {
+    value: "not_between",
+    label: "not between",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const DATE_MULTIPLE_FILTER_OPERATORS = [
-  { value: "contains", label: "contains date" },
-  { value: "not_contains", label: "does not contain date" },
-  { value: "contains_any", label: "contains any" },
-  { value: "contains_all", label: "contains all" },
-  { value: "exactly_equals", label: "exactly matches" },
-  { value: "is_empty", label: "is empty" },
+  {
+    value: "contains",
+    label: "contains date",
+    withValue: true,
+  },
+  {
+    value: "not_contains",
+    label: "does not contain date",
+    withValue: true,
+  },
+  {
+    value: "contains_any",
+    label: "contains any",
+    withValue: true,
+  },
+  {
+    value: "contains_all",
+    label: "contains all",
+    withValue: true,
+  },
+  {
+    value: "exactly_equals",
+    label: "exactly matches",
+    withValue: true,
+  },
+  ...emptyFilterOperators,
 ] as const;
 
 export const DATE_RANGE_FILTER_OPERATORS = [
-  { value: "is_within", label: "is within" },
-  { value: "overlaps", label: "overlaps" },
-  { value: "contains", label: "contains" },
-  { value: "starts_before", label: "starts before" },
-  { value: "ends_after", label: "ends after" },
+  {
+    value: "is_within",
+    label: "is within",
+    withValue: true,
+  },
+  {
+    value: "overlaps",
+    label: "overlaps",
+    withValue: true,
+  },
+  {
+    value: "contains",
+    label: "contains",
+    withValue: true,
+  },
+  {
+    value: "starts_before",
+    label: "starts before",
+    withValue: true,
+  },
+  {
+    value: "ends_after",
+    label: "ends after",
+    withValue: true,
+  },
 ] as const;
 
 export const STRING_FILTER_OPERATOR_VALUES = STRING_FILTER_OPERATORS.map(

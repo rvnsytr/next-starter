@@ -1,15 +1,21 @@
-import { FilterFn, filterFn_includesString } from "@tanstack/react-table";
+import { validateValue } from "@/core/utils";
+import {
+  FilterFn as TanstackFilterFn,
+  filterFn_empty,
+  filterFn_endsWith,
+  filterFn_equalsString,
+  filterFn_includesString,
+  filterFn_notEmpty,
+  filterFn_startsWith,
+} from "@tanstack/react-table";
 import { z } from "better-auth";
-import { filterValueSchema } from "./schema";
-import { validateFilterValue } from "./utils";
+import { filterValueSchema, stringFilterValueSchema } from "./schema";
 
 export type FilterValue = z.infer<typeof filterValueSchema>;
 export type FilterPopupType = "menu" | "popover";
 
-export type FilterType = FilterValue["type"];
-
 export type FilterMeta = {
-  [T in FilterType]: {
+  [T in FilterValue["type"]]: {
     popupType: FilterPopupType;
     defaultValue: Extract<FilterValue, { type: T }>;
   };
@@ -27,20 +33,50 @@ export const filterMeta: FilterMeta = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const filterFns: Record<FilterType, FilterFn<any, any>> = {
-  string: (row, columnId, filterValue, addMeta) => {
-    if (!filterValue)
-      return filterFn_includesString(row, columnId, filterValue, addMeta);
+export type FilterFn = TanstackFilterFn<any, any>;
 
-    const res = validateFilterValue("string", columnId, filterValue);
+const getErrorMessage = (operator: string, filterType: string) =>
+  `Unsupported operator "${operator}" for filter type "${filterType}"`;
 
-    if (!res.success) {
-      console.error(res.message);
+export const stringFilterFn: FilterFn = (
+  row,
+  columnId,
+  filterValue,
+  addMeta,
+) => {
+  if (!filterValue)
+    return filterFn_includesString(row, columnId, filterValue, addMeta);
+
+  const filterType: FilterValue["type"] = "string";
+  const res = validateValue(filterValue, stringFilterValueSchema);
+
+  if (!res.success) {
+    console.error(res.message);
+    return false;
+  }
+
+  const { operator, value } = res.data;
+
+  switch (operator) {
+    case "contains":
+      return filterFn_includesString(row, columnId, value, addMeta);
+    case "not_contains":
+      return !filterFn_includesString(row, columnId, value, addMeta);
+    case "equals":
+      return filterFn_equalsString(row, columnId, value, addMeta);
+    case "not_equals":
+      return !filterFn_equalsString(row, columnId, value, addMeta);
+    case "starts_with":
+      return filterFn_startsWith(row, columnId, value, addMeta);
+    case "ends_with":
+      return filterFn_endsWith(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
       return false;
     }
-
-    const { value } = res.data;
-
-    return filterFn_includesString(row, columnId, value, addMeta);
-  },
+  }
 };
