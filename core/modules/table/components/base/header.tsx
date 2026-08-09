@@ -62,6 +62,14 @@ export function Header({
         className={cn(
           !props.render &&
             "hover:text-foreground flex w-full cursor-pointer items-center gap-2 transition-colors",
+
+          !props.render &&
+            (align === "start"
+              ? "justify-start"
+              : align === "center"
+                ? "justify-center"
+                : "justify-end"),
+
           className,
         )}
         {...props}
