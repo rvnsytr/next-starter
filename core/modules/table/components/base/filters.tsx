@@ -88,6 +88,8 @@ export function FilterSelector({
     { enabled: !!hotkey },
   );
 
+  const columnFilterIds = table.atoms.columnFilters.get().map((c) => c.id);
+
   return (
     <>
       <Menu
@@ -150,6 +152,7 @@ export function FilterSelector({
                       }, ANIMATION_DELAY);
                     }}
                     closeOnClick={false}
+                    disabled={columnFilterIds.includes(column.id)}
                   >
                     {Icon && <Icon className="text-muted-foreground" />}
                     {meta?.label ?? columnId}
@@ -315,7 +318,7 @@ export function ActiveFilters({
     const popupType = filterMeta[filterValue.type].popupType;
 
     const operators = getFilterOperators(filterValue.type);
-    const selectedOperator =
+    const selectedOperatorLabel =
       operators.find((op) => op.value === filterValue.operator)?.label ??
       filterValue.operator;
 
@@ -338,7 +341,7 @@ export function ActiveFilters({
           <MenuTrigger
             render={
               <Button size="sm" variant="outline">
-                {selectedOperator}
+                {selectedOperatorLabel}
               </Button>
             }
           />
@@ -346,9 +349,9 @@ export function ActiveFilters({
             {operators.map((op) => (
               <MenuItem
                 key={op.value}
-                onClick={() =>
-                  column.setFilterValue({ ...filterValue, operator: op.value })
-                }
+                onClick={() => {
+                  column.setFilterValue({ ...filterValue, operator: op.value });
+                }}
               >
                 {op.label}
               </MenuItem>
@@ -392,6 +395,12 @@ function FilterValueDisplayPopup({
   children,
   ...props
 }: FilterValueDisplayPopupProps) {
+  const operators = getFilterOperators(filterValue.type);
+  const withValue =
+    operators.find((v) => v.value === filterValue.operator)?.withValue ?? true;
+
+  if (!withValue) return;
+
   const trigger = (
     <Button {...props}>
       <FilterValueDisplay filterValue={filterValue} />
