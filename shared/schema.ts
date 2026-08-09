@@ -1,4 +1,3 @@
-import { allDataFilterType, allFilterOperators } from "@/core/utils";
 import { file } from "@/shared/db/schema";
 import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
@@ -321,71 +320,3 @@ export const sharedSchemas = {
 
   gender: z.enum(genders.values, { error: messages.invalid("Jenis kelamin") }),
 };
-
-export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(
-  prefix: P,
-  schema: z.ZodObject<S>,
-) {
-  const prefixedShape = Object.fromEntries(
-    Object.entries(schema.shape).map(([k, v]) => [`${prefix}${k}`, v]),
-  ) as { [K in keyof S as `${P}${string & K}`]: S[K] };
-  return z.object(prefixedShape);
-}
-
-export const columnFiltersSchema = z.object({
-  id: z.string(),
-  value: z.object({
-    operator: z.enum(allFilterOperators),
-    values: z
-      .union([
-        z.string(),
-        z.number(),
-        z.coerce.date(),
-        z.union([z.string(), z.number(), z.coerce.date()]).array(),
-      ])
-      .array(),
-    columnMeta: z.object({
-      label: z.string().exactOptional(),
-      type: z.enum(allDataFilterType),
-    }),
-  }),
-});
-
-export const countSchema = z.intersection(
-  z.object({ total: z.number() }),
-  z.record(z.string(), z.number()),
-);
-
-export const getActionResponseSchema = <T>(schema: z.ZodType<T>) =>
-  z.discriminatedUnion("success", [
-    z.object({
-      success: z.literal(true),
-      message: z.string().exactOptional(),
-      count: countSchema.exactOptional(),
-      data: schema,
-    }),
-    z.object({
-      success: z.literal(false),
-      message: z.string(),
-      error: z.unknown().exactOptional(),
-    }),
-  ]);
-
-export const getApiResponseSchema = <T>(schema: z.ZodType<T>) =>
-  z.intersection(
-    z.object({
-      code: z.number(),
-      message: z.string(),
-    }),
-    z.discriminatedUnion("success", [
-      z.object({
-        success: z.literal(true),
-        count: countSchema.exactOptional(),
-        data: schema,
-      }),
-      z.object({
-        success: z.literal(false),
-        error: z.unknown().exactOptional(),
-      }),
-    ]),
-  );

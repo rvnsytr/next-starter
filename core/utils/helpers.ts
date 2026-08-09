@@ -2,7 +2,7 @@ import { messages } from "@/shared/messages";
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import z from "zod";
-import { ActionError } from "../types";
+import { ActionError, ActionResponse } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,6 +18,21 @@ export function clamp(num: number, min: number, max: number) {
 
 export function isValidUrl(url: string) {
   return z.url().safeParse(url).success;
+}
+
+export function validateValue<T>(
+  value: unknown,
+  schema: z.ZodType<T>,
+): ActionResponse<T> {
+  const success = false;
+  const res = schema.safeParse(value);
+
+  if (!res.success) {
+    const error = formatZodError(res.error);
+    return { success, message: error.message, error };
+  }
+
+  return { success: true, data: res.data };
 }
 
 export function formatZodError<T>(

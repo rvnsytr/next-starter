@@ -1,10 +1,10 @@
+import { sharedSchemas } from "@/shared/schema";
 import z from "zod";
 import {
   countSchema,
   getActionResponseSchema,
   getApiResponseSchema,
-  sharedSchemas,
-} from "../shared/schema";
+} from "./schema";
 
 export type Override<T, U> = Omit<T, keyof U> & U;
 
