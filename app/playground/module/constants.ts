@@ -1,4 +1,13 @@
-import { Skill, UserRole } from "./types";
+export type UserRole = (typeof userRoles)[number];
+
+export const userRoles = [
+  "Admin",
+  "Manager",
+  "Developer",
+  "Designer",
+  "QA",
+  "Support",
+] as const;
 
 export const userRoleMeta: Record<UserRole, { color: string }> = {
   Admin: { color: "#FF0000" },
@@ -8,6 +17,21 @@ export const userRoleMeta: Record<UserRole, { color: string }> = {
   QA: { color: "#008000" },
   Support: { color: "#00CED1" },
 };
+
+export type Skill = (typeof skills)[number];
+
+export const skills = [
+  "React",
+  "Vue",
+  "Angular",
+  "Node.js",
+  "TypeScript",
+  "Python",
+  "Go",
+  "Docker",
+  "AWS",
+  "GraphQL",
+] as const;
 
 export const skillMeta: Record<Skill, { color: string }> = {
   React: { color: "#61DAFB" },

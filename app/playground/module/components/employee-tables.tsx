@@ -1,18 +1,29 @@
 "use client";
 
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { extremeEmployees } from "../data";
-import { employeeColumns } from "./employee-columns";
+import useSWR from "swr";
+import { getEmployees } from "../actions";
+import { employeeDTColumns } from "./employee-dt-columns";
 
 export function EmployeeDataTable() {
+  const { data, isLoading } = useSWR(
+    "/employees",
+    async () => await getEmployees(100000),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
+
   const table = dataTable.useAppTable({
-    columns: employeeColumns,
-    data: extremeEmployees,
+    data: data ?? [],
+    columns: employeeDTColumns,
     getRowId: (row) => row.id.toString(),
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 100,
+        pageSize: 50,
       },
     },
   });
@@ -25,6 +36,7 @@ export function EmployeeDataTable() {
           containerProps: {
             className: "rounded-none border-x-0",
           },
+          loading: isLoading,
         }}
       />
     </table.AppTable>
