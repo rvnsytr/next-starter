@@ -20,6 +20,10 @@ export function PageSizeSelector({
   ...props
 }: PageSizeSelectorProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
+
+  const basePageSize =
+    table.options.initialState?.pagination?.pageSize ?? DEFAULT_PAGE_SIZE;
+
   return (
     <Select
       value={String(table.atoms.pagination.get().pageSize)}
@@ -34,7 +38,7 @@ export function PageSizeSelector({
           <SelectItem
             key={v}
             value={String(v)}
-            className={cn(v === DEFAULT_PAGE_SIZE && "font-semibold")}
+            className={cn(v === basePageSize && "font-semibold")}
           >
             {formatNumber(v)}
           </SelectItem>

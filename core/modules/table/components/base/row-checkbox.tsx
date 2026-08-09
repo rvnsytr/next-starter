@@ -1,6 +1,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
+import { cn } from "@/core/utils";
 
 export type RowCheckboxProps = Omit<
   React.ComponentProps<typeof Checkbox>,
@@ -9,7 +10,8 @@ export type RowCheckboxProps = Omit<
 
 export function RowCheckbox({
   tableType,
-  disabled,
+  className,
+  disabled = false,
   ...props
 }: React.ComponentProps<typeof Checkbox> & { tableType: DataTableType }) {
   const cell = getTableHook(tableType).useCellContext();
@@ -19,6 +21,7 @@ export function RowCheckbox({
       checked={cell.row.getIsSelected()}
       onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
       disabled={disabled ?? !cell.row.getCanSelect()}
+      className={cn("mx-auto", className)}
       {...props}
     />
   );

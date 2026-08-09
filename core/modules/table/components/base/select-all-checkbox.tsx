@@ -1,6 +1,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
+import { cn } from "@/core/utils";
 
 export type SelectAllCheckboxProps = Omit<
   React.ComponentProps<typeof Checkbox>,
@@ -9,6 +10,7 @@ export type SelectAllCheckboxProps = Omit<
 
 export function SelectAllCheckbox({
   tableType,
+  className,
   ...props
 }: SelectAllCheckboxProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
@@ -21,6 +23,7 @@ export function SelectAllCheckbox({
       checked={isAllRowsSelected}
       onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
       indeterminate={!isAllRowsSelected && table.getIsSomePageRowsSelected()}
+      className={cn("mx-auto", className)}
       {...props}
     />
   );
