@@ -66,7 +66,6 @@ export function BaseTable({
                   } = header.column.columnDef.meta?.headerProps ?? {};
 
                   const pinPosition = header.column.getIsPinned();
-                  const isPinned = !!pinPosition;
 
                   const isResizing =
                     withResizeIndicator && header.column.getIsResizing();
@@ -77,15 +76,15 @@ export function BaseTable({
                       colSpan={header.colSpan}
                       rowSpan={header.rowSpan}
                       style={{
+                        ...headerStyle,
                         width: header.getSize(),
                         left: header.column.getStart("start"),
                         right: header.column.getAfter("end"),
-                        ...headerStyle,
                       }}
                       className={cn(
                         "relative z-10",
 
-                        isPinned && "bg-background/90 sticky z-20",
+                        !!pinPosition && "bg-background/90 sticky z-20",
                         pinPosition === "start" && "left-0 pl-4",
                         pinPosition === "end" && "right-0 pr-4",
 
@@ -150,7 +149,6 @@ export function BaseTable({
                     } = cell.column.columnDef.meta?.cellProps ?? {};
 
                     const pinPosition = cell.column.getIsPinned();
-                    const isPinned = !!pinPosition;
 
                     return (
                       <TableCell
@@ -169,15 +167,15 @@ export function BaseTable({
                         //   edges.left && "border-l",
                         // )}
                         style={{
+                          ...cellStyle,
                           width: cell.column.getSize(),
                           left: cell.column.getStart("start"),
                           right: cell.column.getAfter("end"),
-                          ...cellStyle,
                         }}
                         className={cn(
                           "z-10",
 
-                          isPinned && "bg-background/90 sticky z-20",
+                          !!pinPosition && "bg-background/90 sticky z-20",
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
 

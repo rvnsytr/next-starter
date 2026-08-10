@@ -14,15 +14,23 @@ export function RowCheckbox({
   disabled = false,
   ...props
 }: React.ComponentProps<typeof Checkbox> & { tableType: DataTableType }) {
-  const cell = getTableHook(tableType).useCellContext();
+  const tableHook = getTableHook(tableType);
+
+  const table = tableHook.useTableContext();
+  const cell = tableHook.useCellContext();
+
   return (
-    <Checkbox
-      aria-label="Select row"
-      checked={cell.row.getIsSelected()}
-      onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
-      disabled={disabled ?? !cell.row.getCanSelect()}
-      className={cn("mx-auto", className)}
-      {...props}
-    />
+    <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
+      {(selected) => (
+        <Checkbox
+          aria-label="Select row"
+          checked={selected}
+          onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
+          disabled={disabled || !cell.row.getCanSelect()}
+          className={cn("mx-auto", className)}
+          {...props}
+        />
+      )}
+    </table.Subscribe>
   );
 }

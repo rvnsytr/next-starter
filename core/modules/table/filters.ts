@@ -44,8 +44,7 @@ export const stringFilterFn: FilterFn = (
   filterValue,
   addMeta,
 ) => {
-  if (!filterValue)
-    return filterFn_includesString(row, columnId, filterValue, addMeta);
+  if (!filterValue) return true;
 
   const filterType: FilterValue["type"] = "string";
   const res = validateValue(filterValue, stringFilterValueSchema);
@@ -56,6 +55,7 @@ export const stringFilterFn: FilterFn = (
   }
 
   const { operator, value } = res.data;
+  if (!value) return true;
 
   switch (operator) {
     case "contains":

@@ -22,6 +22,7 @@ export function DataTableTemplate({
   caption,
   className,
   classNames,
+  renderSlot,
   ...props
 }: TableTemplateProps & {
   caption?: string;
@@ -29,17 +30,11 @@ export function DataTableTemplate({
     header?: string;
     footer?: string;
   };
+  renderSlot?: () => React.ReactNode;
 }) {
   const isDesktop = useIsDesktop();
 
   const table = dataTable.useTableContext();
-
-  const rowsCount = table.getRowCount();
-  const selectedRowsCount = Object.keys(table.atoms.rowSelection.get()).length;
-
-  const { pageIndex, pageSize } = table.atoms.pagination.get();
-  const startRowNumber = pageIndex * pageSize + 1;
-  const endRowNumber = Math.min(startRowNumber + pageSize - 1, rowsCount);
 
   const { align: clearFiltersAlign = "start", ...restClearFiltersProps } =
     clearFiltersProps ?? {};
@@ -105,6 +100,8 @@ export function DataTableTemplate({
           />
         </ButtonGroup>
 
+        {renderSlot?.()}
+
         <div className="flex gap-x-2 *:grow">
           <table.ResetTableButton
             shortcut={resetTableButtonShortcut}
@@ -114,15 +111,20 @@ export function DataTableTemplate({
         </div>
       </div>
 
-      {table.atoms.columnFilters.get().length > 0 && (
-        <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
-          <table.ClearFilters
-            align={clearFiltersAlign}
-            {...restClearFiltersProps}
-          />
-          <table.ActiveFilters {...activeFiltersProps} />
-        </table.ActiveFiltersContainer>
-      )}
+      <table.Subscribe selector={(s) => s.columnFilters.length}>
+        {(columnFiltersLength) => {
+          if (columnFiltersLength <= 0) return;
+          return (
+            <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
+              <table.ClearFilters
+                align={clearFiltersAlign}
+                {...restClearFiltersProps}
+              />
+              <table.ActiveFilters {...activeFiltersProps} />
+            </table.ActiveFiltersContainer>
+          );
+        }}
+      </table.Subscribe>
 
       <table.Table {...tableProps} />
 
@@ -142,11 +144,16 @@ export function DataTableTemplate({
           />
         </div>
 
-        {selectedRowsCount > 0 && (
-          <small className="order-3 shrink-0 lg:order-2">
-            {formatNumber(selectedRowsCount)} rows selected
-          </small>
-        )}
+        <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
+          {(count) => {
+            if (count <= 0) return null;
+            return (
+              <small className="order-3 shrink-0 lg:order-2">
+                {formatNumber(count)} rows selected
+              </small>
+            );
+          }}
+        </table.Subscribe>
 
         {caption ? (
           <small
@@ -159,14 +166,26 @@ export function DataTableTemplate({
           isDesktop && <div className="order-3 mx-auto" />
         )}
 
-        <span className="order-2 shrink-0 tabular-nums lg:order-4">
-          <span className="text-foreground">
-            {tableProps?.loading
-              ? "?"
-              : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
-          </span>
-          {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
-        </span>
+        <table.Subscribe selector={(s) => s.pagination}>
+          {({ pageIndex, pageSize }) => {
+            const rowsCount = table.getRowCount();
+
+            const startRowNumber = pageIndex * pageSize + 1;
+            const rawEndRowNumber = startRowNumber + pageSize - 1;
+            const endRowNumber = Math.min(rawEndRowNumber, rowsCount);
+
+            return (
+              <span className="order-2 shrink-0 tabular-nums lg:order-4">
+                <span className="text-foreground">
+                  {tableProps?.loading
+                    ? "?"
+                    : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
+                </span>
+                {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
+              </span>
+            );
+          }}
+        </table.Subscribe>
 
         <table.Pagination
           className={cn("order-3 lg:order-5", paginationClassName)}

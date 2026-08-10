@@ -77,22 +77,29 @@ export function ColumnVisibilityMenu({
         {table
           .getAllColumns()
           .filter((column) => column.getCanHide())
-          .map((column) => {
-            const Icon = column.columnDef.meta?.icon;
-            return (
-              <MenuCheckboxItem
-                key={column.id}
-                id={`visibility-cb-${column.id}`}
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                <div className="flex gap-2">
-                  {Icon && <Icon className="text-muted-foreground" />}
-                  {column.columnDef.meta?.label ?? column.id}
-                </div>
-              </MenuCheckboxItem>
-            );
-          })}
+          .map((column) => (
+            <table.Subscribe
+              key={column.id}
+              selector={(s) => s.columnVisibility[column.id] ?? true}
+            >
+              {(isVisible) => {
+                const Icon = column.columnDef.meta?.icon;
+                return (
+                  <MenuCheckboxItem
+                    checked={isVisible}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    <div className="flex gap-2">
+                      {Icon && <Icon className="text-muted-foreground" />}
+                      {column.columnDef.meta?.label ?? column.id}
+                    </div>
+                  </MenuCheckboxItem>
+                );
+              }}
+            </table.Subscribe>
+          ))}
       </MenuPopup>
     </Menu>
   );

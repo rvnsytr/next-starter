@@ -25,25 +25,32 @@ export function PageSizeSelector({
     table.options.initialState?.pagination?.pageSize ?? DEFAULT_PAGE_SIZE;
 
   return (
-    <Select
-      value={String(table.atoms.pagination.get().pageSize)}
-      onValueChange={(v) => table.setPageSize(Number(v))}
-    >
-      <SelectTrigger className={cn("w-fit min-w-fit", className)} {...props}>
-        <SelectValue />
-      </SelectTrigger>
-
-      <SelectPopup>
-        {PAGE_SIZES.map((v) => (
-          <SelectItem
-            key={v}
-            value={String(v)}
-            className={cn(v === basePageSize && "font-semibold")}
+    <table.Subscribe selector={(s) => s.pagination.pageSize}>
+      {(pageSize) => (
+        <Select
+          value={String(pageSize)}
+          onValueChange={(v) => table.setPageSize(Number(v))}
+        >
+          <SelectTrigger
+            className={cn("w-fit min-w-fit", className)}
+            {...props}
           >
-            {formatNumber(v)}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+            <SelectValue />
+          </SelectTrigger>
+
+          <SelectPopup>
+            {PAGE_SIZES.map((v) => (
+              <SelectItem
+                key={v}
+                value={String(v)}
+                className={cn(v === basePageSize && "font-semibold")}
+              >
+                {formatNumber(v)}
+              </SelectItem>
+            ))}
+          </SelectPopup>
+        </Select>
+      )}
+    </table.Subscribe>
   );
 }

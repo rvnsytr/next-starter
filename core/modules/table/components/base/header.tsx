@@ -15,6 +15,7 @@ import { SORT_ICONS } from "@/core/modules/table/constants";
 import { DataTableType } from "@/core/modules/table/types";
 import { getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
+import { ColumnPinningPosition, SortDirection } from "@tanstack/react-table";
 import {
   ArrowLeftToLineIcon,
   ArrowRightToLineIcon,
@@ -36,104 +37,138 @@ export function Header({
   className,
   ...props
 }: HeaderProps & { tableType: DataTableType }) {
-  const header = getTableHook(tableType).useHeaderContext();
+  const tableHook = getTableHook(tableType);
 
-  // if (!header.column.getCanPin()) return null;
-  const canSort = header.column.getCanSort();
-  const canPin = header.column.getCanPin();
+  const table = tableHook.useTableContext();
+  const { column } = tableHook.useHeaderContext();
+
+  const canSort = column.getCanSort();
+  const canPin = column.getCanPin();
 
   if (!canSort && !canPin) return label;
 
-  const sortDirection = header.column.getIsSorted();
-  const { asc: AscIcon, desc: DescIcon } = SORT_ICONS;
-  const SortIcon = sortDirection
-    ? SORT_ICONS[sortDirection]
-    : SORT_ICONS.default;
-
-  const pinPosition = header.column.getIsPinned();
-  const popupAlign =
-    pinPosition === "start" ? "start" : pinPosition === "end" ? "end" : align;
-
-  const ColumnIcon = header.column.columnDef.meta?.icon ?? null;
-  const TriggerIcon = canSort ? SortIcon : PinIcon;
+  const columnId = column.id;
 
   return (
-    <Menu>
-      <MenuTrigger
-        className={cn(
-          !props.render &&
-            "hover:text-foreground flex w-full cursor-pointer items-center gap-2 transition-colors",
+    <table.Subscribe
+      selector={(
+        s,
+      ): {
+        sortDirection: SortDirection | false;
+        pinPosition: ColumnPinningPosition;
+      } => {
+        const sort = s.sorting.find((cs) => cs.id === columnId);
+        const isPinStart = s.columnPinning.start?.includes(columnId);
+        const isPinEnd = s.columnPinning.end?.includes(columnId);
+        return {
+          sortDirection: sort ? (sort.desc ? "desc" : "asc") : false,
+          pinPosition: isPinStart ? "start" : isPinEnd ? "end" : false,
+        };
+      }}
+    >
+      {({ sortDirection, pinPosition }) => {
+        const { asc: AscIcon, desc: DescIcon } = SORT_ICONS;
 
-          !props.render &&
-            (align === "start"
-              ? "justify-start"
-              : align === "center"
-                ? "justify-center"
-                : "justify-end"),
+        const SortIcon = sortDirection
+          ? SORT_ICONS[sortDirection]
+          : SORT_ICONS.default;
 
-          "*:[svg]:size-3.5",
-          className,
-        )}
-        {...props}
-      >
-        {ColumnIcon && <ColumnIcon />} {label} <TriggerIcon />
-      </MenuTrigger>
+        const popupAlign =
+          pinPosition === "start"
+            ? "start"
+            : pinPosition === "end"
+              ? "end"
+              : align;
 
-      <MenuPopup align={popupAlign}>
-        {canSort && (
-          <MenuGroup>
-            <MenuGroupLabel>Sort Column</MenuGroupLabel>
+        const ColumnIcon = column.columnDef.meta?.icon ?? null;
+        const TriggerIcon = canSort ? SortIcon : PinIcon;
 
-            <MenuRadioGroup
-              value={sortDirection ?? "default"}
-              onValueChange={(v) => {
-                if (v === "default" || sortDirection === v)
-                  header.column.clearSorting();
-                else header.column.toggleSorting(v === "desc", true);
-              }}
+        return (
+          <Menu>
+            <div
+              className={cn(
+                !props.render && "flex w-full",
+                !props.render &&
+                  (align === "start"
+                    ? "justify-start"
+                    : align === "center"
+                      ? "justify-center"
+                      : "justify-end"),
+              )}
             >
-              <MenuRadioItem value="asc">
-                <div className="flex items-center gap-2">
-                  <AscIcon /> Ascending
-                </div>
-              </MenuRadioItem>
-              <MenuRadioItem value="desc">
-                <div className="flex items-center gap-2">
-                  <DescIcon /> Descending
-                </div>
-              </MenuRadioItem>
-            </MenuRadioGroup>
-          </MenuGroup>
-        )}
+              <MenuTrigger
+                className={cn(
+                  "hover:text-foreground flex cursor-pointer items-center gap-2 transition-colors *:[svg]:size-3.5",
+                  className,
+                )}
+                {...props}
+              >
+                {ColumnIcon && <ColumnIcon />} {label} <TriggerIcon />
+              </MenuTrigger>
+            </div>
 
-        {canSort && canPin && <MenuSeparator />}
+            <MenuPopup align={popupAlign}>
+              {canSort && (
+                <MenuGroup>
+                  <MenuGroupLabel>Sort Column</MenuGroupLabel>
 
-        {canPin && (
-          <MenuGroup>
-            <MenuGroupLabel>Pin Column</MenuGroupLabel>
+                  <MenuRadioGroup
+                    value={sortDirection || "default"}
+                    onValueChange={(v) => {
+                      if (v === "default" || sortDirection === v)
+                        column.clearSorting();
+                      else column.toggleSorting(v === "desc", true);
+                    }}
+                  >
+                    <MenuRadioItem value="asc">
+                      <div className="flex items-center gap-2">
+                        <AscIcon /> Ascending
+                      </div>
+                    </MenuRadioItem>
 
-            <MenuRadioGroup
-              value={pinPosition ?? "default"}
-              onValueChange={(v) => {
-                if (v === "default" || pinPosition === v)
-                  header.column.pin(false);
-                else header.column.pin(v as "start" | "end");
-              }}
-            >
-              <MenuRadioItem value="start">
-                <div className="flex items-center gap-2">
-                  <ArrowLeftToLineIcon /> Pin to left
-                </div>
-              </MenuRadioItem>
-              <MenuRadioItem value="end">
-                <div className="flex items-center gap-2">
-                  <ArrowRightToLineIcon /> Pin to right
-                </div>
-              </MenuRadioItem>
-            </MenuRadioGroup>
-          </MenuGroup>
-        )}
-      </MenuPopup>
-    </Menu>
+                    <MenuRadioItem value="desc">
+                      <div className="flex items-center gap-2">
+                        <DescIcon /> Descending
+                      </div>
+                    </MenuRadioItem>
+                  </MenuRadioGroup>
+                </MenuGroup>
+              )}
+
+              {canSort && canPin && <MenuSeparator />}
+
+              {canPin && (
+                <MenuGroup>
+                  <MenuGroupLabel>Pin Column</MenuGroupLabel>
+
+                  <MenuRadioGroup
+                    value={pinPosition || "default"}
+                    onValueChange={(v) => {
+                      if (v === "default" || pinPosition === v)
+                        column.pin(false);
+                      else column.pin(v as "start" | "end");
+                    }}
+                  >
+                    <MenuRadioItem value="start">
+                      <div className="flex items-center gap-2">
+                        <ArrowLeftToLineIcon />
+                        Pin to left
+                      </div>
+                    </MenuRadioItem>
+
+                    <MenuRadioItem value="end">
+                      <div className="flex items-center gap-2">
+                        <ArrowRightToLineIcon />
+                        Pin to right
+                      </div>
+                    </MenuRadioItem>
+                  </MenuRadioGroup>
+                </MenuGroup>
+              )}
+            </MenuPopup>
+          </Menu>
+        );
+      }}
+    </table.Subscribe>
   );
 }

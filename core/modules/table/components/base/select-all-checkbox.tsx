@@ -14,17 +14,22 @@ export function SelectAllCheckbox({
   ...props
 }: SelectAllCheckboxProps & { tableType: DataTableType }) {
   const table = getTableHook(tableType).useTableContext();
-
-  const isAllRowsSelected = table.getIsAllRowsSelected();
-
   return (
-    <Checkbox
-      aria-label="Select all"
-      checked={isAllRowsSelected}
-      onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
-      indeterminate={!isAllRowsSelected && table.getIsSomePageRowsSelected()}
-      className={cn("mx-auto", className)}
-      {...props}
-    />
+    <table.Subscribe selector={(s) => s.rowSelection}>
+      {() => {
+        const isAllRowsSelected = table.getIsAllRowsSelected();
+        const isSomePageRowsSelected = table.getIsSomePageRowsSelected();
+        return (
+          <Checkbox
+            aria-label="Select all"
+            checked={isAllRowsSelected}
+            onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
+            indeterminate={!isAllRowsSelected && isSomePageRowsSelected}
+            className={cn("mx-auto", className)}
+            {...props}
+          />
+        );
+      }}
+    </table.Subscribe>
   );
 }

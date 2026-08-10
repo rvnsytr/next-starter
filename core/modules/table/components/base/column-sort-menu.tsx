@@ -77,29 +77,42 @@ export function ColumnSortMenu({
         {table
           .getAllColumns()
           .filter((column) => column.getCanSort())
-          .map((column) => {
-            const Icon = column.columnDef.meta?.icon;
-            const sortDirection = column.getIsSorted();
-            const SortIcon = sortDirection ? SORT_ICONS[sortDirection] : null;
-            return (
-              <MenuCheckboxItem
-                key={column.id}
-                id={`sorting-btn-${column.id}`}
-                checked={Boolean(sortDirection)}
-                onCheckedChange={() => {
-                  if (sortDirection === "asc") column.toggleSorting(true, true);
-                  else if (sortDirection === "desc") column.clearSorting();
-                  else column.toggleSorting(false, true);
-                }}
-                checkIcon={SortIcon ? <SortIcon /> : undefined}
-              >
-                <div className="flex gap-2">
-                  {Icon && <Icon className="text-muted-foreground" />}
-                  {column.columnDef.meta?.label ?? column.id}
-                </div>
-              </MenuCheckboxItem>
-            );
-          })}
+          .map((column) => (
+            <table.Subscribe
+              key={column.id}
+              selector={(s) => {
+                const sort = s.sorting.find((cs) => cs.id === column.id);
+                return sort ? (sort.desc ? "desc" : "asc") : null;
+              }}
+            >
+              {(sortDirection) => {
+                const Icon = column.columnDef.meta?.icon;
+                const SortIcon = sortDirection
+                  ? SORT_ICONS[sortDirection]
+                  : null;
+
+                return (
+                  <MenuCheckboxItem
+                    key={column.id}
+                    id={`sorting-btn-${column.id}`}
+                    checked={Boolean(sortDirection)}
+                    onCheckedChange={() => {
+                      if (sortDirection === "asc")
+                        column.toggleSorting(true, true);
+                      else if (sortDirection === "desc") column.clearSorting();
+                      else column.toggleSorting(false, true);
+                    }}
+                    checkIcon={SortIcon ? <SortIcon /> : undefined}
+                  >
+                    <div className="flex gap-2">
+                      {Icon && <Icon className="text-muted-foreground" />}
+                      {column.columnDef.meta?.label ?? column.id}
+                    </div>
+                  </MenuCheckboxItem>
+                );
+              }}
+            </table.Subscribe>
+          ))}
       </MenuPopup>
     </Menu>
   );

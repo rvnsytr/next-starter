@@ -62,7 +62,7 @@ type FilterSelectorState = {
   columnId: string;
   filterType: FilterValue["type"];
   popupType: FilterPopupType;
-} | null;
+};
 
 const FILTERS_DEFAULT_HOTKEY: Hotkey = "F";
 const ANIMATION_DELAY = 50;
@@ -76,12 +76,10 @@ export function FilterSelector({
   children,
   ...props
 }: TableTypeProp & FilterSelectorProps) {
-  const table = getTableHook(tableType).useTableContext();
-
   const anchor = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filterSelector, setFilterSelector] =
-    useState<FilterSelectorState>(null);
+    useState<FilterSelectorState | null>(null);
 
   const hotkey = shortcut === "default" ? FILTERS_DEFAULT_HOTKEY : shortcut;
   useHotkey(
@@ -89,8 +87,6 @@ export function FilterSelector({
     () => setIsOpen((prev) => !prev),
     { enabled: !!hotkey },
   );
-
-  const columnFilterIds = table.atoms.columnFilters.get().map((c) => c.id);
 
   return (
     <>
@@ -128,42 +124,13 @@ export function FilterSelector({
           {filterSelector?.popupType === "menu" ? (
             <FilterValueController tableType={tableType} {...filterSelector} />
           ) : (
-            table
-              .getAllColumns()
-              .filter((column) => column.getCanFilter())
-              .map((column) => {
-                const { filterFn, meta } = column.columnDef;
-
-                const Icon = meta?.icon;
-                const columnId = column.id;
-
-                let filterType: FilterValue["type"] = "string";
-                if (typeof filterFn === "string" && filterFn !== "auto")
-                  filterType = filterFn;
-
-                const popupType = filterMeta[filterType].popupType;
-
-                return (
-                  <MenuItem
-                    key={columnId}
-                    id={`filter-btn-${columnId}`}
-                    onClick={() => {
-                      if (popupType === "popover") setIsOpen(false);
-                      setTimeout(() => {
-                        setFilterSelector({ columnId, filterType, popupType });
-                      }, ANIMATION_DELAY);
-                    }}
-                    closeOnClick={false}
-                    disabled={columnFilterIds.includes(column.id)}
-                  >
-                    {Icon && <Icon className="text-muted-foreground" />}
-                    {meta?.label ?? columnId}
-                    <MenuShortcut>
-                      <ChevronRightIcon />
-                    </MenuShortcut>
-                  </MenuItem>
-                );
-              })
+            <FilterSelectorItems
+              tableType={tableType}
+              onClick={(fs) => {
+                if (fs.popupType === "popover") setIsOpen(false);
+                setTimeout(() => setFilterSelector(fs), ANIMATION_DELAY);
+              }}
+            />
           )}
         </MenuPopup>
       </Menu>
@@ -187,6 +154,52 @@ export function FilterSelector({
         </PopoverPopup>
       </Popover>
     </>
+  );
+}
+
+function FilterSelectorItems({
+  tableType,
+  onClick,
+}: TableTypeProp & { onClick: (filterSelector: FilterSelectorState) => void }) {
+  const table = getTableHook(tableType).useTableContext();
+  return (
+    <table.Subscribe
+      selector={(s) => new Set(s.columnFilters.map((filter) => filter.id))}
+    >
+      {(columnFilterIds) =>
+        table
+          .getAllColumns()
+          .filter((column) => column.getCanFilter())
+          .map((column) => {
+            const { filterFn, meta } = column.columnDef;
+
+            const Icon = meta?.icon;
+            const columnId = column.id;
+
+            let filterType: FilterValue["type"] = "string";
+            if (typeof filterFn === "string" && filterFn !== "auto")
+              filterType = filterFn;
+
+            const popupType = filterMeta[filterType].popupType;
+
+            return (
+              <MenuItem
+                key={columnId}
+                id={`filter-btn-${columnId}`}
+                onClick={() => onClick({ columnId, filterType, popupType })}
+                closeOnClick={false}
+                disabled={columnFilterIds.has(column.id)}
+              >
+                {Icon && <Icon className="text-muted-foreground" />}
+                {meta?.label ?? columnId}
+                <MenuShortcut>
+                  <ChevronRightIcon />
+                </MenuShortcut>
+              </MenuItem>
+            );
+          })
+      }
+    </table.Subscribe>
   );
 }
 
@@ -289,101 +302,111 @@ export function ActiveFilters({
   ...props
 }: TableTypeProp & ActiveFiltersProps) {
   const table = getTableHook(tableType).useTableContext();
-  const filters = table.atoms.columnFilters.get();
-  return filters.map((f) => {
-    const key = `filter-${f.id}`;
-    const column = table.getColumn(f.id);
+  return (
+    <table.Subscribe selector={(s) => s.columnFilters}>
+      {(filters) =>
+        filters.map((f) => {
+          const column = table.getColumn(f.id);
+          const filterValueResult = filterValueSchema.safeParse(f.value);
 
-    const filterValueResult = filterValueSchema.safeParse(f.value);
+          if (!column || !filterValueResult.success) {
+            let errorContent = "";
 
-    if (!column || !filterValueResult.success) {
-      let errorContent = "";
+            if (!column) errorContent = `Invalid Column Id: ${f.id}`;
+            if (!filterValueResult.success)
+              errorContent = `Invalid Filter Value: ${JSON.stringify(f.value)}`;
 
-      if (!column) errorContent = `Invalid Column Id: ${f.id}`;
-      if (!filterValueResult.success)
-        errorContent = `Invalid Filter Value: ${JSON.stringify(f.value)}`;
-
-      return (
-        <Button
-          key={key}
-          size="sm"
-          variant="destructive-outline"
-          className="disabled:opacity-100"
-          disabled
-        >
-          {errorContent}
-        </Button>
-      );
-    }
-
-    const filterValue = filterValueResult.data;
-    const popupType = filterMeta[filterValue.type].popupType;
-
-    const operators = getFilterOperators(filterValue.type);
-    const selectedOperatorLabel =
-      operators.find((op) => op.value === filterValue.operator)?.label ??
-      filterValue.operator;
-
-    const columnMeta = column.columnDef.meta;
-    const Icon = columnMeta?.icon;
-
-    return (
-      <ButtonGroup key={key} className={cn("**:text-xs", className)} {...props}>
-        <Button
-          size="sm"
-          variant="outline"
-          className="disabled:opacity-100"
-          disabled
-        >
-          {Icon && <Icon />}
-          {columnMeta?.label ?? column.id}
-        </Button>
-
-        <Menu>
-          <MenuTrigger
-            render={
-              <Button size="sm" variant="outline">
-                {selectedOperatorLabel}
-              </Button>
-            }
-          />
-          <MenuPopup>
-            {operators.map((op) => (
-              <MenuItem
-                key={op.value}
-                onClick={() => {
-                  column.setFilterValue({ ...filterValue, operator: op.value });
-                }}
+            return (
+              <Button
+                key={f.id}
+                size="sm"
+                variant="destructive-outline"
+                className="disabled:opacity-100"
+                disabled
               >
-                {op.label}
-              </MenuItem>
-            ))}
-          </MenuPopup>
-        </Menu>
+                {errorContent}
+              </Button>
+            );
+          }
 
-        <FilterValueDisplayPopup
-          size="sm"
-          variant="outline"
-          filterValue={filterValue}
-          popupType={popupType}
-        >
-          <FilterValueController
-            tableType={tableType}
-            columnId={column.id}
-            filterType={filterValue.type}
-          />
-        </FilterValueDisplayPopup>
+          const filterValue = filterValueResult.data;
+          const popupType = filterMeta[filterValue.type].popupType;
 
-        <Button
-          size="icon-sm"
-          variant="destructive-outline"
-          onClick={() => column.setFilterValue(undefined)}
-        >
-          <XIcon />
-        </Button>
-      </ButtonGroup>
-    );
-  });
+          const operators = getFilterOperators(filterValue.type);
+          const selectedOperatorLabel =
+            operators.find((op) => op.value === filterValue.operator)?.label ??
+            filterValue.operator;
+
+          const columnMeta = column.columnDef.meta;
+          const Icon = columnMeta?.icon;
+
+          return (
+            <ButtonGroup
+              key={f.id}
+              className={cn("**:text-xs", className)}
+              {...props}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                className="disabled:opacity-100"
+                disabled
+              >
+                {Icon && <Icon />}
+                {columnMeta?.label ?? column.id}
+              </Button>
+
+              <Menu>
+                <MenuTrigger
+                  render={
+                    <Button size="sm" variant="outline">
+                      {selectedOperatorLabel}
+                    </Button>
+                  }
+                />
+                <MenuPopup>
+                  {operators.map((op) => (
+                    <MenuItem
+                      key={op.value}
+                      onClick={() => {
+                        column.setFilterValue({
+                          ...filterValue,
+                          operator: op.value,
+                        });
+                      }}
+                    >
+                      {op.label}
+                    </MenuItem>
+                  ))}
+                </MenuPopup>
+              </Menu>
+
+              <FilterValueDisplayPopup
+                size="sm"
+                variant="outline"
+                filterValue={filterValue}
+                popupType={popupType}
+              >
+                <FilterValueController
+                  tableType={tableType}
+                  columnId={column.id}
+                  filterType={filterValue.type}
+                />
+              </FilterValueDisplayPopup>
+
+              <Button
+                size="icon-sm"
+                variant="destructive-outline"
+                onClick={() => column.setFilterValue(undefined)}
+              >
+                <XIcon />
+              </Button>
+            </ButtonGroup>
+          );
+        })
+      }
+    </table.Subscribe>
+  );
 }
 
 type FilterValueDisplayPopupProps = ButtonProps & {
