@@ -65,10 +65,10 @@ export type ColumnMeta = {
   max?: number;
 
   /** Props applied to the column's header cell (`<th>`) */
-  headerProps?: React.ComponentProps<"th">;
+  headerProps?: Omit<React.ComponentProps<"th">, "rowSpan" | "colSpan">;
 
   /** Props applied to the column's data cell (`<td>`) */
-  cellProps?: React.ComponentProps<"td">;
+  cellProps?: Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">;
 
   /** Props applied to the column's footer cell (`<th>`) */
   // footerProps?: React.ComponentProps<"th">;
