@@ -30,7 +30,7 @@ export function EmployeeDataTable() {
 
   return (
     <table.AppTable>
-      <table.Template
+      <table.Layout
         tableProps={{
           variant: "bordered",
           containerProps: {

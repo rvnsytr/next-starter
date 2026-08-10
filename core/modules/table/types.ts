@@ -79,7 +79,7 @@ export type TableType = DataTableType;
 export type DataTableType = "data-table" | "data-table-server";
 export type DataTableFeatures = typeof dataTableFeatures;
 export type DataTableTableTemplate = {
-  Template: React.ComponentType<any>;
+  Layout: React.ComponentType<any>;
 };
 
 // export type DataGridType = "data-grid" | "data-grid-server";

@@ -16,7 +16,7 @@ import {
   DataTableSearch,
   DataTableSelectAllCheckbox,
 } from "../components/data-table";
-import { DataTableTemplate } from "../components/data-table-template";
+import { DataTableLayout } from "../components/data-table-layout";
 import { dataTableFeatures } from "../features/data-table";
 import {
   CellComponents,
@@ -39,7 +39,7 @@ export const dataTable = createTableHook({
     Pagination: DataTablePagination,
     ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
-    Template: DataTableTemplate,
+    Layout: DataTableLayout,
   } satisfies TableComponents & DataTableTableTemplate,
   headerComponents: {
     Header: DataTableHeader,
