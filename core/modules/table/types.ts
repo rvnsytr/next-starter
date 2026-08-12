@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { Table } from "@/core/components/ui/table";
 import { LucideIcon } from "lucide-react";
-import { BaseTableProps } from "./components/base/base-table";
 import { ClearFiltersProps } from "./components/base/clear-filters";
 import { ColumnSortMenuProps } from "./components/base/column-sort-menu";
 import { ColumnVisibilityMenuProps } from "./components/base/column-visibility-menu";
@@ -57,6 +57,17 @@ export type HeaderComponents = {
 export type CellComponents = {
   RowCheckbox: React.ComponentType<any>;
   RowNumber: React.ComponentType<any>;
+};
+
+export type BaseTableProps = React.ComponentProps<typeof Table> & {
+  /** The caption for the table. */
+  caption?: string;
+
+  /** The placeholder message to display when the table has no data. */
+  placeholder?: string;
+
+  /** Whether the table is in a loading state. */
+  loading?: boolean;
 };
 
 export type TableTemplateProps = React.ComponentProps<"div"> & {
