@@ -9,3 +9,5 @@ export const SORT_ICONS = {
   desc: ArrowDownIcon,
   default: ChevronsUpDownIcon,
 };
+
+export const DEFAULT_FILTER_TYPE = "string";

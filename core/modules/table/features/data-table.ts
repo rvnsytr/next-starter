@@ -17,7 +17,7 @@ import {
   sortFn_text,
   TableFeatures,
 } from "@tanstack/react-table";
-import { FilterFn, FilterValue, stringFilterFn } from "../filters";
+import { FilterFn, FilterType, stringFilterFn } from "../filters";
 import { ColumnMeta } from "../types";
 
 export const serverDataTableFeatures = {
@@ -40,7 +40,7 @@ export const serverDataTableFeatures = {
   globalFilteringFeature,
   filterFns: {
     string: stringFilterFn,
-  } satisfies Record<FilterValue["type"], FilterFn>,
+  } satisfies Record<FilterType, FilterFn>,
 
   columnMeta: metaHelper<ColumnMeta>(),
 } satisfies TableFeatures;

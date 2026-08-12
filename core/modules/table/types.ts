@@ -2,19 +2,38 @@
 
 import { LucideIcon } from "lucide-react";
 import { BaseTableProps } from "./components/base/base-table";
+import { ClearFiltersProps } from "./components/base/clear-filters";
 import { ColumnSortMenuProps } from "./components/base/column-sort-menu";
 import { ColumnVisibilityMenuProps } from "./components/base/column-visibility-menu";
 import {
   ActiveFiltersContainerProps,
   ActiveFiltersProps,
-  ClearFiltersProps,
   FilterSelectorProps,
 } from "./components/base/filters";
 import { PageSizeSelectorProps } from "./components/base/page-size-selector";
 import { PaginationProps } from "./components/base/pagination";
 import { ResetTableButtonProps } from "./components/base/reset-table-button";
 import { SearchProps } from "./components/base/search";
-import { dataTableFeatures } from "./features/data-table";
+
+export type ColumnMeta = {
+  /** The label displayed in the column header */
+  label?: string;
+
+  /** The icon displayed alongside the column header label */
+  icon?: LucideIcon;
+
+  /** The maximum value allowed for number-based filters */
+  max?: number;
+
+  /** Props applied to the column's header cell (`<th>`) */
+  headerProps?: Omit<React.ComponentProps<"th">, "rowSpan" | "colSpan">;
+
+  /** Props applied to the column's data cell (`<td>`) */
+  cellProps?: Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">;
+
+  /** Props applied to the column's footer cell (`<th>`) */
+  // footerProps?: React.ComponentProps<"th">;
+};
 
 export type TableComponents = {
   Table: React.ComponentType<any>;
@@ -31,7 +50,7 @@ export type TableComponents = {
 };
 
 export type HeaderComponents = {
-  Header: React.ComponentType<any>;
+  ColumnHeader: React.ComponentType<any>;
   SelectAllCheckbox: React.ComponentType<any>;
 };
 
@@ -54,32 +73,10 @@ export type TableTemplateProps = React.ComponentProps<"div"> & {
   searchProps?: SearchProps;
 };
 
-export type ColumnMeta = {
-  /** The label displayed in the column header */
-  label?: string;
-
-  /** The icon displayed alongside the column header label */
-  icon?: LucideIcon;
-
-  /** The maximum value allowed for number-based filters */
-  max?: number;
-
-  /** Props applied to the column's header cell (`<th>`) */
-  headerProps?: Omit<React.ComponentProps<"th">, "rowSpan" | "colSpan">;
-
-  /** Props applied to the column's data cell (`<td>`) */
-  cellProps?: Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">;
-
-  /** Props applied to the column's footer cell (`<th>`) */
-  // footerProps?: React.ComponentProps<"th">;
-};
-
-export type TableType = DataTableType;
-
-export type DataTableType = "data-table" | "data-table-server";
-export type DataTableFeatures = typeof dataTableFeatures;
-export type DataTableTableTemplate = {
+export type DataTableLayouts = {
   Layout: React.ComponentType<any>;
 };
 
-// export type DataGridType = "data-grid" | "data-grid-server";
+export type DataGridLayouts = {
+  Layout: React.ComponentType<any>;
+};

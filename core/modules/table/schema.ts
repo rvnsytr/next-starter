@@ -20,3 +20,7 @@ export const filterValueSchema = z.discriminatedUnion("type", [
   stringFilterValueSchema,
   // numberFilterValueSchema,
 ]);
+
+export const filterTypeSchema = z.union(
+  filterValueSchema.options.map((s) => s.shape.type),
+);

@@ -1,5 +1,3 @@
-"use client";
-
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
@@ -30,7 +28,7 @@ export function DataTableLayout({
     header?: string;
     footer?: string;
   };
-  renderSlot?: () => React.ReactNode;
+  renderSlot?: React.ReactNode;
 }) {
   const isDesktop = useIsDesktop();
 
@@ -100,7 +98,7 @@ export function DataTableLayout({
           />
         </ButtonGroup>
 
-        {renderSlot?.()}
+        {renderSlot}
 
         <div className="flex gap-x-2 *:grow">
           <table.ResetTableButton

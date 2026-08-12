@@ -1,43 +1,36 @@
-"use client";
-
 import { Button, ButtonProps } from "@/core/components/ui/button";
 import { Kbd } from "@/core/components/ui/kbd";
-import {
-  Menu,
-  MenuCheckboxItem,
-  MenuPopup,
-  MenuTrigger,
-} from "@/core/components/ui/menu";
+import { Menu, MenuPopup, MenuTrigger } from "@/core/components/ui/menu";
 import {
   Tooltip,
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
+import { ColumnMeta } from "@/core/modules/table/types";
+import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
 
-export type ColumnVisibilityMenuProps = ButtonProps & {
+export type ColumnVisibilityMenuProps = Omit<ButtonProps, "children"> & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
   /** @default "V" */
   shortcut?: "default" | Hotkey;
+
+  renderTrigger?: React.ReactElement;
 };
 
 const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
 
 export function ColumnVisibilityMenu({
-  tableType,
-  shortcut,
   align = "center",
+  shortcut,
+  renderTrigger,
+  renderPopupContent,
   size = "default",
   variant = "outline",
-  children,
   ...props
-}: ColumnVisibilityMenuProps & { tableType: DataTableType }) {
-  const table = getTableHook(tableType).useTableContext();
-
+}: ColumnVisibilityMenuProps & { renderPopupContent: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkey =
@@ -55,13 +48,11 @@ export function ColumnVisibilityMenu({
           render={
             <MenuTrigger
               render={
-                <Button size={size} variant={variant} {...props}>
-                  {children ?? (
-                    <>
-                      <EyeIcon /> Columns
-                    </>
-                  )}
-                </Button>
+                renderTrigger ?? (
+                  <Button size={size} variant={variant} {...props}>
+                    <EyeIcon /> Columns
+                  </Button>
+                )
               }
             />
           }
@@ -73,34 +64,25 @@ export function ColumnVisibilityMenu({
         </TooltipPopup>
       </Tooltip>
 
-      <MenuPopup align={align}>
-        {table
-          .getAllColumns()
-          .filter((column) => column.getCanHide())
-          .map((column) => (
-            <table.Subscribe
-              key={column.id}
-              selector={(s) => s.columnVisibility[column.id] ?? true}
-            >
-              {(isVisible) => {
-                const Icon = column.columnDef.meta?.icon;
-                return (
-                  <MenuCheckboxItem
-                    checked={isVisible}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    <div className="flex gap-2">
-                      {Icon && <Icon className="text-muted-foreground" />}
-                      {column.columnDef.meta?.label ?? column.id}
-                    </div>
-                  </MenuCheckboxItem>
-                );
-              }}
-            </table.Subscribe>
-          ))}
-      </MenuPopup>
+      <MenuPopup align={align}>{renderPopupContent}</MenuPopup>
     </Menu>
+  );
+}
+
+export function ColumnVisibilityMenuItemContent({
+  columnId,
+  meta,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & {
+  columnId: string;
+  meta?: ColumnMeta;
+}) {
+  const Icon = meta?.icon;
+  return (
+    <div className={cn("flex gap-2", className)} {...props}>
+      {Icon && <Icon className="text-muted-foreground" />}
+      {meta?.label ?? columnId}
+    </div>
   );
 }

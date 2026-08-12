@@ -1,9 +1,5 @@
-"use client";
-
 import { Button, ButtonProps } from "@/core/components/ui/button";
 import { ButtonGroup } from "@/core/components/ui/button-group";
-import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -15,13 +11,30 @@ export type PaginationProps = React.ComponentProps<typeof ButtonGroup> & {
   buttonsProps?: Pick<ButtonProps, "size" | "variant" | "disabled" | "onClick">;
 };
 
+type PaginationContext = {
+  firstPageControl: {
+    onClick: () => void;
+    disabled: boolean;
+  };
+  previousPageControl: {
+    onClick: () => void;
+    disabled: boolean;
+  };
+  nextPageControl: {
+    onClick: () => void;
+    disabled: boolean;
+  };
+  lastPageControl: {
+    onClick: () => void;
+    disabled: boolean;
+  };
+};
+
 export function Pagination({
-  tableType,
+  context,
   buttonsProps,
   ...props
-}: PaginationProps & { tableType: DataTableType }) {
-  const table = getTableHook(tableType).useTableContext();
-
+}: PaginationProps & { context: PaginationContext }) {
   const {
     size = "icon",
     variant = "outline",
@@ -35,10 +48,10 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          table.firstPage();
+          context.firstPageControl.onClick();
           onClick?.(e);
         }}
-        disabled={disabled || !table.getCanPreviousPage()}
+        disabled={disabled || context.firstPageControl.disabled}
       >
         <ChevronsLeftIcon />
       </Button>
@@ -47,10 +60,10 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          table.previousPage();
+          context.previousPageControl.onClick();
           onClick?.(e);
         }}
-        disabled={disabled || !table.getCanPreviousPage()}
+        disabled={disabled || context.previousPageControl.disabled}
       >
         <ChevronLeftIcon />
       </Button>
@@ -59,10 +72,10 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          table.nextPage();
+          context.nextPageControl.onClick();
           onClick?.(e);
         }}
-        disabled={disabled || !table.getCanNextPage()}
+        disabled={disabled || context.nextPageControl.disabled}
       >
         <ChevronRightIcon />
       </Button>
@@ -71,10 +84,10 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          table.lastPage();
+          context.lastPageControl.onClick();
           onClick?.(e);
         }}
-        disabled={disabled || !table.getCanNextPage()}
+        disabled={disabled || context.lastPageControl.disabled}
       >
         <ChevronsRightIcon />
       </Button>

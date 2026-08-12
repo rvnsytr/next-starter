@@ -41,7 +41,7 @@ export const employeeDTColumns = columnHelper.columns([
     enableSorting: false,
   }),
   columnHelper.accessor("name", {
-    header: (c) => <c.header.Header label="Name" />,
+    header: (c) => <c.header.ColumnHeader label="Name" />,
     cell: (c) => c.getValue(),
 
     filterFn: "string",
@@ -53,7 +53,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("email", {
-    header: (c) => <c.header.Header label="Email Address" />,
+    header: (c) => <c.header.ColumnHeader label="Email Address" />,
     cell: (c) => c.getValue(),
 
     filterFn: "string",
@@ -65,7 +65,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("age", {
-    header: (c) => <c.header.Header label="Age" align="center" />,
+    header: (c) => <c.header.ColumnHeader label="Age" align="center" />,
     cell: (c) => (
       <div className="text-muted-foreground text-center">
         <span className="text-foreground">{formatNumber(c.getValue())}</span>{" "}
@@ -80,7 +80,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("salary", {
-    header: (c) => <c.header.Header label="Salary" />,
+    header: (c) => <c.header.ColumnHeader label="Salary" />,
     cell: (c) => `$${formatNumber(c.getValue())}/yr`,
 
     minSize: 150,
@@ -90,7 +90,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("createdAt", {
-    header: (c) => <c.header.Header label="Join Date" />,
+    header: (c) => <c.header.ColumnHeader label="Join Date" />,
     cell: (c) => formatDate(c.getValue(), "PPPp"),
 
     minSize: 200,
@@ -100,7 +100,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("status", {
-    header: (c) => <c.header.Header label="User Status" />,
+    header: (c) => <c.header.ColumnHeader label="User Status" />,
     cell: (c) => <UserStatusBadge value={c.getValue()} />,
 
     minSize: 150,
@@ -110,7 +110,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("role", {
-    header: (c) => <c.header.Header label="Role" />,
+    header: (c) => <c.header.ColumnHeader label="Role" />,
     cell: (c) => {
       const role = c.getValue();
       const { color } = userRoleMeta[role];
@@ -124,7 +124,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("skills", {
-    header: (c) => <c.header.Header label="Skills" />,
+    header: (c) => <c.header.ColumnHeader label="Skills" />,
     cell: (c) => (
       <div className="flex flex-wrap gap-1">
         {c.getValue().map((item) => (
@@ -142,7 +142,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("department", {
-    header: (c) => <c.header.Header label="Department" />,
+    header: (c) => <c.header.ColumnHeader label="Department" />,
     cell: (c) => c.getValue(),
 
     filterFn: "string",
@@ -154,7 +154,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("manager", {
-    header: (c) => <c.header.Header label="Manager Name" />,
+    header: (c) => <c.header.ColumnHeader label="Manager Name" />,
     cell: (c) => c.getValue() ?? "-",
 
     filterFn: "string",
@@ -166,7 +166,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("phone", {
-    header: (c) => <c.header.Header label="Phone" />,
+    header: (c) => <c.header.ColumnHeader label="Phone" />,
     cell: (c) => c.getValue() ?? "-",
 
     filterFn: "string",
@@ -182,7 +182,7 @@ export const employeeDTColumns = columnHelper.columns([
     columns: columnHelper.columns([
       columnHelper.accessor("address.city", {
         id: "city",
-        header: (c) => <c.header.Header label="City" />,
+        header: (c) => <c.header.ColumnHeader label="City" />,
         cell: (c) => c.getValue(),
 
         filterFn: "string",
@@ -194,7 +194,7 @@ export const employeeDTColumns = columnHelper.columns([
       }),
       columnHelper.accessor("address.country", {
         id: "country",
-        header: (c) => <c.header.Header label="Country" />,
+        header: (c) => <c.header.ColumnHeader label="Country" />,
         cell: (c) => c.getValue(),
 
         filterFn: "string",
@@ -212,7 +212,7 @@ export const employeeDTColumns = columnHelper.columns([
     },
   }),
   columnHelper.accessor("projects", {
-    header: (c) => <c.header.Header label="Projects" />,
+    header: (c) => <c.header.ColumnHeader label="Projects" />,
     cell: (c) => c.getValue().join(", "),
 
     filterFn: "string",

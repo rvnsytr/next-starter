@@ -1,36 +1,22 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
-import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 
+type CheckboxProps = React.ComponentProps<typeof Checkbox>;
+
+type BaseRowCheckboxProps = CheckboxProps &
+  Required<Pick<CheckboxProps, "checked" | "onCheckedChange" | "disabled">>;
+
 export type RowCheckboxProps = Omit<
-  React.ComponentProps<typeof Checkbox>,
+  CheckboxProps,
   "checked" | "onCheckedChange"
 >;
 
-export function RowCheckbox({
-  tableType,
-  className,
-  disabled = false,
-  ...props
-}: React.ComponentProps<typeof Checkbox> & { tableType: DataTableType }) {
-  const tableHook = getTableHook(tableType);
-
-  const table = tableHook.useTableContext();
-  const cell = tableHook.useCellContext();
-
+export function RowCheckbox({ className, ...props }: BaseRowCheckboxProps) {
   return (
-    <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
-      {(selected) => (
-        <Checkbox
-          aria-label="Select row"
-          checked={selected}
-          onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
-          disabled={disabled || !cell.row.getCanSelect()}
-          className={cn("mx-auto", className)}
-          {...props}
-        />
-      )}
-    </table.Subscribe>
+    <Checkbox
+      aria-label="Select row"
+      className={cn("mx-auto", className)}
+      {...props}
+    />
   );
 }

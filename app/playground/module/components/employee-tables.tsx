@@ -8,7 +8,7 @@ import { employeeDTColumns } from "./employee-dt-columns";
 export function EmployeeDataTable() {
   const { data, isLoading } = useSWR(
     "/employees",
-    async () => await getEmployees(100000),
+    async () => await getEmployees(10),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,

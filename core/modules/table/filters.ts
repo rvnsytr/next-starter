@@ -12,10 +12,12 @@ import { z } from "better-auth";
 import { filterValueSchema, stringFilterValueSchema } from "./schema";
 
 export type FilterValue = z.infer<typeof filterValueSchema>;
+export type FilterType = FilterValue["type"];
+
 export type FilterPopupType = "menu" | "popover";
 
 export type FilterMeta = {
-  [T in FilterValue["type"]]: {
+  [T in FilterType]: {
     popupType: FilterPopupType;
     defaultValue: Extract<FilterValue, { type: T }>;
   };
@@ -46,7 +48,7 @@ export const stringFilterFn: FilterFn = (
 ) => {
   if (!filterValue) return true;
 
-  const filterType: FilterValue["type"] = "string";
+  const filterType: FilterType = "string";
   const res = validateValue(filterValue, stringFilterValueSchema);
 
   if (!res.success) {

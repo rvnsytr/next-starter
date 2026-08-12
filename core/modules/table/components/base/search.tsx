@@ -1,5 +1,3 @@
-"use client";
-
 import {
   InputGroup,
   InputGroupAddon,
@@ -7,8 +5,6 @@ import {
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
 import { useDebounce } from "@/core/hooks/use-debounce";
-import { DataTableType } from "@/core/modules/table/types";
-import { getTableHook } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
@@ -22,21 +18,23 @@ export type SearchProps = Omit<
   shortcut?: Hotkey | "default";
 };
 
+type SearchContext = {
+  defaultValue: string;
+  onSearch: (value: string) => void;
+};
+
 export const SEARCH_DEFAULT_HOTKEY: Hotkey = "/";
 
 export function Search({
-  tableType,
+  context,
   shortcut,
   placeholder = "Cari...",
   className,
   ...props
-}: SearchProps & { tableType: DataTableType }) {
-  const table = getTableHook(tableType).useTableContext();
-  const defaultValue = table.baseAtoms.globalFilter.get() ?? "";
-
+}: SearchProps & { context: SearchContext }) {
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState<string>(defaultValue);
+  const [value, setValue] = useState<string>(context.defaultValue);
   const debouncedSearch = useDebounce(value);
 
   const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
@@ -45,8 +43,8 @@ export function Search({
   });
 
   useEffect(
-    () => table.setGlobalFilter(debouncedSearch),
-    [table, debouncedSearch],
+    () => context.onSearch(debouncedSearch),
+    [debouncedSearch, context],
   );
 
   return (
