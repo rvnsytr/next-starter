@@ -93,10 +93,10 @@ export function DataTable({
 
                           {isResizing && (
                             <div
-                              className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
                               style={{
                                 transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
                               }}
+                              className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
                             />
                           )}
                         </>
@@ -127,9 +127,6 @@ export function DataTable({
               {row.getVisibleCells().map((c) => (
                 <table.AppCell key={c.id} cell={c}>
                   {(cell) => {
-                    // const isSelected = cell.getIsSelected();
-                    // const edges = cell.getSelectionEdges();
-
                     const {
                       style: cellStyle,
                       className: cellClassName,
@@ -141,19 +138,6 @@ export function DataTable({
                     return (
                       <TableCell
                         key={cell.id}
-                        // onMouseDown={(e) => {
-                        //   e.stopPropagation();
-                        //   cell.getSelectionStartHandler();
-                        // }}
-                        // onMouseEnter={(e) => {
-                        //   e.stopPropagation();
-                        //   cell.getSelectionExtendHandler();
-                        // }}
-                        // className={cn(
-                        //   isSelected && "bg-muted",
-                        //   cell.getIsFocused() && "ring-ring ring-1 outline-none",
-                        //   edges.left && "border-l",
-                        // )}
                         style={{
                           ...cellStyle,
                           width: cell.column.getSize(),

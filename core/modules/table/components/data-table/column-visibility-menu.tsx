@@ -6,7 +6,7 @@ import {
   ColumnVisibilityMenuProps,
 } from "../base/column-visibility-menu";
 
-export default function DataTableColumnVisibilityMenu(
+export function DataTableColumnVisibilityMenu(
   props: ColumnVisibilityMenuProps,
 ) {
   const table = dataTable.useTableContext();

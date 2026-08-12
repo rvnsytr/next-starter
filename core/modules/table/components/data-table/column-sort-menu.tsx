@@ -9,7 +9,7 @@ import {
   ColumnSortMenuProps,
 } from "../base/column-sort-menu";
 
-export default function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
+export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
   const table = dataTable.useTableContext();
   return (
     <ColumnSortMenu
