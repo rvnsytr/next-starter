@@ -8,19 +8,27 @@ import {
 } from "@/core/components/ui/tooltip";
 import { ColumnMeta } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import {
+  formatForDisplay,
+  HotkeySequence,
+  useHotkeySequence,
+} from "@tanstack/react-hotkeys";
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
 
 export type ColumnVisibilityMenuProps = Omit<ButtonProps, "children"> & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
-  /** @default "V" */
-  shortcut?: "default" | Hotkey;
+
+  /**
+   * Keyboard shortcut used to open the column visibility menu.
+   * If set to "default", the default shortcut (V) is used.
+   */
+  shortcut?: "default" | HotkeySequence;
 
   renderTrigger?: React.ReactElement;
 };
 
-const COLUMN_VISIBILITY_DEFAULT_HOTKEY: Hotkey = "V";
+const DEFAULT_SHORTCUT: HotkeySequence = ["V"];
 
 export function ColumnVisibilityMenu({
   align = "center",
@@ -33,12 +41,12 @@ export function ColumnVisibilityMenu({
 }: ColumnVisibilityMenuProps & { renderPopupContent: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const hotkey =
-    shortcut === "default" ? COLUMN_VISIBILITY_DEFAULT_HOTKEY : shortcut;
-  useHotkey(
-    hotkey ?? COLUMN_VISIBILITY_DEFAULT_HOTKEY,
+  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+
+  useHotkeySequence(
+    hotkeySequence ?? DEFAULT_SHORTCUT,
     () => setIsOpen((prev) => !prev),
-    { enabled: !!hotkey },
+    { enabled: !!hotkeySequence },
   );
 
   return (
@@ -60,7 +68,11 @@ export function ColumnVisibilityMenu({
 
         <TooltipPopup align={align}>
           View Columns
-          {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
+          {hotkeySequence && (
+            <Kbd className="ml-1">
+              {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
+            </Kbd>
+          )}
         </TooltipPopup>
       </Tooltip>
 

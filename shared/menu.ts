@@ -1,4 +1,4 @@
-import { Hotkey } from "@tanstack/react-hotkeys";
+import { HotkeySequence } from "@tanstack/react-hotkeys";
 import {
   ExternalLinkIcon,
   LayoutDashboardIcon,
@@ -16,7 +16,7 @@ export type MenuItem = {
   route: Route;
   icon?: LucideIcon;
   disabled?: boolean;
-  shortcut?: Hotkey;
+  shortcut?: HotkeySequence;
 
   subItems?: {
     label: string;

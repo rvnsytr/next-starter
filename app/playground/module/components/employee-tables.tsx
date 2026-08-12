@@ -40,6 +40,7 @@ export function EmployeeDataTable() {
           },
           loading: isLoading,
         }}
+        resetTableButtonProps={{ shortcut: ["R", "1"] }}
       />
     </table.AppTable>
   );

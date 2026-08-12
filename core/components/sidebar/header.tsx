@@ -95,7 +95,7 @@ export function SidebarAppHeader() {
       <QuickSearch
         type="group"
         data={data}
-        shortcuts={["Control+K"]}
+        shortcut={["Control+K"]}
         className="mt-2"
       />
     </SidebarHeader>

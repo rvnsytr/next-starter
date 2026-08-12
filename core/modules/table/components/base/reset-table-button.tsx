@@ -5,19 +5,27 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import {
+  formatForDisplay,
+  HotkeySequence,
+  useHotkeySequence,
+} from "@tanstack/react-hotkeys";
 
 export type ResetTableButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
-  /** @default "R" */
-  shortcut?: "default" | Hotkey;
+
+  /**
+   * Keyboard shortcut used to trigger the table reset action.
+   * If set to "default", the default shortcut (R) is used.
+   */
+  shortcut?: "default" | HotkeySequence;
 };
 
 type ResetTableButtonPropsContext = {
   onReset: () => void;
 };
 
-export const TABLE_RESET_DEFAULT_HOTKEY: Hotkey = "R";
+const DEFAULT_SHORTCUT: HotkeySequence = ["R"];
 
 export function ResetTableButton({
   context,
@@ -28,11 +36,13 @@ export function ResetTableButton({
   onClick,
   ...props
 }: ResetTableButtonProps & { context: ResetTableButtonPropsContext }) {
-  const hotkey = shortcut === "default" ? TABLE_RESET_DEFAULT_HOTKEY : shortcut;
+  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
 
-  useHotkey(hotkey ?? TABLE_RESET_DEFAULT_HOTKEY, () => context.onReset(), {
-    enabled: !!hotkey,
-  });
+  useHotkeySequence(
+    hotkeySequence ?? DEFAULT_SHORTCUT,
+    () => context.onReset(),
+    { enabled: !!hotkeySequence },
+  );
 
   return (
     <Tooltip>
@@ -52,7 +62,11 @@ export function ResetTableButton({
 
       <TooltipPopup align={align}>
         Reset Table
-        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
+        {hotkeySequence && (
+          <Kbd className="ml-1">
+            {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
+          </Kbd>
+        )}
       </TooltipPopup>
     </Tooltip>
   );

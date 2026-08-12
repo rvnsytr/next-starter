@@ -3,7 +3,12 @@
 import { routeConfig } from "@/shared/config";
 import { Menu, MenuItem } from "@/shared/menu";
 import { messages } from "@/shared/messages";
-import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
+import {
+  formatForDisplay,
+  HotkeySequence,
+  useHotkeySequence,
+  useHotkeySequences,
+} from "@tanstack/react-hotkeys";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -47,7 +52,7 @@ export type QuickSearchItemType =
 
 export type QuickSearchItem = QuickSearchItemType & {
   label: string;
-  shortcut?: Hotkey;
+  shortcut?: HotkeySequence;
   disabled?: boolean;
   icon?: React.ReactNode;
 };
@@ -65,10 +70,12 @@ export type QuickSearchProps = (
   | { type: "list"; data: QuickSearchDataList }
 ) &
   Pick<ButtonProps, "size" | "className"> & {
-    shortcuts?: Hotkey[];
+    shortcut?: HotkeySequence;
     placeholder?: string;
     shortcutsOnlyWhenOpen?: boolean;
   };
+
+const DEFAULT_SHORTCUT: HotkeySequence = ["Control+K"];
 
 function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
   return items.flatMap((item) => {
@@ -99,7 +106,7 @@ function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
 export function QuickSearch({
   type,
   data: propData,
-  shortcuts = [],
+  shortcut,
   placeholder = "Pencarian cepat",
   shortcutsOnlyWhenOpen = false,
   size = "default",
@@ -146,19 +153,17 @@ export function QuickSearch({
     [router, copy],
   );
 
-  useHotkeys(
-    shortcuts.map((k) => ({
-      hotkey: k,
-      callback: () => setIsOpen((prev) => !prev),
-    })),
-    { enabled: isMounted },
+  useHotkeySequence(
+    shortcut ?? DEFAULT_SHORTCUT,
+    () => setIsOpen((prev) => !prev),
+    { enabled: !!shortcut && isMounted },
   );
 
-  useHotkeys(
+  useHotkeySequences(
     itemShortcuts
       .map((it) =>
         it.shortcut
-          ? { hotkey: it.shortcut, callback: () => actionHandler(it) }
+          ? { sequence: it.shortcut, callback: () => actionHandler(it) }
           : null,
       )
       .filter((v) => !!v),
@@ -192,7 +197,9 @@ export function QuickSearch({
         })}
 
         {item.shortcut && (
-          <CommandShortcut>{formatForDisplay(item.shortcut)}</CommandShortcut>
+          <CommandShortcut>
+            {item.shortcut.map((k) => formatForDisplay(k)).join("+")}
+          </CommandShortcut>
         )}
       </CommandItem>
     );
@@ -218,8 +225,10 @@ export function QuickSearch({
 
             <span>{placeholder}</span>
 
-            {shortcuts.length > 0 && (
-              <Kbd className="ml-auto">{formatForDisplay(shortcuts[0])}</Kbd>
+            {shortcut && (
+              <Kbd className="ml-auto">
+                {shortcut.map((k) => formatForDisplay(k)).join("+")}
+              </Kbd>
             )}
           </Button>
         }

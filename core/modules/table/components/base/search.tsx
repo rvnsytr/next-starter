@@ -6,7 +6,11 @@ import {
 import { Kbd } from "@/core/components/ui/kbd";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import { cn } from "@/core/utils";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import {
+  formatForDisplay,
+  HotkeySequence,
+  useHotkeySequence,
+} from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -14,8 +18,13 @@ export type SearchProps = Omit<
   React.ComponentProps<typeof InputGroupInput>,
   "ref" | "value" | "onChange"
 > & {
-  /** @default "/" */
-  shortcut?: Hotkey | "default";
+  /**
+   * Keyboard shortcut used to focus the search input.
+   * If set to "default", the default shortcut (/) is used.
+   *
+   * @default "default"
+   */
+  shortcut?: "default" | HotkeySequence;
 };
 
 type SearchContext = {
@@ -23,7 +32,7 @@ type SearchContext = {
   onSearch: (value: string) => void;
 };
 
-export const SEARCH_DEFAULT_HOTKEY: Hotkey = "/";
+const DEFAULT_SHORTCUT: HotkeySequence = ["/"];
 
 export function Search({
   context,
@@ -37,10 +46,13 @@ export function Search({
   const [value, setValue] = useState<string>(context.defaultValue);
   const debouncedSearch = useDebounce(value);
 
-  const hotkey = shortcut === "default" ? SEARCH_DEFAULT_HOTKEY : shortcut;
-  useHotkey(hotkey ?? SEARCH_DEFAULT_HOTKEY, () => searchRef.current?.focus(), {
-    enabled: !!hotkey,
-  });
+  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+
+  useHotkeySequence(
+    hotkeySequence ?? DEFAULT_SHORTCUT,
+    () => searchRef.current?.focus(),
+    { enabled: !!hotkeySequence },
+  );
 
   useEffect(
     () => context.onSearch(debouncedSearch),
@@ -61,9 +73,9 @@ export function Search({
         <SearchIcon />
       </InputGroupAddon>
 
-      {hotkey && (
+      {hotkeySequence && (
         <InputGroupAddon align="inline-end">
-          <Kbd>{formatForDisplay(hotkey)}</Kbd>
+          <Kbd>{hotkeySequence.map((k) => formatForDisplay(k)).join("+")}</Kbd>
         </InputGroupAddon>
       )}
     </InputGroup>

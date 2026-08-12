@@ -34,7 +34,11 @@ import { ColumnMeta } from "@/core/modules/table/types";
 import { getFilterOperators } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
-import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
+import {
+  formatForDisplay,
+  HotkeySequence,
+  useHotkeySequence,
+} from "@tanstack/react-hotkeys";
 import {
   ChevronRightIcon,
   EllipsisIcon,
@@ -45,8 +49,12 @@ import { useEffect, useRef, useState } from "react";
 
 export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
-  /** @default "F" */
-  shortcut?: "default" | Hotkey;
+
+  /**
+   * Keyboard shortcut used to open the filter selector.
+   * If set to "default", the default shortcut (F) is used.
+   */
+  shortcut?: "default" | HotkeySequence;
 
   renderTrigger?: React.ReactElement;
 };
@@ -67,7 +75,7 @@ type FilterSelectorContext = {
   )[];
 };
 
-const FILTERS_DEFAULT_HOTKEY: Hotkey = "F";
+const DEFAULT_SHORTCUT: HotkeySequence = ["F"];
 const ANIMATION_DELAY = 50;
 
 export function FilterSelector({
@@ -84,11 +92,12 @@ export function FilterSelector({
   const [filterValueController, setFilterValueController] =
     useState<FilterValueControllerProps | null>(null);
 
-  const hotkey = shortcut === "default" ? FILTERS_DEFAULT_HOTKEY : shortcut;
-  useHotkey(
-    hotkey ?? FILTERS_DEFAULT_HOTKEY,
+  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+
+  useHotkeySequence(
+    hotkeySequence ?? DEFAULT_SHORTCUT,
     () => setIsOpen((prev) => !prev),
-    { enabled: !!hotkey },
+    { enabled: !!hotkeySequence },
   );
 
   return (
@@ -119,7 +128,11 @@ export function FilterSelector({
 
           <TooltipPopup align={align}>
             Filter Columns
-            {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
+            {hotkeySequence && (
+              <Kbd className="ml-1">
+                {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
+              </Kbd>
+            )}
           </TooltipPopup>
         </Tooltip>
 

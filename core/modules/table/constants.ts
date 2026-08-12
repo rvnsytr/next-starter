@@ -11,3 +11,5 @@ export const SORT_ICONS = {
 };
 
 export const DEFAULT_FILTER_TYPE = "string";
+
+export const DEFAULT_EDITOR_TYPE = "string";
