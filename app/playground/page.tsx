@@ -1,22 +1,37 @@
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
-import { Table2Icon, TableIcon } from "lucide-react";
-import { EmployeeDataTable } from "./module/components/employee-tables";
+import {
+  DashboardPageDescription,
+  DashboardPageHeader,
+  DashboardPageTitle,
+} from "@/core/components/layout/dashboard-page";
+import { Separator } from "@/core/components/ui/separator";
+import Link from "next/link";
+import {
+  EmployeeDataGrid,
+  EmployeeDataTable,
+} from "./module/components/employee-tables";
 
 export default function Page() {
   return (
-    <Tabs className="container min-h-dvh px-0 py-8 lg:border-x">
-      <TabsList className="mx-4">
-        <TabsTab value="data-table">
-          <TableIcon /> Data Table
-        </TabsTab>
-        <TabsTab value="data-grid">
-          <Table2Icon /> Data Grid
-        </TabsTab>
-      </TabsList>
+    <div className="slg:border-x container flex min-h-dvh flex-col gap-y-4 px-0 py-8">
+      <Separator className="border-t border-dashed bg-transparent" />
 
-      <TabsPanel value="data-table" className="border-y border-dashed py-4">
-        <EmployeeDataTable />
-      </TabsPanel>
-    </Tabs>
+      <DashboardPageHeader className="mx-4">
+        <DashboardPageTitle>Data Table</DashboardPageTitle>
+        <DashboardPageDescription>
+          Built using{" "}
+          <Link href="https://tanstack.com/table/latest" target="_blank">
+            Tanstack Table v9
+          </Link>
+        </DashboardPageDescription>
+      </DashboardPageHeader>
+
+      <Separator className="border-t border-dashed bg-transparent" />
+
+      <EmployeeDataTable />
+
+      <Separator className="border-t border-dashed bg-transparent" />
+
+      <EmployeeDataGrid />
+    </div>
   );
 }
