@@ -12,7 +12,7 @@ import {
 
 export default function Page() {
   return (
-    <div className="slg:border-x container flex min-h-dvh flex-col gap-y-4 px-0 py-8">
+    <div className="container flex min-h-dvh flex-col gap-y-4 px-0 py-8 lg:border-x">
       <Separator className="border-t border-dashed bg-transparent" />
 
       <DashboardPageHeader className="mx-4">

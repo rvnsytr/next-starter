@@ -88,6 +88,9 @@ export type DataTableLayouts = {
   Layout: React.ComponentType<any>;
 };
 
+export type DataTableTableMeta = {};
+export type DataTableColumnMeta = ColumnMeta;
+
 export type DataGridLayouts = {
   Layout: React.ComponentType<any>;
 };

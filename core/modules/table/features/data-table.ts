@@ -18,7 +18,7 @@ import {
   TableFeatures,
 } from "@tanstack/react-table";
 import { FilterFn, FilterType, stringFilterFn } from "../filters";
-import { ColumnMeta } from "../types";
+import { DataTableColumnMeta, DataTableTableMeta } from "../types";
 
 export const serverDataTableFeatures = {
   columnPinningFeature,
@@ -41,8 +41,6 @@ export const serverDataTableFeatures = {
   filterFns: {
     string: stringFilterFn,
   } satisfies Record<FilterType, FilterFn>,
-
-  columnMeta: metaHelper<ColumnMeta>(),
 } satisfies TableFeatures;
 
 export const clientDataTableFeatures = {
@@ -54,4 +52,7 @@ export const clientDataTableFeatures = {
 export const dataTableFeatures = {
   ...serverDataTableFeatures,
   ...clientDataTableFeatures,
+
+  tableMeta: metaHelper<DataTableTableMeta>(),
+  columnMeta: metaHelper<DataTableColumnMeta>(),
 } satisfies TableFeatures;
