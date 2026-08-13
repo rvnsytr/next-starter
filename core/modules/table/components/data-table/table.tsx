@@ -12,7 +12,7 @@ import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { BaseTableProps } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
-import { useEffect } from "react";
+import { TableResizeCursor } from "../base/table-resize-cursor";
 
 export function DataTable({
   caption,
@@ -24,16 +24,7 @@ export function DataTable({
   const table = dataTable.useTableContext();
 
   const allLeafColumnsLength = table.getAllLeafColumns().length;
-  const resizing = table.atoms.columnResizing.get();
   const withResizeIndicator = table.options.columnResizeMode !== "onChange";
-
-  useEffect(() => {
-    const isResizing = !!resizing.isResizingColumn;
-    document.body.style.cursor = isResizing ? "col-resize" : "";
-    return () => {
-      document.body.style.cursor = "";
-    };
-  }, [resizing]);
 
   return (
     <Table style={{ width: table.getTotalSize(), ...style }} {...props}>
@@ -41,72 +32,91 @@ export function DataTable({
 
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((h) => (
-              <table.AppHeader key={h.id} header={h}>
-                {(header) => {
-                  if (header.rowSpan <= 0) return null;
+          <table.Subscribe
+            key={headerGroup.id}
+            selector={(s) => s.columnResizing}
+          >
+            {(resizing) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((h) => (
+                  <table.AppHeader key={h.id} header={h}>
+                    {(header) => {
+                      if (header.rowSpan <= 0) return null;
 
-                  const {
-                    style: headerStyle,
-                    className: headerClassName,
-                    ...restHeaderProps
-                  } = header.column.columnDef.meta?.headerProps ?? {};
+                      const {
+                        style: headerStyle,
+                        className: headerClassName,
+                        ...restHeaderProps
+                      } = header.column.columnDef.meta?.headerProps ?? {};
 
-                  const pinPosition = header.column.getIsPinned();
+                      const pinPosition = header.column.getIsPinned();
 
-                  const isResizing =
-                    withResizeIndicator && header.column.getIsResizing();
+                      const isResizing =
+                        withResizeIndicator && header.column.getIsResizing();
 
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      rowSpan={header.rowSpan}
-                      style={{
-                        ...headerStyle,
-                        width: header.getSize(),
-                        left: header.column.getStart("start"),
-                        right: header.column.getAfter("end"),
-                      }}
-                      className={cn(
-                        "relative z-10",
-
-                        !!pinPosition && "bg-background/90 sticky z-20",
-                        pinPosition === "start" && "left-0 pl-4",
-                        pinPosition === "end" && "right-0 pr-4",
-
-                        headerClassName,
-                      )}
-                      {...restHeaderProps}
-                    >
-                      <header.FlexRender />
-
-                      {header.column.getCanResize() && (
+                      return (
                         <>
-                          <div
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                            onDoubleClick={() => header.column.resetSize()}
-                            className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none"
-                          />
+                          <table.Subscribe
+                            selector={(s) => {
+                              return !!s.columnResizing.isResizingColumn;
+                            }}
+                          >
+                            {(s) => <TableResizeCursor resizing={s} />}
+                          </table.Subscribe>
 
-                          {isResizing && (
-                            <div
-                              style={{
-                                transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
-                              }}
-                              className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
-                            />
-                          )}
+                          <TableHead
+                            key={header.id}
+                            colSpan={header.colSpan}
+                            rowSpan={header.rowSpan}
+                            style={{
+                              ...headerStyle,
+                              width: header.getSize(),
+                              left: header.column.getStart("start"),
+                              right: header.column.getAfter("end"),
+                            }}
+                            className={cn(
+                              "relative z-10",
+
+                              !!pinPosition && "bg-background/90 sticky z-20",
+                              pinPosition === "start" && "left-0 pl-4",
+                              pinPosition === "end" && "right-0 pr-4",
+
+                              headerClassName,
+                            )}
+                            {...restHeaderProps}
+                          >
+                            <header.FlexRender />
+
+                            {header.column.getCanResize() && (
+                              <>
+                                <div
+                                  onMouseDown={header.getResizeHandler()}
+                                  onTouchStart={header.getResizeHandler()}
+                                  onDoubleClick={() =>
+                                    header.column.resetSize()
+                                  }
+                                  className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none"
+                                />
+
+                                {isResizing && (
+                                  <div
+                                    style={{
+                                      transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
+                                    }}
+                                    className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
+                                  />
+                                )}
+                              </>
+                            )}
+                          </TableHead>
                         </>
-                      )}
-                    </TableHead>
-                  );
-                }}
-              </table.AppHeader>
-            ))}
-          </TableRow>
+                      );
+                    }}
+                  </table.AppHeader>
+                ))}
+              </TableRow>
+            )}
+          </table.Subscribe>
         ))}
       </TableHeader>
 
