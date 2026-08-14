@@ -15,7 +15,9 @@ import { BaseTableProps } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { useHotkeys } from "@tanstack/react-hotkeys";
-import { useEffect, useRef } from "react";
+import { CellSelectionBounds, CellSelectionState } from "@tanstack/react-table";
+import { useEffect, useRef, useState } from "react";
+import { TableResizeCursor } from "../base/table-resize-cursor";
 
 // @see https://tanstack.com/table/latest/docs/framework/react/examples/cell-selection
 function escapeTsvValue(value: unknown) {

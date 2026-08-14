@@ -1,9 +1,9 @@
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
+import { TableTemplateProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
-import { dataTable } from "../../hooks/data-table";
-import { TableTemplateProps } from "../../types";
 
 export function DataTableLayout({
   tableProps,
