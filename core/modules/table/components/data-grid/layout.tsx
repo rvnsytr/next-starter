@@ -279,29 +279,42 @@ function DataGridEditorToolbar({
 }
 
 function ChangesCount() {
+  const table = dataGrid.useTableContext();
   const tableContext = useDataGrid();
+
   const { updated, removed } = tableContext.count;
 
   if (updated <= 0 && removed <= 0) return null;
 
   return (
-    <>
-      <span data-slot="separator">|</span>
+    <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
+      {(rowCount) => {
+        const cellCount = table.getSelectedCellCount();
 
-      {updated > 0 && (
-        <small className="text-warning/72">
-          <b className="text-warning">{formatNumber(updated)}</b> rows updated
-        </small>
-      )}
+        const isRowOrCellSelected = rowCount > 0 || cellCount > 0;
 
-      {updated > 0 && removed > 0 && <span data-slot="separator">|</span>}
+        return (
+          <>
+            {isRowOrCellSelected && <span data-slot="separator">|</span>}
 
-      {removed > 0 && (
-        <small className="text-destructive/72">
-          <b className="text-destructive">{formatNumber(removed)}</b> rows
-          removed
-        </small>
-      )}
-    </>
+            {updated > 0 && (
+              <small className="text-warning/72">
+                <b className="text-warning">{formatNumber(updated)}</b> rows
+                updated
+              </small>
+            )}
+
+            {updated > 0 && removed > 0 && <span data-slot="separator">|</span>}
+
+            {removed > 0 && (
+              <small className="text-destructive/72">
+                <b className="text-destructive">{formatNumber(removed)}</b> rows
+                removed
+              </small>
+            )}
+          </>
+        );
+      }}
+    </table.Subscribe>
   );
 }
