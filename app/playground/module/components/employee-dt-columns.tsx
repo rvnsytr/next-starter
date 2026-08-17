@@ -47,6 +47,8 @@ export const employeeDTColumns = columnHelper.columns([
     filterFn: "string",
 
     minSize: 250,
+    size: 250,
+
     meta: {
       label: "Name",
       icon: UserRoundIcon,
@@ -59,6 +61,8 @@ export const employeeDTColumns = columnHelper.columns([
     filterFn: "string",
 
     minSize: 250,
+    size: 250,
+
     meta: {
       label: "Email Address",
       icon: MailIcon,
@@ -74,6 +78,8 @@ export const employeeDTColumns = columnHelper.columns([
     ),
 
     minSize: 100,
+    size: 100,
+
     meta: {
       label: "Age",
       icon: UserRoundIcon,
@@ -84,6 +90,8 @@ export const employeeDTColumns = columnHelper.columns([
     cell: (c) => `$${formatNumber(c.getValue())}/yr`,
 
     minSize: 150,
+    size: 150,
+
     meta: {
       label: "Salary Amount",
       icon: DollarSignIcon,
@@ -94,6 +102,8 @@ export const employeeDTColumns = columnHelper.columns([
     cell: (c) => formatDate(c.getValue(), "PPPp"),
 
     minSize: 200,
+    size: 200,
+
     meta: {
       label: "Join Date",
       icon: CalendarCheck2Icon,
@@ -104,6 +114,8 @@ export const employeeDTColumns = columnHelper.columns([
     cell: (c) => <UserStatusBadge value={c.getValue()} />,
 
     minSize: 150,
+    size: 150,
+
     meta: {
       label: "User Status",
       icon: CircleDotIcon,
@@ -118,6 +130,8 @@ export const employeeDTColumns = columnHelper.columns([
     },
 
     minSize: 150,
+    size: 150,
+
     meta: {
       label: "Role",
       icon: ShieldUserIcon,
@@ -136,6 +150,8 @@ export const employeeDTColumns = columnHelper.columns([
     ),
 
     minSize: 500,
+    size: 500,
+
     meta: {
       label: "Skills",
       icon: BookOpenTextIcon,
@@ -148,6 +164,8 @@ export const employeeDTColumns = columnHelper.columns([
     filterFn: "string",
 
     minSize: 150,
+    size: 150,
+
     meta: {
       label: "Department",
       icon: Building2Icon,
@@ -160,6 +178,8 @@ export const employeeDTColumns = columnHelper.columns([
     filterFn: "string",
 
     minSize: 250,
+    size: 250,
+
     meta: {
       label: "Manager Name",
       icon: HandshakeIcon,
@@ -171,7 +191,9 @@ export const employeeDTColumns = columnHelper.columns([
 
     filterFn: "string",
 
+    minSize: 150,
     size: 150,
+
     meta: {
       label: "Phone Number",
       icon: BookUserIcon,
@@ -187,7 +209,9 @@ export const employeeDTColumns = columnHelper.columns([
 
         filterFn: "string",
 
+        minSize: 150,
         size: 150,
+
         meta: {
           label: "City",
         },
@@ -199,7 +223,9 @@ export const employeeDTColumns = columnHelper.columns([
 
         filterFn: "string",
 
+        minSize: 150,
         size: 150,
+
         meta: {
           label: "Country",
         },
@@ -218,6 +244,8 @@ export const employeeDTColumns = columnHelper.columns([
     filterFn: "string",
 
     minSize: 500,
+    size: 500,
+
     meta: {
       label: "Projects",
       icon: FoldersIcon,
