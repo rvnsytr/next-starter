@@ -2,7 +2,7 @@ import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { TableTemplateProps } from "@/core/modules/table/types";
+import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 
 export function DataTableLayout({
@@ -22,20 +22,17 @@ export function DataTableLayout({
   classNames,
   renderSlot,
   ...props
-}: TableTemplateProps & {
-  caption?: string;
-  classNames?: {
-    header?: string;
-    footer?: string;
-  };
-  renderSlot?: React.ReactNode;
-}) {
+}: TableLayoutProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataTable.useTableContext();
 
-  const { align: clearFiltersAlign = "start", ...restClearFiltersProps } =
-    clearFiltersProps ?? {};
+  const {
+    align: clearFiltersAlign = "start",
+    side: clearFiltersSide = "bottom",
+    shortcut: clearFiltersShortcut = "default",
+    ...restClearFiltersProps
+  } = clearFiltersProps ?? {};
 
   const {
     align: filterSelectorAlign = "start",
@@ -76,29 +73,32 @@ export function DataTableLayout({
     >
       <div
         className={cn(
-          "flex w-full flex-col gap-2 px-4 lg:flex-row lg:justify-between",
+          "flex w-full flex-col gap-2 px-4 lg:flex-row lg:items-center lg:justify-between",
+          "**:data-[slot=button-group]:w-full lg:**:data-[slot=button-group]:w-fit **:data-[slot=button-group]:**:[button]:grow",
           classNames?.header,
         )}
       >
-        <ButtonGroup className="w-full lg:w-fit **:[button]:grow">
-          <table.FilterSelector
-            align={filterSelectorAlign}
-            shortcut={filterSelectorShortcut}
-            {...restFilterSelectorProps}
-          />
-          <table.ColumnSortMenu
-            align={columnSortMenuAlign}
-            shortcut={columnSortMenuShortcut}
-            {...restColumnSortMenuProps}
-          />
-          <table.ColumnVisibilityMenu
-            align={columnVisibilityMenuAlign}
-            shortcut={columnVisibilityMenuShortcut}
-            {...restColumnVisibilityMenuProps}
-          />
-        </ButtonGroup>
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <ButtonGroup>
+            <table.FilterSelector
+              align={filterSelectorAlign}
+              shortcut={filterSelectorShortcut}
+              {...restFilterSelectorProps}
+            />
+            <table.ColumnSortMenu
+              align={columnSortMenuAlign}
+              shortcut={columnSortMenuShortcut}
+              {...restColumnSortMenuProps}
+            />
+            <table.ColumnVisibilityMenu
+              align={columnVisibilityMenuAlign}
+              shortcut={columnVisibilityMenuShortcut}
+              {...restColumnVisibilityMenuProps}
+            />
+          </ButtonGroup>
 
-        {renderSlot}
+          {renderSlot}
+        </div>
 
         <div className="flex gap-x-2 *:grow">
           <table.ResetTableButton
@@ -116,6 +116,8 @@ export function DataTableLayout({
             <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
               <table.ClearFilters
                 align={clearFiltersAlign}
+                side={clearFiltersSide}
+                shortcut={clearFiltersShortcut}
                 {...restClearFiltersProps}
               />
               <table.ActiveFilters {...activeFiltersProps} />

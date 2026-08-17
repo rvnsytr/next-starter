@@ -20,7 +20,7 @@ import { DataTable } from "../components/data-table/table";
 import { dataTableFeatures } from "../features/data-table";
 import {
   CellComponents,
-  DataTableLayouts,
+  DataTableTableComponents,
   HeaderComponents,
   TableComponents,
 } from "../types";
@@ -40,7 +40,7 @@ export const dataTable = createTableHook({
     ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
     Layout: DataTableLayout,
-  } satisfies TableComponents & DataTableLayouts,
+  } satisfies TableComponents & DataTableTableComponents,
   headerComponents: {
     ColumnHeader: DataTableColumnHeader,
     SelectAllCheckbox: DataTableSelectAllCheckbox,

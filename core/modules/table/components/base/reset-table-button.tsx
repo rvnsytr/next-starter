@@ -1,4 +1,4 @@
-import { ButtonProps, ResetButton } from "@/core/components/ui/button";
+import { Button, ButtonProps } from "@/core/components/ui/button";
 import { Kbd } from "@/core/components/ui/kbd";
 import {
   Tooltip,
@@ -10,6 +10,7 @@ import {
   HotkeySequence,
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
+import { RotateCcwIcon } from "lucide-react";
 
 export type ResetTableButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -48,7 +49,7 @@ export function ResetTableButton({
     <Tooltip>
       <TooltipTrigger
         render={
-          <ResetButton
+          <Button
             size={size}
             variant={variant}
             onClick={(e) => {
@@ -56,7 +57,9 @@ export function ResetTableButton({
               onClick?.(e);
             }}
             {...props}
-          />
+          >
+            <RotateCcwIcon /> Reset Table
+          </Button>
         }
       />
 

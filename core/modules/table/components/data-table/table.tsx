@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { BaseTableProps } from "@/core/modules/table/types";
+import { TableProps } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { TableResizeCursor } from "../base/table-resize-cursor";
@@ -20,7 +20,7 @@ export function DataTable({
   loading = false,
   style,
   ...props
-}: BaseTableProps) {
+}: TableProps) {
   const table = dataTable.useTableContext();
 
   const allLeafColumnsLength = table.getAllLeafColumns().length;

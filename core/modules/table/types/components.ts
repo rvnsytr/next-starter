@@ -49,7 +49,7 @@ export type CellComponents = {
   RowNumber: React.ComponentType<any>;
 };
 
-export type TableTemplateProps = React.ComponentProps<"div"> & {
+export type TableLayoutProps = React.ComponentProps<"div"> & {
   tableProps?: TableProps;
   activeFiltersProps?: ActiveFiltersProps;
   activeFiltersContainerProps?: ActiveFiltersContainerProps;
@@ -61,4 +61,11 @@ export type TableTemplateProps = React.ComponentProps<"div"> & {
   paginationProps?: PaginationProps;
   resetTableButtonProps?: ResetTableButtonProps;
   searchProps?: SearchProps;
+
+  caption?: string;
+  classNames?: {
+    header?: string;
+    footer?: string;
+  };
+  renderSlot?: React.ReactNode;
 };
