@@ -95,7 +95,9 @@ export function DataGrid({
   const tableRef = useRef<HTMLDivElement>(null);
 
   const [edit, setEdit] = useState<DataGridEditState | null>(null);
+  const editRef = useRef<DataGridEditState | null>(null);
 
+  const rowChanges = tableContext.getChanges();
   const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
   const allLeafColumnsLength = useMemo(() => {
@@ -108,13 +110,24 @@ export function DataGrid({
     setEdit(null);
   }, [table, edit]);
 
+  const handleAutoSave = useCallback(() => {
+    if (table.options.meta?.saveMode !== "onChange") return;
+    const ctx = tableContext.getChanges();
+    table.options.meta?.onSave?.(ctx);
+    tableContext.clearChanges();
+  }, [table, tableContext]);
+
+  useEffect(() => {
+    editRef.current = edit;
+  }, [edit]);
+
   useEffect(() => {
     const sub = table.atoms.cellSelection.subscribe(() => {
-      if (edit) setEdit(null);
+      if (editRef.current) setEdit(null);
     });
 
     return () => sub.unsubscribe();
-  }, [table, edit]);
+  }, [table]);
 
   useHotkeys(
     [
@@ -187,6 +200,20 @@ export function DataGrid({
         hotkey: "Escape",
         callback: () => table.resetCellSelection(true),
       },
+      {
+        hotkey: "Delete",
+        callback: () => {
+          const rowIds = table.getCellSelectionRowIds();
+
+          const removedRows = rowIds.map((rowId) => {
+            const row = table.getRow(rowId);
+            return { rowId, data: row.original };
+          });
+
+          tableContext.removeRows(removedRows);
+          handleAutoSave();
+        },
+      },
     ],
     { target: tableRef, enabled: !edit },
   );
@@ -207,12 +234,7 @@ export function DataGrid({
     tableContext.updateRow({ rowId: edit.rowId, data: rowData, changes });
 
     exitEdit();
-
-    if (table.options.meta?.saveMode === "onChange") {
-      const ctx = tableContext.getChanges();
-      table.options.meta?.onSave?.(ctx);
-      tableContext.clearChanges();
-    }
+    handleAutoSave();
   };
 
   const { className: containerClassName, ...restContainerProps } =
@@ -337,18 +359,21 @@ export function DataGrid({
             <table.Subscribe
               key={row.id}
               source={table.atoms.cellSelection}
-              selector={(ranges) =>
-                rowSelectionKey(
+              selector={(ranges) => {
+                return rowSelectionKey(
                   ranges,
                   table.getCellSelectionBounds(),
                   row.getDisplayIndex(),
                   row.id,
-                )
-              }
+                );
+              }}
             >
               {() => {
-                const rowChanges = tableContext.getChanges();
                 const isRowEdited = rowChanges.updated.some(
+                  (r) => r.rowId === row.id,
+                );
+
+                const isRowRemoved = rowChanges.removed.some(
                   (r) => r.rowId === row.id,
                 );
 
@@ -356,7 +381,11 @@ export function DataGrid({
                   <TableRow
                     data-selected={row.getIsSelected()}
                     data-row-edited={isRowEdited}
-                    className={cn(isRowEdited && "bg-accent/50")}
+                    className={cn(
+                      isRowEdited && "bg-accent/50",
+                      isRowRemoved &&
+                        "bg-destructive/32 hover:bg-destructive/32 not-in-data-[variant=card]:data-selected:bg-destructive/32",
+                    )}
                   >
                     {row.getVisibleCells().map((c) => (
                       <table.AppCell key={c.id} cell={c}>
@@ -421,6 +450,7 @@ export function DataGrid({
 
                                 isSelected &&
                                   !isCellEdited &&
+                                  !isRowRemoved &&
                                   "bg-muted dark:bg-muted/50",
 
                                 (isFocused || isEdit) && "cell-edge",
@@ -433,7 +463,10 @@ export function DataGrid({
                                 !isFocused && edges?.left && "cell-edge-left",
 
                                 isEdit && "p-0",
-                                isCellEdited && !isEdit && "bg-warning/32",
+                                isCellEdited &&
+                                  !isEdit &&
+                                  !isRowRemoved &&
+                                  "bg-warning/32",
 
                                 cellClassName,
                               )}
@@ -443,7 +476,8 @@ export function DataGrid({
                                 <CellEditorController
                                   meta={editorMeta}
                                   onSubmit={(data) => {
-                                    const key = editorMeta.key ?? c.column.id;
+                                    const key =
+                                      editorMeta.key ?? cell.column.id;
                                     const changes = { [key]: data };
                                     onCellEditorSubmit(changes, row.original);
                                   }}

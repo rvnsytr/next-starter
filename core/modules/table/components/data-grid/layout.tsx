@@ -73,11 +73,13 @@ export function DataGridLayout({
     searchProps ?? {};
 
   const {
+    align: saveChangesButtonAlign = isDesktop ? "center" : "start",
     shortcut: saveChangesButtonShortcut = "default",
     ...restSaveChangesButtonProps
   } = saveChangesButtonProps ?? {};
 
   const {
+    align: resetChangesButtonAlign = isDesktop ? "center" : "end",
     shortcut: resetChangesButtonShortcut = "default",
     ...restResetChangesButtonProps
   } = resetChangesButtonProps ?? {};
@@ -116,10 +118,12 @@ export function DataGridLayout({
 
             <DataGridEditorToolbar
               saveChangesButtonProps={{
+                align: saveChangesButtonAlign,
                 shortcut: saveChangesButtonShortcut,
                 ...restSaveChangesButtonProps,
               }}
               resetChangesButtonProps={{
+                align: resetChangesButtonAlign,
                 shortcut: resetChangesButtonShortcut,
                 ...restResetChangesButtonProps,
               }}
@@ -172,33 +176,39 @@ export function DataGridLayout({
             />
           </div>
 
-          <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
-            {(rowCount) => {
-              const cellCount = table.getSelectedCellCount();
+          <div className="**:data-[slot=separator]:text-border order-3 **:shrink-0 **:data-[slot=separator]:mx-2 lg:order-2">
+            <table.Subscribe
+              selector={(s) => Object.keys(s.rowSelection).length}
+            >
+              {(rowCount) => {
+                const cellCount = table.getSelectedCellCount();
 
-              if (rowCount <= 0 && cellCount <= 0) return null;
+                if (rowCount <= 0 && cellCount <= 0) return null;
 
-              return (
-                <div className="order-3 **:shrink-0 lg:order-2">
-                  {rowCount > 0 && (
-                    <small>
-                      <b>{formatNumber(rowCount)}</b> rows selected
-                    </small>
-                  )}
+                return (
+                  <>
+                    {rowCount > 0 && (
+                      <small>
+                        <b>{formatNumber(rowCount)}</b> rows selected
+                      </small>
+                    )}
 
-                  {rowCount > 0 && cellCount > 0 && (
-                    <span className="text-border mx-2">|</span>
-                  )}
+                    {rowCount > 0 && cellCount > 0 && (
+                      <span data-slot="separator">|</span>
+                    )}
 
-                  {cellCount > 0 && (
-                    <small>
-                      <b>{formatNumber(cellCount)}</b> cells selected
-                    </small>
-                  )}
-                </div>
-              );
-            }}
-          </table.Subscribe>
+                    {cellCount > 0 && (
+                      <small>
+                        <b>{formatNumber(cellCount)}</b> cells selected
+                      </small>
+                    )}
+                  </>
+                );
+              }}
+            </table.Subscribe>
+
+            <ChangesCount />
+          </div>
 
           {caption ? (
             <small
@@ -258,12 +268,40 @@ function DataGridEditorToolbar({
 
   return (
     <>
-      <Separator orientation="vertical" className="h-4" />
+      <Separator orientation="vertical" className="hidden h-4 lg:flex" />
 
       <ButtonGroup>
         <table.SaveChangesButton {...saveChangesButtonProps} />
         <table.ResetChangesButton {...resetChangesButtonProps} />
       </ButtonGroup>
+    </>
+  );
+}
+
+function ChangesCount() {
+  const tableContext = useDataGrid();
+  const { updated, removed } = tableContext.count;
+
+  if (updated <= 0 && removed <= 0) return null;
+
+  return (
+    <>
+      <span data-slot="separator">|</span>
+
+      {updated > 0 && (
+        <small className="text-warning/72">
+          <b className="text-warning">{formatNumber(updated)}</b> rows updated
+        </small>
+      )}
+
+      {updated > 0 && removed > 0 && <span data-slot="separator">|</span>}
+
+      {removed > 0 && (
+        <small className="text-destructive/72">
+          <b className="text-destructive">{formatNumber(removed)}</b> rows
+          removed
+        </small>
+      )}
     </>
   );
 }

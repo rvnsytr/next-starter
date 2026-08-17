@@ -50,18 +50,23 @@ export type DataGridCellEditorMeta = {
   key?: string;
 };
 
-export type DataGridRowChange<TData extends RowData> = {
-  rowId: string;
-  data: TData;
-  changes: Partial<TData>;
-};
-
 export type DataGridColumnMeta = ColumnMeta & {
   editor?: DataGridCellEditorMeta;
 };
 
 export type DataGridChanges<TData extends RowData> = {
   added: TData[];
-  removed: TData[];
-  updated: DataGridRowChange<TData>[];
+  updated: DataGridUpdateChange<TData>[];
+  removed: DataGridRemoveChange<TData>[];
+};
+
+export type DataGridUpdateChange<TData extends RowData> = {
+  rowId: string;
+  data: TData;
+  changes: Partial<TData>;
+};
+
+export type DataGridRemoveChange<TData extends RowData> = {
+  rowId: string;
+  data: TData;
 };
