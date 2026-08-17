@@ -1,9 +1,13 @@
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
+import { Separator } from "@/core/components/ui/separator";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { TableTemplateProps } from "@/core/modules/table/types";
+import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
+import { useDataGrid } from "./provider";
+import { ResetChangesButtonProps } from "./reset-changes-button";
+import { SaveChangesButtonProps } from "./save-changes-button";
 
 export function DataGridLayout({
   tableProps,
@@ -21,21 +25,20 @@ export function DataGridLayout({
   className,
   classNames,
   renderSlot,
+  saveChangesButtonProps,
+  resetChangesButtonProps,
   ...props
-}: TableTemplateProps & {
-  caption?: string;
-  classNames?: {
-    header?: string;
-    footer?: string;
-  };
-  renderSlot?: React.ReactNode;
-}) {
+}: TableLayoutProps & DataGridEditorToolbarProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataGrid.useTableContext();
 
-  const { align: clearFiltersAlign = "start", ...restClearFiltersProps } =
-    clearFiltersProps ?? {};
+  const {
+    align: clearFiltersAlign = "start",
+    side: clearFiltersSide = "bottom",
+    shortcut: clearFiltersShortcut = "default",
+    ...restClearFiltersProps
+  } = clearFiltersProps ?? {};
 
   const {
     align: filterSelectorAlign = "start",
@@ -69,144 +72,198 @@ export function DataGridLayout({
   const { shortcut: searchShortcut = "default", ...restSearchProps } =
     searchProps ?? {};
 
+  const {
+    shortcut: saveChangesButtonShortcut = "default",
+    ...restSaveChangesButtonProps
+  } = saveChangesButtonProps ?? {};
+
+  const {
+    shortcut: resetChangesButtonShortcut = "default",
+    ...restResetChangesButtonProps
+  } = resetChangesButtonProps ?? {};
+
   return (
-    <div
-      className={cn("relative flex w-full flex-col gap-y-4", className)}
-      {...props}
-    >
+    <table.Provider>
       <div
-        className={cn(
-          "flex w-full flex-col gap-2 px-4 lg:flex-row lg:justify-between",
-          classNames?.header,
-        )}
+        className={cn("relative flex w-full flex-col gap-y-4", className)}
+        {...props}
       >
-        <ButtonGroup className="w-full lg:w-fit **:[button]:grow">
-          <table.FilterSelector
-            align={filterSelectorAlign}
-            shortcut={filterSelectorShortcut}
-            {...restFilterSelectorProps}
-          />
-          <table.ColumnSortMenu
-            align={columnSortMenuAlign}
-            shortcut={columnSortMenuShortcut}
-            {...restColumnSortMenuProps}
-          />
-          <table.ColumnVisibilityMenu
-            align={columnVisibilityMenuAlign}
-            shortcut={columnVisibilityMenuShortcut}
-            {...restColumnVisibilityMenuProps}
-          />
-        </ButtonGroup>
-
-        {renderSlot}
-
-        <div className="flex gap-x-2 *:grow">
-          <table.ResetTableButton
-            shortcut={resetTableButtonShortcut}
-            {...restResetTableButtonProps}
-          />
-          <table.Search shortcut={searchShortcut} {...restSearchProps} />
-        </div>
-      </div>
-
-      <table.Subscribe selector={(s) => s.columnFilters.length}>
-        {(columnFiltersLength) => {
-          if (columnFiltersLength <= 0) return;
-          return (
-            <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
-              <table.ClearFilters
-                align={clearFiltersAlign}
-                {...restClearFiltersProps}
+        <div
+          className={cn(
+            "flex w-full flex-col gap-2 px-4 lg:flex-row lg:items-center lg:justify-between",
+            "**:data-[slot=button-group]:w-full lg:**:data-[slot=button-group]:w-fit **:data-[slot=button-group]:**:[button]:grow",
+            classNames?.header,
+          )}
+        >
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <ButtonGroup>
+              <table.FilterSelector
+                align={filterSelectorAlign}
+                shortcut={filterSelectorShortcut}
+                {...restFilterSelectorProps}
               />
-              <table.ActiveFilters {...activeFiltersProps} />
-            </table.ActiveFiltersContainer>
-          );
-        }}
-      </table.Subscribe>
+              <table.ColumnSortMenu
+                align={columnSortMenuAlign}
+                shortcut={columnSortMenuShortcut}
+                {...restColumnSortMenuProps}
+              />
+              <table.ColumnVisibilityMenu
+                align={columnVisibilityMenuAlign}
+                shortcut={columnVisibilityMenuShortcut}
+                {...restColumnVisibilityMenuProps}
+              />
+            </ButtonGroup>
 
-      <table.Table {...tableProps} />
+            <DataGridEditorToolbar
+              saveChangesButtonProps={{
+                shortcut: saveChangesButtonShortcut,
+                ...restSaveChangesButtonProps,
+              }}
+              resetChangesButtonProps={{
+                shortcut: resetChangesButtonShortcut,
+                ...restResetChangesButtonProps,
+              }}
+            />
 
-      <div
-        className={cn(
-          "text-muted-foreground flex w-full flex-col items-center gap-4 px-4 text-center text-sm lg:flex-row",
-          classNames?.footer,
-        )}
-      >
-        <div className="order-4 flex items-center gap-x-2 *:shrink-0 lg:order-1">
-          <Label htmlFor={pageSizeSelectorId} className="font-normal">
-            Rows per page
-          </Label>
-          <table.PageSizeSelector
-            id={pageSizeSelectorId}
-            {...restPageSizeSelectorProps}
-          />
+            {renderSlot}
+          </div>
+
+          <div className="flex gap-x-2 *:grow">
+            <table.ResetTableButton
+              shortcut={resetTableButtonShortcut}
+              {...restResetTableButtonProps}
+            />
+            <table.Search shortcut={searchShortcut} {...restSearchProps} />
+          </div>
         </div>
 
-        <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
-          {(rowCount) => {
-            const cellCount = table.getSelectedCellCount();
-
-            if (rowCount <= 0 && cellCount <= 0) return null;
-
+        <table.Subscribe selector={(s) => s.columnFilters.length}>
+          {(columnFiltersLength) => {
+            if (columnFiltersLength <= 0) return;
             return (
-              <div className="order-3 **:shrink-0 lg:order-2">
-                {rowCount > 0 && (
-                  <small>
-                    <b>{formatNumber(rowCount)}</b> rows selected
-                  </small>
-                )}
-
-                {rowCount > 0 && cellCount > 0 && (
-                  <span className="text-border mx-2">|</span>
-                )}
-
-                {cellCount > 0 && (
-                  <small>
-                    <b>{formatNumber(cellCount)}</b> cells selected
-                  </small>
-                )}
-              </div>
+              <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
+                <table.ClearFilters
+                  align={clearFiltersAlign}
+                  side={clearFiltersSide}
+                  shortcut={clearFiltersShortcut}
+                  {...restClearFiltersProps}
+                />
+                <table.ActiveFilters {...activeFiltersProps} />
+              </table.ActiveFiltersContainer>
             );
           }}
         </table.Subscribe>
 
-        {caption ? (
-          <small
-            data-slot="caption"
-            className="text-muted-foreground order-1 mx-auto text-sm lg:order-3"
-          >
-            {caption}
-          </small>
-        ) : (
-          isDesktop && <div className="order-3 mx-auto" />
-        )}
+        <table.Table {...tableProps} />
 
-        <table.Subscribe selector={(s) => s.pagination}>
-          {({ pageIndex, pageSize }) => {
-            const rowsCount = table.getRowCount();
+        <div
+          className={cn(
+            "text-muted-foreground flex w-full flex-col items-center gap-4 px-4 text-center text-sm lg:flex-row",
+            classNames?.footer,
+          )}
+        >
+          <div className="order-4 flex items-center gap-x-2 *:shrink-0 lg:order-1">
+            <Label htmlFor={pageSizeSelectorId} className="font-normal">
+              Rows per page
+            </Label>
+            <table.PageSizeSelector
+              id={pageSizeSelectorId}
+              {...restPageSizeSelectorProps}
+            />
+          </div>
 
-            const startRowNumber = pageIndex * pageSize + 1;
-            const rawEndRowNumber = startRowNumber + pageSize - 1;
-            const endRowNumber = Math.min(rawEndRowNumber, rowsCount);
+          <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
+            {(rowCount) => {
+              const cellCount = table.getSelectedCellCount();
 
-            return (
-              <span className="order-2 shrink-0 tabular-nums lg:order-4">
-                <span className="text-foreground">
-                  {tableProps?.loading
-                    ? "?"
-                    : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
+              if (rowCount <= 0 && cellCount <= 0) return null;
+
+              return (
+                <div className="order-3 **:shrink-0 lg:order-2">
+                  {rowCount > 0 && (
+                    <small>
+                      <b>{formatNumber(rowCount)}</b> rows selected
+                    </small>
+                  )}
+
+                  {rowCount > 0 && cellCount > 0 && (
+                    <span className="text-border mx-2">|</span>
+                  )}
+
+                  {cellCount > 0 && (
+                    <small>
+                      <b>{formatNumber(cellCount)}</b> cells selected
+                    </small>
+                  )}
+                </div>
+              );
+            }}
+          </table.Subscribe>
+
+          {caption ? (
+            <small
+              data-slot="caption"
+              className="text-muted-foreground order-1 mx-auto text-sm lg:order-3"
+            >
+              {caption}
+            </small>
+          ) : (
+            isDesktop && <div className="order-3 mx-auto" />
+          )}
+
+          <table.Subscribe selector={(s) => s.pagination}>
+            {({ pageIndex, pageSize }) => {
+              const rowsCount = table.getRowCount();
+
+              const startRowNumber = pageIndex * pageSize + 1;
+              const rawEndRowNumber = startRowNumber + pageSize - 1;
+              const endRowNumber = Math.min(rawEndRowNumber, rowsCount);
+
+              return (
+                <span className="order-2 shrink-0 tabular-nums lg:order-4">
+                  <span className="text-foreground">
+                    {tableProps?.loading
+                      ? "?"
+                      : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
+                  </span>
+                  {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
                 </span>
-                {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
-              </span>
-            );
-          }}
-        </table.Subscribe>
+              );
+            }}
+          </table.Subscribe>
 
-        <table.Pagination
-          className={cn("order-3 lg:order-5", paginationClassName)}
-          {...restPaginationProps}
-        />
+          <table.Pagination
+            className={cn("order-3 lg:order-5", paginationClassName)}
+            {...restPaginationProps}
+          />
+        </div>
       </div>
-    </div>
+    </table.Provider>
+  );
+}
+
+type DataGridEditorToolbarProps = {
+  saveChangesButtonProps?: SaveChangesButtonProps;
+  resetChangesButtonProps?: ResetChangesButtonProps;
+};
+
+function DataGridEditorToolbar({
+  saveChangesButtonProps,
+  resetChangesButtonProps,
+}: DataGridEditorToolbarProps) {
+  const table = dataGrid.useTableContext();
+  const tableContext = useDataGrid();
+
+  if (!tableContext.hasChanges) return null;
+
+  return (
+    <>
+      <Separator orientation="vertical" className="h-4" />
+
+      <ButtonGroup>
+        <table.SaveChangesButton {...saveChangesButtonProps} />
+        <table.ResetChangesButton {...resetChangesButtonProps} />
+      </ButtonGroup>
+    </>
   );
 }

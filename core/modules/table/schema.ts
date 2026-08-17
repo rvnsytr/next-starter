@@ -24,3 +24,7 @@ export const filterValueSchema = z.discriminatedUnion("type", [
 export const filterTypeSchema = z.union(
   filterValueSchema.options.map((s) => s.shape.type),
 );
+
+// export const columnEditorSchema z.discriminatedUnion("type", [
+
+// ])

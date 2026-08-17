@@ -1,15 +1,20 @@
 "use client";
 
+import { toast } from "@/core/components/ui/toast";
+import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
+import { LoadingFallback } from "@/shared/components/fallback";
 import useSWR from "swr";
 import { getEmployees } from "../actions";
 import { employeeDGColumns } from "./employee-dg-columns";
 import { employeeDTColumns } from "./employee-dt-columns";
 
 export function EmployeeDataTable() {
+  const isMounted = useIsMounted();
+
   const { data, isLoading } = useSWR(
-    "/employees",
+    "/dt/employees",
     async () => await getEmployees(10),
     {
       revalidateIfStale: false,
@@ -22,13 +27,9 @@ export function EmployeeDataTable() {
     data: data ?? [],
     columns: employeeDTColumns,
     getRowId: (row) => row.id.toString(),
-    initialState: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 50,
-      },
-    },
   });
+
+  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   return (
     <table.AppTable>
@@ -40,15 +41,21 @@ export function EmployeeDataTable() {
           },
           loading: isLoading,
         }}
+        columnSortMenuProps={{ shortcut: ["S", "1"] }}
+        columnVisibilityMenuProps={{ shortcut: ["V", "1"] }}
+        filterSelectorProps={{ shortcut: ["F", "1"] }}
         resetTableButtonProps={{ shortcut: ["R", "1"] }}
+        searchProps={{ shortcut: ["Control+/", "1"] }}
       />
     </table.AppTable>
   );
 }
 
 export function EmployeeDataGrid() {
+  const isMounted = useIsMounted();
+
   const { data, isLoading } = useSWR(
-    "/employees",
+    "/dg/employees",
     async () => await getEmployees(10),
     {
       revalidateIfStale: false,
@@ -67,17 +74,36 @@ export function EmployeeDataGrid() {
         pageSize: 50,
       },
     },
+    meta: {
+      onSave: (c) => {
+        toast.add({
+          description: (
+            <span className="whitespace-pre-wrap">
+              {JSON.stringify(c, null, 2)}
+            </span>
+          ),
+        });
+      },
+    },
   });
+
+  if (!isMounted) return <LoadingFallback variant="frame" />;
 
   return (
     <table.AppTable>
       <table.Layout
         tableProps={{
-          // containerProps: {
-          //   className: "rounded-none border-x-0",
-          // },
+          variant: "bordered",
+          containerProps: {
+            className: "rounded-none border-x-0",
+          },
           loading: isLoading,
         }}
+        columnSortMenuProps={{ shortcut: ["S", "2"] }}
+        columnVisibilityMenuProps={{ shortcut: ["V", "2"] }}
+        filterSelectorProps={{ shortcut: ["F", "2"] }}
+        resetTableButtonProps={{ shortcut: ["R", "2"] }}
+        searchProps={{ shortcut: ["Control+/", "2"] }}
       />
     </table.AppTable>
   );

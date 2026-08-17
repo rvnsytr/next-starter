@@ -5,10 +5,7 @@ import {
 } from "@/core/components/layout/dashboard-page";
 import { Separator } from "@/core/components/ui/separator";
 import Link from "next/link";
-import {
-  EmployeeDataGrid,
-  EmployeeDataTable,
-} from "./module/components/employee-tables";
+import { EmployeeDataGrid } from "./module/components/employee-tables";
 
 export default function Page() {
   return (
@@ -27,9 +24,9 @@ export default function Page() {
 
       <Separator className="border-t border-dashed bg-transparent" />
 
-      <EmployeeDataTable />
+      {/* <EmployeeDataTable /> */}
 
-      <Separator className="border-t border-dashed bg-transparent" />
+      {/* <Separator className="border-t border-dashed bg-transparent" /> */}
 
       <EmployeeDataGrid />
     </div>

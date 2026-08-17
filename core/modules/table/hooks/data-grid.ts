@@ -11,16 +11,19 @@ import {
 import { DataGridLayout } from "../components/data-grid/layout";
 import { DataGridPageSizeSelector } from "../components/data-grid/page-size-selector";
 import { DataGridPagination } from "../components/data-grid/pagination";
+import { DataGridProvider } from "../components/data-grid/provider";
+import { DataGridResetChangesButton } from "../components/data-grid/reset-changes-button";
 import { DataGridResetTableButton } from "../components/data-grid/reset-table-button";
 import { DataGridRowCheckbox } from "../components/data-grid/row-checkbox";
 import { DataGridRowNumber } from "../components/data-grid/row-number";
+import { DataGridSaveChangesButton } from "../components/data-grid/save-changes-button";
 import { DataGridSearch } from "../components/data-grid/search";
 import { DataGridSelectAllCheckbox } from "../components/data-grid/select-all-checkbox";
 import { DataGrid } from "../components/data-grid/table";
 import { dataGridFeatures } from "../features/data-grid";
 import {
   CellComponents,
-  DataGridLayouts,
+  DataGridTableComponents,
   HeaderComponents,
   TableComponents,
 } from "../types";
@@ -40,7 +43,10 @@ export const dataGrid = createTableHook({
     ResetTableButton: DataGridResetTableButton,
     Search: DataGridSearch,
     Layout: DataGridLayout,
-  } satisfies TableComponents & DataGridLayouts,
+    Provider: DataGridProvider,
+    SaveChangesButton: DataGridSaveChangesButton,
+    ResetChangesButton: DataGridResetChangesButton,
+  } satisfies TableComponents & DataGridTableComponents,
   headerComponents: {
     ColumnHeader: DataGridColumnHeader,
     SelectAllCheckbox: DataGridSelectAllCheckbox,

@@ -1,31 +1,67 @@
-import { RowData } from "@tanstack/react-table";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { RowData, TableFeatures } from "@tanstack/react-table";
 import { ColumnMeta } from "./meta";
 
-export type DataGridLayouts = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TFeatures extends TableFeatures, TData extends RowData> {
+    /**
+     * **Global**
+     *
+     * **Data Grid Only**
+     *
+     * This option is only applicable to the **Data Grid** component and is ignored for other table types.
+     *
+     * Defines the mode in which changes are submitted to the `onSave` callback.
+     *
+     * - `onSave` - Changes are submitted when the user explicitly saves.
+     * - `onChange` - Changes are submitted immediately after a cell is edited.
+     *
+     * @default "onSave"
+     */
+    saveMode?: "onSave" | "onChange";
+
+    /**
+     * **Global**
+     *
+     * **Data Grid Only**
+     *
+     * This option is only applicable to the **Data Grid** component and is ignored for other table types.
+     *
+     * Callback function that is called when the changes are committed from the data grid.
+     * This is only called when `saveMode` is set to `"onSave"`.
+     */
+    onSave?: (context: DataGridChanges<TData>) => void;
+  }
+}
+
+export type DataGridTableComponents = {
   Layout: React.ComponentType<any>;
+  Provider: React.ComponentType<any>;
+  SaveChangesButton: React.ComponentType<any>;
+  ResetChangesButton: React.ComponentType<any>;
 };
 
 export type DataGridCellEditorType = "string";
 
-export type DataGridEditorContext = {
-  type: "string";
+export type DataGridCellEditorMeta = {
+  type: DataGridCellEditorType;
   key?: string;
 };
 
-export type DataGridColumnMeta = ColumnMeta & {
-  editor?: {
-    type: "string";
-    key?: string;
-  };
-};
-
-export type DataGridEditState = {
+export type DataGridRowChange<TData extends RowData> = {
   rowId: string;
-  columnId: string;
-  cellId: string;
+  data: TData;
+  changes: Partial<TData>;
 };
 
-export type DataGridActionContext<TData extends RowData> = DataGridEditState & {
-  data: { old: TData; new: TData }[];
+export type DataGridColumnMeta = ColumnMeta & {
+  editor?: DataGridCellEditorMeta;
+};
+
+export type DataGridChanges<TData extends RowData> = {
+  added: TData[];
+  removed: TData[];
+  updated: DataGridRowChange<TData>[];
 };
