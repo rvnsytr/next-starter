@@ -12,6 +12,7 @@ import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableProps } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
+import { useMemo } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 
 export function DataTable({
@@ -23,8 +24,15 @@ export function DataTable({
 }: TableProps) {
   const table = dataTable.useTableContext();
 
-  const allLeafColumnsLength = table.getAllLeafColumns().length;
-  const withResizeIndicator = table.options.columnResizeMode !== "onChange";
+  const allLeafColumnsLength = useMemo(
+    () => table.getAllLeafColumns().length,
+    [table],
+  );
+
+  const withResizeIndicator = useMemo(
+    () => table.options.columnResizeMode !== "onChange",
+    [table.options.columnResizeMode],
+  );
 
   return (
     <Table style={{ width: table.getTotalSize(), ...style }} {...props}>
@@ -122,7 +130,7 @@ export function DataTable({
 
       <TableBody>
         {loading ? (
-          Array.from({ length: table.atoms.pagination.get().pageSize }).map(
+          Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={allLeafColumnsLength}>
@@ -177,7 +185,7 @@ export function DataTable({
           <TableRow>
             <TableCell
               colSpan={allLeafColumnsLength}
-              className="text-muted-foreground px-0 py-4 text-center whitespace-pre-line"
+              className="text-muted-foreground py-4 text-center whitespace-pre-line"
             >
               {placeholder ?? messages.empty}
             </TableCell>
