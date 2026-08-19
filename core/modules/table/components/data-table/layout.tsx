@@ -6,7 +6,6 @@ import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 
 export function DataTableLayout({
-  loading = false,
   tableProps,
   activeFiltersProps,
   activeFiltersContainerProps,
@@ -112,7 +111,7 @@ export function DataTableLayout({
 
       <table.Subscribe selector={(s) => s.columnFilters.length}>
         {(columnFiltersLength) => {
-          if (columnFiltersLength <= 0) return;
+          if (columnFiltersLength <= 0) return null;
           return (
             <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
               <table.ClearFilters
@@ -178,11 +177,11 @@ export function DataTableLayout({
             return (
               <span className="order-2 shrink-0 tabular-nums lg:order-4">
                 <span className="text-foreground">
-                  {loading
+                  {tableProps?.loading
                     ? "?"
                     : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
                 </span>
-                {loading ? "?" : ` of ${formatNumber(rowsCount)}`}
+                {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
               </span>
             );
           }}

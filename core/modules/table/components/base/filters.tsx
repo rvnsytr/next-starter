@@ -407,7 +407,7 @@ function FilterValueDisplayPopup({
   const withValue =
     operators.find((v) => v.value === filterValue.operator)?.withValue ?? true;
 
-  if (!withValue) return;
+  if (!withValue) return null;
 
   const trigger = (
     <Button {...props}>

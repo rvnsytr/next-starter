@@ -143,7 +143,7 @@ export function DataGridLayout({
 
         <table.Subscribe selector={(s) => s.columnFilters.length}>
           {(columnFiltersLength) => {
-            if (columnFiltersLength <= 0) return;
+            if (columnFiltersLength <= 0) return null;
             return (
               <table.ActiveFiltersContainer {...activeFiltersContainerProps}>
                 <table.ClearFilters
