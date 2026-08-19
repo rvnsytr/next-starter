@@ -79,13 +79,14 @@ export function DataGrid({
   >;
 }) {
   const table = dataGrid.useTableContext();
-  const tableContext = useDataGrid();
   const tableRef = useRef<HTMLDivElement>(null);
+
+  const dataGridContext = useDataGrid();
 
   const [edit, setEdit] = useState<DataGridEditState | null>(null);
   const editRef = useRef<DataGridEditState | null>(null);
 
-  const rowChanges = tableContext.getChanges();
+  const rowChanges = dataGridContext.getChanges();
 
   const allLeafColumns = useMemo(() => table.getAllLeafColumns(), [table]);
 
@@ -105,16 +106,16 @@ export function DataGrid({
   const handleAutoSave = useCallback(
     (triggerCellEditApplied = false) => {
       const meta = table.options.meta;
-      const changes = tableContext.getChanges();
+      const changes = dataGridContext.getChanges();
 
       if (triggerCellEditApplied) meta?.onCellEditApplied?.(changes);
 
       if (meta?.saveMode !== "onChange") return;
       meta?.onSave?.(changes);
 
-      tableContext.clearChanges();
+      dataGridContext.clearChanges();
     },
-    [table, tableContext],
+    [table, dataGridContext],
   );
 
   useEffect(() => {
@@ -215,7 +216,7 @@ export function DataGrid({
             return { rowId, rowData: row.original };
           });
 
-          tableContext.removeRows(removedRows);
+          dataGridContext.removeRows(removedRows);
         },
       },
     ],
@@ -336,7 +337,7 @@ export function DataGrid({
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={allLeafColumns.length}>
-                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-7 w-full" />
                 </TableCell>
               </TableRow>
             ),
@@ -495,7 +496,7 @@ export function DataGrid({
                                       const key =
                                         editorMeta.key ?? cell.column.id;
 
-                                      tableContext.updateRow({
+                                      dataGridContext.updateRow({
                                         rowId: edit.rowId,
                                         rowData: row.original,
                                         changes: { [key]: data },

@@ -36,13 +36,13 @@ export function DataGridResetChangesButton({
   ...props
 }: ResetChangesButtonProps) {
   const table = dataGrid.useTableContext();
-  const tableContext = useDataGrid();
+  const dataGridContext = useDataGrid();
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
 
   const onReset = () => {
-    tableContext.clearChanges();
-    table.options.meta?.onCellEditApplied?.(tableContext.getChanges());
+    dataGridContext.clearChanges();
+    table.options.meta?.onCellEditApplied?.(dataGridContext.getChanges());
   };
 
   useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => onReset(), {

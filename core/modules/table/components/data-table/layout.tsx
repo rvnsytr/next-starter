@@ -6,6 +6,7 @@ import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 
 export function DataTableLayout({
+  loading = false,
   tableProps,
   activeFiltersProps,
   activeFiltersContainerProps,
@@ -177,11 +178,11 @@ export function DataTableLayout({
             return (
               <span className="order-2 shrink-0 tabular-nums lg:order-4">
                 <span className="text-foreground">
-                  {tableProps?.loading
+                  {loading
                     ? "?"
                     : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
                 </span>
-                {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
+                {loading ? "?" : ` of ${formatNumber(rowsCount)}`}
               </span>
             );
           }}

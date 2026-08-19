@@ -41,11 +41,6 @@ export function EmployeeDataTable() {
           },
           loading: isLoading,
         }}
-        columnSortMenuProps={{ shortcut: ["S", "1"] }}
-        columnVisibilityMenuProps={{ shortcut: ["V", "1"] }}
-        filterSelectorProps={{ shortcut: ["F", "1"] }}
-        resetTableButtonProps={{ shortcut: ["R", "1"] }}
-        searchProps={{ shortcut: ["Control+/", "1"] }}
       />
     </table.AppTable>
   );

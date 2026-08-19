@@ -15,7 +15,7 @@ export function DataTableColumnSortMenu(props: ColumnSortMenuProps) {
     <ColumnSortMenu
       renderPopupContent={table
         .getAllColumns()
-        .filter((column) => column.getCanHide())
+        .filter((column) => column.getCanSort())
         .map((column) => (
           <table.Subscribe
             key={column.id}

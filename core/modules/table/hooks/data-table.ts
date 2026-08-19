@@ -19,10 +19,10 @@ import { DataTableSelectAllCheckbox } from "../components/data-table/select-all-
 import { DataTable } from "../components/data-table/table";
 import { dataTableFeatures } from "../features/data-table";
 import {
-  CellComponents,
   DataTableTableComponents,
-  HeaderComponents,
+  TableCellComponents,
   TableComponents,
+  TableHeaderComponents,
 } from "../types";
 
 export const dataTable = createTableHook({
@@ -44,9 +44,9 @@ export const dataTable = createTableHook({
   headerComponents: {
     ColumnHeader: DataTableColumnHeader,
     SelectAllCheckbox: DataTableSelectAllCheckbox,
-  } satisfies HeaderComponents,
+  } satisfies TableHeaderComponents,
   cellComponents: {
     RowCheckbox: DataTableRowCheckbox,
     RowNumber: DataTableRowNumber,
-  } satisfies CellComponents,
+  } satisfies TableCellComponents,
 });

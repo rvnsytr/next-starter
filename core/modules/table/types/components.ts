@@ -39,12 +39,12 @@ export type TableComponents = {
   Search: React.ComponentType<any>;
 };
 
-export type HeaderComponents = {
+export type TableHeaderComponents = {
   ColumnHeader: React.ComponentType<any>;
   SelectAllCheckbox: React.ComponentType<any>;
 };
 
-export type CellComponents = {
+export type TableCellComponents = {
   RowCheckbox: React.ComponentType<any>;
   RowNumber: React.ComponentType<any>;
 };

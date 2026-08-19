@@ -262,9 +262,10 @@ function DataGridEditorToolbar({
   resetChangesButtonProps,
 }: DataGridEditorToolbarProps) {
   const table = dataGrid.useTableContext();
-  const tableContext = useDataGrid();
+  const dataGridContext = useDataGrid();
 
-  if (!tableContext.count.updated && !tableContext.count.removed) return null;
+  if (!dataGridContext.count.updated && !dataGridContext.count.removed)
+    return null;
 
   return (
     <>
@@ -280,9 +281,9 @@ function DataGridEditorToolbar({
 
 function ChangesCount() {
   const table = dataGrid.useTableContext();
-  const tableContext = useDataGrid();
+  const dataGridContext = useDataGrid();
 
-  const { updated, removed } = tableContext.count;
+  const { updated, removed } = dataGridContext.count;
 
   if (updated <= 0 && removed <= 0) return null;
 

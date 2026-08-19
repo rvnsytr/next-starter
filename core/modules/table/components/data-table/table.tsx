@@ -134,7 +134,7 @@ export function DataTable({
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={allLeafColumnsLength}>
-                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-7 w-full" />
                 </TableCell>
               </TableRow>
             ),

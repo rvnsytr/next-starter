@@ -28,11 +28,11 @@ import { DataGridSelectAllCheckbox } from "../components/data-grid/select-all-ch
 import { DataGrid } from "../components/data-grid/table";
 import { dataGridFeatures } from "../features/data-grid";
 import {
-  CellComponents,
   DataGridTableComponents,
   DataGridUpdateChange,
-  HeaderComponents,
+  TableCellComponents,
   TableComponents,
+  TableHeaderComponents,
 } from "../types";
 
 const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
@@ -57,11 +57,11 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
   headerComponents: {
     ColumnHeader: DataGridColumnHeader,
     SelectAllCheckbox: DataGridSelectAllCheckbox,
-  } satisfies HeaderComponents,
+  } satisfies TableHeaderComponents,
   cellComponents: {
     RowCheckbox: DataGridRowCheckbox,
     RowNumber: DataGridRowNumber,
-  } satisfies CellComponents,
+  } satisfies TableCellComponents,
 });
 
 const useAppTable = <
