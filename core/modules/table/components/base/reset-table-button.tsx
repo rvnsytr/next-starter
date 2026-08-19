@@ -26,7 +26,7 @@ type ResetTableButtonPropsContext = {
   onReset: () => void;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["R"];
+const DEFAULT_SHORTCUT: HotkeySequence = ["Alt+R"];
 
 export function ResetTableButton({
   context,

@@ -24,7 +24,7 @@ export type ResetChangesButtonProps = ButtonProps & {
   shortcut?: "default" | HotkeySequence;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["R", "R", "R"];
+const DEFAULT_SHORTCUT: HotkeySequence = ["Control+Z"];
 
 export function DataGridResetChangesButton({
   shortcut,
@@ -63,7 +63,7 @@ export function DataGridResetChangesButton({
       />
 
       <TooltipPopup align={align}>
-        Reset all changes
+        Reset All Changes
         {hotkeySequence && (
           <Kbd className="ml-1">
             {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}

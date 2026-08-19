@@ -316,7 +316,7 @@ export function ActiveFilters({
         button
       ) : (
         <Tooltip key={c.id}>
-          <TooltipTrigger>{button}</TooltipTrigger>
+          <TooltipTrigger render={button} />
           <TooltipPopup className="text-destructive">
             <pre>{JSON.stringify(c.error, null, 2)}</pre>
           </TooltipPopup>

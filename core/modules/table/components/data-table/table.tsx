@@ -65,9 +65,9 @@ export function DataTable({
                       return (
                         <>
                           <table.Subscribe
-                            selector={(s) => {
-                              return !!s.columnResizing.isResizingColumn;
-                            }}
+                            selector={(s) =>
+                              !!s.columnResizing.isResizingColumn
+                            }
                           >
                             {(s) => <TableResizeCursor resizing={s} />}
                           </table.Subscribe>

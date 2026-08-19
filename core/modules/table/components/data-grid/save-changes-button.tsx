@@ -68,7 +68,7 @@ export function DataGridSaveChangesButton({
       />
 
       <TooltipPopup align={align}>
-        Save all changes
+        Save All Changes
         {hotkeySequence && (
           <Kbd className="ml-1">
             {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}

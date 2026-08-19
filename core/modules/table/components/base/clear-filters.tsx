@@ -27,7 +27,7 @@ type ClearFiltersContext = {
   onClear: () => void;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["R", "R"];
+const DEFAULT_SHORTCUT: HotkeySequence = ["R"];
 
 export function ClearFilters({
   context,
