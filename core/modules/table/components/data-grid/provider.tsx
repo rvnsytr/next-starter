@@ -56,18 +56,37 @@ export const DataGridProvider = ({
       (row) => row.rowId === params.rowId,
     );
 
-      if (currentUpdatedRow) {
-        currentUpdatedRow.changes = {
-          ...currentUpdatedRow.changes,
-          ...params.changes,
-        };
-      } else {
-        rowChanges.current.updated.push({
-          rowId: params.rowId,
-          data: params.data,
-          changes: params.changes,
-        });
-      }
+    const mergedChanges = {
+      ...(currentUpdatedRow?.changes ?? {}),
+      ...params.changes,
+    };
+
+    const originalRowData = currentUpdatedRow?.rowData ?? params.rowData;
+
+    const effectiveChanges = Object.entries(mergedChanges).reduce(
+      (acc, [k, v]) => {
+        if (originalRowData[k as keyof RowData] !== v)
+          acc[k as keyof RowData] = v;
+        return acc;
+      },
+      {} as Partial<RowData>,
+    );
+
+    const hasChanges = Object.keys(effectiveChanges).length > 0;
+
+    if (currentUpdatedRow && hasChanges) {
+      currentUpdatedRow.changes = effectiveChanges;
+    } else if (currentUpdatedRow && !hasChanges) {
+      rowChanges.current.updated = rowChanges.current.updated.filter(
+        (row) => row.rowId !== params.rowId,
+      );
+    } else if (hasChanges) {
+      rowChanges.current.updated.push({
+        rowId: params.rowId,
+        rowData: params.rowData,
+        changes: effectiveChanges,
+      });
+    }
 
     const updatedCount = rowChanges.current.updated.length;
     setCount((prev) => ({ ...prev, updated: updatedCount }));

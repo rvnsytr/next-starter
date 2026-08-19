@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { RowData, TableFeatures } from "@tanstack/react-table";
+import { z } from "zod";
 import { ColumnMeta } from "./meta";
 
 declare module "@tanstack/react-table" {
@@ -11,12 +12,10 @@ declare module "@tanstack/react-table" {
      *
      * **Data Grid Only**
      *
-     * This option is only applicable to the **Data Grid** component and is ignored for other table types.
+     * Determines when Data Grid changes are submitted.
      *
-     * Defines the mode in which changes are submitted to the `onSave` callback.
-     *
-     * - `onSave` - Changes are submitted when the user explicitly saves.
-     * - `onChange` - Changes are submitted immediately after a cell is edited.
+     * - `onSave` - Accumulates changes until they are explicitly saved.
+     * - `onChange` - Submits changes immediately after each cell edit is applied.
      *
      * @default "onSave"
      */
@@ -27,10 +26,16 @@ declare module "@tanstack/react-table" {
      *
      * **Data Grid Only**
      *
-     * This option is only applicable to the **Data Grid** component and is ignored for other table types.
+     * Callback invoked after a cell edit has been applied.
+     */
+    onCellEditApplied?: (context: DataGridChanges<TData>) => void;
+
+    /**
+     * **Global**
      *
-     * Callback function that is called when the changes are committed from the data grid.
-     * This is only called when `saveMode` is set to `"onSave"`.
+     * **Data Grid Only**
+     *
+     * Callback invoked when accumulated Data Grid changes are submitted.
      */
     onSave?: (context: DataGridChanges<TData>) => void;
   }
@@ -43,15 +48,23 @@ export type DataGridTableComponents = {
   ResetChangesButton: React.ComponentType<any>;
 };
 
-export type DataGridCellEditorType = "string";
+export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
 export type DataGridCellEditorMeta = {
-  type: DataGridCellEditorType;
   key?: string;
-};
+} & (
+  | { type: "string"; schema?: z.ZodType<string, any> }
+  | { type: "number"; schema?: z.ZodType<number, any> }
+);
 
 export type DataGridColumnMeta = ColumnMeta & {
   editor?: DataGridCellEditorMeta;
+};
+
+export type DataGridEditState = {
+  rowId: string;
+  columnId: string;
+  cellId: string;
 };
 
 export type DataGridChanges<TData extends RowData> = {
@@ -62,11 +75,11 @@ export type DataGridChanges<TData extends RowData> = {
 
 export type DataGridUpdateChange<TData extends RowData> = {
   rowId: string;
-  data: TData;
+  rowData: TData;
   changes: Partial<TData>;
 };
 
 export type DataGridRemoveChange<TData extends RowData> = {
   rowId: string;
-  data: TData;
+  rowData: TData;
 };

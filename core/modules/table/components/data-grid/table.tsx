@@ -9,28 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
-import { toast } from "@/core/components/ui/toast";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { TableProps } from "@/core/modules/table/types";
+import { DataGridEditState, TableProps } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { useHotkey, useHotkeys } from "@tanstack/react-hotkeys";
-import {
-  CellData,
-  CellSelectionBounds,
-  CellSelectionState,
-  RowData,
-} from "@tanstack/react-table";
+import { CellSelectionBounds, CellSelectionState } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { CellEditorController } from "./cell-editor-controller";
 import { useDataGrid } from "./provider";
-
-export type DataGridEditState = {
-  rowId: string;
-  columnId: string;
-  cellId: string;
-};
 
 // @see https://tanstack.com/table/latest/docs/framework/react/guide/cell-selection#copying-a-selection
 function escapeTsvValue(value: unknown) {
@@ -98,11 +86,13 @@ export function DataGrid({
   const editRef = useRef<DataGridEditState | null>(null);
 
   const rowChanges = tableContext.getChanges();
-  const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
-  const allLeafColumnsLength = useMemo(() => {
-    return table.getAllLeafColumns().length;
-  }, [table]);
+  const allLeafColumns = useMemo(() => table.getAllLeafColumns(), [table]);
+
+  const withResizeIndicator = useMemo(
+    () => table.options.columnResizeMode !== "onChange",
+    [table.options.columnResizeMode],
+  );
 
   const exitEdit = useCallback(() => {
     if (edit) table.setFocusedCell(edit.rowId, edit.columnId);
@@ -111,9 +101,14 @@ export function DataGrid({
   }, [table, edit]);
 
   const handleAutoSave = useCallback(() => {
-    if (table.options.meta?.saveMode !== "onChange") return;
-    const ctx = tableContext.getChanges();
-    table.options.meta?.onSave?.(ctx);
+    const meta = table.options.meta;
+    const changes = tableContext.getChanges();
+
+    meta?.onCellEditApplied?.(changes);
+
+    if (meta?.saveMode !== "onChange") return;
+    meta?.onSave?.(changes);
+
     tableContext.clearChanges();
   }, [table, tableContext]);
 
@@ -207,7 +202,7 @@ export function DataGrid({
 
           const removedRows = rowIds.map((rowId) => {
             const row = table.getRow(rowId);
-            return { rowId, data: row.original };
+            return { rowId, rowData: row.original };
           });
 
           tableContext.removeRows(removedRows);
@@ -219,23 +214,6 @@ export function DataGrid({
   );
 
   useHotkey("Escape", () => exitEdit(), { target: tableRef, enabled: !!edit });
-
-  const onCellEditorSubmit = (
-    changes: Record<string, CellData>,
-    rowData: RowData,
-  ) => {
-    if (!edit)
-      return toast.add({
-        type: "error",
-        title: "No cell is being edited.",
-        description: "Double click a cell to edit.",
-      });
-
-    tableContext.updateRow({ rowId: edit.rowId, data: rowData, changes });
-
-    exitEdit();
-    handleAutoSave();
-  };
 
   const { className: containerClassName, ...restContainerProps } =
     containerProps ?? {};
@@ -280,9 +258,9 @@ export function DataGrid({
                       return (
                         <>
                           <table.Subscribe
-                            selector={(s) => {
-                              return !!s.columnResizing.isResizingColumn;
-                            }}
+                            selector={(s) =>
+                              !!s.columnResizing.isResizingColumn
+                            }
                           >
                             {(s) => <TableResizeCursor resizing={s} />}
                           </table.Subscribe>
@@ -345,161 +323,197 @@ export function DataGrid({
 
       <TableBody>
         {loading ? (
-          Array.from({ length: table.atoms.pagination.get().pageSize }).map(
+          Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={allLeafColumnsLength}>
+                <TableCell colSpan={allLeafColumns.length}>
                   <Skeleton className="h-8 w-full" />
                 </TableCell>
               </TableRow>
             ),
           )
         ) : table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <table.Subscribe
-              key={row.id}
-              source={table.atoms.cellSelection}
-              selector={(ranges) => {
-                return rowSelectionKey(
-                  ranges,
-                  table.getCellSelectionBounds(),
-                  row.getDisplayIndex(),
-                  row.id,
-                );
-              }}
-            >
-              {() => {
-                const isRowEdited = rowChanges.updated.some(
-                  (r) => r.rowId === row.id,
-                );
+          <>
+            {/* <TableRow>
+                {allLeafColumns.map((column) => {
+                  const editorMeta = column.columnDef.meta?.editor ?? null;
 
-                const isRowRemoved = rowChanges.removed.some(
-                  (r) => r.rowId === row.id,
-                );
+                  if (!editorMeta) return <TableCell key={column.id} />;
 
-                return (
-                  <TableRow
-                    data-selected={row.getIsSelected()}
-                    data-row-edited={isRowEdited}
-                    className={cn(
-                      isRowEdited && "bg-accent/50",
-                      isRowRemoved &&
-                        "bg-destructive/32 hover:bg-destructive/32 not-in-data-[variant=card]:data-selected:bg-destructive/32",
-                    )}
-                  >
-                    {row.getVisibleCells().map((c) => (
-                      <table.AppCell key={c.id} cell={c}>
-                        {(cell) => {
-                          const {
-                            style: cellStyle,
-                            className: cellClassName,
-                            ...restCellProps
-                          } = cell.column.columnDef.meta?.cellProps ?? {};
-
-                          const pinPosition = cell.column.getIsPinned();
-
-                          const canSelect = cell.getCanSelect();
-
-                          const isSelected = cell.getIsSelected();
-                          const isFocused = cell.getIsFocused();
-                          const edges = isSelected
-                            ? cell.getSelectionEdges()
-                            : null;
-
-                          const editorMeta =
-                            cell.column.columnDef.meta?.editor ?? null;
-
-                          const canEdit = !!editorMeta;
-                          const isEdit = canEdit && edit?.cellId === cell.id;
-                          const isCellEdited = rowChanges.updated.some(
-                            (r) =>
-                              r.rowId === row.id &&
-                              Object.keys(r.changes).includes(cell.column.id),
-                          );
-
-                          return (
-                            <TableCell
-                              key={cell.id}
-                              id={cell.id}
-                              data-cell-selected={isSelected}
-                              onMouseDown={cell.getSelectionStartHandler()}
-                              onMouseEnter={cell.getSelectionExtendHandler()}
-                              onDoubleClick={() => {
-                                table.resetCellSelection(true);
-                                setEdit({
-                                  rowId: row.id,
-                                  columnId: cell.column.id,
-                                  cellId: cell.id,
-                                });
-                              }}
-                              style={{
-                                ...cellStyle,
-                                width: cell.column.getSize(),
-                                left: cell.column.getStart("start"),
-                                right: cell.column.getAfter("end"),
-                              }}
-                              className={cn(
-                                "z-10",
-
-                                !!pinPosition && "bg-background/90 sticky z-20",
-                                pinPosition === "start" && "left-0 pl-4",
-                                pinPosition === "end" && "right-0 pr-4",
-
-                                canSelect &&
-                                  "cell-selectable cursor-cell select-none",
-
-                                isSelected &&
-                                  !isCellEdited &&
-                                  !isRowRemoved &&
-                                  "bg-muted dark:bg-muted/50",
-
-                                (isFocused || isEdit) && "cell-edge",
-
-                                !isFocused && edges?.top && "cell-edge-top",
-                                !isFocused && edges?.right && "cell-edge-right",
-                                !isFocused &&
-                                  edges?.bottom &&
-                                  "cell-edge-bottom",
-                                !isFocused && edges?.left && "cell-edge-left",
-
-                                isEdit && "p-0",
-                                isCellEdited &&
-                                  !isEdit &&
-                                  !isRowRemoved &&
-                                  "bg-warning/32",
-
-                                cellClassName,
-                              )}
-                              {...restCellProps}
-                            >
-                              {isEdit ? (
-                                <CellEditorController
-                                  meta={editorMeta}
-                                  onSubmit={(data) => {
-                                    const key =
-                                      editorMeta.key ?? cell.column.id;
-                                    const changes = { [key]: data };
-                                    onCellEditorSubmit(changes, row.original);
-                                  }}
-                                />
-                              ) : (
-                                <cell.FlexRender />
-                              )}
-                            </TableCell>
-                          );
+                  return (
+                    <TableCell key={column.id}>
+                      <CellEditorController
+                        meta={editorMeta}
+                        onSubmit={(data) => {
+                          // const key = editorMeta.key ?? column.id;
+                          // const changes = { [key]: data };
+                          // onCellEditorSubmit(changes, row.original);
+                          console.log(data);
                         }}
-                      </table.AppCell>
-                    ))}
-                  </TableRow>
-                );
-              }}
-            </table.Subscribe>
-          ))
+                      />
+                    </TableCell>
+                  );
+                })}
+              </TableRow> */}
+
+            {table.getRowModel().rows.map((row) => (
+              <table.Subscribe
+                key={row.id}
+                source={table.atoms.cellSelection}
+                selector={(ranges) => {
+                  return rowSelectionKey(
+                    ranges,
+                    table.getCellSelectionBounds(),
+                    row.getDisplayIndex(),
+                    row.id,
+                  );
+                }}
+              >
+                {() => {
+                  const isRowEdited = rowChanges.updated.some(
+                    (r) => r.rowId === row.id,
+                  );
+
+                  const isRowRemoved = rowChanges.removed.some(
+                    (r) => r.rowId === row.id,
+                  );
+
+                  return (
+                    <TableRow
+                      data-selected={row.getIsSelected()}
+                      className={cn(
+                        isRowEdited && "bg-accent/50",
+                        isRowRemoved &&
+                          "bg-destructive/32 hover:bg-destructive/32 not-in-data-[variant=card]:data-selected:bg-destructive/32",
+                      )}
+                    >
+                      {row.getVisibleCells().map((c) => (
+                        <table.AppCell key={c.id} cell={c}>
+                          {(cell) => {
+                            const {
+                              style: cellStyle,
+                              className: cellClassName,
+                              ...restCellProps
+                            } = cell.column.columnDef.meta?.cellProps ?? {};
+
+                            const pinPosition = cell.column.getIsPinned();
+
+                            const canSelect = cell.getCanSelect();
+
+                            const isSelected = cell.getIsSelected();
+                            const isFocused = cell.getIsFocused();
+                            const edges = isSelected
+                              ? cell.getSelectionEdges()
+                              : null;
+
+                            const editorMeta =
+                              cell.column.columnDef.meta?.editor ?? null;
+
+                            const canEdit = !!editorMeta;
+                            const isEdit = canEdit && edit?.cellId === cell.id;
+                            const isCellEdited = rowChanges.updated.some(
+                              (r) =>
+                                r.rowId === row.id &&
+                                Object.keys(r.changes).includes(cell.column.id),
+                            );
+
+                            return (
+                              <TableCell
+                                key={cell.id}
+                                id={cell.id}
+                                data-cell-selected={isSelected}
+                                onMouseDown={cell.getSelectionStartHandler()}
+                                onMouseEnter={cell.getSelectionExtendHandler()}
+                                onDoubleClick={() => {
+                                  table.resetCellSelection(true);
+                                  setEdit({
+                                    rowId: row.id,
+                                    columnId: cell.column.id,
+                                    cellId: cell.id,
+                                  });
+                                }}
+                                style={{
+                                  ...cellStyle,
+                                  width: cell.column.getSize(),
+                                  left: cell.column.getStart("start"),
+                                  right: cell.column.getAfter("end"),
+                                }}
+                                className={cn(
+                                  "z-10",
+
+                                  !!pinPosition &&
+                                    "bg-background/90 sticky z-20",
+                                  pinPosition === "start" && "left-0 pl-4",
+                                  pinPosition === "end" && "right-0 pr-4",
+
+                                  canSelect &&
+                                    "cell-selectable cursor-cell select-none",
+
+                                  isSelected &&
+                                    !isCellEdited &&
+                                    !isRowRemoved &&
+                                    "bg-muted dark:bg-muted/50",
+
+                                  (isFocused || isEdit) && "cell-edge",
+
+                                  !isFocused && edges?.top && "cell-edge-top",
+                                  !isFocused &&
+                                    edges?.right &&
+                                    "cell-edge-right",
+                                  !isFocused &&
+                                    edges?.bottom &&
+                                    "cell-edge-bottom",
+                                  !isFocused && edges?.left && "cell-edge-left",
+
+                                  isEdit && "p-0",
+                                  isCellEdited &&
+                                    !isEdit &&
+                                    !isRowRemoved &&
+                                    "bg-warning/32",
+
+                                  "has-invalid:bg-destructive",
+
+                                  cellClassName,
+                                )}
+                                {...restCellProps}
+                              >
+                                {isEdit ? (
+                                  <CellEditorController
+                                    defaultValue={cell.getValue()}
+                                    meta={editorMeta}
+                                    onSubmit={(data) => {
+                                      const key =
+                                        editorMeta.key ?? cell.column.id;
+
+                                      tableContext.updateRow({
+                                        rowId: edit.rowId,
+                                        rowData: row.original,
+                                        changes: { [key]: data },
+                                      });
+
+                                      exitEdit();
+                                      handleAutoSave();
+                                    }}
+                                  />
+                                ) : (
+                                  <cell.FlexRender />
+                                )}
+                              </TableCell>
+                            );
+                          }}
+                        </table.AppCell>
+                      ))}
+                    </TableRow>
+                  );
+                }}
+              </table.Subscribe>
+            ))}
+          </>
         ) : (
           <TableRow>
             <TableCell
-              colSpan={allLeafColumnsLength}
-              className="text-muted-foreground px-0 py-4 text-center whitespace-pre-line"
+              colSpan={allLeafColumns.length}
+              className="text-muted-foreground py-4 text-center whitespace-pre-line"
             >
               {placeholder ?? messages.empty}
             </TableCell>

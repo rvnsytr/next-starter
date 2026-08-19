@@ -1,4 +1,10 @@
-import { createTableHook, tableFeatures } from "@tanstack/react-table";
+import {
+  createTableHook,
+  RowData,
+  tableFeatures,
+  TableState,
+} from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 import { ActiveFiltersContainer } from "../components/base/filters";
 import { DataGridClearFilters } from "../components/data-grid/clear-filters";
 import { DataGridColumnHeader } from "../components/data-grid/column-header";
@@ -24,11 +30,12 @@ import { dataGridFeatures } from "../features/data-grid";
 import {
   CellComponents,
   DataGridTableComponents,
+  DataGridUpdateChange,
   HeaderComponents,
   TableComponents,
 } from "../types";
 
-export const dataGrid = createTableHook({
+const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
   features: tableFeatures(dataGridFeatures),
   tableComponents: {
     Table: DataGrid,
@@ -56,3 +63,48 @@ export const dataGrid = createTableHook({
     RowNumber: DataGridRowNumber,
   } satisfies CellComponents,
 });
+
+const useAppTable = <
+  TData extends RowData,
+  TSelected = TableState<typeof dataGridFeatures>,
+>(
+  tableOptions: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[0],
+  selector?: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[1],
+): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
+  const { data, getRowId, meta, ...restOptions } = tableOptions;
+  const { onCellEditApplied, ...restMeta } = meta ?? {};
+
+  const [update, setChanges] = useState<DataGridUpdateChange<TData>[]>([]);
+
+  const resolvedData = useMemo(() => {
+    if (!data || !update) return data ?? [];
+    return data.map((row, rowIndex) => {
+      const rowId = getRowId?.(row, rowIndex);
+      if (!rowId) return row;
+
+      const change = update.find((c, ci) => {
+        const rowDataId = getRowId?.(c.rowData, ci);
+        return !!rowDataId && rowDataId === rowId;
+      });
+
+      return change ? { ...row, ...change.changes } : row;
+    });
+  }, [data, getRowId, update]);
+
+  const modifiedTableOptions: typeof tableOptions = {
+    ...restOptions,
+    data: resolvedData,
+    getRowId,
+    meta: {
+      onCellEditApplied: (ctx) => {
+        setChanges(ctx.updated);
+        onCellEditApplied?.(ctx);
+      },
+      ...restMeta,
+    },
+  };
+
+  return dataGridUseAppTable(modifiedTableOptions, selector);
+};
+
+export const dataGrid = { useAppTable, ...rest };

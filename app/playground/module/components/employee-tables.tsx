@@ -56,7 +56,7 @@ export function EmployeeDataGrid() {
 
   const { data, isLoading } = useSWR(
     "/dg/employees",
-    async () => await getEmployees(10),
+    async () => await getEmployees(20),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -68,18 +68,12 @@ export function EmployeeDataGrid() {
     data: data ?? [],
     columns: employeeDGColumns,
     getRowId: (row) => row.id.toString(),
-    initialState: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 50,
-      },
-    },
     meta: {
-      onSave: (c) => {
+      onSave: (ctx) => {
         toast.add({
           description: (
             <span className="whitespace-pre-wrap">
-              {JSON.stringify(c, null, 2)}
+              {JSON.stringify(ctx, null, 2)}
             </span>
           ),
         });
@@ -99,11 +93,6 @@ export function EmployeeDataGrid() {
           },
           loading: isLoading,
         }}
-        columnSortMenuProps={{ shortcut: ["S", "2"] }}
-        columnVisibilityMenuProps={{ shortcut: ["V", "2"] }}
-        filterSelectorProps={{ shortcut: ["F", "2"] }}
-        resetTableButtonProps={{ shortcut: ["R", "2"] }}
-        searchProps={{ shortcut: ["Control+/", "2"] }}
       />
     </table.AppTable>
   );

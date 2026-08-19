@@ -2,6 +2,7 @@ import { CustomColorBadge } from "@/core/components/ui/badge";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
+import { sharedSchemas } from "@/shared/schema";
 import { formatDate } from "date-fns";
 import {
   BookOpenTextIcon,
@@ -57,6 +58,7 @@ export const employeeDGColumns = columnHelper.columns([
 
       editor: {
         type: "string",
+        schema: sharedSchemas.string({ min: 1 }),
       },
     },
   }),
@@ -75,6 +77,7 @@ export const employeeDGColumns = columnHelper.columns([
 
       editor: {
         type: "string",
+        schema: sharedSchemas.email,
       },
     },
   }),
