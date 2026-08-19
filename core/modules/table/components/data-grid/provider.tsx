@@ -15,7 +15,6 @@ import {
 type CountChanges = { updated: number; removed: number };
 
 type DataGridContextValue = {
-  hasChanges: boolean;
   count: CountChanges;
   getChanges: () => DataGridChanges<RowData>;
   updateRow: (params: DataGridUpdateChange<RowData>) => void;
@@ -32,7 +31,6 @@ export const DataGridProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [count, setCount] = useState<CountChanges>({ updated: 0, removed: 0 });
 
   const rowChanges = useRef<DataGridChanges<RowData>>({
@@ -53,11 +51,10 @@ export const DataGridProvider = ({
     };
   }, []);
 
-  const updateRow = useCallback(
-    (params: DataGridUpdateChange<RowData>) => {
-      const currentUpdatedRow = rowChanges.current.updated.find(
-        (row) => row.rowId === params.rowId,
-      );
+  const updateRow = useCallback((params: DataGridUpdateChange<RowData>) => {
+    const currentUpdatedRow = rowChanges.current.updated.find(
+      (row) => row.rowId === params.rowId,
+    );
 
       if (currentUpdatedRow) {
         currentUpdatedRow.changes = {
@@ -72,38 +69,31 @@ export const DataGridProvider = ({
         });
       }
 
-      const updatedCount = rowChanges.current.updated.length;
-      setCount((prev) => ({ ...prev, updated: updatedCount }));
-      setHasChanges(true);
-    },
-    [],
-  );
+    const updatedCount = rowChanges.current.updated.length;
+    setCount((prev) => ({ ...prev, updated: updatedCount }));
+  }, []);
 
-  const removeRows = useCallback(
-    (params: DataGridRemoveChange<RowData>[]) => {
-      params.forEach((row) => {
-        const existingIndex = rowChanges.current.removed.findIndex(
-          (r) => r.rowId === row.rowId,
-        );
-
-        if (existingIndex >= 0)
-          rowChanges.current.removed.splice(existingIndex, 1);
-        else rowChanges.current.removed.push(row);
-      });
-
-      const updatedCount = rowChanges.current.updated.length;
-      const removedCount = rowChanges.current.removed.length;
-
-      const removedUpdateRows = rowChanges.current.updated.filter((row) =>
-        rowChanges.current.removed.some((r) => r.rowId === row.rowId),
+  const removeRows = useCallback((params: DataGridRemoveChange<RowData>[]) => {
+    params.forEach((row) => {
+      const existingIndex = rowChanges.current.removed.findIndex(
+        (r) => r.rowId === row.rowId,
       );
 
-      const effectiveUpdated = updatedCount - removedUpdateRows.length;
-      setCount({ updated: effectiveUpdated, removed: removedCount });
-      setHasChanges(effectiveUpdated > 0 || removedCount > 0);
-    },
-    [],
-  );
+      if (existingIndex >= 0)
+        rowChanges.current.removed.splice(existingIndex, 1);
+      else rowChanges.current.removed.push(row);
+    });
+
+    const updatedCount = rowChanges.current.updated.length;
+    const removedCount = rowChanges.current.removed.length;
+
+    const removedUpdateRows = rowChanges.current.updated.filter((row) =>
+      rowChanges.current.removed.some((r) => r.rowId === row.rowId),
+    );
+
+    const effectiveUpdated = updatedCount - removedUpdateRows.length;
+    setCount({ updated: effectiveUpdated, removed: removedCount });
+  }, []);
 
   const clearChanges = useCallback(() => {
     rowChanges.current = {
@@ -113,13 +103,11 @@ export const DataGridProvider = ({
     };
 
     setCount({ updated: 0, removed: 0 });
-    setHasChanges(false);
   }, []);
 
   return (
     <DataGridContext.Provider
       value={{
-        hasChanges,
         count,
         getChanges,
         updateRow,

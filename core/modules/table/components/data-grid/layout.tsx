@@ -264,7 +264,7 @@ function DataGridEditorToolbar({
   const table = dataGrid.useTableContext();
   const tableContext = useDataGrid();
 
-  if (!tableContext.hasChanges) return null;
+  if (!tableContext.count.updated && !tableContext.count.removed) return null;
 
   return (
     <>
