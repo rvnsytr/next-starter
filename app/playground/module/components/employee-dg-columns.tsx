@@ -46,6 +46,7 @@ export const employeeDGColumns = columnHelper.columns([
   columnHelper.accessor("name", {
     header: (c) => <c.header.ColumnHeader label="Name" />,
     cell: (c) => c.getValue(),
+    footer: () => "Total",
 
     filterFn: "string",
 
@@ -55,6 +56,7 @@ export const employeeDGColumns = columnHelper.columns([
     meta: {
       label: "Name",
       icon: UserRoundIcon,
+      footerProps: { colSpan: 3 },
 
       editor: {
         type: "string",
@@ -74,6 +76,7 @@ export const employeeDGColumns = columnHelper.columns([
     meta: {
       label: "Email Address",
       icon: MailIcon,
+      footerProps: { isPlaceholder: true },
 
       editor: {
         type: "string",
@@ -96,11 +99,13 @@ export const employeeDGColumns = columnHelper.columns([
     meta: {
       label: "Age",
       icon: UserRoundIcon,
+      footerProps: { isPlaceholder: true },
     },
   }),
   columnHelper.accessor("salary", {
     header: (c) => <c.header.ColumnHeader label="Salary" />,
     cell: (c) => `$${formatNumber(c.getValue())}/yr`,
+    footer: "$170.0000/yr",
 
     minSize: 150,
     size: 150,

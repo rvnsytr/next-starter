@@ -11,11 +11,11 @@ export type ColumnMeta = {
   max?: number;
 
   /** Props applied to the column's header cell (`<th>`) */
-  headerProps?: Omit<React.ComponentProps<"th">, "rowSpan" | "colSpan">;
+  headerProps?: React.ComponentProps<"th">;
 
   /** Props applied to the column's data cell (`<td>`) */
   cellProps?: Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">;
 
-  /** Props applied to the column's footer cell (`<th>`) */
-  // footerProps?: React.ComponentProps<"th">;
+  /** Props applied to the column's footer cell (`<td>`) */
+  footerProps?: React.ComponentProps<"td"> & { isPlaceholder?: boolean };
 };
