@@ -54,7 +54,7 @@ export function EmployeeDataTable() {
 export function EmployeeDataGrid() {
   const isMounted = useIsMounted();
 
-  const { data, isLoading } = useSWR(
+  const { data, mutate, isLoading } = useSWR(
     "/dg/employees",
     async () => await getEmployees(20),
     {
@@ -70,6 +70,28 @@ export function EmployeeDataGrid() {
     getRowId: (row) => row.id.toString(),
     meta: {
       onSave: (ctx) => {
+        mutate(
+          (prev) => {
+            if (!prev) return prev;
+            let updated = prev;
+
+            ctx.removed?.forEach((c) => {
+              updated = updated.filter((r) => r.id !== c.rowData.id);
+            });
+
+            ctx.added?.forEach((r) => updated.unshift(r));
+
+            ctx.updated.forEach((c) => {
+              const rowIndex = updated.findIndex((r) => r.id === c.rowId);
+              if (rowIndex === -1) return;
+              updated[rowIndex] = { ...updated[rowIndex], ...c.changes };
+            });
+
+            return updated;
+          },
+          { revalidate: false },
+        );
+
         toast.add({
           description: (
             <span className="whitespace-pre-wrap">
