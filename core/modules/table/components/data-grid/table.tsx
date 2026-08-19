@@ -95,22 +95,27 @@ export function DataGrid({
   );
 
   const exitEdit = useCallback(() => {
-    if (edit) table.setFocusedCell(edit.rowId, edit.columnId);
-    tableRef.current?.focus({ preventScroll: true });
-    setEdit(null);
+    setTimeout(() => {
+      if (edit) table.setFocusedCell(edit.rowId, edit.columnId);
+      tableRef.current?.focus({ preventScroll: true });
+      setEdit(null);
+    }, 0);
   }, [table, edit]);
 
-  const handleAutoSave = useCallback(() => {
-    const meta = table.options.meta;
-    const changes = tableContext.getChanges();
+  const handleAutoSave = useCallback(
+    (triggerCellEditApplied = false) => {
+      const meta = table.options.meta;
+      const changes = tableContext.getChanges();
 
-    meta?.onCellEditApplied?.(changes);
+      if (triggerCellEditApplied) meta?.onCellEditApplied?.(changes);
 
-    if (meta?.saveMode !== "onChange") return;
-    meta?.onSave?.(changes);
+      if (meta?.saveMode !== "onChange") return;
+      meta?.onSave?.(changes);
 
-    tableContext.clearChanges();
-  }, [table, tableContext]);
+      tableContext.clearChanges();
+    },
+    [table, tableContext],
+  );
 
   useEffect(() => {
     editRef.current = edit;
@@ -175,18 +180,23 @@ export function DataGrid({
         callback: () => {
           const cellSelectionState = table.state.cellSelection;
 
-          if (cellSelectionState.length > 1) return;
+          if (cellSelectionState.length !== 1) return;
 
-          const cs = cellSelectionState[0];
+          const css = cellSelectionState[0];
+
+          const column = table.getColumn(css.anchorColumnId);
+          const canEdit = !!column?.columnDef.meta?.editor;
+
           const cellId = table.getFocusedCell()?.id;
 
           if (
+            canEdit &&
             cellId &&
-            cs.anchorRowId === cs.focusRowId &&
-            cs.anchorColumnId === cs.focusColumnId
+            css.anchorRowId === css.focusRowId &&
+            css.anchorColumnId === css.focusColumnId
           ) {
-            const rowId = cs.anchorRowId;
-            const columnId = cs.anchorColumnId;
+            const rowId = css.anchorRowId;
+            const columnId = css.anchorColumnId;
             setEdit({ rowId, columnId, cellId });
           }
         },
@@ -206,7 +216,6 @@ export function DataGrid({
           });
 
           tableContext.removeRows(removedRows);
-          handleAutoSave();
         },
       },
     ],
@@ -425,6 +434,7 @@ export function DataGrid({
                                 onMouseDown={cell.getSelectionStartHandler()}
                                 onMouseEnter={cell.getSelectionExtendHandler()}
                                 onDoubleClick={() => {
+                                  if (!canEdit) return;
                                   table.resetCellSelection(true);
                                   setEdit({
                                     rowId: row.id,
@@ -491,8 +501,8 @@ export function DataGrid({
                                         changes: { [key]: data },
                                       });
 
+                                      handleAutoSave(true);
                                       exitEdit();
-                                      handleAutoSave();
                                     }}
                                   />
                                 ) : (

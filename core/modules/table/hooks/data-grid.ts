@@ -89,22 +89,24 @@ const useAppTable = <
 
       return change ? { ...row, ...change.changes } : row;
     });
-  }, [data, getRowId, update]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, update]);
 
-  const modifiedTableOptions: typeof tableOptions = {
-    ...restOptions,
-    data: resolvedData,
-    getRowId,
-    meta: {
-      onCellEditApplied: (ctx) => {
-        setChanges(ctx.updated);
-        onCellEditApplied?.(ctx);
+  return dataGridUseAppTable(
+    {
+      ...restOptions,
+      data: resolvedData,
+      getRowId,
+      meta: {
+        onCellEditApplied: (ctx) => {
+          setChanges(ctx.updated);
+          onCellEditApplied?.(ctx);
+        },
+        ...restMeta,
       },
-      ...restMeta,
     },
-  };
-
-  return dataGridUseAppTable(modifiedTableOptions, selector);
+    selector,
+  );
 };
 
 export const dataGrid = { useAppTable, ...rest };
