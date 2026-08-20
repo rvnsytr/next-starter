@@ -28,7 +28,7 @@ export function DataGridLayout({
   saveChangesButtonProps,
   resetChangesButtonProps,
   ...props
-}: TableLayoutProps & DataGridEditorToolbarProps) {
+}: TableLayoutProps & EditorToolbarProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataGrid.useTableContext();
@@ -116,7 +116,7 @@ export function DataGridLayout({
               />
             </ButtonGroup>
 
-            <DataGridEditorToolbar
+            <EditorToolbar
               saveChangesButtonProps={{
                 align: saveChangesButtonAlign,
                 shortcut: saveChangesButtonShortcut,
@@ -252,15 +252,15 @@ export function DataGridLayout({
   );
 }
 
-type DataGridEditorToolbarProps = {
+type EditorToolbarProps = {
   saveChangesButtonProps?: SaveChangesButtonProps;
   resetChangesButtonProps?: ResetChangesButtonProps;
 };
 
-function DataGridEditorToolbar({
+function EditorToolbar({
   saveChangesButtonProps,
   resetChangesButtonProps,
-}: DataGridEditorToolbarProps) {
+}: EditorToolbarProps) {
   const table = dataGrid.useTableContext();
   const dataGridContext = useDataGrid();
 
@@ -272,8 +272,8 @@ function DataGridEditorToolbar({
       <Separator orientation="vertical" className="hidden h-4 lg:flex" />
 
       <ButtonGroup>
-        <table.SaveChangesButton {...saveChangesButtonProps} />
         <table.ResetChangesButton {...resetChangesButtonProps} />
+        <table.SaveChangesButton {...saveChangesButtonProps} />
       </ButtonGroup>
     </>
   );

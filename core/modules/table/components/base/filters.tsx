@@ -236,10 +236,7 @@ function FilterValueControllerString({
     <InputGroup>
       <InputGroupInput
         value={value}
-        onChange={(e) => {
-          console.log(e.target.value);
-          setValue(String(e.target.value));
-        }}
+        onChange={(e) => setValue(String(e.target.value))}
         placeholder={`Search ${columnMeta?.label?.toLowerCase()}...`}
         autoFocus
       />
@@ -323,8 +320,6 @@ export function ActiveFilters({
         </Tooltip>
       );
     }
-
-    console.log(c);
 
     const operators = getFilterOperators(c.filterValue.type);
     const selectedOperatorLabel =

@@ -62,7 +62,7 @@ export function DataGridResetChangesButton({
             }}
             {...props}
           >
-            <ListXIcon /> Cancel
+            <ListXIcon /> Discard
           </Button>
         }
       />

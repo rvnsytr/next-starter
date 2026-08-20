@@ -6,6 +6,7 @@ import {
   DataGridCellEditorType,
 } from "@/core/modules/table/types";
 import { Override } from "@/core/types";
+import { cn } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,8 +75,14 @@ export function StringCellEditor({
       <Controller
         name="string"
         control={form.control}
-        render={({ field }) => (
-          <Input placeholder="Enter your name" unstyled autoFocus {...field} />
+        render={({ field, fieldState }) => (
+          <Input
+            placeholder="Enter your name"
+            className={cn(fieldState.invalid && "*:text-destructive")}
+            unstyled
+            autoFocus
+            {...field}
+          />
         )}
       />
     </Form>

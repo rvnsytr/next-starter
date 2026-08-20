@@ -87,7 +87,10 @@ export function DataGrid({
   const [edit, setEdit] = useState<DataGridEditState | null>(null);
   const editRef = useRef<DataGridEditState | null>(null);
 
-  const rowChanges = dataGridContext.getChanges();
+  const rowChanges = useMemo(
+    () => dataGridContext.getChanges(),
+    [dataGridContext],
+  );
 
   const allLeafColumns = useMemo(() => table.getAllLeafColumns(), [table]);
 
@@ -107,16 +110,15 @@ export function DataGrid({
   const handleAutoSave = useCallback(
     (triggerCellEditApplied = false) => {
       const meta = table.options.meta;
-      const changes = dataGridContext.getChanges();
 
-      if (triggerCellEditApplied) meta?.onCellEditApplied?.(changes);
+      if (triggerCellEditApplied) meta?.onCellEditApplied?.(rowChanges);
 
       if (meta?.saveMode !== "onChange") return;
-      meta?.onSave?.(changes);
 
+      meta?.onSave?.(rowChanges);
       dataGridContext.clearChanges();
     },
-    [table, dataGridContext],
+    [table.options.meta, dataGridContext, rowChanges],
   );
 
   useEffect(() => {
@@ -481,8 +483,6 @@ export function DataGrid({
                                     !isEdit &&
                                     !isRowRemoved &&
                                     "bg-warning/32",
-
-                                  "has-invalid:bg-destructive",
 
                                   cellClassName,
                                 )}
