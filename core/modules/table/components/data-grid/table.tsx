@@ -110,15 +110,16 @@ export function DataGrid({
   const handleAutoSave = useCallback(
     (triggerCellEditApplied = false) => {
       const meta = table.options.meta;
+      const changes = dataGridContext.getChanges();
 
-      if (triggerCellEditApplied) meta?.onCellEditApplied?.(rowChanges);
+      if (triggerCellEditApplied) meta?.onCellEditApplied?.(changes);
 
       if (meta?.saveMode !== "onChange") return;
 
-      meta?.onSave?.(rowChanges);
+      meta?.onSave?.(changes);
       dataGridContext.clearChanges();
     },
-    [table.options.meta, dataGridContext, rowChanges],
+    [table.options.meta, dataGridContext],
   );
 
   useEffect(() => {
