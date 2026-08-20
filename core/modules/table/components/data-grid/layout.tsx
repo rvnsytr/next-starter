@@ -1,10 +1,16 @@
 import { ButtonGroup } from "@/core/components/ui/button-group";
 import { Label } from "@/core/components/ui/label";
 import { Separator } from "@/core/components/ui/separator";
+import {
+  Tooltip,
+  TooltipPopup,
+  TooltipTrigger,
+} from "@/core/components/ui/tooltip";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
+import { InfoIcon } from "lucide-react";
 import { useDataGrid } from "./provider";
 import { ResetChangesButtonProps } from "./reset-changes-button";
 import { SaveChangesButtonProps } from "./save-changes-button";
@@ -176,39 +182,7 @@ export function DataGridLayout({
             />
           </div>
 
-          <div className="**:data-[slot=separator]:text-border order-3 **:shrink-0 **:data-[slot=separator]:mx-2 lg:order-2">
-            <table.Subscribe
-              selector={(s) => Object.keys(s.rowSelection).length}
-            >
-              {(rowCount) => {
-                const cellCount = table.getSelectedCellCount();
-
-                if (rowCount <= 0 && cellCount <= 0) return null;
-
-                return (
-                  <>
-                    {rowCount > 0 && (
-                      <small>
-                        <b>{formatNumber(rowCount)}</b> rows selected
-                      </small>
-                    )}
-
-                    {rowCount > 0 && cellCount > 0 && (
-                      <span data-slot="separator">|</span>
-                    )}
-
-                    {cellCount > 0 && (
-                      <small>
-                        <b>{formatNumber(cellCount)}</b> cells selected
-                      </small>
-                    )}
-                  </>
-                );
-              }}
-            </table.Subscribe>
-
-            <ChangesCount />
-          </div>
+          <ChangesCount />
 
           {caption ? (
             <small
@@ -230,7 +204,7 @@ export function DataGridLayout({
               const endRowNumber = Math.min(rawEndRowNumber, rowsCount);
 
               return (
-                <span className="order-2 shrink-0 tabular-nums lg:order-4">
+                <span className="order-3 shrink-0 tabular-nums lg:order-4">
                   <span className="text-foreground">
                     {tableProps?.loading
                       ? "?"
@@ -283,37 +257,60 @@ function ChangesCount() {
   const table = dataGrid.useTableContext();
   const dataGridContext = useDataGrid();
 
-  const { updated, removed } = dataGridContext.count;
-
-  if (updated <= 0 && removed <= 0) return null;
-
   return (
     <table.Subscribe selector={(s) => Object.keys(s.rowSelection).length}>
       {(rowCount) => {
         const cellCount = table.getSelectedCellCount();
+        const totalCount = rowCount + cellCount;
 
-        const isRowOrCellSelected = rowCount > 0 || cellCount > 0;
+        const { updated, removed } = dataGridContext.count;
+        const changesCount = updated + removed;
+
+        if (totalCount <= 0 && changesCount <= 0) return null;
 
         return (
-          <>
-            {isRowOrCellSelected && <span data-slot="separator">|</span>}
-
-            {updated > 0 && (
-              <small className="text-warning/72">
-                <b className="text-warning">{formatNumber(updated)}</b> rows
-                updated
+          <div className="order-2 flex items-center gap-x-2 *:shrink-0 lg:order-2">
+            {rowCount > 0 && (
+              <small>
+                <b>{formatNumber(rowCount)}</b> rows selected
               </small>
             )}
 
-            {updated > 0 && removed > 0 && <span data-slot="separator">|</span>}
+            {rowCount > 0 && cellCount > 0 && (
+              <Separator orientation="vertical" className="h-4" />
+            )}
 
-            {removed > 0 && (
-              <small className="text-destructive/72">
-                <b className="text-destructive">{formatNumber(removed)}</b> rows
-                removed
+            {cellCount > 0 && (
+              <small>
+                <b>{formatNumber(cellCount)}</b> cells selected
               </small>
             )}
-          </>
+
+            {totalCount > 0 && changesCount > 0 && (
+              <Separator orientation="vertical" className="h-4" />
+            )}
+
+            {changesCount > 0 && (
+              <div className="flex items-center gap-x-2">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <InfoIcon className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipPopup>
+                    <ul className="flex list-inside list-disc flex-col gap-0.5 text-left">
+                      <li className="text-warning *:text-warning">
+                        <b>{formatNumber(updated)}</b> rows updated
+                      </li>
+                      <li className="text-destructive *:text-destructive">
+                        <b>{formatNumber(removed)}</b> rows removed
+                      </li>
+                    </ul>
+                  </TooltipPopup>
+                </Tooltip>
+                {changesCount} unsaved changes
+              </div>
+            )}
+          </div>
         );
       }}
     </table.Subscribe>

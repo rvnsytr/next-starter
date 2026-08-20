@@ -148,7 +148,7 @@ export function DataTableLayout({
           {(count) => {
             if (count <= 0) return null;
             return (
-              <small className="order-3 shrink-0 lg:order-2">
+              <small className="order-2 shrink-0 lg:order-2">
                 {formatNumber(count)} rows selected
               </small>
             );
@@ -175,7 +175,7 @@ export function DataTableLayout({
             const endRowNumber = Math.min(rawEndRowNumber, rowsCount);
 
             return (
-              <span className="order-2 shrink-0 tabular-nums lg:order-4">
+              <span className="order-3 shrink-0 tabular-nums lg:order-4">
                 <span className="text-foreground">
                   {tableProps?.loading
                     ? "?"
