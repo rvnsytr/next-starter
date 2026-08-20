@@ -13,18 +13,14 @@ export const stringFilterValueSchema = z.object({
 export const numberFilterValueSchema = z.object({
   type: z.literal("number"),
   operator: z.enum(NUMBER_FILTER_OPERATOR_VALUES),
-  value: z.number().array().min(1).max(2),
+  value: z.number().array().max(2),
 });
 
 export const filterValueSchema = z.discriminatedUnion("type", [
   stringFilterValueSchema,
-  // numberFilterValueSchema,
+  numberFilterValueSchema,
 ]);
 
 export const filterTypeSchema = z.union(
   filterValueSchema.options.map((s) => s.shape.type),
 );
-
-// export const columnEditorSchema z.discriminatedUnion("type", [
-
-// ])

@@ -14,11 +14,20 @@ import {
   MenuTrigger,
 } from "@/core/components/ui/menu";
 import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from "@/core/components/ui/number-field";
+import {
   Popover,
   PopoverPopup,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
 import { ScrollArea } from "@/core/components/ui/scroll-area";
+import { Slider } from "@/core/components/ui/slider";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import {
   Tooltip,
   TooltipPopup,
@@ -26,14 +35,16 @@ import {
 } from "@/core/components/ui/tooltip";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import {
+  filterMeta,
   FilterPopupType,
   FilterType,
   FilterValue,
+  getFilterOperators,
 } from "@/core/modules/table/filters";
 import { ColumnMeta } from "@/core/modules/table/types";
-import { getFilterOperators } from "@/core/modules/table/utils";
-import { cn } from "@/core/utils";
+import { cn, formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
+import { languages } from "@/shared/constants";
 import {
   formatForDisplay,
   HotkeySequence,
@@ -45,7 +56,7 @@ import {
   FilterIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
@@ -201,10 +212,12 @@ function FilterValueController(props: FilterValueControllerProps) {
   switch (props.filterValue.type) {
     case "string":
       return <FilterValueControllerString {...props} />;
-    default: {
-      const error = `Unsupported Filter Type: ${props.filterValue.type}`;
-      return <ErrorFallback error={error} />;
-    }
+    case "number":
+      return <FilterValueControllerNumber {...props} />;
+    default:
+      return (
+        <ErrorFallback error="Unsupported Filter Type" hideCode hideError />
+      );
   }
 }
 
@@ -216,28 +229,31 @@ function FilterValueControllerString({
   const filterType: FilterType = "string";
 
   const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid ? filterValue.value : "";
+  const defaultValue = isFilterValueValid
+    ? filterValue.value
+    : filterMeta.string.defaultValue.value;
 
   const [value, setValue] = useState<string>(defaultValue);
-  const debouncedSearch = useDebounce(value);
+  const debouncedValue = useDebounce(value);
 
   useEffect(() => {
     if (!isFilterValueValid) return;
     setFilter({
       type: filterType,
       operator: filterValue.operator,
-      value: debouncedSearch,
+      value: debouncedValue,
     });
-  }, [debouncedSearch, isFilterValueValid, filterValue.operator, setFilter]);
+  }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
 
-  const Icon = columnMeta?.icon;
+  const { label, icon: Icon } = columnMeta ?? {};
 
   return (
     <InputGroup>
       <InputGroupInput
+        id="filter-string-input"
         value={value}
         onChange={(e) => setValue(String(e.target.value))}
-        placeholder={`Search ${columnMeta?.label?.toLowerCase()}...`}
+        placeholder={`Search ${label?.toLowerCase()}...`}
         autoFocus
       />
 
@@ -247,6 +263,163 @@ function FilterValueControllerString({
         </InputGroupAddon>
       )}
     </InputGroup>
+  );
+}
+
+function FilterValueControllerNumber({
+  filterValue,
+  columnMeta,
+  setFilter,
+}: FilterValueControllerProps) {
+  const filterType: FilterType = "number";
+  const metaDefaultValue = filterMeta.number.defaultValue.value;
+
+  const isFilterValueValid = filterValue.type === filterType;
+  const defaultValue = isFilterValueValid
+    ? filterValue.value
+    : metaDefaultValue;
+
+  const [value, setValue] = useState<number[]>(defaultValue);
+  const debouncedValue = useDebounce(value);
+
+  const [tab, setTab] = useState<"single" | "range">(
+    defaultValue.length === 2 ? "range" : "single",
+  );
+
+  const sliderScale = useMemo(() => {
+    const min = columnMeta?.min ?? 0;
+    const max = columnMeta?.max ?? 100;
+
+    const maxTicks = 20;
+    const range = max - min;
+
+    if (range <= maxTicks) {
+      return {
+        min,
+        max,
+        ticks: Array.from({ length: range + 1 }, (_, i) => ({
+          value: min + i,
+          major: true,
+        })),
+      };
+    }
+
+    const majorInterval = Math.ceil(range / 5);
+    const minorInterval = Math.max(1, Math.floor(majorInterval / 5));
+
+    const ticks = [];
+
+    for (let v = min; v <= max; v += minorInterval)
+      ticks.push({ value: v, major: (v - min) % majorInterval === 0 });
+
+    if (ticks.at(-1)?.value !== max) ticks.push({ value: max, major: true });
+
+    return { min, max, ticks };
+  }, [columnMeta]);
+
+  useEffect(() => {
+    if (!isFilterValueValid) return;
+    setFilter({
+      type: filterType,
+      operator: filterValue.operator,
+      value: debouncedValue,
+    });
+  }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
+
+  const { label } = columnMeta ?? {};
+
+  return (
+    <Tabs value={tab} onValueChange={setTab} className="max-w-xs">
+      <TabsList className="w-full">
+        <TabsTab value="single">Single</TabsTab>
+        <TabsTab value="range">Range</TabsTab>
+      </TabsList>
+
+      <TabsPanel value="single">
+        <NumberField
+          id="filter-number-field"
+          size="sm"
+          defaultValue={0}
+          value={value[0] ?? 0}
+          onValueChange={(v) => setValue(() => [v ?? 0])}
+          locale={languages.meta.id.locale}
+        >
+          <NumberFieldGroup>
+            <NumberFieldInput placeholder={`Enter ${label?.toLowerCase()}`} />
+            <NumberFieldDecrement />
+            <NumberFieldIncrement />
+          </NumberFieldGroup>
+        </NumberField>
+      </TabsPanel>
+
+      <TabsPanel value="range" className="flex flex-col gap-y-4">
+        <Slider
+          min={sliderScale.min}
+          max={sliderScale.max}
+          value={value}
+          onValueChange={(v) => {
+            if (typeof v === "number") return setValue([v]);
+            setValue([...v]);
+          }}
+        />
+
+        <div className="text-muted-foreground flex items-center justify-between gap-1 px-2 text-xs font-medium">
+          {sliderScale.ticks.map((tick) => (
+            <span
+              key={tick.value}
+              className="flex w-0 flex-col items-center justify-center gap-2"
+            >
+              <span
+                className={cn(
+                  "bg-muted-foreground/72 w-px",
+                  tick.major ? "h-1" : "h-0.5",
+                )}
+              />
+
+              <span className={cn(!tick.major && "opacity-0")}>
+                {tick.value}
+              </span>
+            </span>
+          ))}
+        </div>
+
+        <div className="flex gap-2">
+          <NumberField
+            id="filter-number-field-start"
+            size="sm"
+            min={sliderScale.min}
+            max={sliderScale.max}
+            defaultValue={0}
+            value={value[0] ?? 0}
+            onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
+            locale={languages.meta.id.locale}
+          >
+            <NumberFieldGroup>
+              <NumberFieldInput placeholder="From" />
+              <NumberFieldDecrement />
+              <NumberFieldIncrement />
+            </NumberFieldGroup>
+          </NumberField>
+
+          <NumberField
+            id="filter-number-field-end"
+            size="sm"
+            min={sliderScale.min}
+            max={sliderScale.max}
+            defaultValue={0}
+            value={value[1] ?? 0}
+            onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
+            locale={languages.meta.id.locale}
+          >
+            <NumberFieldGroup>
+              <NumberFieldInput placeholder="To" />
+              <NumberFieldDecrement />
+              <NumberFieldIncrement />
+            </NumberFieldGroup>
+          </NumberField>
+        </div>
+      </TabsPanel>
+    </Tabs>
   );
 }
 
@@ -357,7 +530,10 @@ export function ActiveFilters({
               <MenuItem
                 key={op.value}
                 onClick={() => {
-                  c.setFilter({ ...c.filterValue, operator: op.value });
+                  c.setFilter({
+                    ...c.filterValue,
+                    operator: op.value,
+                  } as FilterValue);
                 }}
               >
                 {op.label}
@@ -435,8 +611,10 @@ function FilterValueDisplay({ filterValue }: { filterValue: FilterValue }) {
   switch (filterValue.type) {
     case "string":
       return <FilterValueDisplayString value={filterValue.value} />;
+    case "number":
+      return <FilterValueDisplayNumber value={filterValue.value} />;
     default:
-      return JSON.stringify(filterValue.value);
+      return "Unsupported Filter Type";
   }
 }
 
@@ -449,4 +627,14 @@ function FilterValueDisplayString({
       ? `${value.slice(0, maxStringLength)}...`
       : value;
   return !!displayValue ? displayValue : <EllipsisIcon />;
+}
+
+function FilterValueDisplayNumber({
+  value,
+}: FilterValueDisplayProps<"number">) {
+  if (value.length === 0) return <EllipsisIcon />;
+  if (value.length === 1) return `${formatNumber(value[0])}`;
+  if (value.length === 2)
+    return `${formatNumber(value[0])} - ${formatNumber(value[1])}`;
+  return <EllipsisIcon />;
 }

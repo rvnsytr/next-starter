@@ -86,8 +86,8 @@ export const NUMBER_FILTER_OPERATORS = [
     withValue: true,
   },
   {
-    value: "greater_than_or_equal",
-    label: "greater than or equal",
+    value: "greater_than_or_equal_to",
+    label: "greater than or equal to",
     withValue: true,
   },
   {
@@ -96,8 +96,8 @@ export const NUMBER_FILTER_OPERATORS = [
     withValue: true,
   },
   {
-    value: "less_than_or_equal",
-    label: "less than or equal",
+    value: "less_than_or_equal_to",
+    label: "less than or equal to",
     withValue: true,
   },
   {
@@ -106,8 +106,18 @@ export const NUMBER_FILTER_OPERATORS = [
     withValue: true,
   },
   {
+    value: "between_inclusive",
+    label: "between inclusive",
+    withValue: true,
+  },
+  {
     value: "not_between",
     label: "not between",
+    withValue: true,
+  },
+  {
+    value: "not_between_inclusive",
+    label: "not between inclusive",
     withValue: true,
   },
   ...emptyFilterOperators,

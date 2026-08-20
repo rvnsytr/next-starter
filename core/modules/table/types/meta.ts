@@ -7,6 +7,9 @@ export type ColumnMeta = {
   /** The icon displayed alongside the column header label */
   icon?: LucideIcon;
 
+  /** The minimum value allowed for number-based filters */
+  min?: number;
+
   /** The maximum value allowed for number-based filters */
   max?: number;
 

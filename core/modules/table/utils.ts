@@ -6,23 +6,8 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DEFAULT_FILTER_TYPE } from "./constants";
-import {
-  filterMeta,
-  FilterPopupType,
-  FilterType,
-  FilterValue,
-} from "./filters";
-import { STRING_FILTER_OPERATORS } from "./operators";
+import { filterMeta, FilterPopupType, FilterValue } from "./filters";
 import { filterTypeSchema, filterValueSchema } from "./schema";
-
-export function getFilterOperators(filterType: FilterType) {
-  switch (filterType) {
-    case "string":
-      return STRING_FILTER_OPERATORS;
-    default:
-      return STRING_FILTER_OPERATORS;
-  }
-}
 
 export function calculateRowNumber(
   cellIndex: number,
