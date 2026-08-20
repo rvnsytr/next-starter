@@ -51,13 +51,25 @@ export type DataGridTableComponents = {
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
 export type DataGridCellEditorMeta = {
+  /** Override the column id used when writing the value back to the row. */
   key?: string;
 } & (
-  | { type: "string"; schema?: z.ZodType<string, any> }
-  | { type: "number"; schema?: z.ZodType<number, any> }
+  | {
+      /** Controls which input component is rendered and which Zod schema is expected. */
+      type: "string";
+      /** Optional Zod schema used to validate the value before committing. */
+      schema?: z.ZodType<string, any>;
+    }
+  | {
+      /** Controls which input component is rendered and which Zod schema is expected. */
+      type: "number";
+      /** Optional Zod schema used to validate the value before committing. */
+      schema?: z.ZodType<number, any>;
+    }
 );
 
 export type DataGridColumnMeta = ColumnMeta & {
+  /** Configuration for an inline cell editor. */
   editor?: DataGridCellEditorMeta;
 };
 
@@ -68,14 +80,23 @@ export type DataGridEditState = {
 };
 
 export type DataGridChanges<TData extends RowData> = {
+  /** Rows staged for insertion. */
   added: TData[];
+  /** Rows with one or more field-level edits. */
   updated: DataGridUpdateChange<TData>[];
+  /** Rows marked for deletion. */
   removed: DataGridRemoveChange<TData>[];
 };
 
 export type DataGridUpdateChange<TData extends RowData> = {
   rowId: string;
   rowData: TData;
+
+  /**
+   * Snapshot of all pending changes in the Data Grid.
+   *
+   * Only the fields that changed, keyed by column id (or `editor.key`).
+   */
   changes: Partial<TData>;
 };
 
