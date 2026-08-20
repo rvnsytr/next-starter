@@ -102,6 +102,10 @@ export const employeeDGColumns = columnHelper.columns([
       label: "Age",
       icon: UserRoundIcon,
       footerProps: { isPlaceholder: true },
+
+      editor: {
+        type: "number",
+      },
     },
   }),
   columnHelper.accessor("salary", {
@@ -117,6 +121,10 @@ export const employeeDGColumns = columnHelper.columns([
     meta: {
       label: "Salary Amount",
       icon: DollarSignIcon,
+
+      editor: {
+        type: "number",
+      },
     },
   }),
   columnHelper.accessor("createdAt", {

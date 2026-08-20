@@ -404,11 +404,13 @@ export function DataGrid({
                       {row.getVisibleCells().map((c) => (
                         <table.AppCell key={c.id} cell={c}>
                           {(cell) => {
+                            const columnMeta = cell.column.columnDef.meta;
+
                             const {
                               style: cellStyle,
                               className: cellClassName,
                               ...restCellProps
-                            } = cell.column.columnDef.meta?.cellProps ?? {};
+                            } = columnMeta?.cellProps ?? {};
 
                             const pinPosition = cell.column.getIsPinned();
 
@@ -420,8 +422,7 @@ export function DataGrid({
                               ? cell.getSelectionEdges()
                               : null;
 
-                            const editorMeta =
-                              cell.column.columnDef.meta?.editor ?? null;
+                            const editorMeta = columnMeta?.editor ?? null;
 
                             const canEdit = !!editorMeta;
                             const isEdit = canEdit && edit?.cellId === cell.id;
@@ -492,7 +493,8 @@ export function DataGrid({
                                 {isEdit ? (
                                   <CellEditorController
                                     defaultValue={cell.getValue()}
-                                    meta={editorMeta}
+                                    columnMeta={columnMeta}
+                                    editorMeta={editorMeta}
                                     onSubmit={(data) => {
                                       const key =
                                         editorMeta.key ?? cell.column.id;
