@@ -195,55 +195,63 @@ export function DataTable({
       </TableBody>
 
       <TableFooter>
-        {table.getFooterGroups().map((footerGroup) => (
-          <TableRow key={footerGroup.id}>
-            {footerGroup.headers.map((f) => (
-              <table.AppFooter key={f.id} header={f}>
-                {(footer) => {
-                  if (footer.isPlaceholder) return null;
-
-                  const {
-                    isPlaceholder,
-                    rowSpan = footer.rowSpan,
-                    colSpan = footer.colSpan,
-                    style: footerStyle,
-                    className: footerClassName,
-                    ...restFooterProps
-                  } = footer.column.columnDef.meta?.footerProps ?? {};
-
-                  const pinPosition = footer.column.getIsPinned();
-                  if (!pinPosition && isPlaceholder) return null;
-
-                  return (
-                    <TableCell
-                      key={footer.id}
-                      rowSpan={rowSpan}
-                      colSpan={colSpan}
-                      style={{
-                        ...footerStyle,
-                        width: footer.getSize(),
-                        left: footer.column.getStart("start"),
-                        right: footer.column.getAfter("end"),
-                      }}
-                      className={cn(
-                        "relative z-10",
-
-                        !!pinPosition && "sticky z-20",
-                        pinPosition === "start" && "left-0 pl-4",
-                        pinPosition === "end" && "right-0 pr-4",
-
-                        footerClassName,
-                      )}
-                      {...restFooterProps}
-                    >
-                      <footer.FlexRender />
-                    </TableCell>
-                  );
-                }}
-              </table.AppFooter>
-            ))}
+        {loading ? (
+          <TableRow>
+            <TableCell colSpan={allLeafColumnsLength}>
+              <Skeleton className="h-7 w-full" />
+            </TableCell>
           </TableRow>
-        ))}
+        ) : (
+          table.getFooterGroups().map((footerGroup) => (
+            <TableRow key={footerGroup.id}>
+              {footerGroup.headers.map((f) => (
+                <table.AppFooter key={f.id} header={f}>
+                  {(footer) => {
+                    if (footer.isPlaceholder) return null;
+
+                    const {
+                      isPlaceholder,
+                      rowSpan = footer.rowSpan,
+                      colSpan = footer.colSpan,
+                      style: footerStyle,
+                      className: footerClassName,
+                      ...restFooterProps
+                    } = footer.column.columnDef.meta?.footerProps ?? {};
+
+                    const pinPosition = footer.column.getIsPinned();
+                    if (!pinPosition && isPlaceholder) return null;
+
+                    return (
+                      <TableCell
+                        key={footer.id}
+                        rowSpan={rowSpan}
+                        colSpan={colSpan}
+                        style={{
+                          ...footerStyle,
+                          width: footer.getSize(),
+                          left: footer.column.getStart("start"),
+                          right: footer.column.getAfter("end"),
+                        }}
+                        className={cn(
+                          "relative z-10",
+
+                          !!pinPosition && "sticky z-20",
+                          pinPosition === "start" && "left-0 pl-4",
+                          pinPosition === "end" && "right-0 pr-4",
+
+                          footerClassName,
+                        )}
+                        {...restFooterProps}
+                      >
+                        <footer.FlexRender />
+                      </TableCell>
+                    );
+                  }}
+                </table.AppFooter>
+              ))}
+            </TableRow>
+          ))
+        )}
       </TableFooter>
     </Table>
   );
