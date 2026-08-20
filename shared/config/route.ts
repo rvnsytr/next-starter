@@ -6,11 +6,11 @@ export type RouteConfig = Record<Route, { title: string; access: RouteAccess }>;
 
 export const routeConfig: RouteConfig = {
   "/": {
-    title: "Beranda",
+    title: "Home",
     access: "public",
   },
   "/sign-in": {
-    title: "Masuk",
+    title: "Sign In",
     access: "public",
   },
 
@@ -19,15 +19,15 @@ export const routeConfig: RouteConfig = {
     access: "authenticated",
   },
   "/dashboard/profile": {
-    title: "Profil Saya",
+    title: "My Profile",
     access: "authenticated",
   },
   "/dashboard/settings": {
-    title: "Pengaturan",
+    title: "Settings",
     access: "authenticated",
   },
   "/dashboard/users": {
-    title: "Pengguna",
+    title: "Users",
     access: ["admin"],
   },
 

@@ -30,27 +30,27 @@ export type MenuItem = {
 export const menuConfig = {
   dashboard: [
     {
-      group: "Umum",
+      group: "General",
       items: [
         { route: "/dashboard", icon: LayoutDashboardIcon },
         { route: "/dashboard/users", icon: UsersRoundIcon },
       ],
     },
     {
-      group: "Lainnya",
+      group: "Others",
       items: [
         {
           route: "/dashboard/profile",
           icon: UserRoundIcon,
-          subItems: [{ label: "Informasi Pribadi" }],
+          subItems: [{ label: "Personal Information" }],
         },
         {
           route: "/dashboard/settings",
           icon: SettingsIcon,
           subItems: [
-            { label: "Tema" },
-            { label: "Sesi Aktif" },
-            { label: "Ubah Kata Sandi" },
+            { label: "Theme" },
+            { label: "Active Sessions" },
+            { label: "Change Password" },
           ],
         },
       ],

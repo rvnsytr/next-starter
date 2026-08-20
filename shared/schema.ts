@@ -235,7 +235,7 @@ export const sharedSchemas = {
     }
 
     const arrayInvalidError = label
-      ? "Beberapa tanggal yang dipilih tidak valid."
+      ? "Some of the selected dates are not valid."
       : undefined;
     let schema = z.array(dateSchema, { error: arrayInvalidError });
 
@@ -263,8 +263,8 @@ export const sharedSchemas = {
     const min = options?.min;
     const max = options?.max;
 
-    let fromSchema = z.date({ error: "Pilih tanggal mulai yang valid." });
-    let toSchema = z.date({ error: "Pilih tanggal akhir yang valid." });
+    let fromSchema = z.date({ error: "Please select a valid start date." });
+    let toSchema = z.date({ error: "Please select a valid end date." });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
@@ -302,17 +302,17 @@ export const sharedSchemas = {
       .pipe(schema),
 
   email: z
-    .email({ error: messages.invalid("Alamat email") })
+    .email({ error: messages.invalid("Email address") })
     .trim()
     .toLowerCase()
-    .min(1, { error: messages.required("Alamat email") })
-    .max(255, { error: messages.string.tooLong("Alamat email", 255) }),
+    .min(1, { error: messages.required("Email address") })
+    .max(255, { error: messages.string.tooLong("Email address", 255) }),
 
   password: z
     .string()
-    .min(1, { error: messages.required("Kata sandi") })
-    .min(8, { error: messages.string.tooShort("Kata sandi", 8) })
-    .max(255, { error: messages.string.tooLong("Kata sandi", 255) })
+    .min(1, { error: messages.required("Password") })
+    .min(8, { error: messages.string.tooShort("Password", 8) })
+    .max(255, { error: messages.string.tooLong("Password", 255) })
     .regex(/[a-z]/, { error: messages.password.lowercase })
     .regex(/[A-Z]/, { error: messages.password.uppercase })
     .regex(/[0-9]/, { error: messages.password.number })
