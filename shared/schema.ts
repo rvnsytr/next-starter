@@ -18,6 +18,10 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
+    /** @default false */
+    coerce?: boolean;
+    /** @default true */
+    trim?: boolean;
     /** @default true */
     sanitize?: boolean;
     /** @default false */
@@ -29,11 +33,17 @@ export const sharedSchemas = {
     const label = options?.label ?? undefined;
     const min = options?.min ?? null;
     const max = options?.max ?? null;
+    const coerce = options?.coerce ?? false;
+    const trim = options?.trim ?? true;
     const sanitize = options?.sanitize ?? true;
     const withRequired = options?.withRequired ?? false;
 
     const invalidError = label && invalid(label);
-    let schema = z.string({ error: invalidError }).trim();
+    let schema = coerce
+      ? z.coerce.string({ error: invalidError })
+      : z.string({ error: invalidError });
+
+    if (trim) schema = schema.trim();
 
     if (sanitize)
       schema = schema.regex(/^$|[A-Za-z0-9]/, { message: invalidError });
@@ -56,6 +66,7 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
+    coerce?: boolean;
     /** @default false */
     withRequired?: boolean;
   }) => {
@@ -65,10 +76,13 @@ export const sharedSchemas = {
     const label = options?.label ?? undefined;
     const min = options?.min ?? null;
     const max = options?.max ?? null;
+    const coerce = options?.coerce ?? false;
     const withRequired = options?.withRequired ?? true;
 
     const invalidError = label && invalid(label);
-    let schema = z.number({ error: invalidError });
+    let schema = coerce
+      ? z.coerce.number({ error: invalidError })
+      : z.number({ error: invalidError });
 
     if (min) {
       const error =
