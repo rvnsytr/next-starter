@@ -23,7 +23,7 @@ import {
   numberFilterFn,
   stringFilterFn,
 } from "../filters";
-import { DataTableColumnMeta, DataTableTableMeta } from "../types";
+import { DataTableColumnMeta } from "../types";
 
 export const serverDataTableFeatures = {
   columnPinningFeature,
@@ -59,6 +59,5 @@ export const dataTableFeatures = {
   ...serverDataTableFeatures,
   ...clientDataTableFeatures,
 
-  tableMeta: metaHelper<DataTableTableMeta>(),
   columnMeta: metaHelper<DataTableColumnMeta>(),
 } satisfies TableFeatures;

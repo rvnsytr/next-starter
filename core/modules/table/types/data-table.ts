@@ -5,5 +5,4 @@ export type DataTableTableComponents = {
   Layout: React.ComponentType<any>;
 };
 
-export type DataTableTableMeta = {};
 export type DataTableColumnMeta = ColumnMeta;

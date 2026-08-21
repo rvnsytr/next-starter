@@ -1,52 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { InputProps } from "@/core/components/ui/input";
-import { RowData, TableFeatures } from "@tanstack/react-table";
+import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
 import { ColumnMeta } from "./meta";
-
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface TableMeta<TFeatures extends TableFeatures, TData extends RowData> {
-    /**
-     * **Global**
-     *
-     * **Data Grid Only**
-     *
-     * Determines when Data Grid changes are submitted.
-     *
-     * - `onSave` - Accumulates changes until they are explicitly saved.
-     * - `onChange` - Submits changes immediately after each cell edit is applied.
-     *
-     * @default "onSave"
-     */
-    saveMode?: "onSave" | "onChange";
-
-    /**
-     * **Global**
-     *
-     * **Data Grid Only**
-     *
-     * Callback invoked after a cell edit has been applied.
-     */
-    onCellEditApplied?: (context: DataGridChanges<TData>) => void;
-
-    /**
-     * **Global**
-     *
-     * **Data Grid Only**
-     *
-     * Callback invoked when accumulated Data Grid changes are submitted.
-     */
-    onSave?: (context: DataGridChanges<TData>) => void;
-  }
-}
 
 export type DataGridTableComponents = {
   Layout: React.ComponentType<any>;
   Provider: React.ComponentType<any>;
   SaveChangesButton: React.ComponentType<any>;
   ResetChangesButton: React.ComponentType<any>;
+};
+
+export type DataGridTableMeta<TData extends RowData> = {
+  /**
+   * Determines when Data Grid changes are submitted.
+   *
+   * - `onSave` - Accumulates changes until they are explicitly saved.
+   * - `onChange` - Submits changes immediately after each cell edit is applied.
+   *
+   * @default "onSave"
+   */
+  saveMode?: "onSave" | "onChange";
+
+  /** Callback invoked after a cell edit has been applied. */
+  onCellEditApplied?: (context: DataGridChanges<TData>) => void;
+
+  /** Callback invoked when accumulated Data Grid changes are submitted. */
+  onSave?: (context: DataGridChanges<TData>) => void;
 };
 
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];

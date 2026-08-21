@@ -1,9 +1,10 @@
 import {
   cellSelectionFeature,
   metaHelper,
+  RowData,
   TableFeatures,
 } from "@tanstack/react-table";
-import { DataGridColumnMeta } from "../types";
+import { DataGridColumnMeta, DataGridTableMeta } from "../types";
 import { clientDataTableFeatures, serverDataTableFeatures } from "./data-table";
 
 export const serverDataGridFeatures = {
@@ -19,5 +20,6 @@ export const dataGridFeatures = {
   ...serverDataGridFeatures,
   ...clientDataGridFeatures,
 
+  tableMeta: metaHelper<DataGridTableMeta<RowData>>(),
   columnMeta: metaHelper<DataGridColumnMeta>(),
 } satisfies TableFeatures;

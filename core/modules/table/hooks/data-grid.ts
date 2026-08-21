@@ -1,3 +1,4 @@
+import { Override } from "@/core/types";
 import {
   createTableHook,
   RowData,
@@ -28,7 +29,9 @@ import { DataGridSelectAllCheckbox } from "../components/data-grid/select-all-ch
 import { DataGrid } from "../components/data-grid/table";
 import { dataGridFeatures } from "../features/data-grid";
 import {
+  DataGridChanges,
   DataGridTableComponents,
+  DataGridTableMeta,
   DataGridUpdateChange,
   TableCellComponents,
   TableComponents,
@@ -68,7 +71,10 @@ const useAppTable = <
   TData extends RowData,
   TSelected = TableState<typeof dataGridFeatures>,
 >(
-  tableOptions: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[0],
+  tableOptions: Override<
+    Parameters<typeof dataGridUseAppTable<TData, TSelected>>[0],
+    { meta: DataGridTableMeta<TData> }
+  >,
   selector?: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[1],
 ): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
   const { data, getRowId, meta, ...restOptions } = tableOptions;
@@ -98,12 +104,12 @@ const useAppTable = <
       data: resolvedData,
       getRowId,
       meta: {
-        onCellEditApplied: (ctx) => {
+        onCellEditApplied: (ctx: DataGridChanges<TData>) => {
           setChanges(ctx.updated);
           onCellEditApplied?.(ctx);
         },
         ...restMeta,
-      },
+      } as DataGridTableMeta<RowData>,
     },
     selector,
   );
