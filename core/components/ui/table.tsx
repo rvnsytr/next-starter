@@ -107,7 +107,7 @@ export function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-muted-foreground h-10 px-2.5 text-left align-middle leading-none font-medium whitespace-nowrap in-data-[variant=bordered]:border-e in-data-[variant=bordered]:last:border-e-0 has-[[role=checkbox]]:w-px first:has-[[role=checkbox]]:pe-0 last:has-[[role=checkbox]]:ps-0",
+        "text-muted-foreground h-10 px-2.5 text-left align-middle leading-none font-medium whitespace-nowrap in-data-[variant=bordered]:border-e in-data-[variant=bordered]:last:border-e-0",
         className,
       )}
       {...props}
@@ -120,7 +120,7 @@ export function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "bg-clip-padding p-2.5 align-middle leading-none whitespace-nowrap in-data-[slot=table-footer]:py-3.5 in-data-[variant=bordered]:border-e in-data-[variant=bordered]:last:border-e-0 in-data-[variant=card]:first:ps-[calc(--spacing(2.5)-1px)] in-data-[variant=card]:last:pe-[calc(--spacing(2.5)-1px)] has-[[role=checkbox]]:w-px first:has-[[role=checkbox]]:pe-0 last:has-[[role=checkbox]]:ps-0",
+        "bg-clip-padding p-2.5 align-middle leading-none whitespace-nowrap in-data-[slot=table-footer]:py-3.5 in-data-[variant=bordered]:border-e in-data-[variant=bordered]:last:border-e-0 in-data-[variant=card]:first:ps-[calc(--spacing(2.5)-1px)] in-data-[variant=card]:last:pe-[calc(--spacing(2.5)-1px)]",
         className,
       )}
       {...props}
