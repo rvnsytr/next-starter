@@ -28,17 +28,17 @@ export type DatePickerBaseProps = Omit<PropsBase, "mode"> & {
 
 export type DatePickerProps = DatePickerBaseProps & {
   selected?: Date;
-  onSelect: (value?: Date) => void;
+  onSelect?: (value?: Date) => void;
 };
 
 export type DateMultiProps = DatePickerBaseProps & {
   selected?: Date[];
-  onSelect: (value?: Date[]) => void;
+  onSelect?: (value?: Date[]) => void;
 };
 
 export type DateRangeProps = DatePickerBaseProps & {
   selected?: DateRange;
-  onSelect: (value?: DateRange) => void;
+  onSelect?: (value?: DateRange) => void;
 };
 
 function RequiredBridge({ required }: { required?: boolean }) {
@@ -68,7 +68,7 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
           const parsed = parseDDMMYYYY(sanitized);
 
           if (parsed && parsed.getTime() !== selected?.getTime())
-            onSelect(parsed);
+            onSelect?.(parsed);
         }}
       />
 
@@ -108,7 +108,7 @@ export function DatePicker({ selected, onSelect, ...props }: DatePickerProps) {
               mode="single"
               selected={selected}
               onSelect={(date) => {
-                onSelect(date);
+                onSelect?.(date);
                 if (!date) return setStrValue("");
                 const formatted = formatLocalizedDate(date, "ddMMyyyy");
                 if (formatted !== strValue) setStrValue(formatted);
