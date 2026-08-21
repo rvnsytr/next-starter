@@ -81,6 +81,7 @@ export const employeeDGColumns = columnHelper.columns([
       editor: {
         type: "string",
         schema: sharedSchemas.email,
+        props: { type: "email" },
       },
     },
   }),

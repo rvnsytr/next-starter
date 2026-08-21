@@ -22,6 +22,12 @@ type CellEditorControllerProps = {
   onSubmit: (data: CellData) => void;
 };
 
+function errorToast(errorMessage?: string) {
+  const title = "Invalid value";
+  const description = errorMessage ?? "Please enter a valid value.";
+  toast.add({ type: "error", title, description });
+}
+
 export function CellEditorController({
   editorMeta,
   ...props
@@ -58,7 +64,8 @@ export function StringCellEditor({
   type FormSchema = z.infer<typeof formSchema>;
 
   const schema =
-    editorMeta.schema ?? sharedSchemas.string({ withRequired: true });
+    editorMeta.schema ??
+    sharedSchemas.string({ coerce: true, withRequired: true });
   const defaultValue = schema.catch("").parse(dv);
 
   const formSchema = z.object({ string: schema });
@@ -69,14 +76,16 @@ export function StringCellEditor({
 
   const onFormSubmit = form.handleSubmit(
     (formData: FormSchema) => onSubmit(formData.string),
-    (e) => {
-      const title = "Invalid value";
-      const description = e.string?.message ?? "Please enter a valid value.";
-      toast.add({ type: "error", title, description });
-    },
+    (e) => errorToast(e.string?.message),
   );
 
   const label = columnMeta?.label ? columnMeta.label.toLowerCase() : "a value";
+  const {
+    type = "text",
+    placeholder = `Enter ${label}`,
+    className,
+    ...props
+  } = editorMeta.props ?? {};
 
   return (
     <Form onSubmit={onFormSubmit}>
@@ -85,11 +94,16 @@ export function StringCellEditor({
         control={form.control}
         render={({ field, fieldState }) => (
           <Input
-            placeholder={`Enter ${label}`}
-            className={cn(fieldState.invalid && "*:text-destructive")}
+            type={type}
+            placeholder={placeholder}
+            className={cn(
+              fieldState.invalid && "*:text-destructive",
+              className,
+            )}
             unstyled
             autoFocus
             {...field}
+            {...props}
           />
         )}
       />
@@ -106,7 +120,8 @@ export function NumberCellEditor({
   type FormSchema = z.infer<typeof formSchema>;
 
   const schema =
-    editorMeta.schema ?? sharedSchemas.number({ withRequired: true });
+    editorMeta.schema ??
+    sharedSchemas.number({ coerce: true, withRequired: true });
   const defaultValue = schema.catch(0).parse(dv);
 
   const formSchema = z.object({ number: schema });
@@ -117,34 +132,34 @@ export function NumberCellEditor({
 
   const onFormSubmit = form.handleSubmit(
     (formData: FormSchema) => onSubmit(formData.number),
-    (e) => {
-      const title = "Invalid value";
-      const description = e.number?.message ?? "Please enter a valid value.";
-      toast.add({ type: "error", title, description });
-    },
+    (e) => errorToast(e.number?.message),
   );
 
   const label = columnMeta?.label ? columnMeta.label.toLowerCase() : "a number";
+  const {
+    type = "number",
+    placeholder = `Enter ${label}`,
+    className,
+    ...props
+  } = editorMeta.props ?? {};
 
   return (
     <Form onSubmit={onFormSubmit}>
       <Controller
         name="number"
         control={form.control}
-        render={({ field: { onChange, ...field }, fieldState }) => (
+        render={({ field, fieldState }) => (
           <Input
-            type="number"
-            placeholder={`Enter ${label}`}
-            className={cn(fieldState.invalid && "*:text-destructive")}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === "") return onChange(undefined);
-              const number = Number(value);
-              if (Number.isFinite(number)) onChange(number);
-            }}
+            type={type}
+            placeholder={placeholder}
+            className={cn(
+              fieldState.invalid && "*:text-destructive",
+              className,
+            )}
             unstyled
             autoFocus
             {...field}
+            {...props}
           />
         )}
       />

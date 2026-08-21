@@ -437,8 +437,14 @@ export function DataGrid({
                                 key={cell.id}
                                 id={cell.id}
                                 data-cell-selected={isSelected}
-                                onMouseDown={cell.getSelectionStartHandler()}
-                                onMouseEnter={cell.getSelectionExtendHandler()}
+                                onMouseDown={(e) => {
+                                  if (!!edit) return;
+                                  return cell.getSelectionStartHandler()(e);
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!!edit) return;
+                                  return cell.getSelectionExtendHandler()(e);
+                                }}
                                 onDoubleClick={() => {
                                   if (!canEdit) return;
                                   table.resetCellSelection(true);

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { InputProps } from "@/core/components/ui/input";
 import { RowData, TableFeatures } from "@tanstack/react-table";
 import { z } from "zod";
 import { ColumnMeta } from "./meta";
@@ -50,6 +51,16 @@ export type DataGridTableComponents = {
 
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
+type ExcludedInputProps =
+  | "ref"
+  | "name"
+  | "value"
+  | "disabled"
+  | "onChange"
+  | "onBlur"
+  | "unstyled"
+  | "autoFocus";
+
 export type DataGridCellEditorMeta = {
   /** Override the column id used when writing the value back to the row. */
   key?: string;
@@ -59,12 +70,16 @@ export type DataGridCellEditorMeta = {
       type: "string";
       /** Optional Zod schema used to validate the value before committing. */
       schema?: z.ZodType<string, any>;
+      /** Props passed to the input component. */
+      props?: Omit<InputProps, ExcludedInputProps>;
     }
   | {
       /** Controls which input component is rendered and which Zod schema is expected. */
       type: "number";
       /** Optional Zod schema used to validate the value before committing. */
       schema?: z.ZodType<number, any>;
+      /** Props passed to the input component. */
+      props?: Omit<InputProps, ExcludedInputProps>;
     }
 );
 
