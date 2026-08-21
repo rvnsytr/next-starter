@@ -195,7 +195,7 @@ export function FilterSelector({
         <PopoverPopup
           anchor={anchor}
           align={align}
-          className="rounded-xl *:p-1"
+          className="max-w-3xs rounded-xl *:p-1"
         >
           {filterValueController ? (
             <FilterValueController {...filterValueController} />
@@ -250,7 +250,6 @@ function FilterValueControllerString({
   return (
     <InputGroup>
       <InputGroupInput
-        id="filter-string-input"
         value={value}
         onChange={(e) => setValue(String(e.target.value))}
         placeholder={`Search ${label?.toLowerCase()}...`}
@@ -329,7 +328,7 @@ function FilterValueControllerNumber({
   const { label } = columnMeta ?? {};
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="max-w-xs">
+    <Tabs value={tab} onValueChange={setTab} className="gap-2">
       <TabsList className="w-full">
         <TabsTab value="single">Single</TabsTab>
         <TabsTab value="range">Range</TabsTab>
@@ -337,12 +336,11 @@ function FilterValueControllerNumber({
 
       <TabsPanel value="single">
         <NumberField
-          id="filter-number-field"
           size="sm"
-          defaultValue={0}
           value={value[0] ?? 0}
           onValueChange={(v) => setValue(() => [v ?? 0])}
           locale={languages.meta.id.locale}
+          autoFocus
         >
           <NumberFieldGroup>
             <NumberFieldInput placeholder={`Enter ${label?.toLowerCase()}`} />
@@ -352,7 +350,7 @@ function FilterValueControllerNumber({
         </NumberField>
       </TabsPanel>
 
-      <TabsPanel value="range" className="flex flex-col gap-y-4">
+      <TabsPanel value="range" className="flex flex-col gap-y-2 pt-2">
         <Slider
           min={sliderScale.min}
           max={sliderScale.max}
@@ -363,36 +361,43 @@ function FilterValueControllerNumber({
           }}
         />
 
-        <div className="text-muted-foreground flex items-center justify-between gap-1 px-2 text-xs font-medium">
-          {sliderScale.ticks.map((tick) => (
-            <span
-              key={tick.value}
-              className="flex w-0 flex-col items-center justify-center gap-2"
-            >
+        <div className="text-muted-foreground flex items-center justify-between gap-1 px-1 text-xs">
+          {sliderScale.ticks.map((tick, index) => {
+            const isFirst = index === 0;
+            const isLast = index === sliderScale.ticks.length - 1;
+            return (
               <span
+                key={tick.value}
                 className={cn(
-                  "bg-muted-foreground/72 w-px",
-                  tick.major ? "h-1" : "h-0.5",
+                  "flex w-0 flex-col items-center justify-center gap-1",
+                  isFirst && "items-start",
+                  isLast && "items-end",
                 )}
-              />
+              >
+                <span
+                  className={cn(
+                    "bg-muted-foreground/72 w-px",
+                    tick.major ? "h-1" : "h-0.5",
+                  )}
+                />
 
-              <span className={cn(!tick.major && "opacity-0")}>
-                {tick.value}
+                <span className={cn(!tick.major && "opacity-0")}>
+                  {tick.value}
+                </span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </div>
 
         <div className="flex gap-2">
           <NumberField
-            id="filter-number-field-start"
             size="sm"
             min={sliderScale.min}
             max={sliderScale.max}
-            defaultValue={0}
             value={value[0] ?? 0}
             onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
             locale={languages.meta.id.locale}
+            autoFocus
           >
             <NumberFieldGroup>
               <NumberFieldInput placeholder="From" />
@@ -402,11 +407,9 @@ function FilterValueControllerNumber({
           </NumberField>
 
           <NumberField
-            id="filter-number-field-end"
             size="sm"
             min={sliderScale.min}
             max={sliderScale.max}
-            defaultValue={0}
             value={value[1] ?? 0}
             onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
             locale={languages.meta.id.locale}
@@ -597,7 +600,9 @@ function FilterValueDisplayPopup({
   return (
     <Popover>
       <PopoverTrigger render={trigger} />
-      <PopoverPopup className="rounded-xl *:p-1">{children}</PopoverPopup>
+      <PopoverPopup className="max-w-3xs rounded-xl *:p-1">
+        {children}
+      </PopoverPopup>
     </Popover>
   );
 }

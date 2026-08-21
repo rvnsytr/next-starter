@@ -47,7 +47,7 @@ export const filterMeta: FilterMeta = {
     defaultValue: {
       type: "number",
       operator: "equals",
-      value: [],
+      value: [0],
     },
   },
 };
