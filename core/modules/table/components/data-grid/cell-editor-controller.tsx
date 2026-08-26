@@ -166,3 +166,27 @@ export function NumberCellEditor({
     </Form>
   );
 }
+
+// const items = [
+//   { label: "Select framework", value: null },
+//   { label: "Next.js", value: "next" },
+//   { label: "Vite", value: "vite" },
+//   { label: "Astro", value: "astro" },
+// ];
+
+// <div className="flex items-center justify-center py-12">
+//   <Select items={items}>
+//     <SelectPrimitive.Trigger>
+//       <Badge>Admin</Badge>
+//     </SelectPrimitive.Trigger>
+
+//     <SelectPopup align="center" alignItemWithTrigger={false}>
+//       <SelectLabel>Frameworks</SelectLabel>
+//       {items.map((item) => (
+//         <SelectItem key={item.value} value={item}>
+//           {item.label}
+//         </SelectItem>
+//       ))}
+//     </SelectPopup>
+//   </Select>
+// </div>;

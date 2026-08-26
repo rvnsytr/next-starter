@@ -7,7 +7,6 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import {
   formatForDisplay,
   HotkeySequence,
@@ -20,7 +19,7 @@ export type ResetChangesButtonProps = ButtonProps & {
 
   /**
    * Keyboard shortcut used to trigger the table reset action.
-   * If set to "default", the default shortcut (R) is used.
+   * If set to "default", the default shortcut (Control+Z) is used.
    */
   shortcut?: "default" | HotkeySequence;
 };
@@ -35,16 +34,11 @@ export function DataGridResetChangesButton({
   onClick,
   ...props
 }: ResetChangesButtonProps) {
-  const table = dataGrid.useTableContext();
   const dataGridContext = useDataGrid();
 
+  const onReset = () => dataGridContext.clearChanges();
+
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
-  const onReset = () => {
-    dataGridContext.clearChanges();
-    table.options.meta?.onCellEditApplied?.(dataGridContext.getChanges());
-  };
-
   useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => onReset(), {
     enabled: !!hotkeySequence,
   });

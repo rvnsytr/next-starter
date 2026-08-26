@@ -47,7 +47,6 @@ export function Search({
   const debouncedSearch = useDebounce(value);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
     () => searchRef.current?.focus(),

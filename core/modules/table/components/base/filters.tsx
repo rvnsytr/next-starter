@@ -104,7 +104,6 @@ export function FilterSelector({
     useState<FilterValueControllerProps | null>(null);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
     () => setIsOpen((prev) => !prev),

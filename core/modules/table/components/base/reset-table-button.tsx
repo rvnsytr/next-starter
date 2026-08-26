@@ -38,7 +38,6 @@ export function ResetTableButton({
   ...props
 }: ResetTableButtonProps & { context: ResetTableButtonPropsContext }) {
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
     () => context.onReset(),

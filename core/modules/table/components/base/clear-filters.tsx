@@ -41,7 +41,6 @@ export function ClearFilters({
   ...props
 }: ClearFiltersProps & { context: ClearFiltersContext }) {
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
     () => context.onClear(),

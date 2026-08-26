@@ -42,7 +42,6 @@ export function ColumnSortMenu({
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
     () => setIsOpen((prev) => !prev),
