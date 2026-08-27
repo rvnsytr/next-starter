@@ -26,7 +26,8 @@ export const sharedSchemas = {
     sanitize?: boolean;
     /** @default false */
     withRequired?: boolean;
-  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): z.ZodType<string, any> => {
     const { invalid, required } = messages;
     const { tooShort, tooLong } = messages.string;
 
@@ -69,7 +70,8 @@ export const sharedSchemas = {
     coerce?: boolean;
     /** @default false */
     withRequired?: boolean;
-  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): z.ZodType<number, any> => {
     const { invalid, required } = messages;
     const { tooSmall, tooLarge } = messages.number;
 
@@ -105,87 +107,6 @@ export const sharedSchemas = {
       .transform((v) =>
         typeof v === "boolean" ? v : v === "true" || v === "1",
       );
-  },
-
-  file: (type: FileType, options?: FileSchemaOptions) => {
-    const { mimeInvalid, tooLarge } = messages.files;
-    const { label, accept, maxSize: defaultMaxSize } = fileTypes.meta[type];
-
-    const mimeTypes =
-      accept === "*" ? [] : accept.split(",").map((t) => t.trim());
-    const maxSize =
-      options?.maxSize && options.maxSize > 0
-        ? options.maxSize
-        : defaultMaxSize;
-
-    let schema = z
-      .file()
-      .min(1)
-      .max(maxSize, { error: tooLarge(label, maxSize) });
-
-    if (mimeTypes.length) {
-      const error = mimeInvalid(label);
-      schema = schema.mime(mimeTypes, { error });
-    }
-
-    return schema;
-  },
-
-  files(type: FileType, options?: FilesSchemaOptions) {
-    const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypes.meta[type];
-
-    const minFiles = options?.minFiles ?? 0;
-    const maxFiles = options?.maxFiles ?? 0;
-
-    let schema = z.array(this.file(type, options));
-
-    if (minFiles > 0) {
-      const message = tooFew(label, minFiles);
-      schema = schema.min(minFiles, { error: message });
-    }
-
-    if (maxFiles > 0) {
-      const message = tooMany(label, maxFiles);
-      schema = schema.max(maxFiles, { error: message });
-    }
-
-    return schema;
-  },
-
-  fileMetadata: createSelectSchema(file)
-    .pick({ id: true, path: true, name: true, type: true, size: true })
-    .extend({ url: z.string().optional() }),
-
-  fileWithPreview(type: FileType, options?: FileSchemaOptions) {
-    const fileSchema = this.file(type, options);
-    return z.object({
-      id: z.string(),
-      file: z.union([fileSchema, this.fileMetadata]),
-      preview: z.string().optional(),
-    });
-  },
-
-  filesWithPreview(type: FileType, options?: FilesSchemaOptions) {
-    const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypes.meta[type];
-
-    const minFiles = options?.minFiles ?? 0;
-    const maxFiles = options?.maxFiles ?? 0;
-
-    let schema = z.array(this.fileWithPreview(type, options));
-
-    if (minFiles > 0) {
-      const message = tooFew(label, minFiles);
-      schema = schema.min(minFiles, { error: message });
-    }
-
-    if (maxFiles > 0) {
-      const message = tooMany(label, maxFiles);
-      schema = schema.max(maxFiles, { error: message });
-    }
-
-    return schema;
   },
 
   date: (options?: {
@@ -314,6 +235,87 @@ export const sharedSchemas = {
         return v;
       })
       .pipe(schema),
+
+  file: (type: FileType, options?: FileSchemaOptions) => {
+    const { mimeInvalid, tooLarge } = messages.files;
+    const { label, accept, maxSize: defaultMaxSize } = fileTypes.meta[type];
+
+    const mimeTypes =
+      accept === "*" ? [] : accept.split(",").map((t) => t.trim());
+    const maxSize =
+      options?.maxSize && options.maxSize > 0
+        ? options.maxSize
+        : defaultMaxSize;
+
+    let schema = z
+      .file()
+      .min(1)
+      .max(maxSize, { error: tooLarge(label, maxSize) });
+
+    if (mimeTypes.length) {
+      const error = mimeInvalid(label);
+      schema = schema.mime(mimeTypes, { error });
+    }
+
+    return schema;
+  },
+
+  files(type: FileType, options?: FilesSchemaOptions) {
+    const { tooFew, tooMany } = messages.files;
+    const { label } = fileTypes.meta[type];
+
+    const minFiles = options?.minFiles ?? 0;
+    const maxFiles = options?.maxFiles ?? 0;
+
+    let schema = z.array(this.file(type, options));
+
+    if (minFiles > 0) {
+      const message = tooFew(label, minFiles);
+      schema = schema.min(minFiles, { error: message });
+    }
+
+    if (maxFiles > 0) {
+      const message = tooMany(label, maxFiles);
+      schema = schema.max(maxFiles, { error: message });
+    }
+
+    return schema;
+  },
+
+  fileMetadata: createSelectSchema(file)
+    .pick({ id: true, path: true, name: true, type: true, size: true })
+    .extend({ url: z.string().optional() }),
+
+  fileWithPreview(type: FileType, options?: FileSchemaOptions) {
+    const fileSchema = this.file(type, options);
+    return z.object({
+      id: z.string(),
+      file: z.union([fileSchema, this.fileMetadata]),
+      preview: z.string().optional(),
+    });
+  },
+
+  filesWithPreview(type: FileType, options?: FilesSchemaOptions) {
+    const { tooFew, tooMany } = messages.files;
+    const { label } = fileTypes.meta[type];
+
+    const minFiles = options?.minFiles ?? 0;
+    const maxFiles = options?.maxFiles ?? 0;
+
+    let schema = z.array(this.fileWithPreview(type, options));
+
+    if (minFiles > 0) {
+      const message = tooFew(label, minFiles);
+      schema = schema.min(minFiles, { error: message });
+    }
+
+    if (maxFiles > 0) {
+      const message = tooMany(label, maxFiles);
+      schema = schema.max(maxFiles, { error: message });
+    }
+
+    return schema;
+  },
 
   email: z
     .email({ error: messages.invalid("Email address") })
