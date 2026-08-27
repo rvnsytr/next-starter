@@ -204,7 +204,7 @@ export const employeeDGColumns = columnHelper.columns([
   }),
   columnHelper.accessor("manager", {
     header: (c) => <c.header.ColumnHeader label="Manager Name" />,
-    cell: (c) => c.getValue() ?? "-",
+    cell: (c) => (c.getValue() ? c.getValue() : "-"),
 
     filterFn: "string",
 
@@ -218,7 +218,7 @@ export const employeeDGColumns = columnHelper.columns([
   }),
   columnHelper.accessor("phone", {
     header: (c) => <c.header.ColumnHeader label="Phone" />,
-    cell: (c) => c.getValue() ?? "-",
+    cell: (c) => (c.getValue() ? c.getValue() : "-"),
 
     filterFn: "string",
 
@@ -231,6 +231,7 @@ export const employeeDGColumns = columnHelper.columns([
     },
   }),
   columnHelper.group({
+    id: "address",
     header: "Address",
     columns: columnHelper.columns([
       columnHelper.accessor("address.city", {
@@ -245,6 +246,9 @@ export const employeeDGColumns = columnHelper.columns([
 
         meta: {
           label: "City",
+          editor: {
+            type: "string",
+          },
         },
       }),
       columnHelper.accessor("address.country", {
@@ -259,6 +263,9 @@ export const employeeDGColumns = columnHelper.columns([
 
         meta: {
           label: "Country",
+          editor: {
+            type: "string",
+          },
         },
       }),
     ]),

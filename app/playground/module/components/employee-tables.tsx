@@ -98,8 +98,8 @@ export function EmployeeDataGrid() {
 
             ctx.updated.forEach((c) => {
               const rowIndex = updated.findIndex((r) => r.id === c.rowId);
-              if (rowIndex === -1) return;
-              updated[rowIndex] = { ...updated[rowIndex], ...c.changes };
+              if (rowIndex >= 0)
+                updated[rowIndex] = { ...updated[rowIndex], ...c.changes };
             });
 
             return updated;

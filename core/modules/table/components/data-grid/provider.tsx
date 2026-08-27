@@ -3,6 +3,7 @@ import {
   DataGridRemoveChange,
   DataGridUpdateChange,
 } from "@/core/modules/table/types";
+import { getNestedProperty, setNestedValue } from "@/core/modules/table/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RowData } from "@tanstack/react-table";
 import {
@@ -93,8 +94,9 @@ export const DataGridProvider = ({
 
     const effectiveChanges = Object.entries(mergedChanges).reduce(
       (acc, [k, v]) => {
-        if (originalRowData[k as keyof RowData] !== v)
-          acc[k as keyof RowData] = v;
+        const keys = k.split(".");
+        const originalData = getNestedProperty(originalRowData, keys);
+        if (originalData !== v) acc = setNestedValue(acc, keys, v);
         return acc;
       },
       {} as Partial<RowData>,

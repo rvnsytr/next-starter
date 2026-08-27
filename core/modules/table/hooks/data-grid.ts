@@ -37,6 +37,7 @@ import {
   TableComponents,
   TableHeaderComponents,
 } from "../types";
+import { mergeNested } from "../utils";
 
 const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
   features: tableFeatures(dataGridFeatures),
@@ -99,7 +100,7 @@ const useAppTable = <
         return rowDataId === rowId;
       });
 
-      return change ? { ...row, ...change.changes } : row;
+      return change ? mergeNested(row, change.changes) : row;
     });
 
     if (changes.added.length > 0) rowData.unshift(...changes.added.reverse());

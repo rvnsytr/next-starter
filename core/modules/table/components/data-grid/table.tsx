@@ -12,10 +12,16 @@ import {
 } from "@/core/components/ui/table";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { DataGridEditState, TableProps } from "@/core/modules/table/types";
+import {
+  getParentColumns,
+  hasNestedKey,
+  setNestedValue,
+} from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { useHotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
+  CellData,
   CellSelectionBounds,
   CellSelectionState,
   RowData,
@@ -439,8 +445,55 @@ export function DataGrid({
                           const isCellEdited = rowChanges.updated.some(
                             (r) =>
                               r.rowId === row.id &&
-                              Object.keys(r.changes).includes(cell.column.id),
+                              hasNestedKey(r.changes, cell.column.id),
                           );
+
+                          const onCellEditorSubmit = (data: CellData) => {
+                            if (!isEdit) return;
+
+                            const { newRows, updateRow } = dataGridContext;
+                            const addedRows = newRows.form.getValues("rows");
+
+                            const rowId = edit.rowId;
+                            const rowData = row.original;
+
+                            let keys = editorMeta.key ? [editorMeta.key] : [];
+                            if (!keys.length) {
+                              keys = [
+                                ...getParentColumns(c.column).map(
+                                  (pc) =>
+                                    pc.columnDef.meta?.editor?.key ?? pc.id,
+                                ),
+                                cell.column.id,
+                              ];
+                            }
+
+                            if (isOriginalRow) {
+                              const changes = { [keys.join(".")]: data };
+                              updateRow({ rowId, rowData, changes });
+                            } else {
+                              const addedRowIndex = addedRows.findIndex(
+                                (r, i) =>
+                                  table.options.getRowId?.(r, i) === row.id,
+                              );
+
+                              if (addedRowIndex >= 0) {
+                                const updated = setNestedValue(
+                                  row.original,
+                                  keys,
+                                  data,
+                                );
+
+                                newRows.fieldArray.update(
+                                  addedRowIndex,
+                                  updated,
+                                );
+                              }
+                            }
+
+                            handleAutoSave();
+                            exitEdit();
+                          };
 
                           return (
                             <TableCell
@@ -509,41 +562,7 @@ export function DataGrid({
                                   defaultValue={cell.getValue()}
                                   columnMeta={columnMeta}
                                   editorMeta={editorMeta}
-                                  onSubmit={(data) => {
-                                    const { newRows, updateRow } =
-                                      dataGridContext;
-                                    const addedRows =
-                                      newRows.form.getValues("rows");
-
-                                    const rowId = edit.rowId;
-                                    const rowData = row.original;
-
-                                    const key =
-                                      editorMeta.key ?? cell.column.id;
-                                    const changes = { [key]: data };
-
-                                    if (isOriginalRow) {
-                                      updateRow({ rowId, rowData, changes });
-                                    } else {
-                                      const addedRowIndex = addedRows.findIndex(
-                                        (r, i) => {
-                                          const addedRowId =
-                                            table.options.getRowId?.(r, i);
-                                          return addedRowId === row.id;
-                                        },
-                                      );
-
-                                      if (addedRowIndex >= 0) {
-                                        newRows.fieldArray.update(
-                                          addedRowIndex,
-                                          { ...row.original, ...changes },
-                                        );
-                                      }
-                                    }
-
-                                    handleAutoSave();
-                                    exitEdit();
-                                  }}
+                                  onSubmit={onCellEditorSubmit}
                                 />
                               ) : (
                                 <cell.FlexRender />
