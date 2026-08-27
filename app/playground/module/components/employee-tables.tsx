@@ -64,6 +64,26 @@ export function EmployeeDataGrid() {
     columns: employeeDGColumns,
     getRowId: (row) => row.id.toString(),
     meta: {
+      defaultValues: {
+        id: crypto.randomUUID(),
+        name: "",
+        email: "",
+        age: 0,
+        salary: 0,
+        createdAt: new Date(),
+        status: "active",
+        role: "Support",
+        skills: [],
+        department: "",
+        manager: "",
+        phone: "",
+        address: {
+          city: "",
+          country: "",
+        },
+        projects: [],
+      },
+
       onSave: (ctx) => {
         mutate(
           (prev) => {

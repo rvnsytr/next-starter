@@ -3,6 +3,7 @@ import {
   DataGridRemoveChange,
   DataGridUpdateChange,
 } from "@/core/modules/table/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { RowData } from "@tanstack/react-table";
 import {
   createContext,
@@ -11,8 +12,21 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  useFieldArray,
+  UseFieldArrayReturn,
+  useForm,
+  UseFormReturn,
+} from "react-hook-form";
+import { z } from "zod";
 
 type CountChanges = { updated: number; removed: number };
+type RowChanges = Pick<DataGridChanges<RowData>, "updated" | "removed">;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AddRowsFormValues = { rows: any[] };
+type AddRowsForm = UseFormReturn<AddRowsFormValues>;
+type AddRowsFieldArray = UseFieldArrayReturn<AddRowsFormValues, "rows", "id">;
 
 type DataGridContextValue = {
   count: CountChanges;
@@ -20,6 +34,7 @@ type DataGridContextValue = {
   updateRow: (params: DataGridUpdateChange<RowData>) => void;
   removeRows: (params: DataGridRemoveChange<RowData>[]) => void;
   clearChanges: () => void;
+  newRows: { form: AddRowsForm; fieldArray: AddRowsFieldArray };
 };
 
 export const DataGridContext = createContext<DataGridContextValue | undefined>(
@@ -31,12 +46,24 @@ export const DataGridProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [count, setCount] = useState<CountChanges>({ updated: 0, removed: 0 });
+  const [count, setCount] = useState<CountChanges>({
+    updated: 0,
+    removed: 0,
+  });
 
-  const rowChanges = useRef<DataGridChanges<RowData>>({
-    added: [],
-    removed: [],
+  const rowChanges = useRef<RowChanges>({
     updated: [],
+    removed: [],
+  });
+
+  const newRowsForm: AddRowsForm = useForm<AddRowsFormValues>({
+    resolver: zodResolver(z.object({ rows: z.array(z.unknown()) })),
+    defaultValues: { rows: [] },
+  });
+
+  const newRowsFieldArray: AddRowsFieldArray = useFieldArray({
+    control: newRowsForm.control,
+    name: "rows",
   });
 
   const getChanges = useCallback(() => {
@@ -47,21 +74,22 @@ export const DataGridProvider = ({
 
     return {
       ...rowChanges.current,
+      added: newRowsForm.getValues("rows"),
       updated: filteredUpdated,
     };
-  }, []);
+  }, [newRowsForm]);
 
-  const updateRow = useCallback((params: DataGridUpdateChange<RowData>) => {
+  const updateRow = useCallback((rows: DataGridUpdateChange<RowData>) => {
     const currentUpdatedRow = rowChanges.current.updated.find(
-      (row) => row.rowId === params.rowId,
+      (row) => row.rowId === rows.rowId,
     );
 
     const mergedChanges = {
       ...(currentUpdatedRow?.changes ?? {}),
-      ...params.changes,
+      ...rows.changes,
     };
 
-    const originalRowData = currentUpdatedRow?.rowData ?? params.rowData;
+    const originalRowData = currentUpdatedRow?.rowData ?? rows.rowData;
 
     const effectiveChanges = Object.entries(mergedChanges).reduce(
       (acc, [k, v]) => {
@@ -78,12 +106,12 @@ export const DataGridProvider = ({
       currentUpdatedRow.changes = effectiveChanges;
     } else if (currentUpdatedRow && !hasChanges) {
       rowChanges.current.updated = rowChanges.current.updated.filter(
-        (row) => row.rowId !== params.rowId,
+        (row) => row.rowId !== rows.rowId,
       );
     } else if (hasChanges) {
       rowChanges.current.updated.push({
-        rowId: params.rowId,
-        rowData: params.rowData,
+        rowId: rows.rowId,
+        rowData: rows.rowData,
         changes: effectiveChanges,
       });
     }
@@ -92,8 +120,8 @@ export const DataGridProvider = ({
     setCount((prev) => ({ ...prev, updated: updatedCount }));
   }, []);
 
-  const removeRows = useCallback((params: DataGridRemoveChange<RowData>[]) => {
-    params.forEach((row) => {
+  const removeRows = useCallback((rows: DataGridRemoveChange<RowData>[]) => {
+    rows.forEach((row) => {
       const existingIndex = rowChanges.current.removed.findIndex(
         (r) => r.rowId === row.rowId,
       );
@@ -115,14 +143,10 @@ export const DataGridProvider = ({
   }, []);
 
   const clearChanges = useCallback(() => {
-    rowChanges.current = {
-      added: [],
-      removed: [],
-      updated: [],
-    };
-
+    newRowsForm.reset();
+    rowChanges.current = { updated: [], removed: [] };
     setCount({ updated: 0, removed: 0 });
-  }, []);
+  }, [newRowsForm]);
 
   return (
     <DataGridContext.Provider
@@ -132,6 +156,7 @@ export const DataGridProvider = ({
         updateRow,
         removeRows,
         clearChanges,
+        newRows: { form: newRowsForm, fieldArray: newRowsFieldArray },
       }}
     >
       {children}

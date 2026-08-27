@@ -11,9 +11,16 @@ import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { InfoIcon } from "lucide-react";
+import { AddRowButtonProps } from "./add-row-button";
+import { ClearChangesButtonProps } from "./clear-changes-button";
 import { useDataGrid } from "./provider";
-import { ResetChangesButtonProps } from "./reset-changes-button";
 import { SaveChangesButtonProps } from "./save-changes-button";
+
+export type DataGridLayoutProps = TableLayoutProps &
+  EditorToolbarProps & {
+    addRowButtonProps?: AddRowButtonProps;
+    clearChangesButtonProps?: ClearChangesButtonProps;
+  };
 
 export function DataGridLayout({
   tableProps,
@@ -32,9 +39,10 @@ export function DataGridLayout({
   classNames,
   renderSlot,
   saveChangesButtonProps,
-  resetChangesButtonProps,
+  addRowButtonProps,
+  clearChangesButtonProps,
   ...props
-}: TableLayoutProps & EditorToolbarProps) {
+}: DataGridLayoutProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataGrid.useTableContext();
@@ -79,6 +87,11 @@ export function DataGridLayout({
     searchProps ?? {};
 
   const {
+    shortcut: addNewRowButtonShortcut = "default",
+    ...restAddNewRowButtonProps
+  } = addRowButtonProps ?? {};
+
+  const {
     align: clearChangesButtonAlign = isDesktop ? "center" : "end",
     shortcut: clearChangesButtonShortcut = "default",
     ...restClearChangesButtonProps
@@ -89,12 +102,6 @@ export function DataGridLayout({
     shortcut: saveChangesButtonShortcut = "default",
     ...restSaveChangesButtonProps
   } = saveChangesButtonProps ?? {};
-
-  const {
-    align: resetChangesButtonAlign = isDesktop ? "center" : "end",
-    shortcut: resetChangesButtonShortcut = "default",
-    ...restResetChangesButtonProps
-  } = resetChangesButtonProps ?? {};
 
   return (
     <table.Provider>
@@ -125,6 +132,10 @@ export function DataGridLayout({
                 align={columnVisibilityMenuAlign}
                 shortcut={columnVisibilityMenuShortcut}
                 {...restColumnVisibilityMenuProps}
+              />
+              <table.AddRowButton
+                shortcut={addNewRowButtonShortcut}
+                {...restAddNewRowButtonProps}
               />
             </ButtonGroup>
 

@@ -7,6 +7,8 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { ActiveFiltersContainer } from "../components/base/filters";
+import { DataGridAddRowButton } from "../components/data-grid/add-row-button";
+import { DataGridClearChangesButton } from "../components/data-grid/clear-changes-button";
 import { DataGridClearFilters } from "../components/data-grid/clear-filters";
 import { DataGridColumnHeader } from "../components/data-grid/column-header";
 import { DataGridColumnSortMenu } from "../components/data-grid/column-sort-menu";
@@ -19,7 +21,6 @@ import { DataGridLayout } from "../components/data-grid/layout";
 import { DataGridPageSizeSelector } from "../components/data-grid/page-size-selector";
 import { DataGridPagination } from "../components/data-grid/pagination";
 import { DataGridProvider } from "../components/data-grid/provider";
-import { DataGridResetChangesButton } from "../components/data-grid/reset-changes-button";
 import { DataGridResetTableButton } from "../components/data-grid/reset-table-button";
 import { DataGridRowCheckbox } from "../components/data-grid/row-checkbox";
 import { DataGridRowNumber } from "../components/data-grid/row-number";
@@ -32,7 +33,6 @@ import {
   DataGridChanges,
   DataGridTableComponents,
   DataGridTableMeta,
-  DataGridUpdateChange,
   TableCellComponents,
   TableComponents,
   TableHeaderComponents,
@@ -54,8 +54,9 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
     Search: DataGridSearch,
     Layout: DataGridLayout,
     Provider: DataGridProvider,
+    AddRowButton: DataGridAddRowButton,
+    ClearChangesButton: DataGridClearChangesButton,
     SaveChangesButton: DataGridSaveChangesButton,
-    ResetChangesButton: DataGridResetChangesButton,
   } satisfies TableComponents & DataGridTableComponents,
   headerComponents: {
     ColumnHeader: DataGridColumnHeader,
@@ -78,25 +79,34 @@ const useAppTable = <
   selector?: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[1],
 ): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
   const { data, getRowId, meta, ...restOptions } = tableOptions;
-  const { onCellEditApplied, ...restMeta } = meta ?? {};
+  const { onChange, ...restMeta } = meta ?? {};
 
-  const [update, setChanges] = useState<DataGridUpdateChange<TData>[]>([]);
+  const [changes, setChanges] = useState<DataGridChanges<TData>>({
+    added: [],
+    updated: [],
+    removed: [], // todo: will be used for ('onChange' save mode)
+  });
 
   const resolvedData = useMemo(() => {
-    if (!data || !update) return data ?? [];
-    return data.map((row, rowIndex) => {
+    if (!data || !changes) return data ?? [];
+
+    const rowData = data.map((row, rowIndex) => {
       const rowId = getRowId?.(row, rowIndex);
       if (!rowId) return row;
 
-      const change = update.find((c, ci) => {
+      const change = changes.updated.find((c, ci) => {
         const rowDataId = getRowId?.(c.rowData, ci);
-        return !!rowDataId && rowDataId === rowId;
+        return rowDataId === rowId;
       });
 
       return change ? { ...row, ...change.changes } : row;
     });
+
+    if (changes.added.length > 0) rowData.unshift(...changes.added.reverse());
+
+    return rowData;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, update]);
+  }, [data, changes]);
 
   return dataGridUseAppTable(
     {
@@ -104,12 +114,13 @@ const useAppTable = <
       data: resolvedData,
       getRowId,
       meta: {
-        onCellEditApplied: (ctx: DataGridChanges<TData>) => {
-          setChanges(ctx.updated);
-          onCellEditApplied?.(ctx);
+        original: data,
+        onChange: (ctx: DataGridChanges<TData>) => {
+          setChanges(ctx);
+          onChange?.(ctx);
         },
         ...restMeta,
-      } as DataGridTableMeta<RowData>,
+      } as DataGridTableMeta<RowData> & { original: TData },
     },
     selector,
   );
