@@ -87,16 +87,19 @@ export function DataGrid({
   const [edit, setEdit] = useState<DataGridEditState | null>(null);
   const editRef = useRef<DataGridEditState | null>(null);
 
-  const rowChanges = useMemo(
-    () => dataGridContext.getChanges(),
-    [dataGridContext],
+  const allLeafColumnsLength = useMemo(
+    () => table.getAllLeafColumns().length,
+    [table],
   );
-
-  const allLeafColumns = useMemo(() => table.getAllLeafColumns(), [table]);
 
   const withResizeIndicator = useMemo(
     () => table.options.columnResizeMode !== "onChange",
     [table.options.columnResizeMode],
+  );
+
+  const rowChanges = useMemo(
+    () => dataGridContext.getChanges(),
+    [dataGridContext],
   );
 
   const exitEdit = useCallback(() => {

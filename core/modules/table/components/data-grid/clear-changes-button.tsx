@@ -7,6 +7,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
+import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import {
   formatForDisplay,
   HotkeySequence,
@@ -14,7 +15,7 @@ import {
 } from "@tanstack/react-hotkeys";
 import { ListXIcon } from "lucide-react";
 
-export type ResetChangesButtonProps = ButtonProps & {
+export type ClearChangesButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 
   /**
@@ -26,17 +27,21 @@ export type ResetChangesButtonProps = ButtonProps & {
 
 const DEFAULT_SHORTCUT: HotkeySequence = ["Control+Z"];
 
-export function DataGridResetChangesButton({
+export function DataGridClearChangesButton({
   shortcut,
   align = "center",
   size = "default",
   variant = "destructive-outline",
   onClick,
   ...props
-}: ResetChangesButtonProps) {
-  const dataGridContext = useDataGrid();
+}: ClearChangesButtonProps) {
+  const table = dataGrid.useTableContext();
+  const { getChanges, clearChanges } = useDataGrid();
 
-  const onReset = () => dataGridContext.clearChanges();
+  const onReset = () => {
+    clearChanges();
+    table.options.meta?.onChange?.(getChanges());
+  };
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
   useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => onReset(), {

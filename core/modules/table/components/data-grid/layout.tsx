@@ -79,6 +79,12 @@ export function DataGridLayout({
     searchProps ?? {};
 
   const {
+    align: clearChangesButtonAlign = isDesktop ? "center" : "end",
+    shortcut: clearChangesButtonShortcut = "default",
+    ...restClearChangesButtonProps
+  } = clearChangesButtonProps ?? {};
+
+  const {
     align: saveChangesButtonAlign = isDesktop ? "center" : "start",
     shortcut: saveChangesButtonShortcut = "default",
     ...restSaveChangesButtonProps
@@ -128,10 +134,10 @@ export function DataGridLayout({
                 shortcut: saveChangesButtonShortcut,
                 ...restSaveChangesButtonProps,
               }}
-              resetChangesButtonProps={{
-                align: resetChangesButtonAlign,
-                shortcut: resetChangesButtonShortcut,
-                ...restResetChangesButtonProps,
+              clearChangesButtonProps={{
+                align: clearChangesButtonAlign,
+                shortcut: clearChangesButtonShortcut,
+                ...restClearChangesButtonProps,
               }}
             />
 
@@ -228,17 +234,17 @@ export function DataGridLayout({
 
 type EditorToolbarProps = {
   saveChangesButtonProps?: SaveChangesButtonProps;
-  resetChangesButtonProps?: ResetChangesButtonProps;
+  clearChangesButtonProps?: ClearChangesButtonProps;
 };
 
 function EditorToolbar({
   saveChangesButtonProps,
-  resetChangesButtonProps,
+  clearChangesButtonProps,
 }: EditorToolbarProps) {
   const table = dataGrid.useTableContext();
-  const dataGridContext = useDataGrid();
+  const { count, newRows } = useDataGrid();
 
-  if (!dataGridContext.count.updated && !dataGridContext.count.removed)
+  if (!newRows.fieldArray.fields.length && !count.updated && !count.removed)
     return null;
 
   return (
@@ -246,7 +252,7 @@ function EditorToolbar({
       <Separator orientation="vertical" className="hidden h-4 lg:flex" />
 
       <ButtonGroup>
-        <table.ResetChangesButton {...resetChangesButtonProps} />
+        <table.ClearChangesButton {...clearChangesButtonProps} />
         <table.SaveChangesButton {...saveChangesButtonProps} />
       </ButtonGroup>
     </>
@@ -263,8 +269,10 @@ function ChangesCount() {
         const cellCount = table.getSelectedCellCount();
         const totalCount = rowCount + cellCount;
 
-        const { updated, removed } = dataGridContext.count;
-        const changesCount = updated + removed;
+        const { newRows, count } = dataGridContext;
+
+        const newRowsCount = newRows.fieldArray.fields.length;
+        const changesCount = newRowsCount + count.updated + count.removed;
 
         if (totalCount <= 0 && changesCount <= 0) return null;
 
@@ -298,11 +306,14 @@ function ChangesCount() {
                   </TooltipTrigger>
                   <TooltipPopup>
                     <ul className="flex list-inside list-disc flex-col gap-0.5 text-left">
+                      <li className="text-success *:text-success">
+                        <b>{formatNumber(newRowsCount)}</b> rows added
+                      </li>
                       <li className="text-warning *:text-warning">
-                        <b>{formatNumber(updated)}</b> rows updated
+                        <b>{formatNumber(count.updated)}</b> rows updated
                       </li>
                       <li className="text-destructive *:text-destructive">
-                        <b>{formatNumber(removed)}</b> rows removed
+                        <b>{formatNumber(count.removed)}</b> rows removed
                       </li>
                     </ul>
                   </TooltipPopup>
