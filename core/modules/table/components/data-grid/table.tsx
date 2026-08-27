@@ -117,15 +117,16 @@ export function DataGrid({
     return meta && "original" in meta ? (meta.original as RowData[]) : [];
   }, [table.options.meta]);
 
-  const handleAutoSave = useCallback(() => {
+  const handleEditAutoSave = useCallback(() => {
     const meta = table.options.meta;
     const currentChanges = dataGridContext.getChanges();
 
     meta?.onChange?.(currentChanges);
-    if (meta?.saveMode !== "onChange") return;
 
-    meta?.onSave?.(currentChanges);
-    dataGridContext.clearChanges();
+    if (meta?.saveMode === "onChange") {
+      meta?.onSave?.(currentChanges);
+      dataGridContext.clearChanges();
+    }
   }, [table.options.meta, dataGridContext]);
 
   const exitEdit = useCallback(() => {
@@ -223,6 +224,7 @@ export function DataGrid({
       {
         hotkey: "Escape",
         callback: () => table.resetCellSelection(true),
+        options: { conflictBehavior: "allow" },
       },
       {
         hotkey: "Delete",
@@ -259,7 +261,11 @@ export function DataGrid({
     { target: tableRef, enabled: !edit },
   );
 
-  useHotkey("Escape", () => exitEdit(), { target: tableRef, enabled: !!edit });
+  useHotkey("Escape", () => exitEdit(), {
+    target: tableRef,
+    enabled: !!edit,
+    conflictBehavior: "allow",
+  });
 
   const { className: containerClassName, ...restContainerProps } =
     containerProps ?? {};
@@ -491,7 +497,7 @@ export function DataGrid({
                               }
                             }
 
-                            handleAutoSave();
+                            handleEditAutoSave();
                             exitEdit();
                           };
 

@@ -35,12 +35,12 @@ export function DataGridSaveChangesButton({
   ...props
 }: SaveChangesButtonProps) {
   const table = dataGrid.useTableContext();
-  const dataGridContext = useDataGrid();
+  const { getChanges, clearChanges } = useDataGrid();
 
   const onSave = () => {
-    const currentChanges = dataGridContext.getChanges();
-    table.options.meta?.onSave?.(currentChanges);
-    dataGridContext.clearChanges();
+    table.options.meta?.onSave?.(getChanges());
+    clearChanges();
+    table.options.meta?.onChange?.(getChanges());
   };
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
