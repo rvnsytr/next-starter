@@ -6,6 +6,26 @@ import {
   getApiResponseSchema,
 } from "./schema";
 
+type Builtin =
+  | Date
+  | RegExp
+  | Error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  | Function
+  | Promise<unknown>
+  | Map<unknown, unknown>
+  | Set<unknown>;
+
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends readonly (infer U)[]
+    ? T extends (infer V)[]
+      ? DeepPartial<V>[]
+      : readonly DeepPartial<U>[]
+    : T extends object
+      ? { [K in keyof T]?: DeepPartial<T[K]> }
+      : T;
+
 export type Override<T, U> = Omit<T, keyof U> & U;
 
 export type OmitByType<T, V> = {
@@ -38,10 +58,10 @@ export type CamelCase<S extends string> = S extends `${infer A}_${infer B}`
 export type TransformKeys<
   T,
   C extends TransformableStringCase,
-> = T extends readonly (infer U)[]
-  ? readonly TransformKeys<U, C>[]
-  : T extends Date | RegExp
-    ? T
+> = T extends Builtin
+  ? T
+  : T extends readonly (infer U)[]
+    ? readonly TransformKeys<U, C>[]
     : T extends object
       ? {
           [

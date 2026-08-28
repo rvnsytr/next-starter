@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { InputProps } from "@/core/components/ui/input";
-import { Override } from "@/core/types";
+import { DeepPartial, Override } from "@/core/types";
 import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
 import { ColumnMeta } from "./meta";
@@ -101,7 +101,7 @@ export type DataGridUpdateChange<TData extends RowData> = {
    *
    * Only the fields that changed, keyed by column id (or `editor.key`).
    */
-  changes: Partial<TData>;
+  changes: DeepPartial<TData>;
 };
 
 export type DataGridRemoveChange<TData extends RowData> = {
