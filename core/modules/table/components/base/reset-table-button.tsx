@@ -17,7 +17,7 @@ export type ResetTableButtonProps = ButtonProps & {
 
   /**
    * Keyboard shortcut used to trigger the table reset action.
-   * If set to "default", the default shortcut (R) is used.
+   * If set to "default", the default shortcut (Alt+R) is used.
    */
   shortcut?: "default" | HotkeySequence;
 };

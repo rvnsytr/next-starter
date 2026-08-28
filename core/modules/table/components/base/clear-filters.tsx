@@ -18,7 +18,7 @@ export type ClearFiltersProps = ButtonProps & {
 
   /**
    * Keyboard shortcut used to trigger the clear filters action.
-   * If set to "default", the default shortcut (R, R) is used.
+   * If set to "default", the default shortcut (C) is used.
    */
   shortcut?: "default" | HotkeySequence;
 };
@@ -27,7 +27,7 @@ type ClearFiltersContext = {
   onClear: () => void;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["R"];
+const DEFAULT_SHORTCUT: HotkeySequence = ["C"];
 
 export function ClearFilters({
   context,

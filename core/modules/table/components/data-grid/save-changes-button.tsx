@@ -19,7 +19,7 @@ export type SaveChangesButtonProps = ButtonProps & {
 
   /**
    * Keyboard shortcut used to trigger the table reset action.
-   * If set to "default", the default shortcut (R) is used.
+   * If set to "default", the default shortcut (Control+S) is used.
    */
   shortcut?: "default" | HotkeySequence;
 };

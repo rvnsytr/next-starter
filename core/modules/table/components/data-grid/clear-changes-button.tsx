@@ -20,12 +20,12 @@ export type ClearChangesButtonProps = ButtonProps & {
 
   /**
    * Keyboard shortcut used to trigger the table reset action.
-   * If set to "default", the default shortcut (Control+Z) is used.
+   * If set to "default", the default shortcut (Alt+Z) is used.
    */
   shortcut?: "default" | HotkeySequence;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["Control+Z"];
+const DEFAULT_SHORTCUT: HotkeySequence = ["Alt+Z"];
 
 export function DataGridClearChangesButton({
   shortcut,
