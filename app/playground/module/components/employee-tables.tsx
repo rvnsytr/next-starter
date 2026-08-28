@@ -91,16 +91,16 @@ export function EmployeeDataGrid() {
             if (!prev) return prev;
             let newData = prev;
 
-            ctx.removed?.forEach((c) => {
-              newData = newData.filter((r) => r.id !== c.rowData.id);
-            });
-
             ctx.added?.forEach((r) => newData.unshift(r));
 
             ctx.updated.forEach((c) => {
               const rowIndex = newData.findIndex((r) => r.id === c.rowId);
               if (rowIndex >= 0)
                 newData[rowIndex] = mergeNested(newData[rowIndex], c.changes);
+            });
+
+            ctx.removed?.forEach((c) => {
+              newData = newData.filter((r) => r.id !== c.rowData.id);
             });
 
             return newData;
@@ -115,6 +115,8 @@ export function EmployeeDataGrid() {
             </span>
           ),
         });
+
+        return true;
       },
     },
   });

@@ -2,12 +2,25 @@ import { ActionResponse } from "@/core/types";
 import { validateValue } from "@/core/utils";
 import {
   PaginationState,
+  RowData,
   SortDirection,
   SortingState,
 } from "@tanstack/react-table";
+import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
 import { filterMeta, FilterPopupType, FilterValue } from "./filters";
 import { filterTypeSchema, filterValueSchema } from "./schema";
+import { DataGridTableMeta } from "./types";
+
+export function saveChanges(
+  context: DataGridContextValue,
+  tableMeta?: DataGridTableMeta<RowData>,
+) {
+  const res = tableMeta?.onSave?.(context.getChanges()) ?? false;
+  if (!res) return;
+  context.clearChanges();
+  tableMeta?.onChange?.(context.getChanges());
+}
 
 export function calculateRowNumber(
   cellIndex: number,

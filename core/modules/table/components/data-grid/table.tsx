@@ -15,6 +15,7 @@ import { DataGridEditState, TableProps } from "@/core/modules/table/types";
 import {
   getParentColumns,
   hasNestedKey,
+  saveChanges,
   setNestedValue,
 } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
@@ -119,14 +120,11 @@ export function DataGrid({
 
   const handleEditAutoSave = useCallback(() => {
     const meta = table.options.meta;
-    const currentChanges = dataGridContext.getChanges();
 
+    const currentChanges = dataGridContext.getChanges();
     meta?.onChange?.(currentChanges);
 
-    if (meta?.saveMode === "onChange") {
-      meta?.onSave?.(currentChanges);
-      dataGridContext.clearChanges();
-    }
+    if (meta?.saveMode === "onChange") saveChanges(dataGridContext, meta);
   }, [table.options.meta, dataGridContext]);
 
   const exitEdit = useCallback(() => {

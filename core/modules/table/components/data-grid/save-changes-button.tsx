@@ -6,12 +6,14 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
+import { saveChanges } from "@/core/modules/table/utils";
 import {
   formatForDisplay,
   HotkeySequence,
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
 import { ListCheckIcon } from "lucide-react";
+import { useCallback } from "react";
 import { useDataGrid } from "./provider";
 
 export type SaveChangesButtonProps = ButtonProps & {
@@ -35,13 +37,12 @@ export function DataGridSaveChangesButton({
   ...props
 }: SaveChangesButtonProps) {
   const table = dataGrid.useTableContext();
-  const { getChanges, clearChanges } = useDataGrid();
+  const dataGridContext = useDataGrid();
 
-  const onSave = () => {
-    table.options.meta?.onSave?.(getChanges());
-    clearChanges();
-    table.options.meta?.onChange?.(getChanges());
-  };
+  const onSave = useCallback(
+    () => saveChanges(dataGridContext, table.options.meta),
+    [table.options.meta, dataGridContext],
+  );
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
   useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => onSave(), {

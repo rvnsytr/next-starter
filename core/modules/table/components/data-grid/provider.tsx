@@ -29,7 +29,7 @@ type AddRowsFormValues = { rows: any[] };
 type AddRowsForm = UseFormReturn<AddRowsFormValues>;
 type AddRowsFieldArray = UseFieldArrayReturn<AddRowsFormValues, "rows", "id">;
 
-type DataGridContextValue = {
+export type DataGridContextValue = {
   count: CountChanges;
   getChanges: () => DataGridChanges<RowData>;
   updateRow: (params: DataGridUpdateChange<RowData>) => void;

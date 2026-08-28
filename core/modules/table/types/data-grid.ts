@@ -28,8 +28,12 @@ export type DataGridTableMeta<TData extends RowData> = {
    */
   saveMode?: "onSave" | "onChange";
 
-  /** Callback invoked when accumulated Data Grid changes are submitted. */
-  onSave?: (context: DataGridChanges<TData>) => void;
+  /**
+   * Callback invoked when accumulated Data Grid changes are submitted.
+   *
+   * Return `true` to confirm and apply the changes, or `false` to reject them.
+   */
+  onSave?: (context: DataGridChanges<TData>) => boolean;
 
   /** Callback invoked when the Data Grid data changes, either through row additions/removals or cell edits. */
   onChange?: (context: DataGridChanges<TData>) => void;
