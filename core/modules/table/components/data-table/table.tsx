@@ -75,6 +75,7 @@ export function DataTable({
 
                           <TableHead
                             key={header.id}
+                            data-pinned={!!pinPosition}
                             colSpan={header.colSpan}
                             rowSpan={header.rowSpan}
                             style={{
@@ -86,7 +87,7 @@ export function DataTable({
                             className={cn(
                               "relative z-10",
 
-                              !!pinPosition && "sticky z-20",
+                              !!pinPosition && "bg-background/90 sticky z-20",
                               pinPosition === "start" && "left-0 pl-4",
                               pinPosition === "end" && "right-0 pr-4",
 
@@ -157,6 +158,7 @@ export function DataTable({
                     return (
                       <TableCell
                         key={cell.id}
+                        data-pinned={!!pinPosition}
                         style={{
                           ...cellStyle,
                           width: cell.column.getSize(),
@@ -166,7 +168,7 @@ export function DataTable({
                         className={cn(
                           "z-10",
 
-                          !!pinPosition && "sticky z-20",
+                          !!pinPosition && "bg-background/90 sticky z-20",
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
 
@@ -224,6 +226,7 @@ export function DataTable({
                     return (
                       <TableCell
                         key={footer.id}
+                        data-pinned={!!pinPosition}
                         rowSpan={rowSpan}
                         colSpan={colSpan}
                         style={{
@@ -235,7 +238,7 @@ export function DataTable({
                         className={cn(
                           "relative z-10",
 
-                          !!pinPosition && "sticky z-20",
+                          !!pinPosition && "sticky z-20 backdrop-blur-xs",
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
 

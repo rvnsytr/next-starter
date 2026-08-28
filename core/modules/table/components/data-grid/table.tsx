@@ -317,6 +317,7 @@ export function DataGrid({
 
                           <TableHead
                             key={header.id}
+                            data-pinned={!!pinPosition}
                             colSpan={header.colSpan}
                             rowSpan={header.rowSpan}
                             style={{
@@ -328,7 +329,7 @@ export function DataGrid({
                             className={cn(
                               "relative z-10",
 
-                              !!pinPosition && "sticky z-20",
+                              !!pinPosition && "bg-background/90 sticky z-20",
                               pinPosition === "start" && "left-0 pl-4",
                               pinPosition === "end" && "right-0 pr-4",
 
@@ -502,8 +503,8 @@ export function DataGrid({
                           return (
                             <TableCell
                               key={cell.id}
+                              data-pinned={!!pinPosition}
                               id={cell.id}
-                              data-cell-selected={isSelected}
                               onMouseDown={(e) => {
                                 if (!!edit) return;
                                 return cell.getSelectionStartHandler()(e);
@@ -530,7 +531,7 @@ export function DataGrid({
                               className={cn(
                                 "z-10",
 
-                                !!pinPosition && "sticky z-20",
+                                !!pinPosition && "bg-background/90 sticky z-20",
                                 pinPosition === "start" && "left-0 pl-4",
                                 pinPosition === "end" && "right-0 pr-4",
 
@@ -538,6 +539,7 @@ export function DataGrid({
                                   "cell-selectable cursor-cell select-none",
 
                                 isSelected &&
+                                  isOriginalRow &&
                                   !isCellEdited &&
                                   !isRowRemoved &&
                                   "bg-muted dark:bg-muted/50",
@@ -623,6 +625,7 @@ export function DataGrid({
                     return (
                       <TableCell
                         key={footer.id}
+                        data-pinned={!!pinPosition}
                         rowSpan={rowSpan}
                         colSpan={colSpan}
                         style={{
@@ -634,7 +637,7 @@ export function DataGrid({
                         className={cn(
                           "relative z-10",
 
-                          !!pinPosition && "sticky z-20",
+                          !!pinPosition && "sticky z-20 backdrop-blur-xs",
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
 
