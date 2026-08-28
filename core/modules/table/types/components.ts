@@ -45,8 +45,8 @@ export type TableHeaderComponents = {
 };
 
 export type TableCellComponents = {
-  RowCheckbox: React.ComponentType<any>;
   RowNumber: React.ComponentType<any>;
+  SelectRowCheckbox: React.ComponentType<any>;
 };
 
 export type TableLayoutProps = React.ComponentProps<"div"> & {

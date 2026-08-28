@@ -1,12 +1,12 @@
-import { dataGrid } from "@/core/modules/table/hooks/data-grid";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { RowCheckbox, RowCheckboxProps } from "../base/row-checkbox";
 
-export function DataGridRowCheckbox({
+export function DataTableSelectRowCheckbox({
   disabled = false,
   ...props
 }: RowCheckboxProps) {
-  const table = dataGrid.useTableContext();
-  const cell = dataGrid.useCellContext();
+  const table = dataTable.useTableContext();
+  const cell = dataTable.useCellContext();
   return (
     <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
       {(selected) => (

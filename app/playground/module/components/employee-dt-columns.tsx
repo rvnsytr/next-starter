@@ -25,9 +25,13 @@ export const employeeDTColumns = columnHelper.columns([
   columnHelper.display({
     id: "select",
     header: (c) => <c.header.SelectAllCheckbox />,
-    cell: (c) => <c.cell.RowCheckbox />,
+    cell: (c) => <c.cell.SelectRowCheckbox />,
     size: 50,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
     enableHiding: false,
+    enableMultiSort: false,
+    enablePinning: false,
     enableResizing: false,
     enableSorting: false,
   }),
@@ -36,7 +40,11 @@ export const employeeDTColumns = columnHelper.columns([
     header: () => <div className="text-center">No</div>,
     cell: (c) => <c.cell.RowNumber className="text-center" />,
     size: 50,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
     enableHiding: false,
+    enableMultiSort: false,
+    enablePinning: false,
     enableResizing: false,
     enableSorting: false,
   }),
@@ -80,6 +88,8 @@ export const employeeDTColumns = columnHelper.columns([
       </div>
     ),
 
+    filterFn: "number",
+
     minSize: 100,
     size: 100,
 
@@ -93,6 +103,8 @@ export const employeeDTColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Salary" />,
     cell: (c) => `$${formatNumber(c.getValue())}/yr`,
     footer: "$170.0000/yr",
+
+    filterFn: "number",
 
     minSize: 150,
     size: 150,

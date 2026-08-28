@@ -12,10 +12,10 @@ import { DataTableLayout } from "../components/data-table/layout";
 import { DataTablePageSizeSelector } from "../components/data-table/page-size-selector";
 import { DataTablePagination } from "../components/data-table/pagination";
 import { DataTableResetTableButton } from "../components/data-table/reset-table-button";
-import { DataTableRowCheckbox } from "../components/data-table/row-checkbox";
 import { DataTableRowNumber } from "../components/data-table/row-number";
 import { DataTableSearch } from "../components/data-table/search";
 import { DataTableSelectAllCheckbox } from "../components/data-table/select-all-checkbox";
+import { DataTableSelectRowCheckbox } from "../components/data-table/select-row-checkbox";
 import { DataTable } from "../components/data-table/table";
 import { dataTableFeatures } from "../features/data-table";
 import {
@@ -46,7 +46,7 @@ export const dataTable = createTableHook({
     SelectAllCheckbox: DataTableSelectAllCheckbox,
   } satisfies TableHeaderComponents,
   cellComponents: {
-    RowCheckbox: DataTableRowCheckbox,
     RowNumber: DataTableRowNumber,
+    SelectRowCheckbox: DataTableSelectRowCheckbox,
   } satisfies TableCellComponents,
 });

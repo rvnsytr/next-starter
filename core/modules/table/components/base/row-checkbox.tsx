@@ -12,11 +12,5 @@ export type RowCheckboxProps = Omit<
 >;
 
 export function RowCheckbox({ className, ...props }: BaseRowCheckboxProps) {
-  return (
-    <Checkbox
-      aria-label="Select row"
-      className={cn("mx-auto", className)}
-      {...props}
-    />
-  );
+  return <Checkbox className={cn("mx-auto", className)} {...props} />;
 }

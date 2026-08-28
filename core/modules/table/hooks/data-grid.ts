@@ -22,11 +22,11 @@ import { DataGridPageSizeSelector } from "../components/data-grid/page-size-sele
 import { DataGridPagination } from "../components/data-grid/pagination";
 import { DataGridProvider } from "../components/data-grid/provider";
 import { DataGridResetTableButton } from "../components/data-grid/reset-table-button";
-import { DataGridRowCheckbox } from "../components/data-grid/row-checkbox";
 import { DataGridRowNumber } from "../components/data-grid/row-number";
 import { DataGridSaveChangesButton } from "../components/data-grid/save-changes-button";
 import { DataGridSearch } from "../components/data-grid/search";
 import { DataGridSelectAllCheckbox } from "../components/data-grid/select-all-checkbox";
+import { DataGridSelectRowCheckbox } from "../components/data-grid/select-row-checkbox";
 import { DataGrid } from "../components/data-grid/table";
 import { dataGridFeatures } from "../features/data-grid";
 import {
@@ -64,7 +64,7 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
     SelectAllCheckbox: DataGridSelectAllCheckbox,
   } satisfies TableHeaderComponents,
   cellComponents: {
-    RowCheckbox: DataGridRowCheckbox,
+    SelectRowCheckbox: DataGridSelectRowCheckbox,
     RowNumber: DataGridRowNumber,
   } satisfies TableCellComponents,
 });
