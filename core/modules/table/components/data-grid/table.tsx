@@ -513,14 +513,21 @@ export function DataGrid({
                                 if (!!edit) return;
                                 return cell.getSelectionExtendHandler()(e);
                               }}
+                              onClick={() => {
+                                if (edit?.cellId !== cell.id) {
+                                  setEdit(null);
+                                  table.setFocusedCell(row.id, cell.column.id);
+                                }
+                              }}
                               onDoubleClick={() => {
-                                if (!canEdit) return;
-                                table.resetCellSelection(true);
-                                setEdit({
-                                  rowId: row.id,
-                                  columnId: cell.column.id,
-                                  cellId: cell.id,
-                                });
+                                if (canEdit && edit?.cellId !== cell.id) {
+                                  table.resetCellSelection(true);
+                                  setEdit({
+                                    rowId: row.id,
+                                    columnId: cell.column.id,
+                                    cellId: cell.id,
+                                  });
+                                }
                               }}
                               style={{
                                 ...cellStyle,
@@ -553,7 +560,7 @@ export function DataGrid({
                                   "cell-edge-bottom",
                                 !isFocused && edges?.left && "cell-edge-left",
 
-                                isEdit && "p-0",
+                                isEdit && "cursor-default p-0",
                                 isCellEdited &&
                                   !isEdit &&
                                   !isRowRemoved &&
