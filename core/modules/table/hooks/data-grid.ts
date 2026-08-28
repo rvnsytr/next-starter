@@ -69,15 +69,26 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
   } satisfies TableCellComponents,
 });
 
+type AppTableOptions<TData extends RowData, TSelected> = Parameters<
+  typeof dataGridUseAppTable<TData, TSelected>
+>[0];
+
+type AppTableSelector<TData extends RowData, TSelected> = Parameters<
+  typeof dataGridUseAppTable<TData, TSelected>
+>[1];
+
 const useAppTable = <
   TData extends RowData,
   TSelected = TableState<typeof dataGridFeatures>,
 >(
   tableOptions: Override<
-    Parameters<typeof dataGridUseAppTable<TData, TSelected>>[0],
-    { meta: DataGridTableMeta<TData> }
+    AppTableOptions<TData, TSelected>,
+    {
+      getRowId: AppTableOptions<TData, TSelected>["getRowId"];
+      meta: DataGridTableMeta<TData>;
+    }
   >,
-  selector?: Parameters<typeof dataGridUseAppTable<TData, TSelected>>[1],
+  selector?: AppTableSelector<TData, TSelected>,
 ): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
   const { data, getRowId, meta, ...restOptions } = tableOptions;
   const { onChange, ...restMeta } = meta ?? {};
