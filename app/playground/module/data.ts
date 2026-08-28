@@ -4,6 +4,7 @@ import { Skill, skills, UserRole, userRoles } from "./constants";
 
 export type Employee = {
   id: string;
+  isActive: boolean;
   name: string;
   email: string;
   age: number;
@@ -87,6 +88,7 @@ const newEmployee = (): Employee => {
       country: countries[Math.floor(Math.random() * countries.length)],
     },
     projects: projects.filter(() => Math.random() > 0.7).slice(0, 5),
+    isActive: Math.random() > 0.5,
   };
 };
 

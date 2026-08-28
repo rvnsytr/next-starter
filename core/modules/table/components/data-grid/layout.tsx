@@ -133,22 +133,23 @@ export function DataGridLayout({
                 shortcut={columnVisibilityMenuShortcut}
                 {...restColumnVisibilityMenuProps}
               />
-              <table.AddRowButton
-                shortcut={addNewRowButtonShortcut}
-                {...restAddNewRowButtonProps}
-              />
             </ButtonGroup>
 
+            <table.AddRowButton
+              shortcut={addNewRowButtonShortcut}
+              {...restAddNewRowButtonProps}
+            />
+
             <EditorToolbar
-              saveChangesButtonProps={{
-                align: saveChangesButtonAlign,
-                shortcut: saveChangesButtonShortcut,
-                ...restSaveChangesButtonProps,
-              }}
               clearChangesButtonProps={{
                 align: clearChangesButtonAlign,
                 shortcut: clearChangesButtonShortcut,
                 ...restClearChangesButtonProps,
+              }}
+              saveChangesButtonProps={{
+                align: saveChangesButtonAlign,
+                shortcut: saveChangesButtonShortcut,
+                ...restSaveChangesButtonProps,
               }}
             />
 
@@ -249,8 +250,8 @@ type EditorToolbarProps = {
 };
 
 function EditorToolbar({
-  saveChangesButtonProps,
   clearChangesButtonProps,
+  saveChangesButtonProps,
 }: EditorToolbarProps) {
   const table = dataGrid.useTableContext();
   const { count, newRows } = useDataGrid();
@@ -259,14 +260,10 @@ function EditorToolbar({
     return null;
 
   return (
-    <>
-      <Separator orientation="vertical" className="hidden h-4 lg:flex" />
-
-      <ButtonGroup>
-        <table.ClearChangesButton {...clearChangesButtonProps} />
-        <table.SaveChangesButton {...saveChangesButtonProps} />
-      </ButtonGroup>
-    </>
+    <ButtonGroup>
+      <table.SaveChangesButton {...saveChangesButtonProps} />
+      <table.ClearChangesButton {...clearChangesButtonProps} />
+    </ButtonGroup>
   );
 }
 

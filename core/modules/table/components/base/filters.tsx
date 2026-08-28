@@ -6,6 +6,7 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
+import { Label } from "@/core/components/ui/label";
 import {
   Menu,
   MenuItem,
@@ -27,6 +28,7 @@ import {
 } from "@/core/components/ui/popover";
 import { ScrollArea } from "@/core/components/ui/scroll-area";
 import { Slider } from "@/core/components/ui/slider";
+import { Switch } from "@/core/components/ui/switch";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import {
   Tooltip,
@@ -208,14 +210,22 @@ export function FilterSelector({
 }
 
 function FilterValueController(props: FilterValueControllerProps) {
-  switch (props.filterValue.type) {
+  const filterType = props.filterValue.type;
+  switch (filterType) {
     case "string":
       return <FilterValueControllerString {...props} />;
     case "number":
       return <FilterValueControllerNumber {...props} />;
+    case "boolean":
+      return <FilterValueControllerBoolean {...props} />;
     default:
       return (
-        <ErrorFallback error="Unsupported Filter Type" hideCode hideError />
+        <ErrorFallback
+          title="Unsupported Filter Type"
+          error={`Filter type "${filterType}" is not supported.`}
+          hideCode
+          hideError
+        />
       );
   }
 }
@@ -425,6 +435,47 @@ function FilterValueControllerNumber({
   );
 }
 
+function FilterValueControllerBoolean({
+  filterValue,
+  columnMeta,
+  setFilter,
+}: FilterValueControllerProps) {
+  const filterType: FilterType = "boolean";
+
+  const isFilterValueValid = filterValue.type === filterType;
+  const defaultValue = isFilterValueValid
+    ? filterValue.value
+    : filterMeta.boolean.defaultValue.value;
+
+  const [value, setValue] = useState<boolean>(defaultValue);
+
+  const { label, icon: Icon } = columnMeta ?? {};
+  const id = label?.toLocaleLowerCase() ?? crypto.randomUUID();
+
+  return (
+    <Label htmlFor={id} className="flex w-fit items-center gap-4 p-2">
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className="size-4" />}
+        <p>{label ?? "Value"}</p>
+      </div>
+
+      <Switch
+        id={id}
+        checked={value}
+        onCheckedChange={(v) => {
+          if (!isFilterValueValid) return;
+          setValue(v);
+          setFilter({
+            type: filterType,
+            operator: filterValue.operator,
+            value: v,
+          });
+        }}
+      />
+    </Label>
+  );
+}
+
 export type ActiveFiltersContainerProps = React.ComponentProps<"div">;
 
 export function ActiveFiltersContainer({
@@ -612,13 +663,16 @@ type FilterValueDisplayProps<T extends FilterType> = Pick<
 >;
 
 function FilterValueDisplay({ filterValue }: { filterValue: FilterValue }) {
-  switch (filterValue.type) {
+  const filterType = filterValue.type;
+  switch (filterType) {
     case "string":
       return <FilterValueDisplayString value={filterValue.value} />;
     case "number":
       return <FilterValueDisplayNumber value={filterValue.value} />;
+    case "boolean":
+      return <FilterValueDisplayBoolean value={filterValue.value} />;
     default:
-      return "Unsupported Filter Type";
+      return `Filter type "${filterType}" is not supported.`;
   }
 }
 
@@ -641,4 +695,10 @@ function FilterValueDisplayNumber({
   if (value.length === 2)
     return `${formatNumber(value[0])} - ${formatNumber(value[1])}`;
   return <EllipsisIcon />;
+}
+
+function FilterValueDisplayBoolean({
+  value,
+}: FilterValueDisplayProps<"boolean">) {
+  return String(value);
 }

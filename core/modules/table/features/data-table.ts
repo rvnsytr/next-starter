@@ -18,6 +18,7 @@ import {
   TableFeatures,
 } from "@tanstack/react-table";
 import {
+  booleanFilterFn,
   FilterFn,
   FilterType,
   numberFilterFn,
@@ -46,6 +47,7 @@ export const serverDataTableFeatures = {
   filterFns: {
     string: stringFilterFn,
     number: numberFilterFn,
+    boolean: booleanFilterFn,
   } satisfies Record<FilterType, FilterFn>,
 } satisfies TableFeatures;
 

@@ -1,4 +1,5 @@
 import { CustomColorBadge } from "@/core/components/ui/badge";
+import { Checkbox } from "@/core/components/ui/checkbox";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
@@ -46,6 +47,32 @@ export const employeeDTColumns = columnHelper.columns([
     enableMultiSort: false,
     enablePinning: false,
     enableResizing: false,
+    enableSorting: false,
+  }),
+  columnHelper.accessor("isActive", {
+    header: (c) => <c.header.ColumnHeader label="Active" align="center" />,
+    cell: (c) => (
+      <div className="flex justify-center">
+        <Checkbox checked={c.getValue()} />
+      </div>
+    ),
+
+    filterFn: "boolean",
+
+    minSize: 100,
+    size: 100,
+
+    meta: {
+      label: "Active",
+      icon: CircleDotIcon,
+    },
+
+    // enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableHiding: false,
+    enableMultiSort: false,
+    // enablePinning: false,
+    // enableResizing: false,
     enableSorting: false,
   }),
   columnHelper.accessor("name", {

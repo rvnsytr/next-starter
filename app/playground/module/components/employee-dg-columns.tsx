@@ -1,4 +1,5 @@
 import { CustomColorBadge } from "@/core/components/ui/badge";
+import { Checkbox } from "@/core/components/ui/checkbox";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { formatNumber } from "@/core/utils";
 import { UserStatusBadge } from "@/modules/auth/components/user-status-badge";
@@ -28,7 +29,6 @@ export const employeeDGColumns = columnHelper.columns([
     header: (c) => <c.header.SelectAllCheckbox />,
     cell: (c) => <c.cell.SelectRowCheckbox />,
     size: 50,
-    enableCellSelection: false,
     enableColumnFilter: false,
     enableGlobalFilter: false,
     enableHiding: false,
@@ -36,13 +36,13 @@ export const employeeDGColumns = columnHelper.columns([
     enablePinning: false,
     enableResizing: false,
     enableSorting: false,
+    enableCellSelection: false,
   }),
   columnHelper.display({
     id: "no",
     header: () => <div className="text-center">No</div>,
     cell: (c) => <c.cell.RowNumber className="text-center" />,
     size: 50,
-    enableCellSelection: false,
     enableColumnFilter: false,
     enableGlobalFilter: false,
     enableHiding: false,
@@ -50,6 +50,34 @@ export const employeeDGColumns = columnHelper.columns([
     enablePinning: false,
     enableResizing: false,
     enableSorting: false,
+    enableCellSelection: false,
+  }),
+  columnHelper.accessor("isActive", {
+    header: (c) => <c.header.ColumnHeader label="Active" align="center" />,
+    cell: (c) => (
+      <div className="flex justify-center">
+        <Checkbox checked={c.getValue()} />
+      </div>
+    ),
+
+    filterFn: "boolean",
+
+    minSize: 100,
+    size: 100,
+
+    meta: {
+      label: "Active",
+      icon: CircleDotIcon,
+    },
+
+    // enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableHiding: false,
+    enableMultiSort: false,
+    // enablePinning: false,
+    // enableResizing: false,
+    enableSorting: false,
+    enableCellSelection: false,
   }),
   columnHelper.accessor("name", {
     header: (c) => <c.header.ColumnHeader label="Name" />,

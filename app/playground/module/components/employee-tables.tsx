@@ -63,10 +63,11 @@ export function EmployeeDataGrid() {
   const table = dataGrid.useAppTable({
     data: data ?? [],
     columns: employeeDGColumns,
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => row.id,
     meta: {
       defaultValues: {
         id: crypto.randomUUID(),
+        isActive: true,
         name: "",
         email: "",
         age: 0,

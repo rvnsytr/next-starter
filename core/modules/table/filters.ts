@@ -16,6 +16,7 @@ import {
 import { z } from "better-auth";
 import { NUMBER_FILTER_OPERATORS, STRING_FILTER_OPERATORS } from "./operators";
 import {
+  booleanFilterValueSchema,
   filterValueSchema,
   numberFilterValueSchema,
   stringFilterValueSchema,
@@ -48,6 +49,14 @@ export const filterMeta: FilterMeta = {
       type: "number",
       operator: "equals",
       value: [0],
+    },
+  },
+  boolean: {
+    popupType: "popover",
+    defaultValue: {
+      type: "boolean",
+      operator: "is",
+      value: true,
     },
   },
 };
@@ -86,7 +95,6 @@ export const stringFilterFn: FilterFn = (
   }
 
   const { operator, value } = res.data;
-  if (!value) return true;
 
   switch (operator) {
     case "contains":
@@ -129,7 +137,7 @@ export const numberFilterFn: FilterFn = (
   }
 
   const { operator, value } = res.data;
-  if (!value || value.length === 0) return true;
+  if (value.length === 0) return true;
 
   switch (operator) {
     case "equals":
@@ -152,6 +160,38 @@ export const numberFilterFn: FilterFn = (
       return !filterFn_between(row, columnId, value, addMeta);
     case "not_between_inclusive":
       return !filterFn_betweenInclusive(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const booleanFilterFn: FilterFn = (
+  row,
+  columnId,
+  filterValue,
+  addMeta,
+) => {
+  if (!filterValue) return true;
+
+  const filterType: FilterType = "boolean";
+  const res = validateValue(filterValue, booleanFilterValueSchema);
+
+  if (!res.success) {
+    console.error(res.message);
+    return false;
+  }
+
+  const { operator, value } = res.data;
+
+  switch (operator) {
+    case "is":
+      return filterFn_equals(row, columnId, value, addMeta);
     case "is_empty":
       return filterFn_empty(row, columnId, value, addMeta);
     case "is_not_empty":
