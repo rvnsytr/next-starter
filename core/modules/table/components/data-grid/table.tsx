@@ -485,7 +485,7 @@ export function DataGrid({
 
                               if (addedRowIndex >= 0) {
                                 const updated = setNestedValue(
-                                  row.original,
+                                  rowData,
                                   keys,
                                   data,
                                 );

@@ -4,6 +4,7 @@ import { toast } from "@/core/components/ui/toast";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
+import { mergeNested } from "@/core/modules/table/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
 import useSWR from "swr";
 import { getEmployees } from "../actions";
@@ -88,21 +89,21 @@ export function EmployeeDataGrid() {
         mutate(
           (prev) => {
             if (!prev) return prev;
-            let updated = prev;
+            let newData = prev;
 
             ctx.removed?.forEach((c) => {
-              updated = updated.filter((r) => r.id !== c.rowData.id);
+              newData = newData.filter((r) => r.id !== c.rowData.id);
             });
 
-            ctx.added?.forEach((r) => updated.unshift(r));
+            ctx.added?.forEach((r) => newData.unshift(r));
 
             ctx.updated.forEach((c) => {
-              const rowIndex = updated.findIndex((r) => r.id === c.rowId);
+              const rowIndex = newData.findIndex((r) => r.id === c.rowId);
               if (rowIndex >= 0)
-                updated[rowIndex] = { ...updated[rowIndex], ...c.changes };
+                newData[rowIndex] = mergeNested(newData[rowIndex], c.changes);
             });
 
-            return updated;
+            return newData;
           },
           { revalidate: false },
         );
