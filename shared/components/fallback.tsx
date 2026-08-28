@@ -26,6 +26,7 @@ export function LoadingFallback({
 export type ErrorFallbackProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any;
+  title?: string;
   hideDescription?: boolean;
   hideError?: boolean;
   hideCode?: boolean;
@@ -34,6 +35,7 @@ export type ErrorFallbackProps = {
 
 export function ErrorFallback({
   error,
+  title = appConfig.name,
   hideDescription = false,
   hideError = false,
   hideCode = false,
@@ -53,10 +55,10 @@ export function ErrorFallback({
     <Alert variant="destructive" className={className}>
       <TriangleAlertIcon />
       {hideCode ? (
-        <AlertTitle>{appConfig.name}</AlertTitle>
+        <AlertTitle>{title}</AlertTitle>
       ) : (
         <AlertTitle>
-          {`${appConfig.name} / `}
+          {`${title} / `}
           <code className="bg-destructive/10 text-xs tabular-nums">
             {errorData?.code ?? 500}
           </code>
