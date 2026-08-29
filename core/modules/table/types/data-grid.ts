@@ -3,6 +3,7 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { InputProps } from "@/core/components/ui/input";
 import { Switch } from "@/core/components/ui/switch";
+import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
 import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
@@ -43,8 +44,16 @@ export type DataGridTableMeta<TData extends RowData> = {
 
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
-type ExcludedInputProps =
-  "ref" | "name" | "value" | "disabled" | "onChange" | "onBlur" | "unstyled";
+type ExcludedCellEditorProps =
+  | "ref"
+  | "name"
+  | "value"
+  | "disabled"
+  | "onChange"
+  | "onBlur"
+  | "unstyled"
+  | "checked"
+  | "onCheckedChange";
 
 export type CellEditorMetaBase = {
   /**
@@ -61,11 +70,21 @@ export type CellEditorMetaBase = {
   schema?: z.ZodType<string, any>;
 
   /** Props passed to the input component. */
-  props?: Omit<InputProps, ExcludedInputProps>;
+  props?: Omit<InputProps, ExcludedCellEditorProps>;
 };
 
 export type DataGridCellEditorMeta =
   | CellEditorMetaBase
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "string:textarea";
+        props?: Omit<
+          React.ComponentProps<typeof Textarea>,
+          ExcludedCellEditorProps
+        >;
+      }
+    >
   | Override<
       CellEditorMetaBase,
       {
@@ -78,7 +97,10 @@ export type DataGridCellEditorMeta =
       {
         type: "boolean";
         schema?: z.ZodType<boolean, any>;
-        props?: React.ComponentProps<typeof Checkbox>;
+        props?: Omit<
+          React.ComponentProps<typeof Checkbox>,
+          ExcludedCellEditorProps
+        >;
       }
     >
   | Override<
@@ -86,7 +108,10 @@ export type DataGridCellEditorMeta =
       {
         type: "boolean:switch";
         schema?: z.ZodType<boolean, any>;
-        props?: React.ComponentProps<typeof Switch>;
+        props?: Omit<
+          React.ComponentProps<typeof Switch>,
+          ExcludedCellEditorProps
+        >;
       }
     >;
 

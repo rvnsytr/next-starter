@@ -2,6 +2,7 @@ import { Checkbox } from "@/core/components/ui/checkbox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
 import { Switch } from "@/core/components/ui/switch";
+import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import {
   ColumnMeta,
@@ -37,6 +38,7 @@ export function CellEditorController({
 }: CellEditorControllerProps) {
   switch (editorMeta.type) {
     case "string":
+    case "string:textarea":
       return <StringCellEditor editorMeta={editorMeta} {...props} />;
 
     case "number":
@@ -69,7 +71,7 @@ function StringCellEditor({
   editorMeta,
   defaultValue: dv,
   onSubmit,
-}: CellEditorMeta<"string">) {
+}: CellEditorMeta<"string" | "string:textarea">) {
   type FormSchema = z.infer<typeof formSchema>;
 
   const schema =
@@ -91,31 +93,61 @@ function StringCellEditor({
   useEffect(() => form.setFocus("value"), [form]);
 
   const label = columnMeta?.label ? columnMeta.label.toLowerCase() : "a value";
-  const {
-    type = "text",
-    placeholder = `Enter ${label}`,
-    className,
-    ...props
-  } = editorMeta.props ?? {};
 
   return (
     <Form onSubmit={onFormSubmit}>
       <Controller
         name="value"
         control={form.control}
-        render={({ field, fieldState }) => (
-          <Input
-            type={type}
-            placeholder={placeholder}
-            className={cn(
-              fieldState.invalid && "*:text-destructive",
+        render={({ field, fieldState }) => {
+          if (editorMeta.type === "string:textarea") {
+            const {
+              placeholder = `Enter ${label}`,
               className,
-            )}
-            unstyled
-            {...field}
-            {...props}
-          />
-        )}
+              ...props
+            } = editorMeta.props ?? {};
+
+            return (
+              <Textarea
+                onKeyDown={(e) => {
+                  if (e.ctrlKey && e.key === "Enter") {
+                    e.preventDefault();
+                    onFormSubmit();
+                  }
+                }}
+                placeholder={placeholder}
+                className={cn(
+                  fieldState.invalid && "*:text-destructive",
+                  className,
+                )}
+                unstyled
+                {...field}
+                {...props}
+              />
+            );
+          }
+
+          const {
+            type = "text",
+            placeholder = `Enter ${label}`,
+            className,
+            ...props
+          } = editorMeta.props ?? {};
+
+          return (
+            <Input
+              type={type}
+              placeholder={placeholder}
+              className={cn(
+                fieldState.invalid && "*:text-destructive",
+                className,
+              )}
+              unstyled
+              {...field}
+              {...props}
+            />
+          );
+        }}
       />
     </Form>
   );
