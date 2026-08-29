@@ -1,6 +1,6 @@
 import { Badge, CustomColorBadge } from "@/core/components/ui/badge";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { formatNumber } from "@/core/utils";
+import { cn, formatNumber } from "@/core/utils";
 import { sharedSchemas } from "@/shared/schema";
 import { formatDate } from "date-fns";
 import {
@@ -11,6 +11,8 @@ import {
   DollarSignIcon,
   MapPinIcon,
   PackageIcon,
+  TrendingDown,
+  TrendingUp,
   UserRoundIcon,
 } from "lucide-react";
 import { Sale, productMeta, saleStatusMeta } from "../constants";
@@ -157,12 +159,16 @@ export const saleDGColumns = columnHelper.columns([
     cell: (c) => {
       const amount = c.getValue();
       const isNegative = amount < 0;
-
+      const Icon = isNegative ? TrendingDown : TrendingUp;
       return (
-        <div className="text-right">
-          <span className="text-foreground">
-            {isNegative ? "-" : ""}${formatNumber(Math.abs(amount))}
-          </span>
+        <div
+          className={cn(
+            "flex items-center justify-end gap-x-2 text-right font-medium tabular-nums",
+            isNegative ? "text-destructive" : "text-success",
+          )}
+        >
+          <Icon className="size-3.5" />
+          {isNegative ? "-" : ""}${formatNumber(Math.abs(amount))}
         </div>
       );
     },
@@ -176,9 +182,13 @@ export const saleDGColumns = columnHelper.columns([
       label: "Sale Amount",
       icon: DollarSignIcon,
 
-      editor: {
-        type: "number",
-      },
+      cellProps: (value) => ({
+        className: cn(
+          typeof value === "number" && value >= 0
+            ? "bg-success/10 dark:bg-success/20"
+            : "bg-destructive/10 dark:bg-destructive/20",
+        ),
+      }),
     },
   }),
 
@@ -189,7 +199,7 @@ export const saleDGColumns = columnHelper.columns([
         {c.getValue() ? (
           <Badge variant="success">Paid</Badge>
         ) : (
-          <Badge variant="outline">Unpaid</Badge>
+          <Badge variant="warning">Unpaid</Badge>
         )}
       </div>
     ),
@@ -204,7 +214,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: CheckCircle2Icon,
 
       editor: {
-        type: "boolean",
+        type: "boolean:switch",
       },
     },
   }),

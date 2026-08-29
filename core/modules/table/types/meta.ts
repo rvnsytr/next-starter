@@ -1,3 +1,4 @@
+import { CellData } from "@tanstack/react-table";
 import { LucideIcon } from "lucide-react";
 
 export type ColumnMeta = {
@@ -17,7 +18,11 @@ export type ColumnMeta = {
   headerProps?: React.ComponentProps<"th">;
 
   /** Props applied to the column's data cell (`<td>`) */
-  cellProps?: Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">;
+  cellProps?:
+    | Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">
+    | ((
+        cellValue: CellData,
+      ) => Omit<React.ComponentProps<"td">, "rowSpan" | "colSpan">);
 
   /** Props applied to the column's footer cell (`<td>`) */
   footerProps?: React.ComponentProps<"td"> & { isPlaceholder?: boolean };

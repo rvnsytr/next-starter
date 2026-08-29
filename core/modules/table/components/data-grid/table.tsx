@@ -444,11 +444,16 @@ export function DataGrid({
                         {(cell) => {
                           const columnMeta = cell.column.columnDef.meta;
 
+                          const cellProps =
+                            typeof columnMeta?.cellProps === "function"
+                              ? columnMeta?.cellProps(cell.getValue())
+                              : columnMeta?.cellProps;
+
                           const {
                             style: cellStyle,
                             className: cellClassName,
                             ...restCellProps
-                          } = columnMeta?.cellProps ?? {};
+                          } = cellProps ?? {};
 
                           const pinPosition = cell.column.getIsPinned();
 

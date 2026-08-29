@@ -24,7 +24,7 @@ export default function Page() {
 
       <Separator className="border-t border-dashed bg-transparent" />
 
-      {/* <EmployeeDataTable /> */}
+      {/* <SaleDataTable /> */}
 
       {/* <Separator className="border-t border-dashed bg-transparent" /> */}
 

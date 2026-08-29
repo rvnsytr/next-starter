@@ -147,11 +147,17 @@ export function DataTable({
               {row.getVisibleCells().map((c) => (
                 <table.AppCell key={c.id} cell={c}>
                   {(cell) => {
+                    const cellPropsMeta = cell.column.columnDef.meta?.cellProps;
+                    const cellProps =
+                      typeof cellPropsMeta === "function"
+                        ? cellPropsMeta(cell.getValue())
+                        : cellPropsMeta;
+
                     const {
                       style: cellStyle,
                       className: cellClassName,
                       ...restCellProps
-                    } = cell.column.columnDef.meta?.cellProps ?? {};
+                    } = cellProps ?? {};
 
                     const pinPosition = cell.column.getIsPinned();
 
