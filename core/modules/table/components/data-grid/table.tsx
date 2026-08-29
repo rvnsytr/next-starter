@@ -577,7 +577,7 @@ export function DataGrid({
                                   "cell-edge-bottom",
                                 !isFocused && edges?.left && "cell-edge-left",
 
-                                isEdit && "cursor-default p-0",
+                                isEdit && "cursor-default px-0 py-1",
                                 isCellEdited &&
                                   !isEdit &&
                                   !isRowRemoved &&
