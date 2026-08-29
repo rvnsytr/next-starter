@@ -7,8 +7,10 @@ import {
   CalendarCheck2Icon,
   CalendarDaysIcon,
   CheckCircle2Icon,
+  CircleDotIcon,
   Clock3Icon,
   DollarSignIcon,
+  MailIcon,
   MapPinIcon,
   PackageIcon,
   TrendingDown,
@@ -81,7 +83,7 @@ export const saleDGColumns = columnHelper.columns([
 
     meta: {
       label: "Email Address",
-      icon: UserRoundIcon,
+      icon: MailIcon,
 
       editor: {
         type: "string",
@@ -130,6 +132,7 @@ export const saleDGColumns = columnHelper.columns([
 
     meta: {
       label: "Status",
+      icon: CircleDotIcon,
     },
   }),
 

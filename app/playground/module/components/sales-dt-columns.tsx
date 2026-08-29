@@ -5,8 +5,10 @@ import { formatDate } from "date-fns";
 import {
   CalendarCheck2Icon,
   CalendarDaysIcon,
+  CircleDotIcon,
   Clock3Icon,
   DollarSignIcon,
+  MailIcon,
   MapPinIcon,
   PackageIcon,
   TrendingDown,
@@ -72,7 +74,7 @@ export const saleDTColumns = columnHelper.columns([
 
     meta: {
       label: "Email Address",
-      icon: UserRoundIcon,
+      icon: MailIcon,
     },
   }),
 
@@ -109,6 +111,7 @@ export const saleDTColumns = columnHelper.columns([
 
     meta: {
       label: "Status",
+      icon: CircleDotIcon,
     },
   }),
 
