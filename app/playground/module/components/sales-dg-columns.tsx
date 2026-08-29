@@ -182,6 +182,10 @@ export const saleDGColumns = columnHelper.columns([
       label: "Sale Amount",
       icon: DollarSignIcon,
 
+      editor: {
+        type: "number",
+      },
+
       cellProps: (value) => ({
         className: cn(
           typeof value === "number" && value >= 0

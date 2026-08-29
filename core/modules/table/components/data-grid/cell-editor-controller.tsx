@@ -75,8 +75,7 @@ function StringCellEditor({
   type FormSchema = z.infer<typeof formSchema>;
 
   const schema =
-    editorMeta.schema ??
-    sharedSchemas.string({ coerce: true, withRequired: true });
+    editorMeta.schema ?? sharedSchemas.string({ withRequired: true });
   const defaultValue = schema.catch("").parse(dv);
 
   const formSchema = z.object({ value: schema });
