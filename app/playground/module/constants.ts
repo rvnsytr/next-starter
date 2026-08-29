@@ -1,47 +1,65 @@
-export type UserRole = (typeof userRoles)[number];
+export type SaleStatus = (typeof saleStatuses)[number];
 
-export const userRoles = [
-  "Admin",
-  "Manager",
-  "Developer",
-  "Designer",
-  "QA",
-  "Support",
+export const saleStatuses = [
+  "Pending",
+  "Processing",
+  "Completed",
+  "Refunded",
+  "Cancelled",
 ] as const;
 
-export const userRoleMeta: Record<UserRole, { color: string }> = {
-  Admin: { color: "#FF0000" },
-  Manager: { color: "#FFA500" },
-  Developer: { color: "#0000FF" },
-  Designer: { color: "#800080" },
-  QA: { color: "#008000" },
-  Support: { color: "#00CED1" },
+export const saleStatusMeta: Record<SaleStatus, { color: string }> = {
+  Pending: { color: "#F59E0B" },
+  Processing: { color: "#3B82F6" },
+  Completed: { color: "#10B981" },
+  Refunded: { color: "#8B5CF6" },
+  Cancelled: { color: "#EF4444" },
 };
 
-export type Skill = (typeof skills)[number];
+export type Product = (typeof products)[number];
 
-export const skills = [
-  "React",
-  "Vue",
-  "Angular",
-  "Node.js",
-  "TypeScript",
-  "Python",
-  "Go",
-  "Docker",
-  "AWS",
-  "GraphQL",
+export const products = [
+  "Laptop",
+  "Monitor",
+  "Keyboard",
+  "Mouse",
+  "Headphones",
+  "Webcam",
+  "Desk",
+  "Chair",
 ] as const;
 
-export const skillMeta: Record<Skill, { color: string }> = {
-  React: { color: "#61DAFB" },
-  Vue: { color: "#42B883" },
-  Angular: { color: "#DD0031" },
-  "Node.js": { color: "#339933" },
-  TypeScript: { color: "#3178C6" },
-  Python: { color: "#3776AB" },
-  Go: { color: "#00ADD8" },
-  Docker: { color: "#2496ED" },
-  AWS: { color: "#FF9900" },
-  GraphQL: { color: "#E10098" },
+export const productMeta: Record<Product, { color: string }> = {
+  Laptop: { color: "#6366F1" },
+  Monitor: { color: "#06B6D4" },
+  Keyboard: { color: "#8B5CF6" },
+  Mouse: { color: "#EC4899" },
+  Headphones: { color: "#F97316" },
+  Webcam: { color: "#14B8A6" },
+  Desk: { color: "#A16207" },
+  Chair: { color: "#64748B" },
+};
+
+export type Sale = {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  salesRep: string | null;
+  notes: string;
+  amount: number;
+  isPaid: boolean;
+  purchasedAt: Date;
+  status: SaleStatus;
+  products: Product[];
+  shippingAddress: {
+    city: string;
+    country: string;
+  };
+  deliveryPeriod: {
+    from: Date;
+    to: Date;
+  };
+  availableDates: Date[];
+  preferredTime: string;
+  deliveryTimes: string[];
 };
