@@ -10,9 +10,11 @@ export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(
   return z.object(prefixedShape);
 }
 
-export const countSchema = z.intersection(
-  z.object({ total: z.number() }),
-  z.record(z.string(), z.number()),
+export const countSchema = z.compile(
+  z.intersection(
+    z.object({ total: z.number() }),
+    z.record(z.string(), z.number()),
+  ),
 );
 
 export const getActionResponseSchema = <T>(schema: z.ZodType<T>) =>

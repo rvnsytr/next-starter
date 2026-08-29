@@ -336,22 +336,28 @@ export const sharedSchemas = {
     return schema;
   },
 
-  email: z
-    .email({ error: messages.invalid("Email address") })
-    .trim()
-    .toLowerCase()
-    .min(1, { error: messages.required("Email address") })
-    .max(255, { error: messages.string.tooLong("Email address", 255) }),
+  email: z.compile(
+    z
+      .email({ error: messages.invalid("Email address") })
+      .trim()
+      .toLowerCase()
+      .min(1, { error: messages.required("Email address") })
+      .max(255, { error: messages.string.tooLong("Email address", 255) }),
+  ),
 
-  password: z
-    .string()
-    .min(1, { error: messages.required("Password") })
-    .min(8, { error: messages.string.tooShort("Password", 8) })
-    .max(255, { error: messages.string.tooLong("Password", 255) })
-    .regex(/[a-z]/, { error: messages.password.lowercase })
-    .regex(/[A-Z]/, { error: messages.password.uppercase })
-    .regex(/[0-9]/, { error: messages.password.number })
-    .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
+  password: z.compile(
+    z
+      .string()
+      .min(1, { error: messages.required("Password") })
+      .min(8, { error: messages.string.tooShort("Password", 8) })
+      .max(255, { error: messages.string.tooLong("Password", 255) })
+      .regex(/[a-z]/, { error: messages.password.lowercase })
+      .regex(/[A-Z]/, { error: messages.password.uppercase })
+      .regex(/[0-9]/, { error: messages.password.number })
+      .regex(/[^A-Za-z0-9]/, { error: messages.password.character }),
+  ),
 
-  gender: z.enum(genders.values, { error: messages.invalid("Jenis kelamin") }),
+  gender: z.compile(
+    z.enum(genders.values, { error: messages.invalid("Jenis kelamin") }),
+  ),
 };

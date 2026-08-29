@@ -23,12 +23,12 @@ export const booleanFilterValueSchema = z.object({
   value: z.boolean(),
 });
 
-export const filterValueSchema = z.discriminatedUnion("type", [
-  stringFilterValueSchema,
-  numberFilterValueSchema,
-  booleanFilterValueSchema,
-]);
+export const filterTypeSchema = z.enum(["string", "number", "boolean"]);
 
-export const filterTypeSchema = z.union(
-  filterValueSchema.options.map((s) => s.shape.type),
+export const filterValueSchema = z.compile(
+  z.discriminatedUnion("type", [
+    stringFilterValueSchema,
+    numberFilterValueSchema,
+    booleanFilterValueSchema,
+  ]),
 );
