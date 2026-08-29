@@ -1,5 +1,7 @@
+import { Checkbox } from "@/core/components/ui/checkbox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import { Switch } from "@/core/components/ui/switch";
 import { toast } from "@/core/components/ui/toast";
 import {
   ColumnMeta,
@@ -12,6 +14,7 @@ import { ErrorFallback } from "@/shared/components/fallback";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,8 +38,14 @@ export function CellEditorController({
   switch (editorMeta.type) {
     case "string":
       return <StringCellEditor editorMeta={editorMeta} {...props} />;
+
     case "number":
       return <NumberCellEditor editorMeta={editorMeta} {...props} />;
+
+    case "boolean":
+    case "boolean:switch":
+      return <BooleanCellEditor editorMeta={editorMeta} {...props} />;
+
     default: {
       return (
         <ErrorFallback
@@ -55,7 +64,7 @@ type CellEditorMeta<T extends DataGridCellEditorType> = Override<
   { editorMeta: Extract<DataGridCellEditorMeta, { type: T }> }
 >;
 
-export function StringCellEditor({
+function StringCellEditor({
   columnMeta,
   editorMeta,
   defaultValue: dv,
@@ -68,16 +77,18 @@ export function StringCellEditor({
     sharedSchemas.string({ coerce: true, withRequired: true });
   const defaultValue = schema.catch("").parse(dv);
 
-  const formSchema = z.object({ string: schema });
+  const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { string: defaultValue },
+    defaultValues: { value: defaultValue },
   });
 
   const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => onSubmit(formData.string),
-    (e) => errorToast(e.string?.message),
+    (formData: FormSchema) => onSubmit(formData.value),
+    (e) => errorToast(e.value?.message),
   );
+
+  useEffect(() => form.setFocus("value"), [form]);
 
   const label = columnMeta?.label ? columnMeta.label.toLowerCase() : "a value";
   const {
@@ -90,7 +101,7 @@ export function StringCellEditor({
   return (
     <Form onSubmit={onFormSubmit}>
       <Controller
-        name="string"
+        name="value"
         control={form.control}
         render={({ field, fieldState }) => (
           <Input
@@ -101,7 +112,6 @@ export function StringCellEditor({
               className,
             )}
             unstyled
-            autoFocus
             {...field}
             {...props}
           />
@@ -111,7 +121,7 @@ export function StringCellEditor({
   );
 }
 
-export function NumberCellEditor({
+function NumberCellEditor({
   columnMeta,
   editorMeta,
   defaultValue: dv,
@@ -124,16 +134,18 @@ export function NumberCellEditor({
     sharedSchemas.number({ coerce: true, withRequired: true });
   const defaultValue = schema.catch(0).parse(dv);
 
-  const formSchema = z.object({ number: schema });
+  const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { number: defaultValue },
+    defaultValues: { value: defaultValue },
   });
 
   const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => onSubmit(formData.number),
-    (e) => errorToast(e.number?.message),
+    (formData: FormSchema) => onSubmit(formData.value),
+    (e) => errorToast(e.value?.message),
   );
+
+  useEffect(() => form.setFocus("value"), [form]);
 
   const label = columnMeta?.label ? columnMeta.label.toLowerCase() : "a number";
   const {
@@ -146,7 +158,7 @@ export function NumberCellEditor({
   return (
     <Form onSubmit={onFormSubmit}>
       <Controller
-        name="number"
+        name="value"
         control={form.control}
         render={({ field, fieldState }) => (
           <Input
@@ -157,11 +169,84 @@ export function NumberCellEditor({
               className,
             )}
             unstyled
-            autoFocus
             {...field}
             {...props}
           />
         )}
+      />
+    </Form>
+  );
+}
+
+function BooleanCellEditor({
+  // columnMeta,
+  editorMeta,
+  defaultValue: dv,
+  onSubmit,
+}: CellEditorMeta<"boolean" | "boolean:switch">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const schema = editorMeta.schema ?? sharedSchemas.boolean();
+  const defaultValue = schema.catch(true).parse(dv);
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: defaultValue },
+  });
+
+  const onFormSubmit = form.handleSubmit(
+    (formData: FormSchema) => onSubmit(formData.value),
+    (e) => errorToast(e.value?.message),
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onFormSubmit();
+    }
+  };
+
+  useEffect(() => form.setFocus("value"), [form]);
+
+  return (
+    <Form onSubmit={onFormSubmit}>
+      <Controller
+        name="value"
+        control={form.control}
+        render={({ field: { value, onChange, ...field } }) => {
+          if (editorMeta.type === "boolean") {
+            const { onKeyDown, className, ...props } = editorMeta.props ?? {};
+            return (
+              <Checkbox
+                checked={value}
+                onCheckedChange={onChange}
+                onKeyDown={(e) => {
+                  handleKeyDown(e);
+                  onKeyDown?.(e);
+                }}
+                className={cn("mx-auto", className)}
+                {...field}
+                {...props}
+              />
+            );
+          }
+
+          const { onKeyDown, className, ...props } = editorMeta.props ?? {};
+          return (
+            <Switch
+              checked={value}
+              onCheckedChange={onChange}
+              onKeyDown={(e) => {
+                handleKeyDown(e);
+                onKeyDown?.(e);
+              }}
+              className={cn("mx-auto", className)}
+              {...field}
+              {...props}
+            />
+          );
+        }}
       />
     </Form>
   );

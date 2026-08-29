@@ -20,7 +20,7 @@ import {
 } from "@/core/modules/table/utils";
 import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
-import { useHotkey, useHotkeys } from "@tanstack/react-hotkeys";
+import { useHotkeys } from "@tanstack/react-hotkeys";
 import {
   CellData,
   CellSelectionBounds,
@@ -166,6 +166,11 @@ export function DataGrid({
         callback: () => table.moveCellSelection("right"),
       },
       {
+        hotkey: "Tab",
+        callback: () => table.moveCellSelection("right"),
+        options: { conflictBehavior: "allow" },
+      },
+      {
         hotkey: "Shift+ArrowUp",
         callback: () => table.extendCellSelection("up"),
       },
@@ -259,11 +264,23 @@ export function DataGrid({
     { target: tableRef, enabled: !edit },
   );
 
-  useHotkey("Escape", () => exitEdit(), {
-    target: tableRef,
-    enabled: !!edit,
-    conflictBehavior: "allow",
-  });
+  useHotkeys(
+    [
+      {
+        hotkey: "Tab",
+        callback: () => {
+          tableRef.current?.focus();
+          table.moveCellSelection("right");
+        },
+      },
+      { hotkey: "Escape", callback: () => exitEdit() },
+    ],
+    {
+      target: tableRef,
+      enabled: !!edit,
+      conflictBehavior: "allow",
+    },
+  );
 
   const { className: containerClassName, ...restContainerProps } =
     containerProps ?? {};

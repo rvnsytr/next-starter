@@ -87,7 +87,7 @@ export const DataGridProvider = ({
 
     const mergedChanges = {
       ...(currentUpdatedRow?.changes ?? {}),
-      /** @note this is flat structure, nested properties are represented using dot notation (e.g., "address.street") */
+      /** @note this is flat structure, nested properties are represented using dot notation (e.g., "address.street"). */
       ...rows.changes,
     };
 

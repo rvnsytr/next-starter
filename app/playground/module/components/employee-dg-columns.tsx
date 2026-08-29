@@ -68,6 +68,9 @@ export const employeeDGColumns = columnHelper.columns([
     meta: {
       label: "Active",
       icon: CircleDotIcon,
+      editor: {
+        type: "boolean",
+      },
     },
 
     // enableColumnFilter: false,
@@ -77,7 +80,6 @@ export const employeeDGColumns = columnHelper.columns([
     // enablePinning: false,
     // enableResizing: false,
     enableSorting: false,
-    enableCellSelection: false,
   }),
   columnHelper.accessor("name", {
     header: (c) => <c.header.ColumnHeader label="Name" />,

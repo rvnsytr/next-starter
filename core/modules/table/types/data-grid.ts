@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { Checkbox } from "@/core/components/ui/checkbox";
 import { InputProps } from "@/core/components/ui/input";
+import { Switch } from "@/core/components/ui/switch";
 import { DeepPartial, Override } from "@/core/types";
 import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
@@ -42,17 +44,14 @@ export type DataGridTableMeta<TData extends RowData> = {
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
 type ExcludedInputProps =
-  | "ref"
-  | "name"
-  | "value"
-  | "disabled"
-  | "onChange"
-  | "onBlur"
-  | "unstyled"
-  | "autoFocus";
+  "ref" | "name" | "value" | "disabled" | "onChange" | "onBlur" | "unstyled";
 
 export type CellEditorMetaBase = {
-  /** Override the column id used when writing the value back to the row. */
+  /**
+   * Override the column id used when writing the value back to the row.
+   *
+   * Nested properties are represented using dot notation (e.g., "address.street").
+   */
   key?: string;
 
   /** Controls which input component is rendered and which Zod schema is expected. */
@@ -71,8 +70,23 @@ export type DataGridCellEditorMeta =
       CellEditorMetaBase,
       {
         type: "number";
-        defaultValue?: number;
         schema?: z.ZodType<number, any>;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "boolean";
+        schema?: z.ZodType<boolean, any>;
+        props?: React.ComponentProps<typeof Checkbox>;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "boolean:switch";
+        schema?: z.ZodType<boolean, any>;
+        props?: React.ComponentProps<typeof Switch>;
       }
     >;
 
