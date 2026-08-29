@@ -67,6 +67,7 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
+    /** @default false */
     coerce?: boolean;
     /** @default false */
     withRequired?: boolean;
@@ -100,7 +101,8 @@ export const sharedSchemas = {
     return schema;
   },
 
-  boolean: (label?: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  boolean: (label?: string): z.ZodType<boolean, any> => {
     const error = label ? messages.invalid(label) : undefined;
     return z
       .union([z.boolean(), z.string()], { error })
@@ -113,7 +115,10 @@ export const sharedSchemas = {
     label?: string;
     min?: Date | "now";
     max?: Date | "now";
-  }) => {
+    /** @default false */
+    coerce?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): z.ZodType<Date, any> => {
     const { tooEarly, tooLate } = messages.date;
 
     const label = options?.label ?? undefined;
@@ -121,7 +126,9 @@ export const sharedSchemas = {
     const max = options?.max;
 
     const invalidError = label && messages.invalid(label);
-    let schema = z.date({ error: invalidError });
+    let schema = options?.coerce
+      ? z.coerce.date({ error: invalidError })
+      : z.date({ error: invalidError });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
@@ -144,7 +151,10 @@ export const sharedSchemas = {
     max?: Date | "now";
     minDate?: number;
     maxDate?: number;
-  }) => {
+    /** @default false */
+    coerce?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): z.ZodType<Date[], any> => {
     const { invalid, required } = messages;
     const { tooEarly, tooLate, tooFew, tooMany } = messages.date;
 
@@ -155,7 +165,9 @@ export const sharedSchemas = {
     const max = options?.max;
 
     const invalidError = label && invalid(label);
-    let dateSchema = z.date({ error: invalidError });
+    let dateSchema = options?.coerce
+      ? z.coerce.date({ error: invalidError })
+      : z.date({ error: invalidError });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
@@ -191,15 +203,22 @@ export const sharedSchemas = {
     label?: string;
     min?: Date | "now";
     max?: Date | "now";
-  }) => {
+    /** @default false */
+    coerce?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): z.ZodType<{ from: Date; to: Date }, any> => {
     const { tooEarly, tooLate } = messages.date;
 
     const label = options?.label ?? undefined;
     const min = options?.min;
     const max = options?.max;
 
-    let fromSchema = z.date({ error: "Please select a valid start date." });
-    let toSchema = z.date({ error: "Please select a valid end date." });
+    let fromSchema = options?.coerce
+      ? z.coerce.date({ error: "Please select a valid start date." })
+      : z.date({ error: "Please select a valid start date." });
+    let toSchema = options?.coerce
+      ? z.coerce.date({ error: "Please select a valid end date." })
+      : z.date({ error: "Please select a valid end date." });
 
     if (min) {
       const value = min === "now" ? new Date() : min;
