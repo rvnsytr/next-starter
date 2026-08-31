@@ -1,6 +1,11 @@
 import { CellData } from "@tanstack/react-table";
 import { LucideIcon } from "lucide-react";
 
+export type TableMeta = {
+  /** Whether the table is in a loading state. */
+  loading?: boolean;
+};
+
 export type ColumnMeta = {
   /** The label displayed in the column header */
   label?: string;

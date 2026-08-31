@@ -20,9 +20,6 @@ export type TableProps = React.ComponentProps<typeof Table> & {
 
   /** The placeholder message to display when the table has no data. */
   placeholder?: string;
-
-  /** Whether the table is in a loading state. */
-  loading?: boolean;
 };
 
 export type TableComponents = {
@@ -50,7 +47,7 @@ export type TableCellComponents = {
 };
 
 export type TableLayoutProps = React.ComponentProps<"div"> & {
-  tableProps?: TableProps;
+  // tableProps?: TableProps;
   activeFiltersProps?: ActiveFiltersProps;
   activeFiltersContainerProps?: ActiveFiltersContainerProps;
   clearFiltersProps?: ClearFiltersProps;
@@ -67,5 +64,6 @@ export type TableLayoutProps = React.ComponentProps<"div"> & {
     header?: string;
     footer?: string;
   };
+
   renderSlot?: React.ReactNode;
 };

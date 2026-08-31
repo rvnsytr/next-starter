@@ -19,11 +19,15 @@ import { TableResizeCursor } from "../base/table-resize-cursor";
 export function DataTable({
   caption,
   placeholder,
-  loading = false,
   style,
   ...props
 }: TableProps) {
   const table = dataTable.useTableContext();
+
+  const isLoading = useMemo(
+    () => table.options.meta?.loading ?? false,
+    [table.options.meta?.loading],
+  );
 
   const allLeafColumnsLength = useMemo(
     () => table.getAllLeafColumns().length,
@@ -131,7 +135,7 @@ export function DataTable({
       </TableHeader>
 
       <TableBody>
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
@@ -203,7 +207,7 @@ export function DataTable({
       </TableBody>
 
       <TableFooter>
-        {loading ? (
+        {isLoading ? (
           <TableRow>
             <TableCell colSpan={allLeafColumnsLength}>
               <Skeleton className="h-7 w-full" />

@@ -7,7 +7,7 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
 import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
-import { ColumnMeta } from "./meta";
+import { ColumnMeta, TableMeta } from "./meta";
 
 export type DataGridTableComponents = {
   Layout: React.ComponentType<any>;
@@ -17,7 +17,7 @@ export type DataGridTableComponents = {
   SaveChangesButton: React.ComponentType<any>;
 };
 
-export type DataGridTableMeta<TData extends RowData> = {
+export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   /** Default values used when adding a new row. */
   defaultValues: TData;
 

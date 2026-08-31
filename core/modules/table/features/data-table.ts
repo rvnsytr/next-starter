@@ -6,7 +6,7 @@ import {
   metaHelper,
   TableFeatures,
 } from "@tanstack/react-table";
-import { DataTableColumnMeta } from "../types";
+import { DataTableColumnMeta, DataTableTableMeta } from "../types";
 import {
   clientDataControllerFeatures,
   serverDataControllerFeatures,
@@ -28,5 +28,6 @@ export const dataTableFeatures = {
   ...serverDataTableFeatures,
   ...clientDataTableFeatures,
 
+  tableMeta: metaHelper<DataTableTableMeta>(),
   columnMeta: metaHelper<DataTableColumnMeta>(),
 } satisfies TableFeatures;

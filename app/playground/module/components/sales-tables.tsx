@@ -28,21 +28,19 @@ export function SaleDataTable() {
     data: data ?? [],
     columns: saleDTColumns,
     getRowId: (row) => row.id.toString(),
+    meta: { loading: isLoading },
   });
 
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
   return (
     <table.AppTable>
-      <table.Layout
-        tableProps={{
-          variant: "bordered",
-          containerProps: {
-            className: "rounded-none border-x-0",
-          },
-          loading: isLoading,
-        }}
-      />
+      <table.Layout>
+        <table.Table
+          variant="bordered"
+          containerProps={{ className: "rounded-none border-x-0" }}
+        />
+      </table.Layout>
     </table.AppTable>
   );
 }
@@ -65,6 +63,8 @@ export function SaleDataGrid() {
     columns: saleDGColumns,
     getRowId: (row) => row.id,
     meta: {
+      loading: isLoading,
+
       defaultValues: {
         id: crypto.randomUUID(),
         customerName: "",
@@ -129,15 +129,12 @@ export function SaleDataGrid() {
 
   return (
     <table.AppTable>
-      <table.Layout
-        tableProps={{
-          variant: "bordered",
-          containerProps: {
-            className: "rounded-none border-x-0",
-          },
-          loading: isLoading,
-        }}
-      />
+      <table.Layout>
+        <table.Table
+          variant="bordered"
+          containerProps={{ className: "rounded-none border-x-0" }}
+        />
+      </table.Layout>
     </table.AppTable>
   );
 }

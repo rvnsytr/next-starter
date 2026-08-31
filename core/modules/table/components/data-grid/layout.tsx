@@ -11,6 +11,7 @@ import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { InfoIcon } from "lucide-react";
+import { useMemo } from "react";
 import { AddRowButtonProps } from "./add-row-button";
 import { ClearChangesButtonProps } from "./clear-changes-button";
 import { useDataGrid } from "./provider";
@@ -23,7 +24,6 @@ export type DataGridLayoutProps = TableLayoutProps &
   };
 
 export function DataGridLayout({
-  tableProps,
   activeFiltersProps,
   activeFiltersContainerProps,
   clearFiltersProps,
@@ -34,18 +34,24 @@ export function DataGridLayout({
   paginationProps,
   resetTableButtonProps,
   searchProps,
+  saveChangesButtonProps,
+  addRowButtonProps,
+  clearChangesButtonProps,
   caption,
   className,
   classNames,
   renderSlot,
-  saveChangesButtonProps,
-  addRowButtonProps,
-  clearChangesButtonProps,
+  children,
   ...props
 }: DataGridLayoutProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataGrid.useTableContext();
+
+  const isLoading = useMemo(
+    () => table.options.meta?.loading,
+    [table.options.meta?.loading],
+  );
 
   const {
     align: clearFiltersAlign = "start",
@@ -182,7 +188,7 @@ export function DataGridLayout({
           }}
         </table.Subscribe>
 
-        <table.Table {...tableProps} />
+        {children}
 
         <div
           className={cn(
@@ -223,12 +229,16 @@ export function DataGridLayout({
 
               return (
                 <span className="order-3 shrink-0 tabular-nums lg:order-4">
-                  <span className="text-foreground">
-                    {tableProps?.loading
-                      ? "?"
-                      : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
-                  </span>
-                  {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
+                  {isLoading ? (
+                    "?"
+                  ) : (
+                    <>
+                      <span className="text-foreground">
+                        {`${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
+                      </span>
+                      {` of ${formatNumber(rowsCount)}`}
+                    </>
+                  )}
                 </span>
               );
             }}
@@ -288,7 +298,7 @@ function ChangesCount() {
           <div className="order-2 flex items-center gap-x-2 *:shrink-0 lg:order-2">
             {rowCount > 0 && (
               <small>
-                <b>{formatNumber(rowCount)}</b> rows selected
+                <b>{formatNumber(rowCount)}</b> selected
               </small>
             )}
 
@@ -315,13 +325,13 @@ function ChangesCount() {
                   <TooltipPopup>
                     <ul className="flex list-inside list-disc flex-col gap-0.5 text-left">
                       <li className="text-success *:text-success">
-                        <b>{formatNumber(newRowsCount)}</b> rows added
+                        <b>{formatNumber(newRowsCount)}</b> added
                       </li>
                       <li className="text-warning *:text-warning">
-                        <b>{formatNumber(count.updated)}</b> rows updated
+                        <b>{formatNumber(count.updated)}</b> updated
                       </li>
                       <li className="text-destructive *:text-destructive">
-                        <b>{formatNumber(count.removed)}</b> rows removed
+                        <b>{formatNumber(count.removed)}</b> removed
                       </li>
                     </ul>
                   </TooltipPopup>

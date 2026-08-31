@@ -80,7 +80,6 @@ function rowSelectionKey(
 export function DataGrid({
   caption,
   placeholder,
-  loading = false,
   style,
   containerProps,
   ...props
@@ -97,6 +96,11 @@ export function DataGrid({
 
   const [edit, setEdit] = useState<DataGridEditState | null>(null);
   const editRef = useRef<DataGridEditState | null>(null);
+
+  const isLoading = useMemo(
+    () => table.options.meta?.loading ?? false,
+    [table.options.meta?.loading],
+  );
 
   const allLeafColumnsLength = useMemo(
     () => table.getAllLeafColumns().length,
@@ -390,7 +394,7 @@ export function DataGrid({
       </TableHeader>
 
       <TableBody>
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
@@ -625,7 +629,7 @@ export function DataGrid({
       </TableBody>
 
       <TableFooter>
-        {loading ? (
+        {isLoading ? (
           <TableRow>
             <TableCell colSpan={allLeafColumnsLength}>
               <Skeleton className="h-7 w-full" />

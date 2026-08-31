@@ -4,9 +4,9 @@ import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
+import { useMemo } from "react";
 
 export function DataTableLayout({
-  tableProps,
   activeFiltersProps,
   activeFiltersContainerProps,
   clearFiltersProps,
@@ -21,11 +21,17 @@ export function DataTableLayout({
   className,
   classNames,
   renderSlot,
+  children,
   ...props
 }: TableLayoutProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataTable.useTableContext();
+
+  const isLoading = useMemo(
+    () => table.options.meta?.loading,
+    [table.options.meta?.loading],
+  );
 
   const {
     align: clearFiltersAlign = "start",
@@ -126,11 +132,11 @@ export function DataTableLayout({
         }}
       </table.Subscribe>
 
-      <table.Table {...tableProps} />
+      {children}
 
       <div
         className={cn(
-          "text-muted-foreground flex w-full flex-col items-center gap-4 px-4 text-center text-sm lg:flex-row",
+          "text-muted-foreground flex w-full flex-col items-center gap-4 px-4 text-center text-sm lg:flex-row lg:items-center",
           classNames?.footer,
         )}
       >
@@ -149,7 +155,7 @@ export function DataTableLayout({
             if (count <= 0) return null;
             return (
               <small className="order-2 shrink-0 lg:order-2">
-                {formatNumber(count)} rows selected
+                {formatNumber(count)} selected
               </small>
             );
           }}
@@ -176,12 +182,16 @@ export function DataTableLayout({
 
             return (
               <span className="order-3 shrink-0 tabular-nums lg:order-4">
-                <span className="text-foreground">
-                  {tableProps?.loading
-                    ? "?"
-                    : `${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
-                </span>
-                {tableProps?.loading ? "?" : ` of ${formatNumber(rowsCount)}`}
+                {isLoading ? (
+                  "?"
+                ) : (
+                  <>
+                    <span className="text-foreground">
+                      {`${formatNumber(startRowNumber)}-${formatNumber(endRowNumber)}`}
+                    </span>
+                    {` of ${formatNumber(rowsCount)}`}
+                  </>
+                )}
               </span>
             );
           }}
