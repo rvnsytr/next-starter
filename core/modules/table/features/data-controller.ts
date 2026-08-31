@@ -20,7 +20,7 @@ import {
   numberFilterFn,
   stringFilterFn,
 } from "../filters";
-import { ColumnMeta } from "../types";
+import { ColumnMeta, TableMeta } from "../types";
 
 export const serverDataControllerFeatures = {
   columnFilteringFeature,
@@ -50,5 +50,6 @@ export const dataControllerFeatures = {
   ...serverDataControllerFeatures,
   ...clientDataControllerFeatures,
 
+  tableMeta: metaHelper<TableMeta>(),
   columnMeta: metaHelper<ColumnMeta>(),
 } satisfies TableFeatures;
