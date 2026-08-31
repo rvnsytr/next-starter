@@ -1,25 +1,23 @@
 import { createTableHook, tableFeatures } from "@tanstack/react-table";
 import { ActiveFiltersContainer } from "../components/base/filters";
-import { DataTableClearFilters } from "../components/data-table/clear-filters";
-import { DataTableColumnHeader } from "../components/data-table/column-header";
-import { DataTableColumnSortMenu } from "../components/data-table/column-sort-menu";
-import { DataTableColumnVisibilityMenu } from "../components/data-table/column-visibility-menu";
+import { DataControllerClearFilters } from "../components/data-controller/clear-filters";
+import { DataControllerColumnHeader } from "../components/data-controller/column-header";
+import { DataControllerColumnSortMenu } from "../components/data-controller/column-sort-menu";
 import {
-  DataTableActiveFilters,
-  DataTableFilterSelector,
-} from "../components/data-table/filters";
-import { DataTableLayout } from "../components/data-table/layout";
-import { DataTablePageSizeSelector } from "../components/data-table/page-size-selector";
-import { DataTablePagination } from "../components/data-table/pagination";
-import { DataTableResetTableButton } from "../components/data-table/reset-table-button";
-import { DataTableRowNumber } from "../components/data-table/row-number";
-import { DataTableSearch } from "../components/data-table/search";
-import { DataTableSelectAllCheckbox } from "../components/data-table/select-all-checkbox";
-import { DataTableSelectRowCheckbox } from "../components/data-table/select-row-checkbox";
-import { DataTable } from "../components/data-table/table";
+  DataControllerActiveFilters,
+  DataControllerFilterSelector,
+} from "../components/data-controller/filters";
+import { DataControllerLayout } from "../components/data-controller/layout";
+import { DataControllerPageSizeSelector } from "../components/data-controller/page-size-selector";
+import { DataControllerPagination } from "../components/data-controller/pagination";
+import { DataControllerResetTableButton } from "../components/data-controller/reset-table-button";
+import { DataControllerRowNumber } from "../components/data-controller/row-number";
+import { DataControllerSearch } from "../components/data-controller/search";
+import { DataControllerSelectAllCheckbox } from "../components/data-controller/select-all-checkbox";
+import { DataControllerSelectRowCheckbox } from "../components/data-controller/select-row-checkbox";
+import { DataControllerTable } from "../components/data-controller/table";
 import { dataControllerFeatures } from "../features/data-controller";
 import {
-  DataTableTableComponents,
   TableCellComponents,
   TableComponents,
   TableHeaderComponents,
@@ -28,25 +26,24 @@ import {
 export const dataController = createTableHook({
   features: tableFeatures(dataControllerFeatures),
   tableComponents: {
-    Table: DataTable,
-    ActiveFilters: DataTableActiveFilters,
+    ActiveFilters: DataControllerActiveFilters,
     ActiveFiltersContainer,
-    ClearFilters: DataTableClearFilters,
-    ColumnSortMenu: DataTableColumnSortMenu,
-    ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
-    FilterSelector: DataTableFilterSelector,
-    PageSizeSelector: DataTablePageSizeSelector,
-    Pagination: DataTablePagination,
-    ResetTableButton: DataTableResetTableButton,
-    Search: DataTableSearch,
-    Layout: DataTableLayout,
-  } satisfies TableComponents & DataTableTableComponents,
+    ClearFilters: DataControllerClearFilters,
+    ColumnSortMenu: DataControllerColumnSortMenu,
+    FilterSelector: DataControllerFilterSelector,
+    Layout: DataControllerLayout,
+    PageSizeSelector: DataControllerPageSizeSelector,
+    Pagination: DataControllerPagination,
+    ResetTableButton: DataControllerResetTableButton,
+    Search: DataControllerSearch,
+    Table: DataControllerTable,
+  } satisfies TableComponents,
   headerComponents: {
-    ColumnHeader: DataTableColumnHeader,
-    SelectAllCheckbox: DataTableSelectAllCheckbox,
+    ColumnHeader: DataControllerColumnHeader,
+    SelectAllCheckbox: DataControllerSelectAllCheckbox,
   } satisfies TableHeaderComponents,
   cellComponents: {
-    RowNumber: DataTableRowNumber,
-    SelectRowCheckbox: DataTableSelectRowCheckbox,
+    RowNumber: DataControllerRowNumber,
+    SelectRowCheckbox: DataControllerSelectRowCheckbox,
   } satisfies TableCellComponents,
 });

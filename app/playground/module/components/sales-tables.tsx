@@ -2,14 +2,50 @@
 
 import { toast } from "@/core/components/ui/toast";
 import { useIsMounted } from "@/core/hooks/use-is-mounted";
+import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { mergeNested } from "@/core/modules/table/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
 import useSWR from "swr";
 import { getSales } from "../actions";
+import { saleDCColumns } from "./sales-dc-columns";
 import { saleDGColumns } from "./sales-dg-columns";
 import { saleDTColumns } from "./sales-dt-columns";
+
+export function SaleDataController() {
+  const isMounted = useIsMounted();
+
+  const { data, isLoading } = useSWR(
+    "/dt/sales",
+    async () => await getSales(10),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
+
+  const table = dataController.useAppTable({
+    data: data ?? [],
+    columns: saleDCColumns,
+    getRowId: (row) => row.id.toString(),
+    meta: { loading: isLoading },
+  });
+
+  if (!isMounted) return <LoadingFallback variant="frame" />;
+
+  return (
+    <table.AppTable>
+      <table.Layout>
+        <table.Table
+          variant="bordered"
+          containerProps={{ className: "rounded-none border-x-0" }}
+        />
+      </table.Layout>
+    </table.AppTable>
+  );
+}
 
 export function SaleDataTable() {
   const isMounted = useIsMounted();
