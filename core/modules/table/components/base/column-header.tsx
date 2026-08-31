@@ -42,10 +42,10 @@ type ColumnHeaderContext = {
   column: {
     id: string;
     meta?: ColumnMeta;
-    canSort: boolean;
-    canPin: boolean;
-    sortControl: RadioGroupControlProps;
-    pinControl: RadioGroupControlProps;
+    canSort?: boolean;
+    canPin?: boolean;
+    sortControl?: RadioGroupControlProps;
+    pinControl?: RadioGroupControlProps;
   };
 };
 
@@ -56,7 +56,13 @@ export function ColumnHeader({
   className,
   ...props
 }: ColumnHeaderProps & { context: ColumnHeaderContext }) {
-  if (!context.column.canSort && !context.column.canPin) return label;
+  const canSort = context.column.canSort ?? false;
+  const sortControl = context.column.sortControl ?? {};
+
+  const canPin = context.column.canPin ?? false;
+  const pinControl = context.column.pinControl ?? {};
+
+  if (!canSort && !canPin) return label;
 
   const { asc: AscIcon, desc: DescIcon } = SORT_ICONS;
 
@@ -99,11 +105,11 @@ export function ColumnHeader({
       </div>
 
       <MenuPopup align={popupAlign}>
-        {context.column.canSort && (
+        {canSort && (
           <MenuGroup>
             <MenuGroupLabel>Sort Column</MenuGroupLabel>
 
-            <MenuRadioGroup {...context.column.sortControl}>
+            <MenuRadioGroup {...sortControl}>
               <MenuRadioItem value="asc">
                 <div className="flex items-center gap-2">
                   <AscIcon /> Ascending
@@ -119,13 +125,13 @@ export function ColumnHeader({
           </MenuGroup>
         )}
 
-        {context.column.canSort && context.column.canPin && <MenuSeparator />}
+        {canSort && canPin && <MenuSeparator />}
 
-        {context.column.canPin && (
+        {canPin && (
           <MenuGroup>
             <MenuGroupLabel>Pin Column</MenuGroupLabel>
 
-            <MenuRadioGroup {...context.column.pinControl}>
+            <MenuRadioGroup {...pinControl}>
               <MenuRadioItem value="start">
                 <div className="flex items-center gap-2">
                   <ArrowLeftToLineIcon />
