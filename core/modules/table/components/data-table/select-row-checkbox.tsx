@@ -1,16 +1,19 @@
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { RowCheckbox, RowCheckboxProps } from "../base/row-checkbox";
+import {
+  SelectRowCheckbox,
+  SelectRowCheckboxProps,
+} from "../base/select-row-checkbox";
 
 export function DataTableSelectRowCheckbox({
   disabled = false,
   ...props
-}: RowCheckboxProps) {
+}: SelectRowCheckboxProps) {
   const table = dataTable.useTableContext();
   const cell = dataTable.useCellContext();
   return (
     <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
       {(selected) => (
-        <RowCheckbox
+        <SelectRowCheckbox
           checked={selected}
           onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
           disabled={disabled || !cell.row.getCanSelect()}
