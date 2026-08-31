@@ -8,20 +8,20 @@ import {
 } from "@/core/components/ui/tooltip";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { InfoIcon } from "lucide-react";
 import { useMemo } from "react";
+import { DataTableLayoutProps } from "../data-table/layout";
 import { AddRowButtonProps } from "./add-row-button";
 import { ClearChangesButtonProps } from "./clear-changes-button";
 import { useDataGrid } from "./provider";
 import { SaveChangesButtonProps } from "./save-changes-button";
 
-export type DataGridLayoutProps = TableLayoutProps &
-  EditorToolbarProps & {
-    addRowButtonProps?: AddRowButtonProps;
-    clearChangesButtonProps?: ClearChangesButtonProps;
-  };
+export type DataGridLayoutProps = DataTableLayoutProps & {
+  addRowButtonProps?: AddRowButtonProps;
+  clearChangesButtonProps?: ClearChangesButtonProps;
+  saveChangesButtonProps?: SaveChangesButtonProps;
+};
 
 export function DataGridLayout({
   activeFiltersProps,
@@ -34,9 +34,9 @@ export function DataGridLayout({
   paginationProps,
   resetTableButtonProps,
   searchProps,
-  saveChangesButtonProps,
   addRowButtonProps,
   clearChangesButtonProps,
+  saveChangesButtonProps,
   caption,
   className,
   classNames,
@@ -254,10 +254,10 @@ export function DataGridLayout({
   );
 }
 
-type EditorToolbarProps = {
-  saveChangesButtonProps?: SaveChangesButtonProps;
-  clearChangesButtonProps?: ClearChangesButtonProps;
-};
+type EditorToolbarProps = Pick<
+  DataGridLayoutProps,
+  "clearChangesButtonProps" | "saveChangesButtonProps"
+>;
 
 function EditorToolbar({
   clearChangesButtonProps,

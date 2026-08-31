@@ -7,10 +7,10 @@ import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
 import { RowData } from "@tanstack/react-table";
 import { z } from "zod";
+import { DataTableTableComponents } from "./data-table";
 import { ColumnMeta, TableMeta } from "./meta";
 
-export type DataGridTableComponents = {
-  Layout: React.ComponentType<any>;
+export type DataGridTableComponents = DataTableTableComponents & {
   Provider: React.ComponentType<any>;
   AddRowButton: React.ComponentType<any>;
   ClearChangesButton: React.ComponentType<any>;

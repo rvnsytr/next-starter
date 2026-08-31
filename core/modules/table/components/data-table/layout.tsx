@@ -5,6 +5,11 @@ import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableLayoutProps } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { useMemo } from "react";
+import { ColumnVisibilityMenuProps } from "../base/column-visibility-menu";
+
+export type DataTableLayoutProps = TableLayoutProps & {
+  columnVisibilityMenuProps?: ColumnVisibilityMenuProps;
+};
 
 export function DataTableLayout({
   activeFiltersProps,
@@ -23,7 +28,7 @@ export function DataTableLayout({
   renderSlot,
   children,
   ...props
-}: TableLayoutProps) {
+}: DataTableLayoutProps) {
   const isDesktop = useIsDesktop();
 
   const table = dataTable.useTableContext();

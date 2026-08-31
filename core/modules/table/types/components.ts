@@ -3,7 +3,6 @@
 import { Table } from "@/core/components/ui/table";
 import { ClearFiltersProps } from "../components/base/clear-filters";
 import { ColumnSortMenuProps } from "../components/base/column-sort-menu";
-import { ColumnVisibilityMenuProps } from "../components/base/column-visibility-menu";
 import {
   ActiveFiltersContainerProps,
   ActiveFiltersProps,
@@ -23,17 +22,17 @@ export type TableProps = React.ComponentProps<typeof Table> & {
 };
 
 export type TableComponents = {
-  Table: React.ComponentType<any>;
   ActiveFilters: React.ComponentType<any>;
   ActiveFiltersContainer: React.ComponentType<any>;
   ClearFilters: React.ComponentType<any>;
   ColumnSortMenu: React.ComponentType<any>;
-  ColumnVisibilityMenu: React.ComponentType<any>;
   FilterSelector: React.ComponentType<any>;
+  Layout: React.ComponentType<any>;
   PageSizeSelector: React.ComponentType<any>;
   Pagination: React.ComponentType<any>;
   ResetTableButton: React.ComponentType<any>;
   Search: React.ComponentType<any>;
+  Table: React.ComponentType<any>;
 };
 
 export type TableHeaderComponents = {
@@ -52,7 +51,6 @@ export type TableLayoutProps = React.ComponentProps<"div"> & {
   activeFiltersContainerProps?: ActiveFiltersContainerProps;
   clearFiltersProps?: ClearFiltersProps;
   columnSortMenuProps?: ColumnSortMenuProps;
-  columnVisibilityMenuProps?: ColumnVisibilityMenuProps;
   filterSelectorProps?: FilterSelectorProps;
   pageSizeSelectorProps?: PageSizeSelectorProps;
   paginationProps?: PaginationProps;

@@ -14,7 +14,6 @@ export function DataTableRowNumber(props: RowNumberProps) {
           pagination,
           table.options.manualPagination,
         );
-
         return <RowNumber {...props}>{formatNumber(rowNumber)}</RowNumber>;
       }}
     </table.Subscribe>

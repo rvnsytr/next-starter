@@ -28,18 +28,18 @@ import {
 export const dataTable = createTableHook({
   features: tableFeatures(dataTableFeatures),
   tableComponents: {
-    Table: DataTable,
     ActiveFilters: DataTableActiveFilters,
     ActiveFiltersContainer,
     ClearFilters: DataTableClearFilters,
     ColumnSortMenu: DataTableColumnSortMenu,
     ColumnVisibilityMenu: DataTableColumnVisibilityMenu,
     FilterSelector: DataTableFilterSelector,
+    Layout: DataTableLayout,
     PageSizeSelector: DataTablePageSizeSelector,
     Pagination: DataTablePagination,
     ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
-    Layout: DataTableLayout,
+    Table: DataTable,
   } satisfies TableComponents & DataTableTableComponents,
   headerComponents: {
     ColumnHeader: DataTableColumnHeader,
