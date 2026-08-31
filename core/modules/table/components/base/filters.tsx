@@ -201,7 +201,11 @@ export function FilterSelector({
           {filterValueController ? (
             <FilterValueController {...filterValueController} />
           ) : (
-            <ErrorFallback error="Invalid Filter Selector State" hideCode />
+            <ErrorFallback
+              error="Invalid Filter Selector State"
+              errorOnly
+              hideCode
+            />
           )}
         </PopoverPopup>
       </Popover>
@@ -224,7 +228,7 @@ function FilterValueController(props: FilterValueControllerProps) {
           title="Unsupported Filter Type"
           error={`Filter type "${filterType}" is not supported.`}
           hideCode
-          hideError
+          hideErrorDetail
         />
       );
   }

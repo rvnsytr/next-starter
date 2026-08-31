@@ -5,8 +5,8 @@ import {
 } from "@/core/components/ui/alert";
 import { Spinner, SpinnerProps } from "@/core/components/ui/spinner";
 import { cn } from "@/core/utils";
-import { appConfig } from "@/shared/config";
 import { TriangleAlertIcon } from "lucide-react";
+import { appConfig } from "../config";
 
 export type LoadingFallback = SpinnerProps & { containerClassName?: string };
 
@@ -27,18 +27,18 @@ export type ErrorFallbackProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any;
   title?: string;
-  hideDescription?: boolean;
-  hideError?: boolean;
   hideCode?: boolean;
+  hideErrorDetail?: boolean;
+  errorOnly?: boolean;
   className?: string;
 };
 
 export function ErrorFallback({
   error,
-  title = appConfig.name,
-  hideDescription = false,
-  hideError = false,
+  title,
   hideCode = false,
+  hideErrorDetail = false,
+  errorOnly = false,
   className,
 }: ErrorFallbackProps) {
   let errorData = error;
@@ -51,24 +51,27 @@ export function ErrorFallback({
     errorMessage = `${name}: ${message}`;
   }
 
+  const errorTitle = title ?? (errorOnly ? errorMessage : appConfig.name);
+
   return (
     <Alert variant="destructive" className={className}>
       <TriangleAlertIcon />
+
       {hideCode ? (
-        <AlertTitle>{title}</AlertTitle>
+        <AlertTitle>{errorTitle}</AlertTitle>
       ) : (
         <AlertTitle>
-          {`${title} / `}
+          {`${errorTitle} / `}
           <code className="bg-destructive/10 text-xs tabular-nums">
             {errorData?.code ?? 500}
           </code>
         </AlertTitle>
       )}
 
-      {!(hideDescription && hideError) && (
+      {!errorOnly && (
         <AlertDescription>
-          {!hideDescription && errorMessage}
-          {!hideError && (
+          {errorMessage}
+          {!hideErrorDetail && (
             <pre className="text-xs">{JSON.stringify(errorData, null, 2)}</pre>
           )}
         </AlertDescription>
