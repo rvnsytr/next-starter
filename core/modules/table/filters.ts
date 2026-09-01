@@ -20,6 +20,7 @@ import {
 import { z } from "zod";
 import {
   BOOLEAN_FILTER_OPERATORS,
+  MULTI_OPTION_FILTER_OPERATORS,
   NUMBER_FILTER_OPERATORS,
   OPTION_FILTER_OPERATORS,
   STRING_FILTER_OPERATORS,
@@ -98,6 +99,8 @@ export function getFilterOperators(filterType: FilterType) {
       return BOOLEAN_FILTER_OPERATORS;
     case "option":
       return OPTION_FILTER_OPERATORS;
+    case "multi-option":
+      return MULTI_OPTION_FILTER_OPERATORS;
     default:
       return STRING_FILTER_OPERATORS;
   }
@@ -108,6 +111,17 @@ export type FilterFn = TanstackFilterFn<any, any>;
 
 const getErrorMessage = (operator: string, filterType: string) =>
   `Unsupported operator "${operator}" for filter type "${filterType}"`;
+
+export const filterFn_arrExactlyMatches = constructFilterFn({
+  filter: (dataValue, filterValue: Array<unknown>) => {
+    if (!Array.isArray(dataValue)) return false;
+    if (dataValue.length !== filterValue.length) return false;
+    for (const value of filterValue)
+      if (!dataValue.includes(value)) return false;
+    return true;
+  },
+  autoRemove: (val) => !val?.length,
+});
 
 export const stringFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
@@ -280,14 +294,3 @@ export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
     }
   }
 };
-
-export const filterFn_arrExactlyMatches = constructFilterFn({
-  filter: (dataValue, filterValue: Array<unknown>) => {
-    if (!Array.isArray(dataValue)) return false;
-    if (dataValue.length !== filterValue.length) return false;
-    for (const value of filterValue)
-      if (!dataValue.includes(value)) return false;
-    return true;
-  },
-  autoRemove: (val) => !val?.length,
-});

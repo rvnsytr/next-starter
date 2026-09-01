@@ -8,7 +8,12 @@ import {
 } from "@tanstack/react-table";
 import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
-import { filterMeta, FilterPopupType, FilterValue } from "./filters";
+import {
+  filterMeta,
+  FilterPopupType,
+  FilterType,
+  FilterValue,
+} from "./filters";
 import { filterTypeSchema, filterValueSchema } from "./schema";
 import { ColumnValueOption, DataGridTableMeta } from "./types";
 
@@ -49,6 +54,11 @@ export function sortingHandler(context: {
   if (context.sortDirection === "asc") context.toggleSortingControl(true, true);
   else if (context.sortDirection === "desc") context.clearSortingControl();
   else context.toggleSortingControl(false, true);
+}
+
+export function isScalarColumnType(filterType: FilterType): boolean {
+  const scalarColumnTypes: FilterType[] = ["option", "multi-option"];
+  return scalarColumnTypes.includes(filterType);
 }
 
 export function resolveColumnOptions(

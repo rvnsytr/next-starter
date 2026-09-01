@@ -280,7 +280,7 @@ function FilterValueController(props: FilterValueControllerProps) {
     case "option":
       return <FilterValueControllerOption {...props} />;
     case "multi-option":
-      return "meh";
+      return <FilterValueControllerMultiOption {...props} />;
     default:
       return <FilterValueControllerErrorFallback filterType={filterType} />;
   }
@@ -600,6 +600,65 @@ function FilterValueControllerOption({
   });
 }
 
+function FilterValueControllerMultiOption({
+  filterValue,
+  columnMeta,
+  setFilter,
+}: FilterValueControllerProps) {
+  const filterType: FilterType = "multi-option";
+
+  const isFilterValueValid = filterValue.type === filterType;
+  const defaultValue = isFilterValueValid
+    ? filterValue.value
+    : filterMeta.option.defaultValue.value;
+
+  const [value, setValue] = useState(defaultValue);
+
+  if (!isFilterValueValid)
+    return <FilterValueControllerErrorFallback filterType={filterType} />;
+
+  if (!columnMeta?.options || !columnMeta.options.length)
+    return (
+      <ErrorFallback
+        error="No option items provided for this column"
+        errorOnly
+        hideCode
+      />
+    );
+
+  return columnMeta.options.map((option) => {
+    const isChecked = value.includes(option.value);
+    const count = option.count ?? null;
+    const Icon = option.icon;
+    return (
+      <MenuCheckboxItem
+        key={option.value}
+        checked={isChecked}
+        onCheckedChange={(v) => {
+          const newValue = v
+            ? [...value, option.value]
+            : value.filter((val) => val !== option.value);
+
+          setValue(newValue);
+          setFilter({
+            type: filterType,
+            operator: filterValue.operator,
+            value: newValue,
+          });
+        }}
+      >
+        <div className="flex gap-4">
+          <div className="flex gap-2">
+            {Icon && <Icon className="text-muted-foreground" />}
+            {option.label}
+          </div>
+          {count !== null && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
+        </div>
+      </MenuCheckboxItem>
+    );
+  });
+}
+
 export type ActiveFiltersContainerProps = React.ComponentProps<"div">;
 
 export function ActiveFiltersContainer({
@@ -785,6 +844,7 @@ function FilterValueDisplay({ filterValue }: { filterValue: FilterValue }) {
     case "boolean":
       return <FilterValueDisplayBoolean value={filterValue.value} />;
     case "option":
+    case "multi-option":
       return <FilterValueDisplayOptions value={filterValue.value} />;
     default:
       return `Filter type "${filterType}" is not supported.`;
@@ -820,7 +880,7 @@ function FilterValueDisplayBoolean({
 
 function FilterValueDisplayOptions({
   value,
-}: FilterValueDisplayProps<"option">) {
+}: FilterValueDisplayProps<"option" | "multi-option">) {
   if (value.length === 0) return <EllipsisIcon />;
   if (value.length > 2)
     return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;

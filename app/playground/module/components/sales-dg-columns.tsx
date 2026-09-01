@@ -156,12 +156,16 @@ export const saleDGColumns = columnHelper.columns([
       </div>
     ),
 
+    filterFn: "multi-option",
+
     minSize: 300,
     size: 300,
 
     meta: {
       label: "Products",
       icon: PackageIcon,
+
+      options: Object.keys(productMeta).map((k) => ({ value: k, label: k })),
     },
   }),
 

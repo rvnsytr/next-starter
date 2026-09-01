@@ -5,7 +5,7 @@ import {
 } from "@/core/components/layout/dashboard-page";
 import { Separator } from "@/core/components/ui/separator";
 import Link from "next/link";
-import { SaleDataTable } from "./module/components/sales-tables";
+import { SaleDataGrid } from "./module/components/sales-tables";
 
 export default function Page() {
   return (
@@ -28,11 +28,11 @@ export default function Page() {
 
       {/* <Separator className="border-t border-dashed bg-transparent" /> */}
 
-      <SaleDataTable />
+      {/* <SaleDataTable /> */}
 
       {/* <Separator className="border-t border-dashed bg-transparent" /> */}
 
-      {/* <SaleDataGrid /> */}
+      <SaleDataGrid />
     </div>
   );
 }
