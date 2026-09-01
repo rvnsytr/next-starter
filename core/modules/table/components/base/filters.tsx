@@ -109,27 +109,23 @@ export function FilterSelector({
   ...props
 }: FilterSelectorProps & { context: FilterSelectorContext }) {
   const anchor = useRef<HTMLButtonElement>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filterValueController, setFilterValueController] =
     useState<FilterValueControllerProps | null>(null);
+
+  const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
   useHotkeySequence(
     hotkeySequence ?? DEFAULT_SHORTCUT,
-    () => setIsOpen((prev) => !prev),
+    () => setIsSelectorOpen((prev) => !prev),
     { enabled: !!hotkeySequence },
   );
 
   return (
     <>
-      <Menu
-        open={isOpen}
-        onOpenChange={(v) => {
-          setIsOpen(v);
-          if (v) return;
-          setTimeout(() => setFilterValueController(null), ANIMATION_DELAY);
-        }}
-      >
+      <Menu open={isSelectorOpen} onOpenChange={setIsSelectorOpen}>
         <Tooltip>
           <TooltipTrigger
             render={
@@ -157,62 +153,89 @@ export function FilterSelector({
         </Tooltip>
 
         <MenuPopup align={align}>
-          {filterValueController?.popupType === "menu" ? (
-            <FilterValueController {...filterValueController} />
-          ) : (
-            context.columns.map((c) => {
-              if (!c.success) {
-                let errorContent = "";
+          {context.columns.map((c) => {
+            if (!c.success) {
+              let errorContent = "";
 
-                if (c.type === "column")
-                  errorContent = c.message ?? `Invalid Column Id: ${c.id}`;
-                if (c.type === "validation")
-                  errorContent =
-                    c.message ?? `Invalid Filter Value for Column: ${c.id}`;
+              if (c.type === "column")
+                errorContent = c.message ?? `Invalid Column Id: ${c.id}`;
+              if (c.type === "validation")
+                errorContent =
+                  c.message ?? `Invalid Filter Value for Column: ${c.id}`;
 
-                return (
-                  <MenuItem key={c.id} disabled>
-                    {errorContent}
-                  </MenuItem>
-                );
-              }
-
-              const Icon = c.columnMeta?.icon;
               return (
-                <MenuItem
-                  key={c.columnId}
-                  onClick={() => {
-                    if (c.popupType === "popover") setIsOpen(false);
-                    setTimeout(
-                      () => setFilterValueController(c),
-                      ANIMATION_DELAY,
-                    );
-                  }}
-                  disabled={context.columnFilterIds.has(c.columnId)}
-                  closeOnClick={false}
-                >
-                  {Icon && <Icon className="text-muted-foreground" />}
-                  {c.columnMeta?.label ?? c.columnId}
-                  <MenuShortcut>
-                    <ChevronRightIcon />
-                  </MenuShortcut>
+                <MenuItem key={c.id} disabled>
+                  {errorContent}
                 </MenuItem>
               );
-            })
+            }
+
+            const Icon = c.columnMeta?.icon;
+            return (
+              <MenuItem
+                key={c.columnId}
+                onClick={() => {
+                  setIsSelectorOpen(false);
+
+                  if (c.popupType === "menu") setIsMenuOpen(true);
+                  if (c.popupType === "popover") setIsPopoverOpen(true);
+
+                  setTimeout(
+                    () => setFilterValueController(c),
+                    ANIMATION_DELAY,
+                  );
+                }}
+                disabled={context.columnFilterIds.has(c.columnId)}
+                closeOnClick={false}
+              >
+                {Icon && <Icon className="text-muted-foreground" />}
+                {c.columnMeta?.label ?? c.columnId}
+                <MenuShortcut>
+                  <ChevronRightIcon />
+                </MenuShortcut>
+              </MenuItem>
+            );
+          })}
+        </MenuPopup>
+      </Menu>
+
+      <Menu
+        open={isMenuOpen}
+        onOpenChange={(v) => {
+          setIsMenuOpen(v);
+          if (!v) {
+            setIsSelectorOpen(true);
+            setTimeout(() => setFilterValueController(null), ANIMATION_DELAY);
+          }
+        }}
+      >
+        <MenuPopup anchor={anchor} align={align}>
+          {filterValueController ? (
+            <FilterValueController {...filterValueController} />
+          ) : (
+            <ErrorFallback
+              error="Invalid Filter Selector State"
+              errorOnly
+              hideCode
+            />
           )}
         </MenuPopup>
       </Menu>
 
       <Popover
-        open={filterValueController?.popupType === "popover"}
+        open={isPopoverOpen}
         onOpenChange={(v) => {
-          if (!v) setFilterValueController(null);
+          setIsPopoverOpen(v);
+          if (!v) {
+            setIsSelectorOpen(true);
+            setTimeout(() => setFilterValueController(null), ANIMATION_DELAY);
+          }
         }}
       >
         <PopoverPopup
           anchor={anchor}
           align={align}
-          className="max-w-3xs rounded-xl *:p-1"
+          className="w-fit max-w-3xs rounded-xl *:p-1"
         >
           {filterValueController ? (
             <FilterValueController {...filterValueController} />
@@ -740,7 +763,7 @@ function FilterValueDisplayPopup({
   return (
     <Popover>
       <PopoverTrigger render={trigger} />
-      <PopoverPopup className="max-w-3xs rounded-xl *:p-1">
+      <PopoverPopup className="w-fit max-w-3xs rounded-xl *:p-1">
         {children}
       </PopoverPopup>
     </Popover>
