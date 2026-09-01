@@ -1,5 +1,6 @@
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import {
+  isScalarColumnType,
   resolveColumnOptions,
   resolveFilter,
 } from "@/core/modules/table/utils";
@@ -40,13 +41,12 @@ export function DataGridFilterSelector(props: FilterSelectorProps) {
                   return { success: false, id: c.id, type: "column" };
 
                 const meta = c.columnDef.meta ?? {};
-                const options =
-                  filterValue.type === "option"
-                    ? resolveColumnOptions(
-                        column.getFacetedUniqueValues().entries(),
-                        meta.options,
-                      )
-                    : [];
+                const options = isScalarColumnType(filterValue.type)
+                  ? resolveColumnOptions(
+                      column.getFacetedUniqueValues().entries(),
+                      meta.options,
+                    )
+                  : [];
 
                 const columnMeta = { ...meta, options };
 

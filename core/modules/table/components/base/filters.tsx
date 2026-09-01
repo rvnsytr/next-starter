@@ -593,7 +593,7 @@ function FilterValueControllerOption({
             {Icon && <Icon className="text-muted-foreground" />}
             {option.label}
           </div>
-          {count && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
+          {count !== null && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
         </div>
       </MenuCheckboxItem>
     );
