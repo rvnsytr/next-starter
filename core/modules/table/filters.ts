@@ -1,6 +1,10 @@
 import { validateValue } from "@/core/utils";
 import {
   FilterFn as TanstackFilterFn,
+  constructFilterFn,
+  filterFn_arrHas,
+  filterFn_arrIncludesAll,
+  filterFn_arrIncludesSome,
   filterFn_between,
   filterFn_betweenInclusive,
   filterFn_empty,
@@ -13,12 +17,19 @@ import {
   filterFn_notEmpty,
   filterFn_startsWith,
 } from "@tanstack/react-table";
-import { z } from "better-auth";
-import { NUMBER_FILTER_OPERATORS, STRING_FILTER_OPERATORS } from "./operators";
+import { z } from "zod";
+import {
+  BOOLEAN_FILTER_OPERATORS,
+  NUMBER_FILTER_OPERATORS,
+  OPTION_FILTER_OPERATORS,
+  STRING_FILTER_OPERATORS,
+} from "./operators";
 import {
   booleanFilterValueSchema,
   filterValueSchema,
+  multiOptionFilterValueSchema,
   numberFilterValueSchema,
+  optionFilterValueSchema,
   stringFilterValueSchema,
 } from "./schema";
 
@@ -59,6 +70,22 @@ export const filterMeta: FilterMeta = {
       value: true,
     },
   },
+  option: {
+    popupType: "menu",
+    defaultValue: {
+      type: "option",
+      operator: "is_any_of",
+      value: [],
+    },
+  },
+  "multi-option": {
+    popupType: "menu",
+    defaultValue: {
+      type: "multi-option",
+      operator: "contains_any",
+      value: [],
+    },
+  },
 };
 
 export function getFilterOperators(filterType: FilterType) {
@@ -67,6 +94,10 @@ export function getFilterOperators(filterType: FilterType) {
       return STRING_FILTER_OPERATORS;
     case "number":
       return NUMBER_FILTER_OPERATORS;
+    case "boolean":
+      return BOOLEAN_FILTER_OPERATORS;
+    case "option":
+      return OPTION_FILTER_OPERATORS;
     default:
       return STRING_FILTER_OPERATORS;
   }
@@ -78,23 +109,18 @@ export type FilterFn = TanstackFilterFn<any, any>;
 const getErrorMessage = (operator: string, filterType: string) =>
   `Unsupported operator "${operator}" for filter type "${filterType}"`;
 
-export const stringFilterFn: FilterFn = (
-  row,
-  columnId,
-  filterValue,
-  addMeta,
-) => {
-  if (!filterValue) return true;
+export const stringFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
 
   const filterType: FilterType = "string";
-  const res = validateValue(filterValue, stringFilterValueSchema);
+  const filterValue = validateValue(fv, stringFilterValueSchema);
 
-  if (!res.success) {
-    console.error(res.message);
+  if (!filterValue.success) {
+    console.error(filterValue.message);
     return false;
   }
 
-  const { operator, value } = res.data;
+  const { operator, value } = filterValue.data;
 
   switch (operator) {
     case "contains":
@@ -120,23 +146,18 @@ export const stringFilterFn: FilterFn = (
   }
 };
 
-export const numberFilterFn: FilterFn = (
-  row,
-  columnId,
-  filterValue,
-  addMeta,
-) => {
-  if (!filterValue) return true;
+export const numberFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
 
   const filterType: FilterType = "number";
-  const res = validateValue(filterValue, numberFilterValueSchema);
+  const filterValue = validateValue(fv, numberFilterValueSchema);
 
-  if (!res.success) {
-    console.error(res.message);
+  if (!filterValue.success) {
+    console.error(filterValue.message);
     return false;
   }
 
-  const { operator, value } = res.data;
+  const { operator, value } = filterValue.data;
   if (value.length === 0) return true;
 
   switch (operator) {
@@ -171,23 +192,18 @@ export const numberFilterFn: FilterFn = (
   }
 };
 
-export const booleanFilterFn: FilterFn = (
-  row,
-  columnId,
-  filterValue,
-  addMeta,
-) => {
-  if (!filterValue) return true;
+export const booleanFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
 
   const filterType: FilterType = "boolean";
-  const res = validateValue(filterValue, booleanFilterValueSchema);
+  const filterValue = validateValue(fv, booleanFilterValueSchema);
 
-  if (!res.success) {
-    console.error(res.message);
+  if (!filterValue.success) {
+    console.error(filterValue.message);
     return false;
   }
 
-  const { operator, value } = res.data;
+  const { operator, value } = filterValue.data;
 
   switch (operator) {
     case "is":
@@ -202,3 +218,76 @@ export const booleanFilterFn: FilterFn = (
     }
   }
 };
+
+export const optionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
+
+  const filterType: FilterType = "option";
+  const filterValue = validateValue(fv, optionFilterValueSchema);
+
+  if (!filterValue.success) {
+    console.error(filterValue.message);
+    return false;
+  }
+
+  const { operator, value } = filterValue.data;
+
+  switch (operator) {
+    case "is_any_of":
+      return filterFn_arrHas(row, columnId, value, addMeta);
+    case "is_none_of":
+      return !filterFn_arrHas(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
+
+  const filterType: FilterType = "multi-option";
+  const filterValue = validateValue(fv, multiOptionFilterValueSchema);
+
+  if (!filterValue.success) {
+    console.error(filterValue.message);
+    return false;
+  }
+
+  const { operator, value } = filterValue.data;
+
+  switch (operator) {
+    case "contains_any":
+      return filterFn_arrIncludesSome(row, columnId, value, addMeta);
+    case "contains_all":
+      return filterFn_arrIncludesAll(row, columnId, value, addMeta);
+    case "contains_none":
+      return !filterFn_arrIncludesSome(row, columnId, value, addMeta);
+    case "exactly_matches":
+      return filterFn_arrExactlyMatches(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const filterFn_arrExactlyMatches = constructFilterFn({
+  filter: (dataValue, filterValue: Array<unknown>) => {
+    if (!Array.isArray(dataValue)) return false;
+    if (dataValue.length !== filterValue.length) return false;
+    for (const value of filterValue)
+      if (!dataValue.includes(value)) return false;
+    return true;
+  },
+  autoRemove: (val) => !val?.length,
+});

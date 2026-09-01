@@ -106,12 +106,20 @@ export const saleDTColumns = columnHelper.columns([
       );
     },
 
+    filterFn: "option",
+
     minSize: 120,
     size: 120,
 
     meta: {
       label: "Status",
       icon: CircleDotIcon,
+
+      options: Object.entries(saleStatusMeta).map(([k, v]) => ({
+        value: k,
+        label: k,
+        icon: v.icon,
+      })),
     },
   }),
 
@@ -157,8 +165,8 @@ export const saleDTColumns = columnHelper.columns([
 
     filterFn: "number",
 
-    minSize: 150,
-    size: 150,
+    minSize: 120,
+    size: 120,
 
     meta: {
       label: "Sale Amount",

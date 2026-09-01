@@ -1,3 +1,11 @@
+import {
+  ArrowsUpFromLineIcon,
+  ClockIcon,
+  LucideIcon,
+  PackageCheckIcon,
+  PackageXIcon,
+} from "lucide-react";
+
 export type SaleStatus = (typeof saleStatuses)[number];
 
 export const saleStatuses = [
@@ -8,12 +16,15 @@ export const saleStatuses = [
   "Cancelled",
 ] as const;
 
-export const saleStatusMeta: Record<SaleStatus, { color: string }> = {
-  Pending: { color: "#F59E0B" },
-  Processing: { color: "#3B82F6" },
-  Completed: { color: "#10B981" },
-  Refunded: { color: "#8B5CF6" },
-  Cancelled: { color: "#EF4444" },
+export const saleStatusMeta: Record<
+  SaleStatus,
+  { color: string; icon: LucideIcon }
+> = {
+  Pending: { color: "#F59E0B", icon: ClockIcon },
+  Processing: { color: "#3B82F6", icon: ArrowsUpFromLineIcon },
+  Completed: { color: "#10B981", icon: PackageCheckIcon },
+  Refunded: { color: "#8B5CF6", icon: PackageXIcon },
+  Cancelled: { color: "#EF4444", icon: PackageXIcon },
 };
 
 export type Product = (typeof products)[number];

@@ -1,5 +1,8 @@
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { resolveFilter } from "@/core/modules/table/utils";
+import {
+  resolveColumnOptions,
+  resolveFilter,
+} from "@/core/modules/table/utils";
 import {
   ActiveFilters,
   ActiveFiltersProps,
@@ -19,22 +22,41 @@ export function DataGridFilterSelector(props: FilterSelectorProps) {
             columnFilterIds,
             columns: table
               .getAllColumns()
-              .filter((column) => column.getCanFilter())
-              .map((column) => {
+              .filter((c) => c.getCanFilter())
+              .map((c) => {
                 const filter = resolveFilter({
-                  filterFn: column.columnDef.filterFn,
-                  columnFilterValue: column.getFilterValue(),
+                  filterFn: c.columnDef.filterFn,
+                  columnFilterValue: c.getFilterValue(),
                   safeParse: true,
                 });
 
-                if (!filter.success) return { success: false, id: column.id };
+                if (!filter.success)
+                  return { ...filter, id: c.id, type: "validation" };
+
+                const { filterValue, popupType } = filter.data;
+
+                const column = table.getColumn(c.id);
+                if (!column)
+                  return { success: false, id: c.id, type: "column" };
+
+                const meta = c.columnDef.meta ?? {};
+                const options =
+                  filterValue.type === "option"
+                    ? resolveColumnOptions(
+                        column.getFacetedUniqueValues().entries(),
+                        meta.options,
+                      )
+                    : [];
+
+                const columnMeta = { ...meta, options };
 
                 return {
                   success: true,
-                  id: column.id,
-                  setFilter: (v) => column.setFilterValue(v),
-                  columnMeta: column.columnDef.meta,
-                  ...filter.data,
+                  columnId: c.id,
+                  popupType,
+                  filterValue,
+                  setFilter: (v) => c.setFilterValue(v),
+                  columnMeta,
                 };
               }),
           }}
@@ -65,7 +87,7 @@ export function DataGridActiveFilters(props: ActiveFiltersProps) {
 
             return {
               success: true,
-              id: f.id,
+              columnId: column.id,
               setFilter: (v) => column.setFilterValue(v),
               columnMeta: column.columnDef.meta,
               ...filter.data,

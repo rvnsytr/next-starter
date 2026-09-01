@@ -9,6 +9,7 @@ import { Kbd } from "@/core/components/ui/kbd";
 import { Label } from "@/core/components/ui/label";
 import {
   Menu,
+  MenuCheckboxItem,
   MenuItem,
   MenuPopup,
   MenuShortcut,
@@ -73,19 +74,26 @@ export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
 };
 
 type FilterValueControllerProps = {
-  id: string;
+  columnId: string;
+  popupType: FilterPopupType;
   filterValue: FilterValue;
   setFilter: (updater: FilterValue | undefined) => void;
   columnMeta?: ColumnMeta;
-  popupType: FilterPopupType;
 };
+
+type FilterColumnContext =
+  | ({ success: true } & FilterValueControllerProps)
+  | {
+      success: false;
+      id: string;
+      type: "column" | "validation";
+      message?: string;
+      error?: unknown;
+    };
 
 type FilterSelectorContext = {
   columnFilterIds: Set<string>;
-  columns: (
-    | ({ success: true } & FilterValueControllerProps)
-    | { success: false; id: string }
-  )[];
+  columns: FilterColumnContext[];
 };
 
 const DEFAULT_SHORTCUT: HotkeySequence = ["F"];
@@ -152,31 +160,39 @@ export function FilterSelector({
           {filterValueController?.popupType === "menu" ? (
             <FilterValueController {...filterValueController} />
           ) : (
-            context.columns.map((column) => {
-              if (!column.success) {
+            context.columns.map((c) => {
+              if (!c.success) {
+                let errorContent = "";
+
+                if (c.type === "column")
+                  errorContent = c.message ?? `Invalid Column Id: ${c.id}`;
+                if (c.type === "validation")
+                  errorContent =
+                    c.message ?? `Invalid Filter Value for Column: ${c.id}`;
+
                 return (
-                  <MenuItem key={column.id}>
-                    Invalid Filter: {column.id}
+                  <MenuItem key={c.id} disabled>
+                    {errorContent}
                   </MenuItem>
                 );
               }
 
-              const Icon = column.columnMeta?.icon;
+              const Icon = c.columnMeta?.icon;
               return (
                 <MenuItem
-                  key={column.id}
+                  key={c.columnId}
                   onClick={() => {
-                    if (column.popupType === "popover") setIsOpen(false);
+                    if (c.popupType === "popover") setIsOpen(false);
                     setTimeout(
-                      () => setFilterValueController(column),
+                      () => setFilterValueController(c),
                       ANIMATION_DELAY,
                     );
                   }}
-                  disabled={context.columnFilterIds.has(column.id)}
+                  disabled={context.columnFilterIds.has(c.columnId)}
                   closeOnClick={false}
                 >
                   {Icon && <Icon className="text-muted-foreground" />}
-                  {column.columnMeta?.label ?? column.id}
+                  {c.columnMeta?.label ?? c.columnId}
                   <MenuShortcut>
                     <ChevronRightIcon />
                   </MenuShortcut>
@@ -213,6 +229,22 @@ export function FilterSelector({
   );
 }
 
+export function FilterValueControllerErrorFallback({
+  filterType: ft,
+}: {
+  filterType: string;
+}) {
+  const filterType = ft ?? "unknown";
+  return (
+    <ErrorFallback
+      title="Unsupported Filter Type"
+      error={`Filter type "${filterType}" is not supported.`}
+      hideCode
+      hideErrorDetail
+    />
+  );
+}
+
 function FilterValueController(props: FilterValueControllerProps) {
   const filterType = props.filterValue.type;
   switch (filterType) {
@@ -222,15 +254,12 @@ function FilterValueController(props: FilterValueControllerProps) {
       return <FilterValueControllerNumber {...props} />;
     case "boolean":
       return <FilterValueControllerBoolean {...props} />;
+    case "option":
+      return <FilterValueControllerOption {...props} />;
+    case "multi-option":
+      return "meh";
     default:
-      return (
-        <ErrorFallback
-          title="Unsupported Filter Type"
-          error={`Filter type "${filterType}" is not supported.`}
-          hideCode
-          hideErrorDetail
-        />
-      );
+      return <FilterValueControllerErrorFallback filterType={filterType} />;
   }
 }
 
@@ -246,7 +275,7 @@ function FilterValueControllerString({
     ? filterValue.value
     : filterMeta.string.defaultValue.value;
 
-  const [value, setValue] = useState<string>(defaultValue);
+  const [value, setValue] = useState(defaultValue);
   const debouncedValue = useDebounce(value);
 
   useEffect(() => {
@@ -257,6 +286,9 @@ function FilterValueControllerString({
       value: debouncedValue,
     });
   }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
+
+  if (!isFilterValueValid)
+    return <FilterValueControllerErrorFallback filterType={filterType} />;
 
   const { label, icon: Icon } = columnMeta ?? {};
 
@@ -291,7 +323,7 @@ function FilterValueControllerNumber({
     ? filterValue.value
     : metaDefaultValue;
 
-  const [value, setValue] = useState<number[]>(defaultValue);
+  const [value, setValue] = useState(defaultValue);
   const debouncedValue = useDebounce(value);
 
   const [tab, setTab] = useState<"single" | "range">(
@@ -337,6 +369,9 @@ function FilterValueControllerNumber({
       value: debouncedValue,
     });
   }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
+
+  if (!isFilterValueValid)
+    return <FilterValueControllerErrorFallback filterType={filterType} />;
 
   const { label } = columnMeta ?? {};
 
@@ -451,7 +486,10 @@ function FilterValueControllerBoolean({
     ? filterValue.value
     : filterMeta.boolean.defaultValue.value;
 
-  const [value, setValue] = useState<boolean>(defaultValue);
+  const [value, setValue] = useState(defaultValue);
+
+  if (!isFilterValueValid)
+    return <FilterValueControllerErrorFallback filterType={filterType} />;
 
   const { label, icon: Icon } = columnMeta ?? {};
   const id = label?.toLocaleLowerCase() ?? crypto.randomUUID();
@@ -480,6 +518,65 @@ function FilterValueControllerBoolean({
   );
 }
 
+function FilterValueControllerOption({
+  filterValue,
+  columnMeta,
+  setFilter,
+}: FilterValueControllerProps) {
+  const filterType: FilterType = "option";
+
+  const isFilterValueValid = filterValue.type === filterType;
+  const defaultValue = isFilterValueValid
+    ? filterValue.value
+    : filterMeta.option.defaultValue.value;
+
+  const [value, setValue] = useState(defaultValue);
+
+  if (!isFilterValueValid)
+    return <FilterValueControllerErrorFallback filterType={filterType} />;
+
+  if (!columnMeta?.options || !columnMeta.options.length)
+    return (
+      <ErrorFallback
+        error="No option items provided for this column"
+        errorOnly
+        hideCode
+      />
+    );
+
+  return columnMeta.options.map((option) => {
+    const isChecked = value.includes(option.value);
+    const count = option.count ?? null;
+    const Icon = option.icon;
+    return (
+      <MenuCheckboxItem
+        key={option.value}
+        checked={isChecked}
+        onCheckedChange={(v) => {
+          const newValue = v
+            ? [...value, option.value]
+            : value.filter((val) => val !== option.value);
+
+          setValue(newValue);
+          setFilter({
+            type: filterType,
+            operator: filterValue.operator,
+            value: newValue,
+          });
+        }}
+      >
+        <div className="flex gap-4">
+          <div className="flex gap-2">
+            {Icon && <Icon className="text-muted-foreground" />}
+            {option.label}
+          </div>
+          {count && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
+        </div>
+      </MenuCheckboxItem>
+    );
+  });
+}
+
 export type ActiveFiltersContainerProps = React.ComponentProps<"div">;
 
 export function ActiveFiltersContainer({
@@ -506,18 +603,7 @@ export function ActiveFilters({
   contexts,
   className,
   ...props
-}: ActiveFiltersProps & {
-  contexts: (
-    | ({ success: true } & FilterValueControllerProps)
-    | {
-        success: false;
-        id: string;
-        type: "column" | "validation";
-        message?: string;
-        error?: unknown;
-      }
-  )[];
-}) {
+}: ActiveFiltersProps & { contexts: FilterColumnContext[] }) {
   return contexts.map((c) => {
     if (!c.success) {
       let errorContent = "";
@@ -560,7 +646,7 @@ export function ActiveFilters({
 
     return (
       <ButtonGroup
-        key={c.id}
+        key={c.columnId}
         className={cn("**:text-xs", className)}
         {...props}
       >
@@ -571,7 +657,7 @@ export function ActiveFilters({
           disabled
         >
           {Icon && <Icon />}
-          {c.columnMeta?.label ?? c.id}
+          {c.columnMeta?.label ?? c.columnId}
         </Button>
 
         <Menu>
@@ -675,6 +761,8 @@ function FilterValueDisplay({ filterValue }: { filterValue: FilterValue }) {
       return <FilterValueDisplayNumber value={filterValue.value} />;
     case "boolean":
       return <FilterValueDisplayBoolean value={filterValue.value} />;
+    case "option":
+      return <FilterValueDisplayOptions value={filterValue.value} />;
     default:
       return `Filter type "${filterType}" is not supported.`;
   }
@@ -705,4 +793,13 @@ function FilterValueDisplayBoolean({
   value,
 }: FilterValueDisplayProps<"boolean">) {
   return String(value);
+}
+
+function FilterValueDisplayOptions({
+  value,
+}: FilterValueDisplayProps<"option">) {
+  if (value.length === 0) return <EllipsisIcon />;
+  if (value.length > 2)
+    return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;
+  return value.join(", ");
 }

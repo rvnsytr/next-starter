@@ -87,7 +87,7 @@ export const createSale = (): Sale => {
   return {
     id: faker.string.uuid(),
     customerName: faker.person.fullName(),
-    customerEmail: faker.internet.email(),
+    customerEmail: faker.internet.email().toLowerCase(),
     // Some sales don't have an assigned representative yet.
     salesRep: faker.datatype.boolean({ probability: 0.8 })
       ? faker.person.fullName()

@@ -1,5 +1,9 @@
 import {
+  columnFacetingFeature,
   columnFilteringFeature,
+  createFacetedMinMaxValues,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
   createFilteredRowModel,
   createPaginatedRowModel,
   createSortedRowModel,
@@ -17,17 +21,24 @@ import {
   booleanFilterFn,
   FilterFn,
   FilterType,
+  multiOptionFilterFn,
   numberFilterFn,
+  optionFilterFn,
   stringFilterFn,
 } from "../filters";
 import { ColumnMeta, TableMeta } from "../types";
 
 export const serverDataControllerFeatures = {
+  columnFacetingFeature,
   columnFilteringFeature,
+  facetedUniqueValues: createFacetedUniqueValues(),
+  facetedMinMaxValues: createFacetedMinMaxValues(),
   filterFns: {
-    boolean: booleanFilterFn,
-    number: numberFilterFn,
     string: stringFilterFn,
+    number: numberFilterFn,
+    boolean: booleanFilterFn,
+    option: optionFilterFn,
+    "multi-option": multiOptionFilterFn,
   } satisfies Record<FilterType, FilterFn>,
   globalFilteringFeature,
   rowPaginationFeature,
@@ -42,6 +53,7 @@ export const serverDataControllerFeatures = {
 
 export const clientDataControllerFeatures = {
   filteredRowModel: createFilteredRowModel(),
+  facetedRowModel: createFacetedRowModel(),
   sortedRowModel: createSortedRowModel(),
   paginatedRowModel: createPaginatedRowModel(),
 } satisfies TableFeatures;

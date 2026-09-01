@@ -134,29 +134,19 @@ export const BOOLEAN_FILTER_OPERATORS = [
 
 export const OPTION_FILTER_OPERATORS = [
   {
-    value: "equals",
-    label: "equals",
+    value: "is_any_of",
+    label: "is any of",
     withValue: true,
   },
   {
-    value: "not_equals",
-    label: "does not equal",
+    value: "is_none_of",
+    label: "is none of",
     withValue: true,
   },
   ...emptyFilterOperators,
 ] as const;
 
 export const MULTI_OPTION_FILTER_OPERATORS = [
-  {
-    value: "contains",
-    label: "contains",
-    withValue: true,
-  },
-  {
-    value: "not_contains",
-    label: "does not contain",
-    withValue: true,
-  },
   {
     value: "contains_any",
     label: "contains any",
@@ -168,7 +158,12 @@ export const MULTI_OPTION_FILTER_OPERATORS = [
     withValue: true,
   },
   {
-    value: "exactly_equals",
+    value: "contains_none",
+    label: "contains none of",
+    withValue: true,
+  },
+  {
+    value: "exactly_matches",
     label: "exactly matches",
     withValue: true,
   },

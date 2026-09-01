@@ -10,7 +10,7 @@ import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
 import { filterMeta, FilterPopupType, FilterValue } from "./filters";
 import { filterTypeSchema, filterValueSchema } from "./schema";
-import { DataGridTableMeta } from "./types";
+import { ColumnValueOption, DataGridTableMeta } from "./types";
 
 export function saveChanges(
   context: DataGridContextValue,
@@ -49,6 +49,25 @@ export function sortingHandler(context: {
   if (context.sortDirection === "asc") context.toggleSortingControl(true, true);
   else if (context.sortDirection === "desc") context.clearSortingControl();
   else context.toggleSortingControl(false, true);
+}
+
+export function resolveColumnOptions(
+  columnFacetedEnteries: Iterable<[string, number]>,
+  columnValueOption?: ColumnValueOption[],
+): ColumnValueOption[] {
+  const facetedEntries = new Map(columnFacetedEnteries);
+  const options =
+    columnValueOption ??
+    [...facetedEntries].map(([value, count]) => ({
+      value,
+      label: value,
+      count,
+    }));
+
+  return options.map((option) => ({
+    ...option,
+    count: option.count ?? facetedEntries.get(option.value) ?? 0,
+  }));
 }
 
 export function resolveFilter(params: {

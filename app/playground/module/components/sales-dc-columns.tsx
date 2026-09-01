@@ -90,9 +90,17 @@ export const saleDCColumns = columnHelper.columns([
       );
     },
 
+    filterFn: "option",
+
     meta: {
       label: "Status",
       icon: CircleDotIcon,
+
+      options: Object.entries(saleStatusMeta).map(([k, v]) => ({
+        value: k,
+        label: k,
+        icon: v.icon,
+      })),
     },
   }),
 
