@@ -1,7 +1,7 @@
 import { appConfig } from "@/shared/config";
 import * as schema from "@/shared/db/schema";
 import { ac, authRoles, defaultRole, roles } from "@/shared/permission";
-import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
@@ -23,11 +23,11 @@ export type User = AuthSession["user"];
 export const auth = betterAuth({
   appName: appConfig.name,
 
-  // secret: process.env.BETTER_AUTH_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
-  database: drizzleAdapter(db, { provider: "pg", schema }),
-  // experimental: { joins: true },
+  database: drizzleAdapter(db, { provider: "pg", usePlural: true }),
+  advanced: { database: { joins: true } },
 
   plugins: [
     openAPI(),
@@ -38,39 +38,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
-    // requireEmailVerification: true,
-    // sendResetPassword: async ({ user, token }) => {
-    //   const { name, email } = user;
-    //   const url = `${appConfig.cors.origin}/reset-password?token=${token}`;
-    //   void novu.trigger("purnaku-reset-password", {
-    //     to: { subscriberId: email, email },
-    //     payload: { name, url },
-    //   });
-    // },
-    // onPasswordReset: async ({ user }) => {
-    //   await db
-    //     .insertInto("event_log")
-    //     .values({ type: "password-reset", user_id: user.id })
-    //     .execute();
-    // },
-  },
-
-  emailVerification: {
-    // sendOnSignUp: true,
-    // sendVerificationEmail: async ({ user, token }) => {
-    //   const { name, email } = user;
-    //   const url = `${appConfig.cors.origin}/verify-user?token=${token}`;
-    //   void novu.trigger("purnaku-verification", {
-    //     to: { subscriberId: email, email },
-    //     payload: { name, url },
-    //   });
-    // },
-    // afterEmailVerification: async (user) => {
-    //   await db
-    //     .insertInto("event_log")
-    //     .values({ type: "user-verified", user_id: user.id })
-    //     .execute();
-    // },
   },
 
   socialProviders: {
@@ -103,9 +70,9 @@ export const auth = betterAuth({
         if (isValidUrl(userData.image)) return ctx.json(session);
 
         const data = await db
-          .select({ path: schema.file.path })
-          .from(schema.file)
-          .where(eq(schema.file.id, userData.image));
+          .select({ path: schema.files.path })
+          .from(schema.files)
+          .where(eq(schema.files.id, userData.image));
 
         if (!data.length) return ctx.json(session);
 

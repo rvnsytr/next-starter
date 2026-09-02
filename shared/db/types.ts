@@ -1,5 +1,5 @@
-import { activity, file } from "./schema";
+import { activity, files } from "./schema";
 
 export type Activity = typeof activity.$inferSelect;
 
-export type FileTable = typeof file.$inferSelect;
+export type FileTable = typeof files.$inferSelect;

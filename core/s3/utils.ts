@@ -1,5 +1,5 @@
 import { appConfig } from "@/shared/config";
-import { FileTable } from "@/shared/db";
+import { FileTable } from "@/shared/db/types";
 import {
   DeleteObjectsCommand,
   DeleteObjectsCommandInput,

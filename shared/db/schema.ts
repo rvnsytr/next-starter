@@ -1,9 +1,9 @@
 import { activities } from "@/modules/activity/constants";
-import { index, snakeCase, unique } from "drizzle-orm/pg-core";
+import { index, snakeCase, uniqueIndex } from "drizzle-orm/pg-core";
 import { roles } from "../permission";
 
-export const file = snakeCase.table(
-  "file",
+export const files = snakeCase.table(
+  "files",
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
 
@@ -25,13 +25,13 @@ export const file = snakeCase.table(
     createdAt: t.timestamp().notNull().defaultNow(),
   }),
   (t) => [
-    index("IDX_file_file_path").on(t.path),
-    index("IDX_file_visibility").on(t.visibility),
+    index("IDX_files_filePath").on(t.path),
+    index("IDX_files_visibility").on(t.visibility),
   ],
 );
 
-export const user = snakeCase.table(
-  "user",
+export const users = snakeCase.table(
+  "users",
   (t) => ({
     id: t.text().primaryKey(),
     name: t.text().notNull(),
@@ -55,16 +55,17 @@ export const user = snakeCase.table(
   ],
 );
 
-export const account = snakeCase.table(
-  "account",
+export const accounts = snakeCase.table(
+  "accounts",
   (t) => ({
     id: t.text().primaryKey(),
+    issuer: t.text().notNull(),
     accountId: t.text().notNull(),
     providerId: t.text().notNull(),
     userId: t
       .text()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: t.text(),
     refreshToken: t.text(),
     idToken: t.text(),
@@ -79,13 +80,13 @@ export const account = snakeCase.table(
       .$onUpdate(() => new Date()),
   }),
   (t) => [
-    unique("UQ_account_provider_id_account_id").on(t.providerId, t.accountId),
-    index("IDX_account_user_id").on(t.userId),
+    uniqueIndex("UIDX_accounts_issuer_accountId").on(t.issuer, t.accountId),
+    index("IDX_accounts_userId").on(t.userId),
   ],
 );
 
-export const session = snakeCase.table(
-  "session",
+export const sessions = snakeCase.table(
+  "sessions",
   (t) => ({
     id: t.text().primaryKey(),
     expiresAt: t.timestamp().notNull(),
@@ -100,10 +101,10 @@ export const session = snakeCase.table(
     userId: t
       .text()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     impersonatedBy: t.text(),
   }),
-  (t) => [index("IDX_session_user_id").on(t.userId)],
+  (t) => [index("IDX_session_userId").on(t.userId)],
 );
 
 export const verification = snakeCase.table(
@@ -120,7 +121,7 @@ export const verification = snakeCase.table(
       .defaultNow()
       .$onUpdate(() => new Date()),
   }),
-  (t) => [unique("UQ_verification_identifier_value").on(t.identifier, t.value)],
+  (t) => [index("IDX_verifications_identifier").on(t.identifier)],
 );
 
 export const activity = snakeCase.table(
@@ -130,7 +131,7 @@ export const activity = snakeCase.table(
     userId: t
       .text()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     entityId: t.text(),
 
     eventType: t.text({ enum: activities.values }).notNull(),

@@ -1,4 +1,4 @@
-import { activity } from "@/shared/db";
+import { activity } from "@/shared/db/schema";
 import {
   LucideIcon,
   PlusCircleIcon,
