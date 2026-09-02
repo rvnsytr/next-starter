@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTypeDef, fileTypes } from "@/shared/constants";
+import { FILE_TYPE_META, FileTypeDef } from "@/shared/constants";
 import { messages } from "@/shared/messages";
 import {
   BrushCleaningIcon,
@@ -58,8 +58,8 @@ export function FileDropzone({
   required = false,
   disabled = false,
 
-  label = fileTypes.meta.file.label,
-  icon: Icon = fileTypes.meta.file.icon,
+  label = FILE_TYPE_META.file.label,
+  icon: Icon = FILE_TYPE_META.file.icon,
   extensions = [],
 
   initialFiles = [],

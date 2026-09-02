@@ -8,7 +8,7 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 import { Route } from "next";
-import { RouteAccess } from "./config";
+import { RouteAccess } from ".";
 
 export type Menu = { group: string; items: MenuItem[] };
 

@@ -2,15 +2,15 @@
 
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
-import { themes } from "../constants";
+import { nextTheme, THEME_TOGGLE_HOTKEY } from "../constants";
 
 export function GlobalShortcuts() {
   const { theme: currentTheme, setTheme } = useTheme();
 
   useHotkeys([
     {
-      hotkey: themes.hotkey,
-      callback: () => setTheme(themes.next(currentTheme)),
+      hotkey: THEME_TOGGLE_HOTKEY,
+      callback: () => setTheme(nextTheme(currentTheme)),
     },
   ]);
 

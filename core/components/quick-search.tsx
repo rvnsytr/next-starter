@@ -1,7 +1,6 @@
 "use client";
 
-import { routeConfig } from "@/shared/config";
-import { Menu, MenuItem } from "@/shared/menu";
+import { Menu, MenuItem, routeConfig } from "@/shared/configs";
 import { messages } from "@/shared/messages";
 import {
   formatForDisplay,

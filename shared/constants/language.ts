@@ -1,10 +1,8 @@
-export type Language = (typeof values)[number];
+export type Language = (typeof LANGUAGES)[number];
 
-const values = ["en", "id", "de", "es", "fr", "ar"] as const;
+export const LANGUAGES = ["en", "id", "de", "es", "fr", "ar"] as const;
 
-const defaultLanguage: Language = "id";
-
-const meta: Record<
+export const LANGUAGE_META: Record<
   Language,
   {
     locale: string;
@@ -49,10 +47,4 @@ const meta: Record<
     decimal: 2,
     symbol: "ر.س",
   },
-};
-
-export const languages = {
-  default: defaultLanguage,
-  values,
-  meta,
 };

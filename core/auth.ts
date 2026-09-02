@@ -1,4 +1,4 @@
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import * as schema from "@/shared/db/schema";
 import { ac, authRoles, defaultRole, roles } from "@/shared/permission";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";

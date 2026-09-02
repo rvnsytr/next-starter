@@ -1,5 +1,6 @@
 import { DashboardPage } from "@/core/components/layout/dashboard-page";
-import { themeHotkeyDisplay, ThemeSettings } from "@/core/components/theme";
+import { ThemeSettings } from "@/core/components/theme-settings";
+import { THEME_TOGGLE_HOTKEY_DISPLAY } from "@/core/components/theme-toggle";
 import {
   Card,
   CardAction,
@@ -14,7 +15,7 @@ import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import { LockKeyholeIcon, ShieldIcon, SunMoonIcon } from "lucide-react";
 import { Metadata } from "next";
 
@@ -36,7 +37,9 @@ export default function Page() {
           </CardDescription>
 
           <CardAction>
-            <Kbd className="hidden lg:inline-flex">{themeHotkeyDisplay}</Kbd>
+            <Kbd className="hidden lg:inline-flex">
+              {THEME_TOGGLE_HOTKEY_DISPLAY}
+            </Kbd>
           </CardAction>
         </CardHeader>
 

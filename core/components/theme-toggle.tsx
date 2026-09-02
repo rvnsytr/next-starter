@@ -1,22 +1,24 @@
 "use client";
 
-import { LoadingFallback } from "@/shared/components/fallback";
-import { Theme, themes } from "@/shared/constants";
+import {
+  nextTheme,
+  Theme,
+  THEME_META,
+  THEME_TOGGLE_HOTKEY,
+} from "@/shared/constants";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
-import { useViewTransition } from "../hooks/use-view-transition";
 import { cn } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
-import { Label } from "./ui/label";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
-export const themeHotkeyDisplay = formatForDisplay(themes.hotkey);
+export const THEME_TOGGLE_HOTKEY_DISPLAY =
+  formatForDisplay(THEME_TOGGLE_HOTKEY);
 
 export function ThemeToggle({
   withTooltip = true,
@@ -35,7 +37,7 @@ export function ThemeToggle({
   const isMounted = useIsMounted();
   const { theme: currentTheme, setTheme } = useTheme();
 
-  const { icon: Icon } = themes.meta[(currentTheme ?? "system") as Theme];
+  const { icon: Icon } = THEME_META[(currentTheme ?? "system") as Theme];
 
   if (!isMounted)
     return <Skeleton className={cn(buttonVariants({ size }), className)} />;
@@ -46,7 +48,7 @@ export function ThemeToggle({
       variant={variant}
       onClick={(e) => {
         onClick?.(e);
-        setTheme(themes.next(currentTheme));
+        setTheme(nextTheme(currentTheme));
       }}
       className={className}
       disabled={disabled}
@@ -64,34 +66,9 @@ export function ThemeToggle({
       <TooltipTrigger render={element} />
       <TooltipPopup align={align}>
         <div className="flex items-center gap-x-1">
-          Toggle Theme <Kbd>{themeHotkeyDisplay}</Kbd>
+          Toggle Theme <Kbd>{THEME_TOGGLE_HOTKEY_DISPLAY}</Kbd>
         </div>
       </TooltipPopup>
     </Tooltip>
-  );
-}
-
-export function ThemeSettings() {
-  const isMounted = useIsMounted();
-  const { theme: currentTheme, setTheme } = useTheme();
-  const { isTransitioning, startTransition } = useViewTransition();
-
-  if (!isMounted) return <LoadingFallback variant="frame" />;
-
-  return (
-    <RadioGroup
-      value={currentTheme}
-      defaultValue="system"
-      onValueChange={(v) => startTransition(() => setTheme(v))}
-      className="grid grid-cols-3"
-      disabled={isTransitioning}
-    >
-      {Object.entries(themes.meta).map(([k, { icon: Icon }]) => (
-        <Label key={k} className="justify-center capitalize" asCard>
-          <RadioGroupItem value={k} hidden />
-          <Icon /> {k}
-        </Label>
-      ))}
-    </RadioGroup>
   );
 }

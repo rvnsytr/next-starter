@@ -1,7 +1,7 @@
 import { files } from "@/shared/db/schema";
 import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
-import { FileType, fileTypes, genders } from "./constants";
+import { FILE_TYPE_META, FileType, GENDERS } from "./constants";
 import { messages } from "./messages";
 
 type FileSchemaOptions = {
@@ -257,7 +257,7 @@ export const sharedSchemas = {
 
   file: (type: FileType, options?: FileSchemaOptions) => {
     const { mimeInvalid, tooLarge } = messages.files;
-    const { label, accept, maxSize: defaultMaxSize } = fileTypes.meta[type];
+    const { label, accept, maxSize: defaultMaxSize } = FILE_TYPE_META[type];
 
     const mimeTypes =
       accept === "*" ? [] : accept.split(",").map((t) => t.trim());
@@ -281,7 +281,7 @@ export const sharedSchemas = {
 
   files(type: FileType, options?: FilesSchemaOptions) {
     const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypes.meta[type];
+    const { label } = FILE_TYPE_META[type];
 
     const minFiles = options?.minFiles ?? 0;
     const maxFiles = options?.maxFiles ?? 0;
@@ -316,7 +316,7 @@ export const sharedSchemas = {
 
   filesWithPreview(type: FileType, options?: FilesSchemaOptions) {
     const { tooFew, tooMany } = messages.files;
-    const { label } = fileTypes.meta[type];
+    const { label } = FILE_TYPE_META[type];
 
     const minFiles = options?.minFiles ?? 0;
     const maxFiles = options?.maxFiles ?? 0;
@@ -358,6 +358,6 @@ export const sharedSchemas = {
   ),
 
   gender: z.compile(
-    z.enum(genders.values, { error: messages.invalid("Jenis kelamin") }),
+    z.enum(GENDERS, { error: messages.invalid("Jenis kelamin") }),
   ),
 };

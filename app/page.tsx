@@ -6,11 +6,11 @@
 //   )
 // }
 
-import { ThemeToggle } from "@/core/components/theme";
+import { ThemeToggle } from "@/core/components/theme-toggle";
 import { Button } from "@/core/components/ui/button";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { GithubIcon } from "@/shared/components/icons";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import {
   ArrowRightIcon,
   ExternalLinkIcon,

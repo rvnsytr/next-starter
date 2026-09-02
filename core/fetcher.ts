@@ -1,4 +1,4 @@
-import { apiConfig } from "@/shared/config";
+import { apiConfig } from "@/shared/configs";
 import z from "zod";
 import { getApiResponseSchema } from "./schema";
 import { ApiResponse } from "./types";

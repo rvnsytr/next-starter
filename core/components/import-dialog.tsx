@@ -1,6 +1,6 @@
 "use client";
 
-import { fileTypes } from "@/shared/constants";
+import { FILE_TYPE_META } from "@/shared/constants";
 import { messages } from "@/shared/messages";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -205,12 +205,12 @@ export function ImportDialog<T, K extends string>({
                 field: { value, onChange, ...field },
                 fieldState,
               }) => {
-                const config = fileTypes.meta.spreadsheet;
+                const meta = FILE_TYPE_META.spreadsheet;
                 return (
                   <Field name={field.name} invalid={fieldState.invalid}>
-                    <FieldLabel>{config.label}</FieldLabel>
+                    <FieldLabel>{meta.label}</FieldLabel>
                     <FileDropzone
-                      {...config}
+                      {...meta}
                       files={value}
                       onFilesChange={onChange}
                       multiple={multiple}

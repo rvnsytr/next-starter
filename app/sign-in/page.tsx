@@ -13,7 +13,7 @@ import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { FooterNote } from "@/shared/components/footer-note";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";

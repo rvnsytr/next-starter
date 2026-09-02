@@ -1,10 +1,10 @@
 import { LucideIcon, MarsIcon, VenusIcon } from "lucide-react";
 
-export type Gender = (typeof values)[number];
+export type Gender = (typeof GENDERS)[number];
 
-const values = ["m", "f"] as const;
+export const GENDERS = ["m", "f"] as const;
 
-const meta: Record<
+export const GENDER_META: Record<
   Gender,
   {
     label: string;
@@ -22,9 +22,4 @@ const meta: Record<
     icon: VenusIcon,
     color: "var(--color-pink-500)",
   },
-};
-
-export const genders = {
-  values,
-  meta,
 };

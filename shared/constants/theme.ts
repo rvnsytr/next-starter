@@ -1,27 +1,20 @@
 import { Hotkey } from "@tanstack/react-hotkeys";
 import { LucideIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 
-export type Theme = (typeof values)[number];
+export type Theme = (typeof THEMES)[number];
 
-const values = ["light", "dark", "system"] as const;
+export const THEMES = ["light", "dark", "system"] as const;
 
-const hotkey: Hotkey = "D";
+export const THEME_TOGGLE_HOTKEY: Hotkey = "D";
 
-const meta: Record<Theme, { icon: LucideIcon; hotkey: Hotkey }> = {
-  light: { icon: SunIcon, hotkey },
-  system: { icon: MonitorIcon, hotkey },
-  dark: { icon: MoonIcon, hotkey },
+export const THEME_META: Record<Theme, { icon: LucideIcon }> = {
+  light: { icon: SunIcon },
+  system: { icon: MonitorIcon },
+  dark: { icon: MoonIcon },
 };
 
-const next = (currentTheme?: string) => {
+export const nextTheme = (currentTheme?: string) => {
   if (currentTheme === "light") return "dark";
   if (currentTheme === "dark") return "system";
   return "light";
-};
-
-export const themes = {
-  hotkey,
-  values,
-  meta,
-  next,
 };

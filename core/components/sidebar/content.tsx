@@ -3,8 +3,7 @@
 import { getAccessibleMenus, getActiveRoute } from "@/core/route";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { routeConfig } from "@/shared/config";
-import { menuConfig, MenuItem } from "@/shared/menu";
+import { menuConfig, MenuItem, routeConfig } from "@/shared/configs";
 import { ChevronRightIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";

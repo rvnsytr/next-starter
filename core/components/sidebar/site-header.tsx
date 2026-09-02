@@ -1,8 +1,8 @@
 import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user-badge";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
-import { ThemeToggle } from "../theme";
+import { ThemeToggle } from "../theme-toggle";
 import { Separator } from "../ui/separator";
 import { ShimmerText } from "../ui/shimmer-text";
 import { SidebarToggle } from "../ui/sidebar";

@@ -1,5 +1,5 @@
-import { appConfig } from "@/shared/config";
-import { Language, languages } from "@/shared/constants";
+import { appConfig } from "@/shared/configs";
+import { Language, LANGUAGE_META } from "@/shared/constants";
 
 export function toBytes(mb: number) {
   return mb * 1024 * 1024;
@@ -36,8 +36,7 @@ export function formatNumber(
   number: number,
   options?: Intl.NumberFormatOptions & { lang?: Language },
 ) {
-  const config =
-    languages.meta[options?.lang ?? (appConfig.default.language as Language)];
+  const config = LANGUAGE_META[options?.lang ?? appConfig.default.numberLocale];
   const value = new Intl.NumberFormat(config.locale, options).format(number);
   return value === "0" ? "0" : value;
 }

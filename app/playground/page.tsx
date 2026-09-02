@@ -3,7 +3,7 @@ import {
   DashboardPageHeader,
   DashboardPageTitle,
 } from "@/core/components/layout/dashboard-page";
-import { ThemeToggle } from "@/core/components/theme";
+import { ThemeToggle } from "@/core/components/theme-toggle";
 import { Button } from "@/core/components/ui/button";
 import { Separator } from "@/core/components/ui/separator";
 import { LinkSpinner } from "@/core/components/ui/spinner";

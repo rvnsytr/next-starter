@@ -19,6 +19,8 @@ export const appConfig = {
   default: {
     language: "id",
 
+    numberLocale: "id",
+
     /** @see [route.ts](../../core/route.ts) / createSignInURL */
     callbackUrls,
 

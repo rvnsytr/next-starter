@@ -2,8 +2,7 @@
 
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
-import { routeConfig } from "@/shared/config";
-import { menuConfig } from "@/shared/menu";
+import { menuConfig, routeConfig } from "@/shared/configs";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import Link from "next/link";
 import { Kbd } from "../ui/kbd";
@@ -40,7 +39,7 @@ export function SidebarAppFooter() {
                         <LinkSpinner icon={{ base: iconElement }} /> {title}
                         {shortcut && (
                           <Kbd className="ml-auto hidden lg:inline-flex">
-                            {formatForDisplay(shortcut)}
+                            {shortcut.map((k) => formatForDisplay(k)).join("+")}
                           </Kbd>
                         )}
                       </Link>

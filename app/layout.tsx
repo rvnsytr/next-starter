@@ -5,7 +5,7 @@ import {
 } from "@/core/components/ui/toast";
 import { cn } from "@/core/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
-import { appConfig } from "@/shared/config";
+import { appConfig } from "@/shared/configs";
 import { GlobalShortcuts } from "@/shared/providers/global-shortcuts";
 import "@/styles/globals.css";
 import { Metadata } from "next";

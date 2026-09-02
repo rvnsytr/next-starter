@@ -1,5 +1,4 @@
-import { appConfig, RouteAccess, routeConfig } from "@/shared/config";
-import { Menu } from "@/shared/menu";
+import { appConfig, Menu, RouteAccess, routeConfig } from "@/shared/configs";
 import { Role } from "@/shared/permission";
 import { Route } from "next";
 

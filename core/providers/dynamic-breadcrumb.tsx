@@ -1,6 +1,6 @@
 "use client";
 
-import { routeConfig } from "@/shared/config";
+import { routeConfig } from "@/shared/configs";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useMemo, useState } from "react";

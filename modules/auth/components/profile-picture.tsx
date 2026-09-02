@@ -21,7 +21,7 @@ import { Label } from "@/core/components/ui/label";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useFileUpload } from "@/core/hooks/use-file-upload";
-import { fileTypes } from "@/shared/constants";
+import { FILE_TYPE_META } from "@/shared/constants";
 import { messages } from "@/shared/messages";
 import { TriangleAlertIcon, UploadIcon } from "lucide-react";
 import { useState } from "react";
@@ -42,7 +42,7 @@ export function ProfilePicture({
     handleDragOver,
     handleDrop,
   } = useFileUpload({
-    ...fileTypes.meta.image,
+    ...FILE_TYPE_META.image,
     onFilesChange: (files) => {
       if (!files.length) return;
       const file = files[0].file;

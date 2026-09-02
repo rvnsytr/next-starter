@@ -12,7 +12,7 @@ import {
   VideoIcon,
 } from "lucide-react";
 
-export type FileType = (typeof values)[number];
+export type FileType = (typeof FILE_TYPES)[number];
 
 export type FileTypeDef = {
   label: string;
@@ -24,7 +24,7 @@ export type FileTypeDef = {
 
 export type FileTypeMeta = Record<FileType, FileTypeDef>;
 
-const values = [
+export const FILE_TYPES = [
   "image",
   "pdf",
   "document",
@@ -37,7 +37,7 @@ const values = [
   "office-document",
 ] as const;
 
-const baseMeta: Omit<FileTypeMeta, "file" | "office-document"> = {
+const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   image: {
     label: "gambar",
     icon: ImageIcon,
@@ -123,11 +123,11 @@ const baseMeta: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 };
 
-const meta: FileTypeMeta = {
+export const FILE_TYPE_META: FileTypeMeta = {
   file: {
     label: "berkas",
     icon: FileIcon,
-    maxSize: Math.max(...Object.values(baseMeta).map((c) => c.maxSize)),
+    maxSize: Math.max(...Object.values(META).map((c) => c.maxSize)),
     accept: "*",
     extensions: [],
   },
@@ -137,23 +137,18 @@ const meta: FileTypeMeta = {
     icon: FilesIcon,
     maxSize: toBytes(10),
     accept: [
-      ...baseMeta.pdf.accept.split(", "),
-      ...baseMeta.document.accept.split(", "),
-      ...baseMeta.spreadsheet.accept.split(", "),
-      ...baseMeta.presentation.accept.split(", "),
+      ...META.pdf.accept.split(", "),
+      ...META.document.accept.split(", "),
+      ...META.spreadsheet.accept.split(", "),
+      ...META.presentation.accept.split(", "),
     ].join(", "),
     extensions: [
-      ...baseMeta.pdf.extensions,
-      ...baseMeta.document.extensions,
-      ...baseMeta.spreadsheet.extensions,
-      ...baseMeta.presentation.extensions,
+      ...META.pdf.extensions,
+      ...META.document.extensions,
+      ...META.spreadsheet.extensions,
+      ...META.presentation.extensions,
     ],
   },
 
-  ...baseMeta,
-};
-
-export const fileTypes = {
-  values,
-  meta,
+  ...META,
 };

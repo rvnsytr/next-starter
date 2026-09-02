@@ -5,7 +5,7 @@ import { stopImpersonateUser } from "@/modules/auth/actions";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { menuConfig } from "@/shared/menu";
+import { menuConfig } from "@/shared/configs";
 import { Layers2Icon, LogOutIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";

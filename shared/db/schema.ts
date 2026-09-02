@@ -1,4 +1,3 @@
-import { activities } from "@/modules/activity/constants";
 import { index, snakeCase, uniqueIndex } from "drizzle-orm/pg-core";
 import { roles } from "../permission";
 
@@ -124,8 +123,8 @@ export const verification = snakeCase.table(
   (t) => [index("IDX_verifications_identifier").on(t.identifier)],
 );
 
-export const activity = snakeCase.table(
-  "activity",
+export const activities = snakeCase.table(
+  "activities",
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
     userId: t
@@ -134,13 +133,13 @@ export const activity = snakeCase.table(
       .references(() => users.id, { onDelete: "cascade" }),
     entityId: t.text(),
 
-    eventType: t.text({ enum: activities.values }).notNull(),
+    eventType: t.text({ enum: [] }).notNull(),
     data: t.text(),
 
     createdAt: t.timestamp().notNull().defaultNow(),
   }),
   (t) => [
-    index("IDX_activity_type").on(t.eventType),
-    index("IDX_activity_user_id_created_at").on(t.userId, t.createdAt),
+    index("IDX_activities_type").on(t.eventType),
+    index("IDX_activities_user_id_created_at").on(t.userId, t.createdAt),
   ],
 );
