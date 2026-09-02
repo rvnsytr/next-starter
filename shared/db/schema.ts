@@ -1,3 +1,4 @@
+import { ACTIVITY_EVENT_TYPES } from "@/modules/activity/constants";
 import { index, snakeCase, uniqueIndex } from "drizzle-orm/pg-core";
 import { roles } from "../permission";
 
@@ -127,13 +128,14 @@ export const activities = snakeCase.table(
   "activities",
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
+    eventType: t.text({ enum: ACTIVITY_EVENT_TYPES }).notNull(),
+
     userId: t
       .text()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     entityId: t.text(),
 
-    eventType: t.text({ enum: [] }).notNull(),
     data: t.text(),
 
     createdAt: t.timestamp().notNull().defaultNow(),

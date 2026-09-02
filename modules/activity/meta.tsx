@@ -1,4 +1,4 @@
-import { activity } from "@/shared/db/schema";
+import { ActivityWithEntity } from "@/shared/db/types";
 import {
   LucideIcon,
   PlusCircleIcon,
@@ -10,11 +10,7 @@ import {
   UserSquare2Icon,
 } from "lucide-react";
 import { DeletedEntityIcon } from "./components/deleted-entity-icon";
-
-export type Activity = typeof activity.$inferSelect;
-export type ActivityWithEntity = Activity & { entity?: string };
-
-export type ActivityEventType = (typeof values)[number];
+import { ActivityEventType } from "./constants";
 
 type ActivityContext = Pick<ActivityWithEntity, "data" | "entity">;
 
@@ -31,33 +27,7 @@ type ActivityMeta = Record<
   ActivityDef | ((ctx?: ActivityContext) => ActivityDef)
 >;
 
-const values = [
-  // "user-registered",
-  "user-created",
-  // "user-imported",
-  // "user-activated",
-  // "user-verified",
-  "user-role-updated",
-  "user-banned",
-  "user-unbanned",
-  // "user-deleted",
-
-  "profile-updated",
-  "profile-image-updated",
-
-  // "password-reset",
-  // "password-changed",
-
-  "admin-user-create",
-  // "admin-user-import",
-  "admin-user-update-role",
-  "admin-user-ban",
-  "admin-user-unban",
-  "admin-user-delete",
-  "admin-users-delete",
-] as const;
-
-export const meta: ActivityMeta = {
+export const ACTIVITY_META: ActivityMeta = {
   // "user-registered": {
   //   label: "Akun Terdaftar",
   //   description: "Pengguna berhasil mendaftar dan membuat akun baru.",
@@ -240,15 +210,4 @@ export const meta: ActivityMeta = {
     color: "var(--color-destructive)",
     textColor: "var(--color-destructive-foreground)",
   }),
-};
-
-export function get(type: ActivityEventType, ctx?: ActivityContext) {
-  const m = meta[type];
-  return typeof m === "function" ? m(ctx) : m;
-}
-
-export const activities = {
-  values,
-  meta,
-  get,
 };

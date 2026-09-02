@@ -31,8 +31,9 @@ import { useSession } from "@/modules/auth/hooks/use-session";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { messages } from "@/shared/messages";
 import { getUserActivitiesAction } from "../actions";
-import { activities, ActivityWithEntity } from "../constants";
+import { ActivityWithEntity } from "../constants";
 import { activityKeys } from "../keys";
+import { ACTIVITY_META } from "../meta";
 import { getActivityColumns } from "./activity-column";
 
 export type ActivityTimelineProps = {
@@ -70,12 +71,13 @@ function BaseActivityTimeline({
       ) : table.getRowModel().rows.length ? (
         <Timeline orientation="vertical" className="px-2">
           {table.getRowModel().rows.map((row, index) => {
+            const meta = ACTIVITY_META[(row.original.eventType, row.original)];
             const {
               label,
               description,
               icon: Icon,
               color,
-            } = activities.get(row.original.eventType, row.original);
+            } = typeof meta === "function" ? meta() : meta;
 
             return (
               <TimelineItem

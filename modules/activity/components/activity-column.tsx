@@ -1,9 +1,11 @@
 import { ColumnCellNumber, ColumnHeader } from "@/core/components/ui/column";
 import { DataControllerResult } from "@/core/hooks/use-data-controller";
 import { filterFn, formatLocalizedDate } from "@/core/utils";
+import { ActivityWithEntity } from "@/shared/db/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarCheck2Icon, RouteIcon } from "lucide-react";
-import { ActivityWithEntity, activities } from "../constants";
+import { ACTIVITY_EVENT_TYPES } from "../constants";
+import { ACTIVITY_META } from "../meta";
 
 const columnHelper = createColumnHelper<ActivityWithEntity>();
 export const getActivityColumns = (
@@ -24,8 +26,10 @@ export const getActivityColumns = (
       label: "Tipe",
       type: "option",
       icon: RouteIcon,
-      options: activities.values.map((value) => {
-        const { label, icon } = activities.get(value);
+      options: ACTIVITY_EVENT_TYPES.map((value) => {
+        const meta = ACTIVITY_META[value];
+        const { label, icon } = typeof meta === "function" ? meta() : meta;
+
         const count = result?.data?.count?.[value] ?? undefined;
         return { value, label, icon, count };
       }),

@@ -3,19 +3,19 @@
 import { auth } from "@/core/auth";
 import { db } from "@/core/db";
 import { ActionResponse } from "@/core/types";
-import { activity } from "@/shared/db/schema";
+import { activities } from "@/shared/db/schema";
+import { ActivityWithEntity } from "@/shared/db/types";
 import { messages } from "@/shared/messages";
 import { Role } from "@/shared/permission";
 import { desc, eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";
 import { headers } from "next/headers";
-import { ActivityWithEntity } from "./constants";
-import { activityKeys } from "./keys";
+import { ACTIVITY_ACTION_KEYS } from "./constants";
 
 async function listActivities(): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(activityKeys.actions.list);
-  return await db.select().from(activity).orderBy(desc(activity.createdAt));
+  cacheTag(ACTIVITY_ACTION_KEYS.list);
+  return await db.select().from(activities).orderBy(desc(activities.createdAt));
 }
 
 export async function listActivitiesAction(
@@ -37,12 +37,12 @@ async function getUserActivities(
   userId: string,
 ): Promise<ActivityWithEntity[]> {
   "use cache";
-  cacheTag(activityKeys.actions.getByUser(userId));
+  cacheTag(ACTIVITY_ACTION_KEYS.getByUser(userId));
   return await db
     .select()
-    .from(activity)
-    .where(eq(activity.userId, userId))
-    .orderBy(desc(activity.createdAt));
+    .from(activities)
+    .where(eq(activities.userId, userId))
+    .orderBy(desc(activities.createdAt));
 }
 
 export async function getMyActivitiesAction(
