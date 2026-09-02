@@ -11,9 +11,9 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.users.id,
       to: r.accounts.userId,
     }),
-    activities: r.many.activity({
+    activities: r.many.activities({
       from: r.users.id,
-      to: r.activity.userId,
+      to: r.activities.userId,
     }),
     file: r.one.files({
       from: r.users.image,
@@ -38,7 +38,7 @@ export const relations = defineRelations(schema, (r) => ({
 
   activity: {
     user: r.one.users({
-      from: r.activity.userId,
+      from: r.activities.userId,
       to: r.users.id,
     }),
   },
