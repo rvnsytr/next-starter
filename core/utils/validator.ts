@@ -2,6 +2,10 @@ import { messages } from "@/shared/messages";
 import z from "zod";
 import { ActionError, ActionResponse } from "../types";
 
+export function isValidUrl(url: string) {
+  return z.url().safeParse(url).success;
+}
+
 export function validateValue<T>(
   value: unknown,
   schema: z.ZodType<T>,
