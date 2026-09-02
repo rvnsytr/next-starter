@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  nextTheme,
-  Theme,
-  THEME_META,
-  THEME_TOGGLE_HOTKEY,
-} from "@/shared/constants";
+import { Theme, THEME_META, THEME_TOGGLE_HOTKEY } from "@/shared/constants";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
@@ -19,6 +14,12 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
 export const THEME_TOGGLE_HOTKEY_DISPLAY =
   formatForDisplay(THEME_TOGGLE_HOTKEY);
+
+export const nextTheme = (currentTheme?: string) => {
+  if (currentTheme === "light") return "dark";
+  if (currentTheme === "dark") return "system";
+  return "light";
+};
 
 export function ThemeToggle({
   withTooltip = true,

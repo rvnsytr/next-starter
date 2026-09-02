@@ -12,9 +12,3 @@ export const THEME_META: Record<Theme, { icon: LucideIcon }> = {
   system: { icon: MonitorIcon },
   dark: { icon: MoonIcon },
 };
-
-export const nextTheme = (currentTheme?: string) => {
-  if (currentTheme === "light") return "dark";
-  if (currentTheme === "dark") return "system";
-  return "light";
-};
