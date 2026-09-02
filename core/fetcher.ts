@@ -28,13 +28,15 @@ const fetcher = async <T>(
 
 fetcher.postJson = async <T>(
   url: string,
-  config?: Omit<ApiFetcherConfig<T>, "method">,
-) =>
-  await fetcher(url, {
-    ...config,
+  config: Omit<ApiFetcherConfig<T>, "method">,
+) => {
+  const { headers, ...restConfig } = config ?? {};
+  return await fetcher(url, {
+    ...restConfig,
     method: "POST",
-    headers: { ...config?.headers, "Content-Type": "application/json" },
+    headers: { ...headers, "Content-Type": "application/json" },
   });
+};
 
 fetcher.api = async <T>(
   path: string,
@@ -49,11 +51,13 @@ fetcher.api = async <T>(
 fetcher.apiPostJson = async <T>(
   path: string,
   config?: ApiFetcherConfig<T>,
-): Promise<ApiResponse<T>> =>
-  await fetcher.api(path, {
-    ...config,
+): Promise<ApiResponse<T>> => {
+  const { headers, ...restConfig } = config ?? {};
+  return await fetcher.api(path, {
+    ...restConfig,
     method: "POST",
-    headers: { ...config?.headers, "Content-Type": "application/json" },
+    headers: { ...headers, "Content-Type": "application/json" },
   });
+};
 
 export { fetcher };
