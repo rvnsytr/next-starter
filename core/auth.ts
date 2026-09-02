@@ -27,7 +27,12 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
 
   database: drizzleAdapter(db, { provider: "pg", usePlural: true }),
-  advanced: { database: { joins: true } },
+  advanced: {
+    database: {
+      joins: true,
+      generateId: () => crypto.randomUUID(),
+    },
+  },
 
   plugins: [
     openAPI(),

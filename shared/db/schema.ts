@@ -17,12 +17,12 @@ export const files = snakeCase.table(
       .default("private")
       .notNull(),
 
+    createdAt: t.timestamp().notNull().defaultNow(),
     updatedAt: t
       .timestamp()
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),
-    createdAt: t.timestamp().notNull().defaultNow(),
   }),
   (t) => [
     index("IDX_files_filePath").on(t.path),
@@ -33,21 +33,24 @@ export const files = snakeCase.table(
 export const users = snakeCase.table(
   "users",
   (t) => ({
-    id: t.text().primaryKey(),
+    id: t.uuid().primaryKey().defaultRandom(),
+
     name: t.text().notNull(),
     email: t.text().notNull().unique(),
     emailVerified: t.boolean().notNull().default(false),
     image: t.text(),
+    role: t.text({ enum: roles }).notNull().default("user"),
+
+    banned: t.boolean().default(false),
+    banReason: t.text(),
+    banExpires: t.timestamp(),
+
     createdAt: t.timestamp().notNull().defaultNow(),
     updatedAt: t
       .timestamp()
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),
-    role: t.text({ enum: roles }).notNull().default("user"),
-    banned: t.boolean().default(false),
-    banReason: t.text(),
-    banExpires: t.timestamp(),
   }),
   (t) => [
     index("IDX_user_role").on(t.role),
@@ -58,25 +61,30 @@ export const users = snakeCase.table(
 export const accounts = snakeCase.table(
   "accounts",
   (t) => ({
-    id: t.text().primaryKey(),
+    id: t.uuid().primaryKey().defaultRandom(),
+
     issuer: t.text().notNull(),
     accountId: t.text().notNull(),
     providerId: t.text().notNull(),
     userId: t
-      .text()
+      .uuid()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+
     accessToken: t.text(),
     refreshToken: t.text(),
     idToken: t.text(),
     accessTokenExpiresAt: t.timestamp(),
     refreshTokenExpiresAt: t.timestamp(),
+
     scope: t.text(),
     password: t.text(),
+
     createdAt: t.timestamp().notNull().defaultNow(),
     updatedAt: t
       .timestamp()
       .notNull()
+      .defaultNow()
       .$onUpdate(() => new Date()),
   }),
   (t) => [
@@ -88,21 +96,26 @@ export const accounts = snakeCase.table(
 export const sessions = snakeCase.table(
   "sessions",
   (t) => ({
-    id: t.text().primaryKey(),
-    expiresAt: t.timestamp().notNull(),
+    id: t.uuid().primaryKey().defaultRandom(),
+
+    userId: t
+      .uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+
     token: t.text().notNull().unique(),
+    ipAddress: t.text(),
+    userAgent: t.text(),
+
+    impersonatedBy: t.text(),
+
+    expiresAt: t.timestamp().notNull(),
     createdAt: t.timestamp().notNull().defaultNow(),
     updatedAt: t
       .timestamp()
       .notNull()
+      .defaultNow()
       .$onUpdate(() => new Date()),
-    ipAddress: t.text(),
-    userAgent: t.text(),
-    userId: t
-      .text()
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    impersonatedBy: t.text(),
   }),
   (t) => [index("IDX_session_userId").on(t.userId)],
 );
@@ -110,14 +123,17 @@ export const sessions = snakeCase.table(
 export const verification = snakeCase.table(
   "verification",
   (t) => ({
-    id: t.text().primaryKey(),
+    id: t.uuid().primaryKey().defaultRandom(),
+
     identifier: t.text().notNull(),
     value: t.text().notNull(),
+
     expiresAt: t.timestamp().notNull(),
     createdAt: t.timestamp().notNull().defaultNow(),
     updatedAt: t
       .timestamp()
       .notNull()
+      .defaultNow()
       .defaultNow()
       .$onUpdate(() => new Date()),
   }),
@@ -128,14 +144,14 @@ export const activities = snakeCase.table(
   "activities",
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
-    eventType: t.text({ enum: ACTIVITY_EVENT_TYPES }).notNull(),
 
     userId: t
-      .text()
+      .uuid()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     entityId: t.text(),
 
+    eventType: t.text({ enum: ACTIVITY_EVENT_TYPES }).notNull(),
     data: t.text(),
 
     createdAt: t.timestamp().notNull().defaultNow(),
