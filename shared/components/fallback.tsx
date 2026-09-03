@@ -6,7 +6,7 @@ import {
 import { Spinner, SpinnerProps } from "@/core/components/ui/spinner";
 import { cn } from "@/core/utils";
 import { TriangleAlertIcon } from "lucide-react";
-import { appConfig } from "../config";
+import { appConfig } from "../configs";
 
 export type LoadingFallback = SpinnerProps & { containerClassName?: string };
 

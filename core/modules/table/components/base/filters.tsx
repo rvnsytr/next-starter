@@ -47,7 +47,7 @@ import {
 import { ColumnMeta } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
-import { languages } from "@/shared/constants";
+import { appConfig } from "@/shared/configs";
 import {
   formatForDisplay,
   HotkeySequence,
@@ -410,7 +410,7 @@ function FilterValueControllerNumber({
           size="sm"
           value={value[0] ?? 0}
           onValueChange={(v) => setValue(() => [v ?? 0])}
-          locale={languages.meta.id.locale}
+          locale={appConfig.default.numberLocale}
           autoFocus
         >
           <NumberFieldGroup>
@@ -467,7 +467,7 @@ function FilterValueControllerNumber({
             max={sliderScale.max}
             value={value[0] ?? 0}
             onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
-            locale={languages.meta.id.locale}
+            locale={appConfig.default.numberLocale}
             autoFocus
           >
             <NumberFieldGroup>
@@ -483,7 +483,7 @@ function FilterValueControllerNumber({
             max={sliderScale.max}
             value={value[1] ?? 0}
             onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
-            locale={languages.meta.id.locale}
+            locale={appConfig.default.numberLocale}
           >
             <NumberFieldGroup>
               <NumberFieldInput placeholder="To" />
