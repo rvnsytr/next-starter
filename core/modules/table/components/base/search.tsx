@@ -4,7 +4,6 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
-import { useDebounce } from "@/core/hooks/use-debounce";
 import { cn } from "@/core/utils";
 import {
   formatForDisplay,
@@ -12,12 +11,9 @@ import {
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
 import { SearchIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
-export type SearchProps = Omit<
-  React.ComponentProps<typeof InputGroupInput>,
-  "ref" | "value" | "onChange"
-> & {
+export type SearchProps = React.ComponentProps<typeof InputGroupInput> & {
   /**
    * Keyboard shortcut used to focus the search input.
    * If set to "default", the default shortcut (/) is used.
@@ -27,24 +23,15 @@ export type SearchProps = Omit<
   shortcut?: "default" | HotkeySequence;
 };
 
-type SearchContext = {
-  defaultValue: string;
-  onSearch: (value: string) => void;
-};
-
 const DEFAULT_SHORTCUT: HotkeySequence = ["/"];
 
 export function Search({
-  context,
   shortcut,
   placeholder = "Cari...",
   className,
   ...props
-}: SearchProps & { context: SearchContext }) {
+}: SearchProps) {
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const [value, setValue] = useState<string>(context.defaultValue);
-  const debouncedSearch = useDebounce(value);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
   useHotkeySequence(
@@ -53,20 +40,9 @@ export function Search({
     { enabled: !!hotkeySequence },
   );
 
-  useEffect(
-    () => context.onSearch(debouncedSearch),
-    [debouncedSearch, context],
-  );
-
   return (
     <InputGroup className={cn(className)}>
-      <InputGroupInput
-        ref={searchRef}
-        value={value}
-        onChange={(e) => setValue(String(e.target.value))}
-        placeholder={placeholder}
-        {...props}
-      />
+      <InputGroupInput ref={searchRef} placeholder={placeholder} {...props} />
 
       <InputGroupAddon>
         <SearchIcon />

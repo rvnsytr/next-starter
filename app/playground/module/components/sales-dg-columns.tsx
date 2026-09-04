@@ -157,6 +157,7 @@ export const saleDGColumns = columnHelper.columns([
     ),
 
     filterFn: "multi-option",
+    getUniqueValues: (r) => r.products,
 
     minSize: 300,
     size: 300,
