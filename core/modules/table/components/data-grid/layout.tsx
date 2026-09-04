@@ -98,12 +98,6 @@ export function DataGridLayout({
   } = addRowButtonProps ?? {};
 
   const {
-    align: clearChangesButtonAlign = isDesktop ? "center" : "end",
-    shortcut: clearChangesButtonShortcut = "default",
-    ...restClearChangesButtonProps
-  } = clearChangesButtonProps ?? {};
-
-  const {
     align: saveChangesButtonAlign = isDesktop ? "center" : "start",
     shortcut: saveChangesButtonShortcut = "default",
     ...restSaveChangesButtonProps
@@ -147,11 +141,7 @@ export function DataGridLayout({
             />
 
             <EditorToolbar
-              clearChangesButtonProps={{
-                align: clearChangesButtonAlign,
-                shortcut: clearChangesButtonShortcut,
-                ...restClearChangesButtonProps,
-              }}
+              clearChangesButtonProps={clearChangesButtonProps}
               saveChangesButtonProps={{
                 align: saveChangesButtonAlign,
                 shortcut: saveChangesButtonShortcut,

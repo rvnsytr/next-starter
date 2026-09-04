@@ -230,7 +230,11 @@ export function DataGrid({
       },
       {
         hotkey: "Escape",
-        callback: () => table.resetCellSelection(true),
+        callback: () => {
+          if (table.state.cellSelection.length > 0)
+            table.resetCellSelection(true);
+          else dataGridContext.clearChanges();
+        },
         options: { conflictBehavior: "allow" },
       },
       {
