@@ -1,12 +1,12 @@
 import { format, isAfter, isBefore, isValid, parse, set } from "date-fns";
 import { id } from "date-fns/locale";
 
-export function getTimeOfDay(date = new Date()) {
+export function timeOfDayText(date = new Date()) {
   const hour = date.getHours();
-  if (hour >= 4 && hour < 11) return "pagi";
-  if (hour < 15) return "siang";
-  if (hour < 18) return "sore";
-  return "malam";
+  if (hour >= 4 && hour < 11) return "morning";
+  if (hour < 15) return "afternoon";
+  if (hour < 18) return "evening";
+  return "night";
 }
 
 export function isDateInRange(from: Date, to: Date, date: Date) {

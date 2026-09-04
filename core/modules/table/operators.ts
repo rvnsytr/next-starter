@@ -19,8 +19,8 @@ export type DateTimeFilterOperator =
 export type DateMultipleFilterOperator =
   (typeof DATE_MULTIPLE_FILTER_OPERATORS)[number]["value"];
 
-export type DateRangeFilterOperator =
-  (typeof DATE_RANGE_FILTER_OPERATORS)[number]["value"];
+// export type DateRangeFilterOperator =
+//   (typeof DATE_RANGE_FILTER_OPERATORS)[number]["value"];
 
 const emptyFilterOperators = [
   {
@@ -243,33 +243,33 @@ export const DATE_MULTIPLE_FILTER_OPERATORS = [
   ...emptyFilterOperators,
 ] as const;
 
-export const DATE_RANGE_FILTER_OPERATORS = [
-  {
-    value: "is_within",
-    label: "is within",
-    withValue: true,
-  },
-  {
-    value: "overlaps",
-    label: "overlaps",
-    withValue: true,
-  },
-  {
-    value: "contains",
-    label: "contains",
-    withValue: true,
-  },
-  {
-    value: "starts_before",
-    label: "starts before",
-    withValue: true,
-  },
-  {
-    value: "ends_after",
-    label: "ends after",
-    withValue: true,
-  },
-] as const;
+// export const DATE_RANGE_FILTER_OPERATORS = [
+//   {
+//     value: "is_within",
+//     label: "is within",
+//     withValue: true,
+//   },
+//   {
+//     value: "overlaps",
+//     label: "overlaps",
+//     withValue: true,
+//   },
+//   {
+//     value: "contains",
+//     label: "contains",
+//     withValue: true,
+//   },
+//   {
+//     value: "starts_before",
+//     label: "starts before",
+//     withValue: true,
+//   },
+//   {
+//     value: "ends_after",
+//     label: "ends after",
+//     withValue: true,
+//   },
+// ] as const;
 
 export const STRING_FILTER_OPERATOR_VALUES = STRING_FILTER_OPERATORS.map(
   (operator) => operator.value,
@@ -301,7 +301,7 @@ export const DATE_MULTIPLE_FILTER_OPERATOR_VALUES =
     (operator) => operator.value,
   ) as DateMultipleFilterOperator[];
 
-export const DATE_RANGE_FILTER_OPERATOR_VALUES =
-  DATE_RANGE_FILTER_OPERATORS.map(
-    (operator) => operator.value,
-  ) as DateRangeFilterOperator[];
+// export const DATE_RANGE_FILTER_OPERATOR_VALUES =
+//   DATE_RANGE_FILTER_OPERATORS.map(
+//     (operator) => operator.value,
+//   ) as DateRangeFilterOperator[];
