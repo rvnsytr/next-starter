@@ -15,7 +15,7 @@ export function DataGridSelectRowCheckbox({
       {(selected) => (
         <SelectRowCheckbox
           checked={selected}
-          onCheckedChange={(value) => cell.row.toggleSelected(!!value)}
+          onCheckedChange={(v) => cell.row.toggleSelected(v)}
           disabled={disabled || !cell.row.getCanSelect()}
           {...props}
         />

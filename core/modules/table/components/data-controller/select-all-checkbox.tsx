@@ -14,7 +14,7 @@ export function DataControllerSelectAllCheckbox(props: SelectAllCheckboxProps) {
         return (
           <SelectAllCheckbox
             checked={isAllRowsSelected}
-            onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
+            onCheckedChange={(v) => table.toggleAllRowsSelected(v)}
             indeterminate={!isAllRowsSelected && isSomePageRowsSelected}
             {...props}
           />

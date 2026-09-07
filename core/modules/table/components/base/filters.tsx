@@ -257,7 +257,7 @@ export function FilterValueControllerErrorFallback({
 }: {
   filterType: string;
 }) {
-  const filterType = ft ?? "unknown";
+  const filterType = ft || "unknown";
   return (
     <ErrorFallback
       title="Unsupported Filter Type"
@@ -346,12 +346,12 @@ function FilterValueControllerNumber({
     ? filterValue.value
     : metaDefaultValue;
 
-  const [value, setValue] = useState(defaultValue);
-  const debouncedValue = useDebounce(value);
-
   const [tab, setTab] = useState<"single" | "range">(
     defaultValue.length === 2 ? "range" : "single",
   );
+
+  const [value, setValue] = useState(defaultValue);
+  const debouncedValue = useDebounce(value);
 
   const sliderScale = useMemo(() => {
     const min = columnMeta?.min ?? 0;
@@ -528,7 +528,6 @@ function FilterValueControllerBoolean({
         id={id}
         checked={value}
         onCheckedChange={(v) => {
-          if (!isFilterValueValid) return;
           setValue(v);
           setFilter({
             type: filterType,
@@ -536,6 +535,7 @@ function FilterValueControllerBoolean({
             value: v,
           });
         }}
+        autoFocus
       />
     </Label>
   );

@@ -21,9 +21,7 @@ export function DataGridColumnVisibilityMenu(props: ColumnVisibilityMenuProps) {
             {(isVisible) => (
               <MenuCheckboxItem
                 checked={isVisible}
-                onCheckedChange={(value) => {
-                  column.toggleVisibility(!!value);
-                }}
+                onCheckedChange={(v) => column.toggleVisibility(v)}
               >
                 <ColumnVisibilityMenuItemContent
                   columnId={column.id}

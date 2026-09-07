@@ -454,7 +454,7 @@ export function DataGrid({
 
                           const cellProps =
                             typeof columnMeta?.cellProps === "function"
-                              ? columnMeta?.cellProps(cell.getValue())
+                              ? columnMeta.cellProps(cell.getValue())
                               : columnMeta?.cellProps;
 
                           const {

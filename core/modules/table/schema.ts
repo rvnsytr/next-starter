@@ -7,31 +7,32 @@ import {
   STRING_FILTER_OPERATOR_VALUES,
 } from "./operators";
 
-export const stringFilterValueSchema = z.object({
+export const stringFilterSchema = z.object({
   type: z.literal("string"),
   operator: z.enum(STRING_FILTER_OPERATOR_VALUES),
   value: z.string(),
 });
 
-export const numberFilterValueSchema = z.object({
+export const numberFilterSchema = z.object({
   type: z.literal("number"),
   operator: z.enum(NUMBER_FILTER_OPERATOR_VALUES),
   value: z.number().array().min(1).max(2),
+  // value: z.tuple([z.number().optional(), z.number().optional()]),
 });
 
-export const booleanFilterValueSchema = z.object({
+export const booleanFilterSchema = z.object({
   type: z.literal("boolean"),
   operator: z.enum(BOOLEAN_FILTER_OPERATOR_VALUES),
   value: z.boolean(),
 });
 
-export const optionFilterValueSchema = z.object({
+export const optionFilterSchema = z.object({
   type: z.literal("option"),
   operator: z.enum(OPTION_FILTER_OPERATOR_VALUES),
   value: z.string().array(),
 });
 
-export const multiOptionFilterValueSchema = z.object({
+export const multiOptionFilterSchema = z.object({
   type: z.literal("multi-option"),
   operator: z.enum(MULTI_OPTION_FILTER_OPERATOR_VALUES),
   value: z.string().array(),

@@ -1,7 +1,6 @@
 import { validateValue } from "@/core/utils";
 import {
   FilterFn as TanstackFilterFn,
-  constructFilterFn,
   filterFn_arrHas,
   filterFn_arrIncludesAll,
   filterFn_arrIncludesSome,
@@ -19,6 +18,15 @@ import {
 } from "@tanstack/react-table";
 import { z } from "zod";
 import {
+  filterFn_arrExactlyMatches,
+  filterFn_dateAfter,
+  filterFn_dateBefore,
+  filterFn_dateBetween,
+  filterFn_dateIs,
+  filterFn_dateOnOrAfter,
+  filterFn_dateOnOrBefore,
+} from "./filter-fns";
+import {
   BOOLEAN_FILTER_OPERATORS,
   MULTI_OPTION_FILTER_OPERATORS,
   NUMBER_FILTER_OPERATORS,
@@ -26,12 +34,12 @@ import {
   STRING_FILTER_OPERATORS,
 } from "./operators";
 import {
-  booleanFilterValueSchema,
+  booleanFilterSchema,
   filterValueSchema,
-  multiOptionFilterValueSchema,
-  numberFilterValueSchema,
-  optionFilterValueSchema,
-  stringFilterValueSchema,
+  multiOptionFilterSchema,
+  numberFilterSchema,
+  optionFilterSchema,
+  stringFilterSchema,
 } from "./schema";
 
 export type FilterValue = z.infer<typeof filterValueSchema>;
@@ -112,22 +120,11 @@ export type FilterFn = TanstackFilterFn<any, any>;
 const getErrorMessage = (operator: string, filterType: string) =>
   `Unsupported operator "${operator}" for filter type "${filterType}"`;
 
-export const filterFn_arrExactlyMatches = constructFilterFn({
-  filter: (dataValue, filterValue: Array<unknown>) => {
-    if (!Array.isArray(dataValue)) return false;
-    if (dataValue.length !== filterValue.length) return false;
-    for (const value of filterValue)
-      if (!dataValue.includes(value)) return false;
-    return true;
-  },
-  autoRemove: (val) => !val?.length,
-});
-
 export const stringFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "string";
-  const filterValue = validateValue(fv, stringFilterValueSchema);
+  const filterValue = validateValue(fv, stringFilterSchema);
 
   if (!filterValue.success) {
     console.error(filterValue.message);
@@ -164,7 +161,7 @@ export const numberFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "number";
-  const filterValue = validateValue(fv, numberFilterValueSchema);
+  const filterValue = validateValue(fv, numberFilterSchema);
 
   if (!filterValue.success) {
     console.error(filterValue.message);
@@ -210,7 +207,7 @@ export const booleanFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "boolean";
-  const filterValue = validateValue(fv, booleanFilterValueSchema);
+  const filterValue = validateValue(fv, booleanFilterSchema);
 
   if (!filterValue.success) {
     console.error(filterValue.message);
@@ -237,7 +234,7 @@ export const optionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "option";
-  const filterValue = validateValue(fv, optionFilterValueSchema);
+  const filterValue = validateValue(fv, optionFilterSchema);
 
   if (!filterValue.success) {
     console.error(filterValue.message);
@@ -266,7 +263,7 @@ export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "multi-option";
-  const filterValue = validateValue(fv, multiOptionFilterValueSchema);
+  const filterValue = validateValue(fv, multiOptionFilterSchema);
 
   if (!filterValue.success) {
     console.error(filterValue.message);
