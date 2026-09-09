@@ -18,7 +18,7 @@ export default defineConfig([
       /** Enabled rules (warn) */
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "@typescript-eslint/array-type": ["warn", { default: "array-simple" }],
+      "@typescript-eslint/array-type": ["warn", { default: "array" }],
 
       /** Disabled rules */
       "import/order": "off",
