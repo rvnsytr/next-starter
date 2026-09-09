@@ -17,8 +17,8 @@ export function DataTableColumnHeader(props: ColumnHeaderProps) {
     <table.Subscribe
       selector={(s): ColumnHeaderState => {
         const sort = s.sorting.find((cs) => cs.id === columnId);
-        const isPinStart = s.columnPinning.start?.includes(columnId);
-        const isPinEnd = s.columnPinning.end?.includes(columnId);
+        const isPinStart = s.columnPinning.start.includes(columnId);
+        const isPinEnd = s.columnPinning.end.includes(columnId);
         return {
           sortDirection: sort ? (sort.desc ? "desc" : "asc") : false,
           pinPosition: isPinStart ? "start" : isPinEnd ? "end" : false,
