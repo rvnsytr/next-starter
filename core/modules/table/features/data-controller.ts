@@ -19,6 +19,7 @@ import {
 } from "@tanstack/react-table";
 import {
   booleanFilterFn,
+  dateTimeFilterFn,
   FilterFn,
   FilterType,
   multiOptionFilterFn,
@@ -39,6 +40,9 @@ export const serverDataControllerFeatures = {
     boolean: booleanFilterFn,
     option: optionFilterFn,
     "multi-option": multiOptionFilterFn,
+    "date-time": dateTimeFilterFn,
+    date: dateTimeFilterFn,
+    time: dateTimeFilterFn,
   } satisfies Record<FilterType, FilterFn>,
   globalFilteringFeature,
   rowPaginationFeature,

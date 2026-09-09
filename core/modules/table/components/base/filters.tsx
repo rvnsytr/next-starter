@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from "@/core/components/ui/button";
 import { ButtonGroup } from "@/core/components/ui/button-group";
+import { Calendar } from "@/core/components/ui/calendar";
 import {
   InputGroup,
   InputGroupAddon,
@@ -38,10 +39,10 @@ import {
 } from "@/core/components/ui/tooltip";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import {
+  Filter,
   filterMeta,
   FilterPopupType,
   FilterType,
-  FilterValue,
   getFilterOperators,
 } from "@/core/modules/table/filters";
 import { ColumnMeta } from "@/core/modules/table/types";
@@ -53,6 +54,7 @@ import {
   HotkeySequence,
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
+import { format } from "date-fns";
 import {
   ChevronRightIcon,
   EllipsisIcon,
@@ -61,27 +63,15 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
-  align?: React.ComponentProps<typeof TooltipPopup>["align"];
-
-  /**
-   * Keyboard shortcut used to open the filter selector.
-   * If set to "default", the default shortcut (F) is used.
-   */
-  shortcut?: "default" | HotkeySequence;
-
-  renderTrigger?: React.ReactElement;
-};
-
 type FilterValueControllerProps = {
   columnId: string;
+  filter: Filter;
   popupType: FilterPopupType;
-  filterValue: FilterValue;
-  setFilter: (updater: FilterValue | undefined) => void;
+  setFilter: (updater: Filter | undefined) => void;
   columnMeta?: ColumnMeta;
 };
 
-type FilterColumnContext =
+export type FilterColumnContext =
   | ({ success: true } & FilterValueControllerProps)
   | {
       success: false;
@@ -94,6 +84,18 @@ type FilterColumnContext =
 type FilterSelectorContext = {
   columnFilterIds: Set<string>;
   columns: FilterColumnContext[];
+};
+
+export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
+  align?: React.ComponentProps<typeof TooltipPopup>["align"];
+
+  /**
+   * Keyboard shortcut used to open the filter selector.
+   * If set to "default", the default shortcut (F) is used.
+   */
+  shortcut?: "default" | HotkeySequence;
+
+  renderTrigger?: React.ReactElement;
 };
 
 const DEFAULT_SHORTCUT: HotkeySequence = ["F"];
@@ -269,7 +271,7 @@ export function FilterValueControllerErrorFallback({
 }
 
 function FilterValueController(props: FilterValueControllerProps) {
-  const filterType = props.filterValue.type;
+  const filterType = props.filter.type;
   switch (filterType) {
     case "string":
       return <FilterValueControllerString {...props} />;
@@ -281,37 +283,37 @@ function FilterValueController(props: FilterValueControllerProps) {
       return <FilterValueControllerOption {...props} />;
     case "multi-option":
       return <FilterValueControllerMultiOption {...props} />;
+    case "date-time":
+    case "date":
+    case "time":
+      return <FilterValueControllerTemporal {...props} />;
     default:
       return <FilterValueControllerErrorFallback filterType={filterType} />;
   }
 }
 
 function FilterValueControllerString({
-  filterValue,
+  filter,
   columnMeta,
   setFilter,
 }: FilterValueControllerProps) {
   const filterType: FilterType = "string";
 
-  const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid
-    ? filterValue.value
-    : filterMeta.string.defaultValue.value;
+  const isFilterValid = filter.type === filterType;
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[filterType].defaultValue.value;
 
   const [value, setValue] = useState(defaultValue);
   const debouncedValue = useDebounce(value);
 
   useEffect(() => {
-    if (!isFilterValueValid) return;
-    setFilter({
-      type: filterType,
-      operator: filterValue.operator,
-      value: debouncedValue,
-    });
-  }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
+    if (!isFilterValid) return;
+    setFilter({ ...filter, value: debouncedValue });
+  }, [setFilter, isFilterValid, filter, debouncedValue]);
 
-  if (!isFilterValueValid)
-    return <FilterValueControllerErrorFallback filterType={filterType} />;
+  if (!isFilterValid)
+    return <FilterValueControllerErrorFallback filterType={filter.type} />;
 
   const { label, icon: Icon } = columnMeta ?? {};
 
@@ -334,17 +336,16 @@ function FilterValueControllerString({
 }
 
 function FilterValueControllerNumber({
-  filterValue,
+  filter,
   columnMeta,
   setFilter,
 }: FilterValueControllerProps) {
   const filterType: FilterType = "number";
-  const metaDefaultValue = filterMeta.number.defaultValue.value;
 
-  const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid
-    ? filterValue.value
-    : metaDefaultValue;
+  const isFilterValid = filter.type === filterType;
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[filterType].defaultValue.value;
 
   const [tab, setTab] = useState<"single" | "range">(
     defaultValue.length === 2 ? "range" : "single",
@@ -385,16 +386,12 @@ function FilterValueControllerNumber({
   }, [columnMeta]);
 
   useEffect(() => {
-    if (!isFilterValueValid) return;
-    setFilter({
-      type: filterType,
-      operator: filterValue.operator,
-      value: debouncedValue,
-    });
-  }, [isFilterValueValid, setFilter, filterValue.operator, debouncedValue]);
+    if (!isFilterValid) return;
+    setFilter({ ...filter, value: debouncedValue });
+  }, [setFilter, isFilterValid, filter, debouncedValue]);
 
-  if (!isFilterValueValid)
-    return <FilterValueControllerErrorFallback filterType={filterType} />;
+  if (!isFilterValid)
+    return <FilterValueControllerErrorFallback filterType={filter.type} />;
 
   const { label } = columnMeta ?? {};
 
@@ -498,21 +495,21 @@ function FilterValueControllerNumber({
 }
 
 function FilterValueControllerBoolean({
-  filterValue,
+  filter,
   columnMeta,
   setFilter,
 }: FilterValueControllerProps) {
   const filterType: FilterType = "boolean";
 
-  const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid
-    ? filterValue.value
-    : filterMeta.boolean.defaultValue.value;
+  const isFilterValid = filter.type === filterType;
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[filterType].defaultValue.value;
 
   const [value, setValue] = useState(defaultValue);
 
-  if (!isFilterValueValid)
-    return <FilterValueControllerErrorFallback filterType={filterType} />;
+  if (!isFilterValid)
+    return <FilterValueControllerErrorFallback filterType={filter.type} />;
 
   const { label, icon: Icon } = columnMeta ?? {};
   const id = label?.toLocaleLowerCase() ?? crypto.randomUUID();
@@ -529,11 +526,7 @@ function FilterValueControllerBoolean({
         checked={value}
         onCheckedChange={(v) => {
           setValue(v);
-          setFilter({
-            type: filterType,
-            operator: filterValue.operator,
-            value: v,
-          });
+          setFilter({ ...filter, value: v });
         }}
         autoFocus
       />
@@ -542,21 +535,21 @@ function FilterValueControllerBoolean({
 }
 
 function FilterValueControllerOption({
-  filterValue,
+  filter,
   columnMeta,
   setFilter,
 }: FilterValueControllerProps) {
   const filterType: FilterType = "option";
 
-  const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid
-    ? filterValue.value
-    : filterMeta.option.defaultValue.value;
+  const isFilterValid = filter.type === filterType;
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[filterType].defaultValue.value;
 
   const [value, setValue] = useState(defaultValue);
 
-  if (!isFilterValueValid)
-    return <FilterValueControllerErrorFallback filterType={filterType} />;
+  if (!isFilterValid)
+    return <FilterValueControllerErrorFallback filterType={filter.type} />;
 
   if (!columnMeta?.options || !columnMeta.options.length)
     return (
@@ -581,11 +574,7 @@ function FilterValueControllerOption({
             : value.filter((val) => val !== option.value);
 
           setValue(newValue);
-          setFilter({
-            type: filterType,
-            operator: filterValue.operator,
-            value: newValue,
-          });
+          setFilter({ ...filter, value: newValue });
         }}
       >
         <div className="flex gap-4">
@@ -601,20 +590,20 @@ function FilterValueControllerOption({
 }
 
 function FilterValueControllerMultiOption({
-  filterValue,
+  filter,
   columnMeta,
   setFilter,
 }: FilterValueControllerProps) {
   const filterType: FilterType = "multi-option";
 
-  const isFilterValueValid = filterValue.type === filterType;
-  const defaultValue = isFilterValueValid
-    ? filterValue.value
-    : filterMeta.option.defaultValue.value;
+  const isFilterValid = filter.type === filterType;
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[filterType].defaultValue.value;
 
   const [value, setValue] = useState(defaultValue);
 
-  if (!isFilterValueValid)
+  if (!isFilterValid)
     return <FilterValueControllerErrorFallback filterType={filterType} />;
 
   if (!columnMeta?.options || !columnMeta.options.length)
@@ -640,11 +629,7 @@ function FilterValueControllerMultiOption({
             : value.filter((val) => val !== option.value);
 
           setValue(newValue);
-          setFilter({
-            type: filterType,
-            operator: filterValue.operator,
-            value: newValue,
-          });
+          setFilter({ ...filter, value: newValue });
         }}
       >
         <div className="flex gap-4">
@@ -657,6 +642,84 @@ function FilterValueControllerMultiOption({
       </MenuCheckboxItem>
     );
   });
+}
+
+function FilterValueControllerTemporal({
+  filter,
+  columnMeta,
+  setFilter,
+}: FilterValueControllerProps) {
+  const defaultFilterType: FilterType = "date-time";
+
+  const isFilterValid =
+    filter.type === defaultFilterType ||
+    filter.type === "date" ||
+    filter.type === "time";
+
+  const defaultValue = isFilterValid
+    ? filter.value
+    : filterMeta[defaultFilterType].defaultValue.value;
+
+  const [tab, setTab] = useState<"single" | "range">(
+    defaultValue.length === 2 ? "range" : "single",
+  );
+
+  const [value, setValue] = useState(defaultValue);
+
+  useEffect(() => {
+    if (!isFilterValid) return;
+    setFilter({ ...filter, value });
+  }, [isFilterValid, setFilter, filter, value]);
+
+  if (!isFilterValid)
+    return <FilterValueControllerErrorFallback filterType={filter.type} />;
+
+  const { label } = columnMeta ?? {};
+
+  let inputType = "date";
+  let formatStr = "yyyy-MM-dd";
+
+  if (filter.operator === "exactly") {
+    formatStr = "yyyy-MM-dd'T'HH:mm";
+    inputType = "datetime-local";
+  }
+  if (filter.type === "time") {
+    formatStr = "HH:mm";
+    inputType = "time";
+  }
+
+  return (
+    <Tabs value={tab} onValueChange={setTab} className="gap-2">
+      <TabsList className="w-full">
+        <TabsTab value="single">Single</TabsTab>
+        <TabsTab value="range">Range</TabsTab>
+      </TabsList>
+
+      <TabsPanel value="single" className="flex flex-col gap-2">
+        <Calendar
+          mode="single"
+          selected={value[0] ?? undefined}
+          onSelect={(date) => {
+            if (date) setValue([date]);
+          }}
+          defaultMonth={value[0] ?? undefined}
+          autoFocus
+        />
+
+        <InputGroup>
+          <InputGroupInput
+            type={inputType}
+            value={value[0] ? format(value[0], formatStr) : ""}
+            onChange={(e) => {
+              const date = e.target.value ? new Date(e.target.value) : null;
+              if (date) setValue([date]);
+            }}
+            placeholder={`Search ${label?.toLowerCase()}...`}
+          />
+        </InputGroup>
+      </TabsPanel>
+    </Tabs>
+  );
 }
 
 export type ActiveFiltersContainerProps = React.ComponentProps<"div">;
@@ -719,10 +782,10 @@ export function ActiveFilters({
       );
     }
 
-    const operators = getFilterOperators(c.filterValue.type);
+    const operators = getFilterOperators(c.filter.type);
     const selectedOperatorLabel =
-      operators.find((op) => op.value === c.filterValue.operator)?.label ??
-      c.filterValue.operator;
+      operators.find((op) => op.value === c.filter.operator)?.label ??
+      c.filter.operator;
 
     const Icon = c.columnMeta?.icon;
 
@@ -755,10 +818,7 @@ export function ActiveFilters({
               <MenuItem
                 key={op.value}
                 onClick={() => {
-                  c.setFilter({
-                    ...c.filterValue,
-                    operator: op.value,
-                  } as FilterValue);
+                  c.setFilter({ ...c.filter, operator: op.value } as Filter);
                 }}
               >
                 {op.label}
@@ -770,7 +830,7 @@ export function ActiveFilters({
         <FilterValueDisplayPopup
           size="sm"
           variant="outline"
-          filterValue={c.filterValue}
+          filter={c.filter}
           popupType={c.popupType}
         >
           <FilterValueController {...c} />
@@ -789,25 +849,27 @@ export function ActiveFilters({
 }
 
 type FilterValueDisplayPopupProps = ButtonProps & {
-  filterValue: FilterValue;
+  filter: Filter;
   popupType: FilterPopupType;
 };
 
 function FilterValueDisplayPopup({
-  filterValue,
+  filter,
   popupType,
   children,
   ...props
 }: FilterValueDisplayPopupProps) {
-  const operators = getFilterOperators(filterValue.type);
+  const operators = getFilterOperators(filter.type);
+
+  // TODO
   const withValue =
-    operators.find((v) => v.value === filterValue.operator)?.withValue ?? true;
+    operators.find((v) => v.value === filter.operator)?.withValue ?? true;
 
   if (!withValue) return null;
 
   const trigger = (
     <Button {...props}>
-      <FilterValueDisplay filterValue={filterValue} />
+      <FilterValueDisplay filter={filter} />
     </Button>
   );
 
@@ -829,23 +891,27 @@ function FilterValueDisplayPopup({
   );
 }
 
-type FilterValueDisplayProps<T extends FilterType> = Pick<
-  Extract<FilterValue, { type: T }>,
-  "value"
+type FilterValueDisplayProps<T extends FilterType> = Extract<
+  Filter,
+  { type: T }
 >;
 
-function FilterValueDisplay({ filterValue }: { filterValue: FilterValue }) {
-  const filterType = filterValue.type;
+function FilterValueDisplay({ filter }: { filter: Filter }) {
+  const filterType = filter.type;
   switch (filterType) {
     case "string":
-      return <FilterValueDisplayString value={filterValue.value} />;
+      return <FilterValueDisplayString {...filter} />;
     case "number":
-      return <FilterValueDisplayNumber value={filterValue.value} />;
+      return <FilterValueDisplayNumber {...filter} />;
     case "boolean":
-      return <FilterValueDisplayBoolean value={filterValue.value} />;
+      return <FilterValueDisplayBoolean {...filter} />;
     case "option":
     case "multi-option":
-      return <FilterValueDisplayOptions value={filterValue.value} />;
+      return <FilterValueDisplayOptions {...filter} />;
+    case "date-time":
+    case "date":
+    case "time":
+      return <FilterValueDisplayTemporal {...filter} />;
     default:
       return `Filter type "${filterType}" is not supported.`;
   }
@@ -885,4 +951,21 @@ function FilterValueDisplayOptions({
   if (value.length > 2)
     return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;
   return value.join(", ");
+}
+
+function FilterValueDisplayTemporal({
+  type,
+  operator,
+  value,
+}: FilterValueDisplayProps<"date-time" | "date" | "time">) {
+  const [v1, v2] = value;
+
+  let formatStr = "PPP";
+
+  if (type === "date-time" && operator === "exactly") formatStr = "PPPp";
+  if (type === "time") formatStr = "p";
+
+  if (!v1) return <EllipsisIcon />;
+  if (!v2) return format(v1, formatStr);
+  return `${format(v1, formatStr)} - ${format(v2, formatStr)}`;
 }

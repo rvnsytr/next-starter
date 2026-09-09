@@ -1,12 +1,12 @@
 import z from "zod";
 
-export function withSchemaPrefix<P extends string, S extends z.ZodRawShape>(
-  prefix: P,
-  schema: z.ZodObject<S>,
-) {
+export function withSchemaPrefix<
+  TPrefix extends string,
+  TSchema extends z.ZodRawShape,
+>(prefix: TPrefix, schema: z.ZodObject<TSchema>) {
   const prefixedShape = Object.fromEntries(
     Object.entries(schema.shape).map(([k, v]) => [`${prefix}${k}`, v]),
-  ) as { [K in keyof S as `${P}${string & K}`]: S[K] };
+  ) as { [K in keyof TSchema as `${TPrefix}${string & K}`]: TSchema[K] };
   return z.object(prefixedShape);
 }
 

@@ -19,38 +19,37 @@ import {
 import { z } from "zod";
 import {
   filterFn_arrExactlyMatches,
-  filterFn_dateAfter,
-  filterFn_dateBefore,
-  filterFn_dateBetween,
+  filterFn_dateExactly,
   filterFn_dateIs,
-  filterFn_dateOnOrAfter,
-  filterFn_dateOnOrBefore,
 } from "./filter-fns";
 import {
   BOOLEAN_FILTER_OPERATORS,
+  DATE_TIME_FILTER_OPERATORS,
   MULTI_OPTION_FILTER_OPERATORS,
   NUMBER_FILTER_OPERATORS,
   OPTION_FILTER_OPERATORS,
   STRING_FILTER_OPERATORS,
+  TEMPORAL_FILTER_OPERATORS,
 } from "./operators";
 import {
   booleanFilterSchema,
-  filterValueSchema,
+  filterSchema,
   multiOptionFilterSchema,
   numberFilterSchema,
   optionFilterSchema,
   stringFilterSchema,
+  temporalFilterSchema,
 } from "./schema";
 
-export type FilterValue = z.infer<typeof filterValueSchema>;
-export type FilterType = FilterValue["type"];
+export type Filter = z.infer<typeof filterSchema>;
+export type FilterType = Filter["type"];
 
 export type FilterPopupType = "menu" | "popover";
 
 export type FilterMeta = {
   [T in FilterType]: {
     popupType: FilterPopupType;
-    defaultValue: Extract<FilterValue, { type: T }>;
+    defaultValue: Extract<Filter, { type: T }>;
   };
 };
 
@@ -95,6 +94,30 @@ export const filterMeta: FilterMeta = {
       value: [],
     },
   },
+  "date-time": {
+    popupType: "popover",
+    defaultValue: {
+      type: "date-time",
+      operator: "is",
+      value: [new Date()],
+    },
+  },
+  date: {
+    popupType: "popover",
+    defaultValue: {
+      type: "date",
+      operator: "is",
+      value: [new Date()],
+    },
+  },
+  time: {
+    popupType: "popover",
+    defaultValue: {
+      type: "time",
+      operator: "is",
+      value: [new Date()],
+    },
+  },
 };
 
 export function getFilterOperators(filterType: FilterType) {
@@ -109,6 +132,11 @@ export function getFilterOperators(filterType: FilterType) {
       return OPTION_FILTER_OPERATORS;
     case "multi-option":
       return MULTI_OPTION_FILTER_OPERATORS;
+    case "date-time":
+      return DATE_TIME_FILTER_OPERATORS;
+    case "date":
+    case "time":
+      return TEMPORAL_FILTER_OPERATORS;
     default:
       return STRING_FILTER_OPERATORS;
   }
@@ -124,14 +152,14 @@ export const stringFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "string";
-  const filterValue = validateValue(fv, stringFilterSchema);
+  const filterResult = validateValue(fv, stringFilterSchema);
 
-  if (!filterValue.success) {
-    console.error(filterValue.message);
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
     return false;
   }
 
-  const { operator, value } = filterValue.data;
+  const { operator, value } = filterResult.data;
 
   switch (operator) {
     case "contains":
@@ -161,14 +189,14 @@ export const numberFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "number";
-  const filterValue = validateValue(fv, numberFilterSchema);
+  const filterResult = validateValue(fv, numberFilterSchema);
 
-  if (!filterValue.success) {
-    console.error(filterValue.message);
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
     return false;
   }
 
-  const { operator, value } = filterValue.data;
+  const { operator, value } = filterResult.data;
   if (value.length === 0) return true;
 
   switch (operator) {
@@ -207,14 +235,14 @@ export const booleanFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "boolean";
-  const filterValue = validateValue(fv, booleanFilterSchema);
+  const filterResult = validateValue(fv, booleanFilterSchema);
 
-  if (!filterValue.success) {
-    console.error(filterValue.message);
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
     return false;
   }
 
-  const { operator, value } = filterValue.data;
+  const { operator, value } = filterResult.data;
 
   switch (operator) {
     case "is":
@@ -234,14 +262,14 @@ export const optionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "option";
-  const filterValue = validateValue(fv, optionFilterSchema);
+  const filterResult = validateValue(fv, optionFilterSchema);
 
-  if (!filterValue.success) {
-    console.error(filterValue.message);
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
     return false;
   }
 
-  const { operator, value } = filterValue.data;
+  const { operator, value } = filterResult.data;
 
   switch (operator) {
     case "is_any_of":
@@ -263,14 +291,14 @@ export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
   const filterType: FilterType = "multi-option";
-  const filterValue = validateValue(fv, multiOptionFilterSchema);
+  const filterResult = validateValue(fv, multiOptionFilterSchema);
 
-  if (!filterValue.success) {
-    console.error(filterValue.message);
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
     return false;
   }
 
-  const { operator, value } = filterValue.data;
+  const { operator, value } = filterResult.data;
 
   switch (operator) {
     case "contains_any":
@@ -287,6 +315,49 @@ export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
       return filterFn_notEmpty(row, columnId, value, addMeta);
     default: {
       console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const dateTimeFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
+
+  const filterType: FilterType = "date-time";
+  const filterResult = validateValue(fv, temporalFilterSchema);
+
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
+    return false;
+  }
+
+  const filter = filterResult.data;
+
+  switch (filter.operator) {
+    case "exactly":
+      return filterFn_dateExactly(row, columnId, filter, addMeta);
+    case "is":
+      return filterFn_dateIs(row, columnId, filter, addMeta);
+    case "is_not":
+      return !filterFn_dateIs(row, columnId, filter, addMeta);
+    // case "before":
+    //   return filterFn_dateBefore(row, columnId, filter, addMeta);
+    // case "after":
+    //   return filterFn_dateAfter(row, columnId, filter, addMeta);
+    // case "on_or_before":
+    //   return filterFn_dateOnOrBefore(row, columnId, filter, addMeta);
+    // case "on_or_after":
+    //   return filterFn_dateOnOrAfter(row, columnId, filter, addMeta);
+    // case "between":
+    //   return filterFn_dateBetween(row, columnId, filter, addMeta);
+    // case "not_between":
+    //   return !filterFn_dateBetween(row, columnId, filter, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, filter.value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, filter.value, addMeta);
+    default: {
+      console.error(getErrorMessage(filter.operator, filterType));
       return false;
     }
   }

@@ -8,13 +8,8 @@ import {
 } from "@tanstack/react-table";
 import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
-import {
-  filterMeta,
-  FilterPopupType,
-  FilterType,
-  FilterValue,
-} from "./filters";
-import { filterTypeSchema, filterValueSchema } from "./schema";
+import { Filter, filterMeta, FilterPopupType, FilterType } from "./filters";
+import { filterSchema, filterTypeSchema } from "./schema";
 import { ColumnValueOption, DataGridTableMeta } from "./types";
 
 export function saveChanges(
@@ -84,10 +79,7 @@ export function resolveFilter(params: {
   filterFn: unknown;
   columnFilterValue: unknown;
   safeParse?: boolean;
-}): ActionResponse<{
-  filterValue: FilterValue;
-  popupType: FilterPopupType;
-}> {
+}): ActionResponse<{ filter: Filter; popupType: FilterPopupType }> {
   const ftSchema = params.safeParse
     ? filterTypeSchema.default(DEFAULT_FILTER_TYPE).catch(DEFAULT_FILTER_TYPE)
     : filterTypeSchema;
@@ -98,15 +90,15 @@ export function resolveFilter(params: {
   const { popupType, defaultValue } = filterMeta[parsedFilterType.data];
 
   const fvSchema = params.safeParse
-    ? filterValueSchema.default(defaultValue).catch(defaultValue)
-    : filterValueSchema;
+    ? filterSchema.default(defaultValue).catch(defaultValue)
+    : filterSchema;
 
   const parsedFilterValue = validateValue(params.columnFilterValue, fvSchema);
   if (!parsedFilterValue.success) return parsedFilterValue;
 
-  const filterValue = parsedFilterValue.data;
+  const filter = parsedFilterValue.data;
 
-  return { success: true, data: { filterValue, popupType } };
+  return { success: true, data: { filter, popupType } };
 }
 
 export function getParentColumns<T extends { parent?: T }>(node: T): T[] {
@@ -145,7 +137,7 @@ export function getNestedProperty<T = unknown>(
   let current = object;
 
   for (const key of keys) {
-    if (current == null || typeof current !== "object") return undefined;
+    if (typeof current !== "object") return undefined;
     current = current[key];
   }
 

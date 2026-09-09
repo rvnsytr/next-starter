@@ -13,6 +13,9 @@ export type OptionFilterOperator =
 export type MultiOptionFilterOperator =
   (typeof MULTI_OPTION_FILTER_OPERATORS)[number]["value"];
 
+export type TemporalFilterOperator =
+  (typeof TEMPORAL_FILTER_OPERATORS)[number]["value"];
+
 export type DateTimeFilterOperator =
   (typeof DATE_TIME_FILTER_OPERATORS)[number]["value"];
 
@@ -22,7 +25,8 @@ export type DateMultipleFilterOperator =
 // export type DateRangeFilterOperator =
 //   (typeof DATE_RANGE_FILTER_OPERATORS)[number]["value"];
 
-const emptyFilterOperators = [
+// TODO: remove withValue key
+const EMPTY_FILTER_OPERATORS = [
   {
     value: "is_empty",
     label: "is empty",
@@ -66,7 +70,7 @@ export const STRING_FILTER_OPERATORS = [
     label: "ends with",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
 export const NUMBER_FILTER_OPERATORS = [
@@ -120,7 +124,7 @@ export const NUMBER_FILTER_OPERATORS = [
     label: "not between inclusive",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
 export const BOOLEAN_FILTER_OPERATORS = [
@@ -129,7 +133,7 @@ export const BOOLEAN_FILTER_OPERATORS = [
     label: "is",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
 export const OPTION_FILTER_OPERATORS = [
@@ -143,7 +147,7 @@ export const OPTION_FILTER_OPERATORS = [
     label: "is none of",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
 export const MULTI_OPTION_FILTER_OPERATORS = [
@@ -167,10 +171,10 @@ export const MULTI_OPTION_FILTER_OPERATORS = [
     label: "exactly matches",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
-export const DATE_TIME_FILTER_OPERATORS = [
+export const TEMPORAL_FILTER_OPERATORS = [
   {
     value: "is",
     label: "is",
@@ -211,7 +215,16 @@ export const DATE_TIME_FILTER_OPERATORS = [
     label: "not between",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
+] as const;
+
+export const DATE_TIME_FILTER_OPERATORS = [
+  {
+    value: "exactly",
+    label: "exactly",
+    withValue: true,
+  },
+  ...TEMPORAL_FILTER_OPERATORS,
 ] as const;
 
 export const DATE_MULTIPLE_FILTER_OPERATORS = [
@@ -240,7 +253,7 @@ export const DATE_MULTIPLE_FILTER_OPERATORS = [
     label: "exactly matches",
     withValue: true,
   },
-  ...emptyFilterOperators,
+  ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
 // export const DATE_RANGE_FILTER_OPERATORS = [
@@ -273,33 +286,33 @@ export const DATE_MULTIPLE_FILTER_OPERATORS = [
 
 export const STRING_FILTER_OPERATOR_VALUES = STRING_FILTER_OPERATORS.map(
   (operator) => operator.value,
-) as StringFilterOperator[];
+);
 
 export const NUMBER_FILTER_OPERATOR_VALUES = NUMBER_FILTER_OPERATORS.map(
   (operator) => operator.value,
-) as NumberFilterOperator[];
+);
 
 export const BOOLEAN_FILTER_OPERATOR_VALUES = BOOLEAN_FILTER_OPERATORS.map(
   (operator) => operator.value,
-) as BooleanFilterOperator[];
+);
 
 export const OPTION_FILTER_OPERATOR_VALUES = OPTION_FILTER_OPERATORS.map(
   (operator) => operator.value,
-) as OptionFilterOperator[];
+);
 
 export const MULTI_OPTION_FILTER_OPERATOR_VALUES =
-  MULTI_OPTION_FILTER_OPERATORS.map(
-    (operator) => operator.value,
-  ) as MultiOptionFilterOperator[];
+  MULTI_OPTION_FILTER_OPERATORS.map((operator) => operator.value);
+
+export const TEMPORAL_FILTER_OPERATOR_VALUES = TEMPORAL_FILTER_OPERATORS.map(
+  (operator) => operator.value,
+);
 
 export const DATE_TIME_FILTER_OPERATOR_VALUES = DATE_TIME_FILTER_OPERATORS.map(
   (operator) => operator.value,
-) as DateTimeFilterOperator[];
+);
 
 export const DATE_MULTIPLE_FILTER_OPERATOR_VALUES =
-  DATE_MULTIPLE_FILTER_OPERATORS.map(
-    (operator) => operator.value,
-  ) as DateMultipleFilterOperator[];
+  DATE_MULTIPLE_FILTER_OPERATORS.map((operator) => operator.value);
 
 // export const DATE_RANGE_FILTER_OPERATOR_VALUES =
 //   DATE_RANGE_FILTER_OPERATORS.map(

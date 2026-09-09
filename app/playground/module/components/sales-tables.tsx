@@ -86,7 +86,7 @@ export function SaleDataGrid() {
 
   const { data, mutate, isLoading } = useSWR(
     "/dg/sales",
-    async () => await getSales(20),
+    async () => await getSales(1),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -131,7 +131,7 @@ export function SaleDataGrid() {
             if (!prev) return prev;
             let newData = prev;
 
-            ctx.added?.forEach((r) => newData.unshift(r));
+            ctx.added.forEach((r) => newData.unshift(r));
 
             ctx.updated.forEach((c) => {
               const rowIndex = newData.findIndex((r) => r.id === c.rowId);
@@ -139,7 +139,7 @@ export function SaleDataGrid() {
                 newData[rowIndex] = mergeNested(newData[rowIndex], c.changes);
             });
 
-            ctx.removed?.forEach((c) => {
+            ctx.removed.forEach((c) => {
               newData = newData.filter((r) => r.id !== c.rowData.id);
             });
 
