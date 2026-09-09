@@ -45,6 +45,7 @@ import {
   FilterType,
   getFilterOperators,
 } from "@/core/modules/table/filters";
+import { EMPTY_FILTER_OPERATORS } from "@/core/modules/table/operators";
 import { ColumnMeta } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
@@ -859,13 +860,8 @@ function FilterValueDisplayPopup({
   children,
   ...props
 }: FilterValueDisplayPopupProps) {
-  const operators = getFilterOperators(filter.type);
-
-  // TODO
-  const withValue =
-    operators.find((v) => v.value === filter.operator)?.withValue ?? true;
-
-  if (!withValue) return null;
+  if (EMPTY_FILTER_OPERATORS.some((o) => o.value === filter.operator))
+    return null;
 
   const trigger = (
     <Button {...props}>
