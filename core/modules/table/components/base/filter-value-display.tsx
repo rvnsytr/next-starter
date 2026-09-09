@@ -1,0 +1,133 @@
+import { Button, ButtonProps } from "@/core/components/ui/button";
+import { Menu, MenuPopup, MenuTrigger } from "@/core/components/ui/menu";
+import {
+  Popover,
+  PopoverPopup,
+  PopoverTrigger,
+} from "@/core/components/ui/popover";
+import {
+  Filter,
+  FilterPopupType,
+  FilterType,
+} from "@/core/modules/table/filters";
+import { EMPTY_FILTER_OPERATORS } from "@/core/modules/table/operators";
+import { formatNumber } from "@/core/utils";
+import { format } from "date-fns";
+import { EllipsisIcon } from "lucide-react";
+
+export type FilterValueDisplayPopupProps = ButtonProps & {
+  filter: Filter;
+  popupType: FilterPopupType;
+};
+
+export function FilterValueDisplayPopup({
+  filter,
+  popupType,
+  children,
+  ...props
+}: FilterValueDisplayPopupProps) {
+  if (EMPTY_FILTER_OPERATORS.some((o) => o.value === filter.operator))
+    return null;
+
+  const trigger = (
+    <Button {...props}>
+      <FilterValueDisplay filter={filter} />
+    </Button>
+  );
+
+  if (popupType === "menu")
+    return (
+      <Menu>
+        <MenuTrigger render={trigger} />
+        <MenuPopup>{children}</MenuPopup>
+      </Menu>
+    );
+
+  return (
+    <Popover>
+      <PopoverTrigger render={trigger} />
+      <PopoverPopup className="w-fit max-w-3xs rounded-xl *:p-1">
+        {children}
+      </PopoverPopup>
+    </Popover>
+  );
+}
+
+export type FilterValueDisplayProps<T extends FilterType> = Extract<
+  Filter,
+  { type: T }
+>;
+
+export function FilterValueDisplay({ filter }: { filter: Filter }) {
+  const filterType = filter.type;
+  switch (filterType) {
+    case "string":
+      return <FilterValueDisplayString {...filter} />;
+    case "number":
+      return <FilterValueDisplayNumber {...filter} />;
+    case "boolean":
+      return <FilterValueDisplayBoolean {...filter} />;
+    case "option":
+    case "multi-option":
+      return <FilterValueDisplayOptions {...filter} />;
+    case "date-time":
+    case "date":
+    case "time":
+      return <FilterValueDisplayTemporal {...filter} />;
+    default:
+      return `Filter type "${filterType}" is not supported.`;
+  }
+}
+
+function FilterValueDisplayString({
+  value,
+}: FilterValueDisplayProps<"string">) {
+  const maxStringLength = 20;
+  const displayValue =
+    value.length > maxStringLength
+      ? `${value.slice(0, maxStringLength)}...`
+      : value;
+  return !!displayValue ? displayValue : <EllipsisIcon />;
+}
+
+function FilterValueDisplayNumber({
+  value,
+}: FilterValueDisplayProps<"number">) {
+  if (value.length === 0) return <EllipsisIcon />;
+  if (value.length === 1) return `${formatNumber(value[0])}`;
+  if (value.length === 2)
+    return `${formatNumber(value[0])} - ${formatNumber(value[1])}`;
+  return <EllipsisIcon />;
+}
+
+function FilterValueDisplayBoolean({
+  value,
+}: FilterValueDisplayProps<"boolean">) {
+  return String(value);
+}
+
+function FilterValueDisplayOptions({
+  value,
+}: FilterValueDisplayProps<"option" | "multi-option">) {
+  if (value.length === 0) return <EllipsisIcon />;
+  if (value.length > 2)
+    return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;
+  return value.join(", ");
+}
+
+function FilterValueDisplayTemporal({
+  type,
+  operator,
+  value,
+}: FilterValueDisplayProps<"date-time" | "date" | "time">) {
+  const [v1, v2] = value;
+
+  let formatStr = "PPP";
+
+  if (type === "date-time" && operator === "exactly") formatStr = "PPPp";
+  if (type === "time") formatStr = "p";
+
+  if (!v1) return <EllipsisIcon />;
+  if (!v2) return format(v1, formatStr);
+  return `${format(v1, formatStr)} - ${format(v2, formatStr)}`;
+}

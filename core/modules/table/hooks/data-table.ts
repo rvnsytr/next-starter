@@ -1,13 +1,11 @@
 import { createTableHook, tableFeatures } from "@tanstack/react-table";
-import { ActiveFiltersContainer } from "../components/base/filters";
+import { ActiveFiltersContainer } from "../components/base/active-filters";
+import { DataTableActiveFilters } from "../components/data-table/active-filters";
 import { DataTableClearFilters } from "../components/data-table/clear-filters";
 import { DataTableColumnHeader } from "../components/data-table/column-header";
 import { DataTableColumnSortMenu } from "../components/data-table/column-sort-menu";
 import { DataTableColumnVisibilityMenu } from "../components/data-table/column-visibility-menu";
-import {
-  DataTableActiveFilters,
-  DataTableFilterSelector,
-} from "../components/data-table/filters";
+import { DataTableFilterSelector } from "../components/data-table/filter-selector";
 import { DataTableLayout } from "../components/data-table/layout";
 import { DataTablePageSizeSelector } from "../components/data-table/page-size-selector";
 import { DataTablePagination } from "../components/data-table/pagination";

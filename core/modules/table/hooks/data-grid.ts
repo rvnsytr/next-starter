@@ -6,17 +6,15 @@ import {
   TableState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { ActiveFiltersContainer } from "../components/base/filters";
+import { ActiveFiltersContainer } from "../components/base/active-filters";
+import { DataGridActiveFilters } from "../components/data-grid/active-filters";
 import { DataGridAddRowButton } from "../components/data-grid/add-row-button";
 import { DataGridClearChangesButton } from "../components/data-grid/clear-changes-button";
 import { DataGridClearFilters } from "../components/data-grid/clear-filters";
 import { DataGridColumnHeader } from "../components/data-grid/column-header";
 import { DataGridColumnSortMenu } from "../components/data-grid/column-sort-menu";
 import { DataGridColumnVisibilityMenu } from "../components/data-grid/column-visibility-menu";
-import {
-  DataGridActiveFilters,
-  DataGridFilterSelector,
-} from "../components/data-grid/filters";
+import { DataGridFilterSelector } from "../components/data-grid/filter-selector";
 import { DataGridLayout } from "../components/data-grid/layout";
 import { DataGridPageSizeSelector } from "../components/data-grid/page-size-selector";
 import { DataGridPagination } from "../components/data-grid/pagination";
@@ -91,7 +89,7 @@ const useAppTable = <
   selector?: AppTableSelector<TData, TSelected>,
 ): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
   const { data, getRowId, meta, ...restOptions } = tableOptions;
-  const { onChange, ...restMeta } = meta ?? {};
+  const { onChange, ...restMeta } = meta;
 
   const [changes, setChanges] = useState<DataGridChanges<TData>>({
     added: [],
@@ -100,8 +98,6 @@ const useAppTable = <
   });
 
   const resolvedData = useMemo(() => {
-    if (!data || !changes) return data ?? [];
-
     const rowData = data.map((row, rowIndex) => {
       const rowId = getRowId?.(row, rowIndex);
       if (!rowId) return row;

@@ -1,19 +1,14 @@
-import { dataGrid } from "@/core/modules/table/hooks/data-grid";
+import { dataTable } from "@/core/modules/table/hooks/data-table";
+import { ColumnFilterContext } from "@/core/modules/table/types";
 import {
   isScalarColumnType,
   resolveColumnOptions,
   resolveFilter,
 } from "@/core/modules/table/utils";
-import {
-  ActiveFilters,
-  ActiveFiltersProps,
-  FilterColumnContext,
-  FilterSelector,
-  FilterSelectorProps,
-} from "../base/filters";
+import { FilterSelector, FilterSelectorProps } from "../base/filters";
 
-export function DataGridFilterSelector(props: FilterSelectorProps) {
-  const table = dataGrid.useTableContext();
+export function DataTableFilterSelector(props: FilterSelectorProps) {
+  const table = dataTable.useTableContext();
   return (
     <table.Subscribe
       selector={(s) => new Set(s.columnFilters.map((filter) => filter.id))}
@@ -54,46 +49,13 @@ export function DataGridFilterSelector(props: FilterSelectorProps) {
                 return {
                   success: true,
                   columnId: c.id,
-                  popupType,
                   filter,
                   setFilter: (v) => c.setFilterValue(v),
+                  popupType,
                   columnMeta,
-                } satisfies FilterColumnContext;
+                } satisfies ColumnFilterContext;
               }),
           }}
-          {...props}
-        />
-      )}
-    </table.Subscribe>
-  );
-}
-
-export function DataGridActiveFilters(props: ActiveFiltersProps) {
-  const table = dataGrid.useTableContext();
-  return (
-    <table.Subscribe selector={(s) => s.columnFilters}>
-      {(filters) => (
-        <ActiveFilters
-          contexts={filters.map((f) => {
-            const column = table.getColumn(f.id);
-            if (!column) return { success: false, id: f.id, type: "column" };
-
-            const filter = resolveFilter({
-              filterFn: column.columnDef.filterFn,
-              columnFilterValue: column.getFilterValue(),
-            });
-
-            if (!filter.success)
-              return { ...filter, id: f.id, type: "validation" };
-
-            return {
-              success: true,
-              columnId: column.id,
-              setFilter: (v) => column.setFilterValue(v),
-              columnMeta: column.columnDef.meta,
-              ...filter.data,
-            };
-          })}
           {...props}
         />
       )}

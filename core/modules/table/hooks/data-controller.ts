@@ -1,12 +1,10 @@
 import { createTableHook, tableFeatures } from "@tanstack/react-table";
-import { ActiveFiltersContainer } from "../components/base/filters";
+import { ActiveFiltersContainer } from "../components/base/active-filters";
+import { DataControllerActiveFilters } from "../components/data-controller/active-filters";
 import { DataControllerClearFilters } from "../components/data-controller/clear-filters";
 import { DataControllerColumnHeader } from "../components/data-controller/column-header";
 import { DataControllerColumnSortMenu } from "../components/data-controller/column-sort-menu";
-import {
-  DataControllerActiveFilters,
-  DataControllerFilterSelector,
-} from "../components/data-controller/filters";
+import { DataControllerFilterSelector } from "../components/data-controller/filter-selector";
 import { DataControllerLayout } from "../components/data-controller/layout";
 import { DataControllerPageSizeSelector } from "../components/data-controller/page-size-selector";
 import { DataControllerPagination } from "../components/data-controller/pagination";
