@@ -89,13 +89,17 @@ function FilterValueDisplayString({
 }
 
 function FilterValueDisplayNumber({
+  operator,
   value,
 }: FilterValueDisplayProps<"number">) {
   if (value.length === 0) return <EllipsisIcon />;
-  if (value.length === 1) return `${formatNumber(value[0])}`;
-  if (value.length === 2)
-    return `${formatNumber(value[0])} - ${formatNumber(value[1])}`;
-  return <EllipsisIcon />;
+
+  const start = value[0] ?? 0;
+  const end = value[1] ?? 0;
+
+  if (operator.includes("between"))
+    return `${formatNumber(start)} - ${formatNumber(end)}`;
+  return `${formatNumber(start)}`;
 }
 
 function FilterValueDisplayBoolean({
@@ -118,14 +122,13 @@ function FilterValueDisplayTemporal({
   operator,
   value,
 }: FilterValueDisplayProps<"date-time" | "date" | "time">) {
-  const [v1, v2] = value;
+  const [start, end] = value;
 
   let formatStr = "PPP";
-
   if (type === "date-time" && operator === "exactly") formatStr = "PPPp";
   if (type === "time") formatStr = "p";
 
-  if (!v1) return <EllipsisIcon />;
-  if (!v2) return format(v1, formatStr);
-  return `${format(v1, formatStr)} - ${format(v2, formatStr)}`;
+  if (!start) return <EllipsisIcon />;
+  if (!end) return format(start, formatStr);
+  return `${format(start, formatStr)} - ${format(end, formatStr)}`;
 }

@@ -1,13 +1,13 @@
 import { Filter, FilterPopupType, FilterType } from "./types";
 
-export type FilterMeta = {
-  [T in FilterType]: {
-    popupType: FilterPopupType;
-    defaultValue: Extract<Filter, { type: T }>;
-  };
+export type FilterMeta<T extends FilterType> = {
+  popupType: FilterPopupType;
+  defaultValue: Extract<Filter, { type: T }>;
 };
 
-export const filterMeta: FilterMeta = {
+export const filterMeta: {
+  [T in FilterType]: FilterMeta<T>;
+} = {
   string: {
     popupType: "popover",
     defaultValue: {

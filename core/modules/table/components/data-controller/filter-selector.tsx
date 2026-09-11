@@ -1,9 +1,5 @@
 import { dataController } from "@/core/modules/table/hooks/data-controller";
-import {
-  isScalarColumnType,
-  resolveColumnOptions,
-  resolveFilter,
-} from "@/core/modules/table/utils";
+import { resolveColumnFilter } from "@/core/modules/table/utils";
 import { FilterSelector, FilterSelectorProps } from "../base/filter-selector";
 
 export function DataControllerFilterSelector(props: FilterSelectorProps) {
@@ -20,38 +16,22 @@ export function DataControllerFilterSelector(props: FilterSelectorProps) {
               .getAllColumns()
               .filter((c) => c.getCanFilter())
               .map((c) => {
-                const resolvedFilter = resolveFilter({
+                const resolvedFilter = resolveColumnFilter({
                   filterFn: c.columnDef.filterFn,
                   columnFilterValue: c.getFilterValue(),
-                  safeParse: true,
+                  columnMeta: c.columnDef.meta,
+                  getFacetedUniqueValues: () => c.getFacetedUniqueValues(),
+                  getFacetedMinMaxValues: () => c.getFacetedMinMaxValues(),
                 });
 
                 if (!resolvedFilter.success)
                   return { ...resolvedFilter, id: c.id, type: "validation" };
 
-                const { filter, popupType } = resolvedFilter.data;
-
-                const column = table.getColumn(c.id);
-                if (!column)
-                  return { success: false, id: c.id, type: "column" };
-
-                const meta = c.columnDef.meta ?? {};
-                const options = isScalarColumnType(filter.type)
-                  ? resolveColumnOptions(
-                      column.getFacetedUniqueValues().entries(),
-                      meta.options,
-                    )
-                  : [];
-
-                const columnMeta = { ...meta, options };
-
                 return {
                   success: true,
                   columnId: c.id,
-                  filter,
                   setFilter: (v) => c.setFilterValue(v),
-                  popupType,
-                  columnMeta,
+                  ...resolvedFilter.data,
                 };
               }),
           }}

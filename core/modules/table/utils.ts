@@ -11,7 +11,7 @@ import { DEFAULT_FILTER_TYPE } from "./constants";
 import { filterMeta } from "./filter-meta";
 import { filterSchema, filterTypeSchema } from "./schema";
 import {
-  ColumnValueOption,
+  ColumnMeta,
   DataGridTableMeta,
   Filter,
   FilterPopupType,
@@ -57,54 +57,80 @@ export function sortingHandler(context: {
   else context.toggleSortingControl(false, true);
 }
 
-export function isScalarColumnType(filterType: FilterType): boolean {
-  const scalarColumnTypes: FilterType[] = ["option", "multi-option"];
-  return scalarColumnTypes.includes(filterType);
-}
-
-export function resolveColumnOptions(
-  columnFacetedEnteries: Iterable<[string, number]>,
-  columnValueOption?: ColumnValueOption[],
-): ColumnValueOption[] {
-  const facetedEntries = new Map(columnFacetedEnteries);
-  const options =
-    columnValueOption ??
-    [...facetedEntries].map(([value, count]) => ({
-      value,
-      label: value,
-      count,
-    }));
-
-  return options.map((option) => ({
-    ...option,
-    count: option.count ?? facetedEntries.get(option.value) ?? 0,
-  }));
-}
-
-export function resolveFilter(params: {
+export function resolveColumnFilter({
+  filterFn,
+  columnFilterValue,
+  columnMeta,
+  getFacetedUniqueValues,
+  getFacetedMinMaxValues,
+}: {
   filterFn: unknown;
   columnFilterValue: unknown;
-  safeParse?: boolean;
-}): ActionResponse<{ filter: Filter; popupType: FilterPopupType }> {
-  const ftSchema = params.safeParse
-    ? filterTypeSchema.default(DEFAULT_FILTER_TYPE).catch(DEFAULT_FILTER_TYPE)
-    : filterTypeSchema;
+  columnMeta?: ColumnMeta;
+  getFacetedUniqueValues: () => Map<string, number>;
+  getFacetedMinMaxValues: () => [number, number] | undefined;
+}): ActionResponse<{
+  filter: Filter;
+  columnMeta: ColumnMeta;
+  popupType: FilterPopupType;
+}> {
+  const ftSchema = filterTypeSchema
+    .default(DEFAULT_FILTER_TYPE)
+    .catch(DEFAULT_FILTER_TYPE);
 
-  const parsedFilterType = validateValue(params.filterFn, ftSchema);
+  const parsedFilterType = validateValue(filterFn, ftSchema);
   if (!parsedFilterType.success) return parsedFilterType;
 
   const { popupType, defaultValue } = filterMeta[parsedFilterType.data];
 
-  const fvSchema = params.safeParse
-    ? filterSchema.default(defaultValue).catch(defaultValue)
-    : filterSchema;
+  const fSchema = filterSchema.default(defaultValue).catch(defaultValue);
 
-  const parsedFilterValue = validateValue(params.columnFilterValue, fvSchema);
-  if (!parsedFilterValue.success) return parsedFilterValue;
+  const parsedFilter = validateValue(columnFilterValue, fSchema);
+  if (!parsedFilter.success) return parsedFilter;
 
-  const filter = parsedFilterValue.data;
+  const filter = parsedFilter.data;
 
-  return { success: true, data: { filter, popupType } };
+  let columnMetaOptions: ColumnMeta["options"] = columnMeta?.options;
+  let columnMetaMin: ColumnMeta["min"] = columnMeta?.min;
+  let columnMetaMax: ColumnMeta["max"] = columnMeta?.max;
+
+  if (filter.type === "number" && (!columnMetaMin || !columnMetaMax)) {
+    const facetedMinMaxValues = getFacetedMinMaxValues();
+    if (facetedMinMaxValues) {
+      columnMetaMin = facetedMinMaxValues[0];
+      columnMetaMax = facetedMinMaxValues[1];
+    }
+  }
+
+  const scalarFilterTypes: FilterType[] = ["option", "multi-option"];
+  if (scalarFilterTypes.includes(filter.type) && !columnMetaOptions) {
+    const facetedUniqueValues = getFacetedUniqueValues();
+    columnMetaOptions = (
+      columnMeta?.options ??
+      [...facetedUniqueValues.entries()].map(([value, count]) => ({
+        value,
+        label: value,
+        count,
+      }))
+    ).map((option) => ({
+      ...option,
+      count: option.count ?? facetedUniqueValues.get(option.value) ?? 0,
+    }));
+  }
+
+  return {
+    success: true,
+    data: {
+      filter,
+      popupType,
+      columnMeta: {
+        ...columnMeta,
+        min: columnMetaMin,
+        max: columnMetaMax,
+        options: columnMetaOptions,
+      },
+    },
+  };
 }
 
 export function getParentColumns<T extends { parent?: T }>(node: T): T[] {

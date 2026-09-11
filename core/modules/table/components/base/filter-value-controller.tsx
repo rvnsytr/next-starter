@@ -24,6 +24,7 @@ import { ErrorFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/configs";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
+import { FilterOperatorSelector } from "./filter-operator-selector";
 
 export type FilterValueControllerProps = {
   context: ColumnFilterContext;
@@ -90,20 +91,22 @@ function FilterValueControllerString({ context }: FilterValueControllerProps) {
   const { label, icon: Icon } = columnMeta ?? {};
 
   return (
-    <InputGroup>
-      <InputGroupInput
-        value={value}
-        onChange={(e) => setValue(String(e.target.value))}
-        placeholder={`Search ${label?.toLowerCase()}...`}
-        autoFocus
-      />
+    <div className="flex flex-col gap-y-2">
+      <InputGroup>
+        <InputGroupInput
+          value={value}
+          onChange={(e) => setValue(String(e.target.value))}
+          placeholder={`Search ${label?.toLowerCase()}...`}
+          autoFocus
+        />
 
-      {Icon && (
-        <InputGroupAddon>
-          <Icon />
-        </InputGroupAddon>
-      )}
-    </InputGroup>
+        {Icon && (
+          <InputGroupAddon>
+            <Icon />
+          </InputGroupAddon>
+        )}
+      </InputGroup>
+    </div>
   );
 }
 
@@ -115,10 +118,6 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
   const defaultValue = isFilterValid
     ? filter.value
     : filterMeta[filterType].defaultValue.value;
-
-  const [tab, setTab] = useState<"single" | "range">(
-    defaultValue.length === 2 ? "range" : "single",
-  );
 
   const [value, setValue] = useState(defaultValue);
   const debouncedValue = useDebounce(value);
@@ -165,13 +164,84 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
   const { label } = columnMeta ?? {};
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="gap-2">
-      <TabsList className="w-full">
-        <TabsTab value="single">Single</TabsTab>
-        <TabsTab value="range">Range</TabsTab>
-      </TabsList>
+    <div className="flex flex-col gap-y-2">
+      <FilterOperatorSelector context={context} />
 
-      <TabsPanel value="single">
+      {filter.operator.includes("between") ? (
+        <>
+          <Slider
+            min={sliderScale.min}
+            max={sliderScale.max}
+            value={value}
+            onValueChange={(v) => {
+              if (typeof v === "number") return setValue([v]);
+              setValue([...v]);
+            }}
+            className="mt-2"
+          />
+
+          <div className="text-muted-foreground flex items-center justify-between gap-1 px-1 text-xs">
+            {sliderScale.ticks.map((tick, index) => {
+              const isFirst = index === 0;
+              const isLast = index === sliderScale.ticks.length - 1;
+              return (
+                <span
+                  key={tick.value}
+                  className={cn(
+                    "flex w-0 flex-col items-center justify-center gap-1",
+                    isFirst && "items-start",
+                    isLast && "items-end",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "bg-muted-foreground/72 w-px",
+                      tick.major ? "h-1" : "h-0.5",
+                    )}
+                  />
+
+                  <span className={cn(!tick.major && "opacity-0")}>
+                    {formatNumber(tick.value)}
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-2">
+            <NumberField
+              size="sm"
+              min={sliderScale.min}
+              max={sliderScale.max}
+              value={value[0] ?? 0}
+              onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
+              locale={appConfig.default.numberLocale}
+              autoFocus
+            >
+              <NumberFieldGroup>
+                <NumberFieldInput placeholder="From" />
+                <NumberFieldDecrement />
+                <NumberFieldIncrement />
+              </NumberFieldGroup>
+            </NumberField>
+
+            <NumberField
+              size="sm"
+              min={sliderScale.min}
+              max={sliderScale.max}
+              value={value[1] ?? 0}
+              onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
+              locale={appConfig.default.numberLocale}
+            >
+              <NumberFieldGroup>
+                <NumberFieldInput placeholder="To" />
+                <NumberFieldDecrement />
+                <NumberFieldIncrement />
+              </NumberFieldGroup>
+            </NumberField>
+          </div>
+        </>
+      ) : (
         <NumberField
           size="sm"
           value={value[0] ?? 0}
@@ -185,81 +255,8 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
             <NumberFieldIncrement />
           </NumberFieldGroup>
         </NumberField>
-      </TabsPanel>
-
-      <TabsPanel value="range" className="flex flex-col gap-y-2 pt-2">
-        <Slider
-          min={sliderScale.min}
-          max={sliderScale.max}
-          value={value}
-          onValueChange={(v) => {
-            if (typeof v === "number") return setValue([v]);
-            setValue([...v]);
-          }}
-        />
-
-        <div className="text-muted-foreground flex items-center justify-between gap-1 px-1 text-xs">
-          {sliderScale.ticks.map((tick, index) => {
-            const isFirst = index === 0;
-            const isLast = index === sliderScale.ticks.length - 1;
-            return (
-              <span
-                key={tick.value}
-                className={cn(
-                  "flex w-0 flex-col items-center justify-center gap-1",
-                  isFirst && "items-start",
-                  isLast && "items-end",
-                )}
-              >
-                <span
-                  className={cn(
-                    "bg-muted-foreground/72 w-px",
-                    tick.major ? "h-1" : "h-0.5",
-                  )}
-                />
-
-                <span className={cn(!tick.major && "opacity-0")}>
-                  {tick.value}
-                </span>
-              </span>
-            );
-          })}
-        </div>
-
-        <div className="flex gap-2">
-          <NumberField
-            size="sm"
-            min={sliderScale.min}
-            max={sliderScale.max}
-            value={value[0] ?? 0}
-            onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
-            locale={appConfig.default.numberLocale}
-            autoFocus
-          >
-            <NumberFieldGroup>
-              <NumberFieldInput placeholder="From" />
-              <NumberFieldDecrement />
-              <NumberFieldIncrement />
-            </NumberFieldGroup>
-          </NumberField>
-
-          <NumberField
-            size="sm"
-            min={sliderScale.min}
-            max={sliderScale.max}
-            value={value[1] ?? 0}
-            onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
-            locale={appConfig.default.numberLocale}
-          >
-            <NumberFieldGroup>
-              <NumberFieldInput placeholder="To" />
-              <NumberFieldDecrement />
-              <NumberFieldIncrement />
-            </NumberFieldGroup>
-          </NumberField>
-        </div>
-      </TabsPanel>
-    </Tabs>
+      )}
+    </div>
   );
 }
 
@@ -271,8 +268,6 @@ function FilterValueControllerBoolean({ context }: FilterValueControllerProps) {
   const defaultValue = isFilterValid
     ? filter.value
     : filterMeta[filterType].defaultValue.value;
-
-  const [value, setValue] = useState(defaultValue);
 
   if (!isFilterValid)
     return <FilterValueControllerErrorFallback filterType={filter.type} />;
@@ -289,9 +284,9 @@ function FilterValueControllerBoolean({ context }: FilterValueControllerProps) {
 
       <Switch
         id={id}
-        checked={value}
+        defaultChecked={defaultValue}
+        checked={filter.value}
         onCheckedChange={(v) => {
-          setValue(v);
           setFilter({ ...filter, value: v });
         }}
         autoFocus

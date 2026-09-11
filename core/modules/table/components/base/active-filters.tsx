@@ -36,11 +36,11 @@ export function ActiveFiltersContainer({
 export type ActiveFiltersProps = React.ComponentProps<typeof ButtonGroup>;
 
 export function ActiveFilters({
-  contexts,
+  columns,
   className,
   ...props
-}: ActiveFiltersProps & { contexts: ColumnFilterResult[] }) {
-  return contexts.map((c) => {
+}: ActiveFiltersProps & { columns: ColumnFilterResult[] }) {
+  return columns.map((c) => {
     if (!c.success) {
       let errorContent = "";
 
