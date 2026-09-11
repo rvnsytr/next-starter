@@ -17,13 +17,8 @@ import { Slider } from "@/core/components/ui/slider";
 import { Switch } from "@/core/components/ui/switch";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { useDebounce } from "@/core/hooks/use-debounce";
-import {
-  Filter,
-  filterMeta,
-  FilterPopupType,
-  FilterType,
-} from "@/core/modules/table/filters";
-import { ColumnMeta } from "@/core/modules/table/types";
+import { filterMeta } from "@/core/modules/table/filter-meta";
+import { ColumnFilterContext, FilterType } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/configs";
@@ -31,11 +26,7 @@ import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 
 export type FilterValueControllerProps = {
-  columnId: string;
-  filter: Filter;
-  setFilter: (updater: Filter | undefined) => void;
-  popupType: FilterPopupType;
-  columnMeta?: ColumnMeta;
+  context: ColumnFilterContext;
 };
 
 function FilterValueControllerErrorFallback({
@@ -55,7 +46,7 @@ function FilterValueControllerErrorFallback({
 }
 
 export function FilterValueController(props: FilterValueControllerProps) {
-  const filterType = props.filter.type;
+  const filterType = props.context.filter.type;
   switch (filterType) {
     case "string":
       return <FilterValueControllerString {...props} />;
@@ -76,11 +67,8 @@ export function FilterValueController(props: FilterValueControllerProps) {
   }
 }
 
-function FilterValueControllerString({
-  filter,
-  columnMeta,
-  setFilter,
-}: FilterValueControllerProps) {
+function FilterValueControllerString({ context }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "string";
 
   const isFilterValid = filter.type === filterType;
@@ -94,7 +82,7 @@ function FilterValueControllerString({
   useEffect(() => {
     if (!isFilterValid) return;
     setFilter({ ...filter, value: debouncedValue });
-  }, [setFilter, isFilterValid, filter, debouncedValue]);
+  }, [debouncedValue, filter, isFilterValid, setFilter]);
 
   if (!isFilterValid)
     return <FilterValueControllerErrorFallback filterType={filter.type} />;
@@ -119,11 +107,8 @@ function FilterValueControllerString({
   );
 }
 
-function FilterValueControllerNumber({
-  filter,
-  columnMeta,
-  setFilter,
-}: FilterValueControllerProps) {
+function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "number";
 
   const isFilterValid = filter.type === filterType;
@@ -172,7 +157,7 @@ function FilterValueControllerNumber({
   useEffect(() => {
     if (!isFilterValid) return;
     setFilter({ ...filter, value: debouncedValue });
-  }, [setFilter, isFilterValid, filter, debouncedValue]);
+  }, [debouncedValue, filter, isFilterValid, setFilter]);
 
   if (!isFilterValid)
     return <FilterValueControllerErrorFallback filterType={filter.type} />;
@@ -278,11 +263,8 @@ function FilterValueControllerNumber({
   );
 }
 
-function FilterValueControllerBoolean({
-  filter,
-  columnMeta,
-  setFilter,
-}: FilterValueControllerProps) {
+function FilterValueControllerBoolean({ context }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "boolean";
 
   const isFilterValid = filter.type === filterType;
@@ -318,11 +300,8 @@ function FilterValueControllerBoolean({
   );
 }
 
-function FilterValueControllerOption({
-  filter,
-  columnMeta,
-  setFilter,
-}: FilterValueControllerProps) {
+function FilterValueControllerOption({ context }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "option";
 
   const isFilterValid = filter.type === filterType;
@@ -374,10 +353,9 @@ function FilterValueControllerOption({
 }
 
 function FilterValueControllerMultiOption({
-  filter,
-  columnMeta,
-  setFilter,
+  context,
 }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "multi-option";
 
   const isFilterValid = filter.type === filterType;
@@ -429,10 +407,9 @@ function FilterValueControllerMultiOption({
 }
 
 function FilterValueControllerTemporal({
-  filter,
-  columnMeta,
-  setFilter,
+  context,
 }: FilterValueControllerProps) {
+  const { filter, setFilter, columnMeta } = context;
   const defaultFilterType: FilterType = "date-time";
 
   const isFilterValid =
@@ -453,7 +430,7 @@ function FilterValueControllerTemporal({
   useEffect(() => {
     if (!isFilterValid) return;
     setFilter({ ...filter, value });
-  }, [isFilterValid, setFilter, filter, value]);
+  }, [filter, isFilterValid, setFilter, value]);
 
   if (!isFilterValid)
     return <FilterValueControllerErrorFallback filterType={filter.type} />;

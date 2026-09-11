@@ -1,11 +1,10 @@
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { ColumnFilterContext } from "@/core/modules/table/types";
 import {
   isScalarColumnType,
   resolveColumnOptions,
   resolveFilter,
 } from "@/core/modules/table/utils";
-import { FilterSelector, FilterSelectorProps } from "../base/filters";
+import { FilterSelector, FilterSelectorProps } from "../base/filter-selector";
 
 export function DataGridFilterSelector(props: FilterSelectorProps) {
   const table = dataGrid.useTableContext();
@@ -53,7 +52,7 @@ export function DataGridFilterSelector(props: FilterSelectorProps) {
                   setFilter: (v) => c.setFilterValue(v),
                   popupType,
                   columnMeta,
-                } satisfies ColumnFilterContext;
+                };
               }),
           }}
           {...props}

@@ -16,131 +16,20 @@ import {
   filterFn_notEmpty,
   filterFn_startsWith,
 } from "@tanstack/react-table";
-import { z } from "zod";
 import {
   filterFn_arrExactlyMatches,
   filterFn_dateExactly,
   filterFn_dateIs,
 } from "./filter-fns";
 import {
-  BOOLEAN_FILTER_OPERATORS,
-  DATE_TIME_FILTER_OPERATORS,
-  MULTI_OPTION_FILTER_OPERATORS,
-  NUMBER_FILTER_OPERATORS,
-  OPTION_FILTER_OPERATORS,
-  STRING_FILTER_OPERATORS,
-  TEMPORAL_FILTER_OPERATORS,
-} from "./operators";
-import {
   booleanFilterSchema,
-  filterSchema,
   multiOptionFilterSchema,
   numberFilterSchema,
   optionFilterSchema,
   stringFilterSchema,
   temporalFilterSchema,
 } from "./schema";
-
-export type Filter = z.infer<typeof filterSchema>;
-export type FilterType = Filter["type"];
-
-export type FilterPopupType = "menu" | "popover";
-
-export type FilterMeta = {
-  [T in FilterType]: {
-    popupType: FilterPopupType;
-    defaultValue: Extract<Filter, { type: T }>;
-  };
-};
-
-export const filterMeta: FilterMeta = {
-  string: {
-    popupType: "popover",
-    defaultValue: {
-      type: "string",
-      operator: "contains",
-      value: "",
-    },
-  },
-  number: {
-    popupType: "popover",
-    defaultValue: {
-      type: "number",
-      operator: "equals",
-      value: [0],
-    },
-  },
-  boolean: {
-    popupType: "popover",
-    defaultValue: {
-      type: "boolean",
-      operator: "is",
-      value: true,
-    },
-  },
-  option: {
-    popupType: "menu",
-    defaultValue: {
-      type: "option",
-      operator: "is_any_of",
-      value: [],
-    },
-  },
-  "multi-option": {
-    popupType: "menu",
-    defaultValue: {
-      type: "multi-option",
-      operator: "contains_any",
-      value: [],
-    },
-  },
-  "date-time": {
-    popupType: "popover",
-    defaultValue: {
-      type: "date-time",
-      operator: "is",
-      value: [new Date()],
-    },
-  },
-  date: {
-    popupType: "popover",
-    defaultValue: {
-      type: "date",
-      operator: "is",
-      value: [new Date()],
-    },
-  },
-  time: {
-    popupType: "popover",
-    defaultValue: {
-      type: "time",
-      operator: "is",
-      value: [new Date()],
-    },
-  },
-};
-
-export function getFilterOperators(filterType: FilterType) {
-  switch (filterType) {
-    case "string":
-      return STRING_FILTER_OPERATORS;
-    case "number":
-      return NUMBER_FILTER_OPERATORS;
-    case "boolean":
-      return BOOLEAN_FILTER_OPERATORS;
-    case "option":
-      return OPTION_FILTER_OPERATORS;
-    case "multi-option":
-      return MULTI_OPTION_FILTER_OPERATORS;
-    case "date-time":
-      return DATE_TIME_FILTER_OPERATORS;
-    case "date":
-    case "time":
-      return TEMPORAL_FILTER_OPERATORS;
-    default:
-      return STRING_FILTER_OPERATORS;
-  }
-}
+import { FilterType } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FilterFn = TanstackFilterFn<any, any>;

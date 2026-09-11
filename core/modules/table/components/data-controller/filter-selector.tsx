@@ -1,11 +1,10 @@
 import { dataController } from "@/core/modules/table/hooks/data-controller";
-import { ColumnFilterContext } from "@/core/modules/table/types";
 import {
   isScalarColumnType,
   resolveColumnOptions,
   resolveFilter,
 } from "@/core/modules/table/utils";
-import { FilterSelector, FilterSelectorProps } from "../base/filters";
+import { FilterSelector, FilterSelectorProps } from "../base/filter-selector";
 
 export function DataControllerFilterSelector(props: FilterSelectorProps) {
   const table = dataController.useTableContext();
@@ -53,7 +52,7 @@ export function DataControllerFilterSelector(props: FilterSelectorProps) {
                   setFilter: (v) => c.setFilterValue(v),
                   popupType,
                   columnMeta,
-                } satisfies ColumnFilterContext;
+                };
               }),
           }}
           {...props}

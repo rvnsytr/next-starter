@@ -13,7 +13,10 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { ColumnFilterContext } from "@/core/modules/table/types";
+import {
+  ColumnFilterContext,
+  ColumnFilterResult,
+} from "@/core/modules/table/types";
 import { ErrorFallback } from "@/shared/components/fallback";
 import {
   formatForDisplay,
@@ -21,15 +24,12 @@ import {
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
 import { ChevronRightIcon, FilterIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import {
-  FilterValueController,
-  FilterValueControllerProps,
-} from "./filter-value-controller";
+import { useMemo, useRef, useState } from "react";
+import { FilterValueController } from "./filter-value-controller";
 
 type FilterSelectorContext = {
   columnFilterIds: Set<string>;
-  columns: ColumnFilterContext[];
+  columns: ColumnFilterResult[];
 };
 
 export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
@@ -57,12 +57,21 @@ export function FilterSelector({
   ...props
 }: FilterSelectorProps & { context: FilterSelectorContext }) {
   const anchor = useRef<HTMLButtonElement>(null);
-  const [filterValueController, setFilterValueController] =
-    useState<FilterValueControllerProps | null>(null);
+  const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
 
   const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+
+  const columnFilterContext: ColumnFilterContext | null = useMemo(() => {
+    if (!selectedColumnId) return null;
+
+    const column = context.columns.find(
+      (c) => c.success && c.columnId === selectedColumnId,
+    );
+
+    return column?.success ? column : null;
+  }, [context.columns, selectedColumnId]);
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
   useHotkeySequence(
@@ -129,7 +138,7 @@ export function FilterSelector({
                   if (c.popupType === "popover") setIsPopoverOpen(true);
 
                   setTimeout(
-                    () => setFilterValueController(c),
+                    () => setSelectedColumnId(c.columnId),
                     ANIMATION_DELAY,
                   );
                 }}
@@ -153,13 +162,13 @@ export function FilterSelector({
           setIsMenuOpen(v);
           if (!v) {
             setIsSelectorOpen(true);
-            setTimeout(() => setFilterValueController(null), ANIMATION_DELAY);
+            setTimeout(() => setSelectedColumnId(null), ANIMATION_DELAY);
           }
         }}
       >
         <MenuPopup anchor={anchor} align={align}>
-          {filterValueController ? (
-            <FilterValueController {...filterValueController} />
+          {columnFilterContext ? (
+            <FilterValueController context={columnFilterContext} />
           ) : (
             <ErrorFallback
               error="Invalid Filter Selector State"
@@ -176,7 +185,7 @@ export function FilterSelector({
           setIsPopoverOpen(v);
           if (!v) {
             setIsSelectorOpen(true);
-            setTimeout(() => setFilterValueController(null), ANIMATION_DELAY);
+            setTimeout(() => setSelectedColumnId(null), ANIMATION_DELAY);
           }
         }}
       >
@@ -185,8 +194,8 @@ export function FilterSelector({
           align={align}
           className="w-fit max-w-3xs rounded-xl *:p-1"
         >
-          {filterValueController ? (
-            <FilterValueController {...filterValueController} />
+          {columnFilterContext ? (
+            <FilterValueController context={columnFilterContext} />
           ) : (
             <ErrorFallback
               error="Invalid Filter Selector State"

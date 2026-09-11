@@ -8,9 +8,15 @@ import {
 } from "@tanstack/react-table";
 import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
-import { Filter, filterMeta, FilterPopupType, FilterType } from "./filters";
+import { filterMeta } from "./filter-meta";
 import { filterSchema, filterTypeSchema } from "./schema";
-import { ColumnValueOption, DataGridTableMeta } from "./types";
+import {
+  ColumnValueOption,
+  DataGridTableMeta,
+  Filter,
+  FilterPopupType,
+  FilterType,
+} from "./types";
 
 export function saveChanges(
   context: DataGridContextValue,

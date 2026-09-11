@@ -5,20 +5,21 @@ import { ActiveFilters, ActiveFiltersProps } from "../base/active-filters";
 export function DataGridActiveFilters(props: ActiveFiltersProps) {
   const table = dataGrid.useTableContext();
   return (
-    <table.Subscribe selector={(s) => s.columnFilters}>
-      {(filters) => (
+    <table.Subscribe
+      selector={(s) => new Set(s.columnFilters.map((filter) => filter.id))}
+    >
+      {(columnFilterIds) => (
         <ActiveFilters
-          contexts={filters.map((f) => {
-            const column = table.getColumn(f.id);
-            if (!column) return { success: false, id: f.id, type: "column" };
+          contexts={Array.from(columnFilterIds).map((id) => {
+            const column = table.getColumn(id);
+            if (!column) return { success: false, id, type: "column" };
 
             const filter = resolveFilter({
               filterFn: column.columnDef.filterFn,
               columnFilterValue: column.getFilterValue(),
             });
 
-            if (!filter.success)
-              return { ...filter, id: f.id, type: "validation" };
+            if (!filter.success) return { ...filter, id, type: "validation" };
 
             return {
               success: true,

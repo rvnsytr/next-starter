@@ -5,37 +5,35 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import {
-  Filter,
-  FilterPopupType,
-  FilterType,
-} from "@/core/modules/table/filters";
 import { EMPTY_FILTER_OPERATORS } from "@/core/modules/table/operators";
+import {
+  ColumnFilterContext,
+  Filter,
+  FilterType,
+} from "@/core/modules/table/types";
 import { formatNumber } from "@/core/utils";
 import { format } from "date-fns";
 import { EllipsisIcon } from "lucide-react";
 
 export type FilterValueDisplayPopupProps = ButtonProps & {
-  filter: Filter;
-  popupType: FilterPopupType;
+  context: ColumnFilterContext;
 };
 
 export function FilterValueDisplayPopup({
-  filter,
-  popupType,
+  context,
   children,
   ...props
 }: FilterValueDisplayPopupProps) {
-  if (EMPTY_FILTER_OPERATORS.some((o) => o.value === filter.operator))
+  if (EMPTY_FILTER_OPERATORS.some((op) => op.value === context.filter.operator))
     return null;
 
   const trigger = (
     <Button {...props}>
-      <FilterValueDisplay filter={filter} />
+      <FilterValueDisplay filter={context.filter} />
     </Button>
   );
 
-  if (popupType === "menu")
+  if (context.popupType === "menu")
     return (
       <Menu>
         <MenuTrigger render={trigger} />

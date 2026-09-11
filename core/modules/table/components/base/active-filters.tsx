@@ -1,21 +1,15 @@
 import { Button } from "@/core/components/ui/button";
 import { ButtonGroup } from "@/core/components/ui/button-group";
-import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuTrigger,
-} from "@/core/components/ui/menu";
 import { ScrollArea } from "@/core/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { Filter, getFilterOperators } from "@/core/modules/table/filters";
-import { ColumnFilterContext } from "@/core/modules/table/types";
+import { ColumnFilterResult } from "@/core/modules/table/types";
 import { cn } from "@/core/utils";
 import { XIcon } from "lucide-react";
+import { FilterOperatorSelector } from "./filter-operator-selector";
 import { FilterValueController } from "./filter-value-controller";
 import { FilterValueDisplayPopup } from "./filter-value-display";
 
@@ -45,7 +39,7 @@ export function ActiveFilters({
   contexts,
   className,
   ...props
-}: ActiveFiltersProps & { contexts: ColumnFilterContext[] }) {
+}: ActiveFiltersProps & { contexts: ColumnFilterResult[] }) {
   return contexts.map((c) => {
     if (!c.success) {
       let errorContent = "";
@@ -79,11 +73,6 @@ export function ActiveFilters({
       );
     }
 
-    const operators = getFilterOperators(c.filter.type);
-    const selectedOperatorLabel =
-      operators.find((op) => op.value === c.filter.operator)?.label ??
-      c.filter.operator;
-
     const Icon = c.columnMeta?.icon;
 
     return (
@@ -102,35 +91,10 @@ export function ActiveFilters({
           {c.columnMeta?.label ?? c.columnId}
         </Button>
 
-        <Menu>
-          <MenuTrigger
-            render={
-              <Button size="sm" variant="outline">
-                {selectedOperatorLabel}
-              </Button>
-            }
-          />
-          <MenuPopup>
-            {operators.map((op) => (
-              <MenuItem
-                key={op.value}
-                onClick={() => {
-                  c.setFilter({ ...c.filter, operator: op.value } as Filter);
-                }}
-              >
-                {op.label}
-              </MenuItem>
-            ))}
-          </MenuPopup>
-        </Menu>
+        <FilterOperatorSelector context={c} />
 
-        <FilterValueDisplayPopup
-          size="sm"
-          variant="outline"
-          filter={c.filter}
-          popupType={c.popupType}
-        >
-          <FilterValueController {...c} />
+        <FilterValueDisplayPopup context={c} size="sm" variant="outline">
+          <FilterValueController context={c} />
         </FilterValueDisplayPopup>
 
         <Button

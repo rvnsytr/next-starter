@@ -1,11 +1,10 @@
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { ColumnFilterContext } from "@/core/modules/table/types";
 import {
   isScalarColumnType,
   resolveColumnOptions,
   resolveFilter,
 } from "@/core/modules/table/utils";
-import { FilterSelector, FilterSelectorProps } from "../base/filters";
+import { FilterSelector, FilterSelectorProps } from "../base/filter-selector";
 
 export function DataTableFilterSelector(props: FilterSelectorProps) {
   const table = dataTable.useTableContext();
@@ -53,7 +52,7 @@ export function DataTableFilterSelector(props: FilterSelectorProps) {
                   setFilter: (v) => c.setFilterValue(v),
                   popupType,
                   columnMeta,
-                } satisfies ColumnFilterContext;
+                };
               }),
           }}
           {...props}

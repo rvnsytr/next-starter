@@ -7,8 +7,7 @@ import {
 } from "../components/base/active-filters";
 import { ClearFiltersProps } from "../components/base/clear-filters";
 import { ColumnSortMenuProps } from "../components/base/column-sort-menu";
-import { FilterValueControllerProps } from "../components/base/filter-value-controller";
-import { FilterSelectorProps } from "../components/base/filters";
+import { FilterSelectorProps } from "../components/base/filter-selector";
 import { PageSizeSelectorProps } from "../components/base/page-size-selector";
 import { PaginationProps } from "../components/base/pagination";
 import { ResetTableButtonProps } from "../components/base/reset-table-button";
@@ -66,13 +65,3 @@ export type TableLayoutProps = React.ComponentProps<"div"> & {
 
   renderSlot?: React.ReactNode;
 };
-
-export type ColumnFilterContext =
-  | ({ success: true } & FilterValueControllerProps)
-  | {
-      success: false;
-      id: string;
-      type: "column" | "validation";
-      message?: string;
-      error?: unknown;
-    };
