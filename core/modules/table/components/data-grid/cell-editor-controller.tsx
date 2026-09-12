@@ -53,8 +53,8 @@ export function CellEditorController({
         <ErrorFallback
           error="Unsupported Editor Type"
           className="rounded-none border-none"
+          errorOnly
           hideCode
-          hideError
         />
       );
     }

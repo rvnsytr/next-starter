@@ -28,7 +28,7 @@ import { FilterOperatorSelector } from "./filter-operator-selector";
 
 export type FilterValueControllerProps = {
   context: ColumnFilterContext;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 function FilterValueControllerErrorFallback({
@@ -101,7 +101,7 @@ export function FilterValueController({ context }: FilterValueControllerProps) {
 
 function FilterValueControllerString({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "string";
@@ -149,7 +149,7 @@ function FilterValueControllerString({
 
 function FilterValueControllerNumber({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "number";
@@ -306,7 +306,7 @@ function FilterValueControllerNumber({
 
 function FilterValueControllerBoolean({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "boolean";
@@ -345,7 +345,7 @@ function FilterValueControllerBoolean({
 
 function FilterValueControllerOption({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "option";
@@ -409,7 +409,7 @@ function FilterValueControllerOption({
 
 function FilterValueControllerMultiOption({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "multi-option";
@@ -473,7 +473,7 @@ function FilterValueControllerMultiOption({
 
 function FilterValueControllerTemporal({
   context,
-  disabled,
+  disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const defaultFilterType: FilterType = "date-time";
