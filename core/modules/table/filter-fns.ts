@@ -1,6 +1,8 @@
 import { constructFilterFn } from "@tanstack/react-table";
 import {
   endOfDay,
+  isAfter,
+  isBefore,
   isEqual,
   isWithinInterval,
   startOfDay,
@@ -69,7 +71,7 @@ type TemporalFilter = z.infer<typeof temporalFilterSchema>;
 // const validateDateTimeFilterValue = (value: unknown) =>
 //   temporalFilterValueSchema.safeParse(value).success;
 
-const temporalAutoRemoveHandler = (v: unknown) => !(v instanceof Date);
+const temporalFilterAutoRemove = (v: unknown) => !(v instanceof Date);
 
 export const filterFn_dateExactly = constructFilterFn({
   filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
@@ -77,7 +79,7 @@ export const filterFn_dateExactly = constructFilterFn({
     if (!dataValue || !filterValue) return false;
     return isEqual(startOfMinute(dataValue), startOfMinute(filterValue));
   },
-  autoRemove: temporalAutoRemoveHandler,
+  autoRemove: temporalFilterAutoRemove,
 });
 
 export const filterFn_dateIs = constructFilterFn({
@@ -89,68 +91,59 @@ export const filterFn_dateIs = constructFilterFn({
       end: endOfDay(filterValue),
     });
   },
-  autoRemove: temporalAutoRemoveHandler,
+  autoRemove: temporalFilterAutoRemove,
 });
 
-// export const filterFn_dateBefore = constructFilterFn({
-//   filter: (
-//     dataValue: ResolvedFilterDate | undefined,
-//     filterValue: FilterDateValue,
-//   ) => {
-//     const filterDate = toValidDate(filterValue[0]);
-//     if (!dataValue || !filterDate) return false;
-//     return dataValue.timeOnly
-//       ? isBefore(timeOfDay(dataValue.date), timeOfDay(filterDate.date))
-//       : isBefore(dataValue.date, startOfDay(filterDate.date));
-//   },
-//   autoRemove: (value) => !hasDateValue(value),
-//   resolveDataValue: toValidDate,
-// });
+export const filterFn_dateBefore = constructFilterFn({
+  filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
+    const filterValue = filter.value[0];
+    if (!dataValue || !filterValue) return false;
+    return isBefore(dataValue, startOfDay(filterValue));
+  },
+  autoRemove: temporalFilterAutoRemove,
+});
 
-// export const filterFn_dateAfter = constructFilterFn({
-//   filter: (
-//     dataValue: ResolvedFilterDate | undefined,
-//     filterValue: FilterDateValue,
-//   ) => {
-//     const filterDate = toValidDate(filterValue[0]);
-//     if (!dataValue || !filterDate) return false;
-//     return dataValue.timeOnly
-//       ? isAfter(timeOfDay(dataValue.date), timeOfDay(filterDate.date))
-//       : isAfter(dataValue.date, endOfDay(filterDate.date));
-//   },
-//   autoRemove: (value) => !hasDateValue(value),
-//   resolveDataValue: toValidDate,
-// });
+export const filterFn_dateOnOrBefore = constructFilterFn({
+  filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
+    const filterValue = filter.value[0];
+    if (!dataValue || !filterValue) return false;
+    return isBefore(dataValue, endOfDay(filterValue));
+  },
+  autoRemove: temporalFilterAutoRemove,
+});
 
-// export const filterFn_dateOnOrBefore = constructFilterFn({
-//   filter: (
-//     dataValue: ResolvedFilterDate | undefined,
-//     filterValue: FilterDateValue,
-//   ) => {
-//     const filterDate = toValidDate(filterValue[0]);
-//     if (!dataValue || !filterDate) return false;
-//     return dataValue.timeOnly
-//       ? !isAfter(timeOfDay(dataValue.date), timeOfDay(filterDate.date))
-//       : !isAfter(dataValue.date, endOfDay(filterDate.date));
-//   },
-//   autoRemove: (value) => !hasDateValue(value),
-//   resolveDataValue: toValidDate,
-// });
+export const filterFn_dateAfter = constructFilterFn({
+  filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
+    const filterValue = filter.value[0];
+    if (!dataValue || !filterValue) return false;
+    return isAfter(dataValue, endOfDay(filterValue));
+  },
+  autoRemove: temporalFilterAutoRemove,
+});
 
-// export const filterFn_dateOnOrAfter = constructFilterFn({
-//   filter: (
-//     dataValue: ResolvedFilterDate | undefined,
-//     filterValue: FilterDateValue,
-//   ) => {
-//     const filterDate = toValidDate(filterValue[0]);
-//     if (!dataValue || !filterDate) return false;
-//     return dataValue.timeOnly
-//       ? !isBefore(timeOfDay(dataValue.date), timeOfDay(filterDate.date))
-//       : !isBefore(dataValue.date, startOfDay(filterDate.date));
-//   },
-//   autoRemove: (value) => !hasDateValue(value),
-//   resolveDataValue: toValidDate,
-// });
+export const filterFn_dateOnOrAfter = constructFilterFn({
+  filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
+    const filterValue = filter.value[0];
+    if (!dataValue || !filterValue) return false;
+    return isAfter(dataValue, startOfDay(filterValue));
+  },
+  autoRemove: temporalFilterAutoRemove,
+});
+
+export const filterFn_dateBetween = constructFilterFn({
+  filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
+    const filterValueStart = filter.value[0];
+    const filterValueEnd = filter.value[1] ?? filterValueStart;
+
+    if (!dataValue || !filterValueStart || !filterValueEnd) return false;
+
+    return isWithinInterval(dataValue, {
+      start: startOfDay(filterValueStart),
+      end: endOfDay(filterValueEnd),
+    });
+  },
+  autoRemove: temporalFilterAutoRemove,
+});
 
 // export const filterFn_dateBetween = constructFilterFn({
 //   filter: (

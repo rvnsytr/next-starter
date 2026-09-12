@@ -15,9 +15,9 @@ import {
 } from "@/core/components/ui/number-field";
 import { Slider } from "@/core/components/ui/slider";
 import { Switch } from "@/core/components/ui/switch";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import { filterMeta } from "@/core/modules/table/filter-meta";
+import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/operators";
 import { ColumnFilterContext, FilterType } from "@/core/modules/table/types";
 import { cn, formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
@@ -28,6 +28,7 @@ import { FilterOperatorSelector } from "./filter-operator-selector";
 
 export type FilterValueControllerProps = {
   context: ColumnFilterContext;
+  disabled: boolean;
 };
 
 function FilterValueControllerErrorFallback({
@@ -46,29 +47,63 @@ function FilterValueControllerErrorFallback({
   );
 }
 
-export function FilterValueController(props: FilterValueControllerProps) {
-  const filterType = props.context.filter.type;
+export function FilterValueController({ context }: FilterValueControllerProps) {
+  const filterType = context.filter.type;
+
+  const isDisabled = useMemo(
+    () =>
+      EMPTY_FILTER_OPERATOR_VALUES.some((v) => v === context.filter.operator),
+    [context.filter.operator],
+  );
+
   switch (filterType) {
     case "string":
-      return <FilterValueControllerString {...props} />;
+      return (
+        <FilterValueControllerString context={context} disabled={isDisabled} />
+      );
+
     case "number":
-      return <FilterValueControllerNumber {...props} />;
+      return (
+        <FilterValueControllerNumber context={context} disabled={isDisabled} />
+      );
+
     case "boolean":
-      return <FilterValueControllerBoolean {...props} />;
+      return (
+        <FilterValueControllerBoolean context={context} disabled={isDisabled} />
+      );
+
     case "option":
-      return <FilterValueControllerOption {...props} />;
+      return (
+        <FilterValueControllerOption context={context} disabled={isDisabled} />
+      );
+
     case "multi-option":
-      return <FilterValueControllerMultiOption {...props} />;
+      return (
+        <FilterValueControllerMultiOption
+          context={context}
+          disabled={isDisabled}
+        />
+      );
+
     case "date-time":
     case "date":
     case "time":
-      return <FilterValueControllerTemporal {...props} />;
+      return (
+        <FilterValueControllerTemporal
+          context={context}
+          disabled={isDisabled}
+        />
+      );
+
     default:
       return <FilterValueControllerErrorFallback filterType={filterType} />;
   }
 }
 
-function FilterValueControllerString({ context }: FilterValueControllerProps) {
+function FilterValueControllerString({
+  context,
+  disabled,
+}: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "string";
 
@@ -92,11 +127,14 @@ function FilterValueControllerString({ context }: FilterValueControllerProps) {
 
   return (
     <div className="flex flex-col gap-y-2">
+      <FilterOperatorSelector context={context} />
+
       <InputGroup>
         <InputGroupInput
           value={value}
           onChange={(e) => setValue(String(e.target.value))}
           placeholder={`Search ${label?.toLowerCase()}...`}
+          disabled={disabled}
           autoFocus
         />
 
@@ -110,7 +148,10 @@ function FilterValueControllerString({ context }: FilterValueControllerProps) {
   );
 }
 
-function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
+function FilterValueControllerNumber({
+  context,
+  disabled,
+}: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "number";
 
@@ -178,6 +219,7 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
               setValue([...v]);
             }}
             className="mt-2"
+            disabled={disabled}
           />
 
           <div className="text-muted-foreground flex items-center justify-between gap-1 px-1 text-xs">
@@ -216,6 +258,7 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
               value={value[0] ?? 0}
               onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
               locale={appConfig.default.numberLocale}
+              disabled={disabled}
               autoFocus
             >
               <NumberFieldGroup>
@@ -232,6 +275,7 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
               value={value[1] ?? 0}
               onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
               locale={appConfig.default.numberLocale}
+              disabled={disabled}
             >
               <NumberFieldGroup>
                 <NumberFieldInput placeholder="To" />
@@ -247,6 +291,7 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
           value={value[0] ?? 0}
           onValueChange={(v) => setValue(() => [v ?? 0])}
           locale={appConfig.default.numberLocale}
+          disabled={disabled}
           autoFocus
         >
           <NumberFieldGroup>
@@ -260,7 +305,10 @@ function FilterValueControllerNumber({ context }: FilterValueControllerProps) {
   );
 }
 
-function FilterValueControllerBoolean({ context }: FilterValueControllerProps) {
+function FilterValueControllerBoolean({
+  context,
+  disabled,
+}: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "boolean";
 
@@ -289,13 +337,17 @@ function FilterValueControllerBoolean({ context }: FilterValueControllerProps) {
         onCheckedChange={(v) => {
           setFilter({ ...filter, value: v });
         }}
+        disabled={disabled}
         autoFocus
       />
     </Label>
   );
 }
 
-function FilterValueControllerOption({ context }: FilterValueControllerProps) {
+function FilterValueControllerOption({
+  context,
+  disabled,
+}: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "option";
 
@@ -334,6 +386,7 @@ function FilterValueControllerOption({ context }: FilterValueControllerProps) {
           setValue(newValue);
           setFilter({ ...filter, value: newValue });
         }}
+        disabled={disabled}
       >
         <div className="flex gap-4">
           <div className="flex gap-2">
@@ -349,6 +402,7 @@ function FilterValueControllerOption({ context }: FilterValueControllerProps) {
 
 function FilterValueControllerMultiOption({
   context,
+  disabled,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const filterType: FilterType = "multi-option";
@@ -388,6 +442,7 @@ function FilterValueControllerMultiOption({
           setValue(newValue);
           setFilter({ ...filter, value: newValue });
         }}
+        disabled={disabled}
       >
         <div className="flex gap-4">
           <div className="flex gap-2">
@@ -403,6 +458,7 @@ function FilterValueControllerMultiOption({
 
 function FilterValueControllerTemporal({
   context,
+  disabled,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
   const defaultFilterType: FilterType = "date-time";
@@ -416,11 +472,24 @@ function FilterValueControllerTemporal({
     ? filter.value
     : filterMeta[defaultFilterType].defaultValue.value;
 
-  const [tab, setTab] = useState<"single" | "range">(
-    defaultValue.length === 2 ? "range" : "single",
-  );
-
   const [value, setValue] = useState(defaultValue);
+
+  const options = useMemo(() => {
+    let inputType = "date";
+    let formatStr = "yyyy-MM-dd";
+
+    if (filter.operator === "exactly") {
+      formatStr = "yyyy-MM-dd'T'HH:mm";
+      inputType = "datetime-local";
+    }
+
+    if (filter.type === "time") {
+      formatStr = "HH:mm";
+      inputType = "time";
+    }
+
+    return { inputType, formatStr };
+  }, [filter.type, filter.operator]);
 
   useEffect(() => {
     if (!isFilterValid) return;
@@ -432,48 +501,50 @@ function FilterValueControllerTemporal({
 
   const { label } = columnMeta ?? {};
 
-  let inputType = "date";
-  let formatStr = "yyyy-MM-dd";
-
-  if (filter.operator === "exactly") {
-    formatStr = "yyyy-MM-dd'T'HH:mm";
-    inputType = "datetime-local";
-  }
-  if (filter.type === "time") {
-    formatStr = "HH:mm";
-    inputType = "time";
-  }
-
   return (
-    <Tabs value={tab} onValueChange={setTab} className="gap-2">
-      <TabsList className="w-full">
-        <TabsTab value="single">Single</TabsTab>
-        <TabsTab value="range">Range</TabsTab>
-      </TabsList>
+    <div className="flex flex-col gap-2">
+      <FilterOperatorSelector context={context} />
 
-      <TabsPanel value="single" className="flex flex-col gap-2">
-        <Calendar
-          mode="single"
-          selected={value[0] ?? undefined}
-          onSelect={(date) => {
-            if (date) setValue([date]);
-          }}
-          defaultMonth={value[0] ?? undefined}
-          autoFocus
-        />
-
-        <InputGroup>
-          <InputGroupInput
-            type={inputType}
-            value={value[0] ? format(value[0], formatStr) : ""}
-            onChange={(e) => {
-              const date = e.target.value ? new Date(e.target.value) : null;
+      {filter.operator.includes("between") ? (
+        <>
+          <Calendar
+            mode="range"
+            selected={{ from: value[0], to: value[1] }}
+            onSelect={(dateRange) => {
+              if (dateRange) setValue([dateRange.from, dateRange.to]);
+            }}
+            defaultMonth={value[0] ?? undefined}
+            disabled={disabled}
+            autoFocus
+          />
+        </>
+      ) : (
+        <>
+          <Calendar
+            mode="single"
+            selected={value[0] ?? undefined}
+            onSelect={(date) => {
               if (date) setValue([date]);
             }}
-            placeholder={`Search ${label?.toLowerCase()}...`}
+            defaultMonth={value[0] ?? undefined}
+            disabled={disabled}
+            autoFocus
           />
-        </InputGroup>
-      </TabsPanel>
-    </Tabs>
+
+          <InputGroup>
+            <InputGroupInput
+              type={options.inputType}
+              value={value[0] ? format(value[0], options.formatStr) : ""}
+              onChange={(e) => {
+                const date = e.target.value ? new Date(e.target.value) : null;
+                if (date) setValue([date]);
+              }}
+              placeholder={`Search ${label?.toLowerCase()}...`}
+              disabled={disabled}
+            />
+          </InputGroup>
+        </>
+      )}
+    </div>
   );
 }

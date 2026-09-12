@@ -109,6 +109,10 @@ export const DATE_MULTIPLE_FILTER_OPERATORS = [
 //   { value: "ends_after", label: "ends after" },
 // ] as const;
 
+export const EMPTY_FILTER_OPERATOR_VALUES = EMPTY_FILTER_OPERATORS.map(
+  (op) => op.value,
+);
+
 export const STRING_FILTER_OPERATOR_VALUES = STRING_FILTER_OPERATORS.map(
   (op) => op.value,
 );

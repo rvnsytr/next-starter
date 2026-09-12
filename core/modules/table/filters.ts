@@ -18,8 +18,13 @@ import {
 } from "@tanstack/react-table";
 import {
   filterFn_arrExactlyMatches,
+  filterFn_dateAfter,
+  filterFn_dateBefore,
+  filterFn_dateBetween,
   filterFn_dateExactly,
   filterFn_dateIs,
+  filterFn_dateOnOrAfter,
+  filterFn_dateOnOrBefore,
 } from "./filter-fns";
 import {
   booleanFilterSchema,
@@ -221,32 +226,33 @@ export const dateTimeFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   }
 
   const filter = filterResult.data;
+  const operator = filter.operator;
 
-  switch (filter.operator) {
+  switch (operator) {
     case "exactly":
       return filterFn_dateExactly(row, columnId, filter, addMeta);
     case "is":
       return filterFn_dateIs(row, columnId, filter, addMeta);
     case "is_not":
       return !filterFn_dateIs(row, columnId, filter, addMeta);
-    // case "before":
-    //   return filterFn_dateBefore(row, columnId, filter, addMeta);
-    // case "after":
-    //   return filterFn_dateAfter(row, columnId, filter, addMeta);
-    // case "on_or_before":
-    //   return filterFn_dateOnOrBefore(row, columnId, filter, addMeta);
-    // case "on_or_after":
-    //   return filterFn_dateOnOrAfter(row, columnId, filter, addMeta);
-    // case "between":
-    //   return filterFn_dateBetween(row, columnId, filter, addMeta);
-    // case "not_between":
-    //   return !filterFn_dateBetween(row, columnId, filter, addMeta);
+    case "before":
+      return filterFn_dateBefore(row, columnId, filter, addMeta);
+    case "after":
+      return filterFn_dateAfter(row, columnId, filter, addMeta);
+    case "on_or_before":
+      return filterFn_dateOnOrBefore(row, columnId, filter, addMeta);
+    case "on_or_after":
+      return filterFn_dateOnOrAfter(row, columnId, filter, addMeta);
+    case "between":
+      return filterFn_dateBetween(row, columnId, filter, addMeta);
+    case "not_between":
+      return !filterFn_dateBetween(row, columnId, filter, addMeta);
     case "is_empty":
       return filterFn_empty(row, columnId, filter.value, addMeta);
     case "is_not_empty":
       return filterFn_notEmpty(row, columnId, filter.value, addMeta);
     default: {
-      console.error(getErrorMessage(filter.operator, filterType));
+      console.error(getErrorMessage(operator, filterType));
       return false;
     }
   }

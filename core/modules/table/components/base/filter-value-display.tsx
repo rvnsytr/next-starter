@@ -5,7 +5,7 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { EMPTY_FILTER_OPERATORS } from "@/core/modules/table/operators";
+import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/operators";
 import {
   ColumnFilterContext,
   Filter,
@@ -24,7 +24,7 @@ export function FilterValueDisplayPopup({
   children,
   ...props
 }: FilterValueDisplayPopupProps) {
-  if (EMPTY_FILTER_OPERATORS.some((op) => op.value === context.filter.operator))
+  if (EMPTY_FILTER_OPERATOR_VALUES.some((v) => v === context.filter.operator))
     return null;
 
   const trigger = (
@@ -92,13 +92,12 @@ function FilterValueDisplayNumber({
   operator,
   value,
 }: FilterValueDisplayProps<"number">) {
-  if (value.length === 0) return <EllipsisIcon />;
+  const [start, end] = value;
+  if (!start) return <EllipsisIcon />;
 
-  const start = value[0] ?? 0;
-  const end = value[1] ?? 0;
-
-  if (operator.includes("between"))
+  if (operator.includes("between") && !!end)
     return `${formatNumber(start)} - ${formatNumber(end)}`;
+
   return `${formatNumber(start)}`;
 }
 
@@ -123,12 +122,14 @@ function FilterValueDisplayTemporal({
   value,
 }: FilterValueDisplayProps<"date-time" | "date" | "time">) {
   const [start, end] = value;
+  if (!start) return <EllipsisIcon />;
 
   let formatStr = "PPP";
   if (type === "date-time" && operator === "exactly") formatStr = "PPPp";
   if (type === "time") formatStr = "p";
 
-  if (!start) return <EllipsisIcon />;
-  if (!end) return format(start, formatStr);
-  return `${format(start, formatStr)} - ${format(end, formatStr)}`;
+  if (operator.includes("between") && !!end)
+    return `${format(start, formatStr)} - ${format(end, formatStr)}`;
+
+  return format(start, formatStr);
 }
