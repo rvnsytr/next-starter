@@ -369,34 +369,42 @@ function FilterValueControllerOption({
       />
     );
 
-  return columnMeta.options.map((option) => {
-    const isChecked = value.includes(option.value);
-    const count = option.count ?? null;
-    const Icon = option.icon;
-    return (
-      <MenuCheckboxItem
-        key={option.value}
-        checked={isChecked}
-        onCheckedChange={(v) => {
-          const newValue = v
-            ? [...value, option.value]
-            : value.filter((val) => val !== option.value);
+  return columnMeta.options
+    .sort((a, b) => {
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return 1;
+      return 0;
+    })
+    .map((option) => {
+      const isChecked = value.includes(option.value);
+      const count = option.count ?? null;
+      const Icon = option.icon;
+      return (
+        <MenuCheckboxItem
+          key={option.value}
+          checked={isChecked}
+          onCheckedChange={(v) => {
+            const newValue = v
+              ? [...value, option.value]
+              : value.filter((val) => val !== option.value);
 
-          setValue(newValue);
-          setFilter({ ...filter, value: newValue });
-        }}
-        disabled={disabled}
-      >
-        <div className="flex gap-4">
-          <div className="flex gap-2">
-            {Icon && <Icon className="text-muted-foreground" />}
-            {option.label}
+            setValue(newValue);
+            setFilter({ ...filter, value: newValue });
+          }}
+          disabled={disabled}
+        >
+          <div className="flex gap-4">
+            <div className="flex gap-2">
+              {Icon && <Icon className="text-muted-foreground" />}
+              {option.label}
+            </div>
+            {count !== null && (
+              <MenuShortcut>{formatNumber(count)}</MenuShortcut>
+            )}
           </div>
-          {count !== null && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
-        </div>
-      </MenuCheckboxItem>
-    );
-  });
+        </MenuCheckboxItem>
+      );
+    });
 }
 
 function FilterValueControllerMultiOption({
@@ -425,34 +433,42 @@ function FilterValueControllerMultiOption({
       />
     );
 
-  return columnMeta.options.map((option) => {
-    const isChecked = value.includes(option.value);
-    const count = option.count ?? null;
-    const Icon = option.icon;
-    return (
-      <MenuCheckboxItem
-        key={option.value}
-        checked={isChecked}
-        onCheckedChange={(v) => {
-          const newValue = v
-            ? [...value, option.value]
-            : value.filter((val) => val !== option.value);
+  return columnMeta.options
+    .sort((a, b) => {
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return 1;
+      return 0;
+    })
+    .map((option) => {
+      const isChecked = value.includes(option.value);
+      const count = option.count ?? null;
+      const Icon = option.icon;
+      return (
+        <MenuCheckboxItem
+          key={option.value}
+          checked={isChecked}
+          onCheckedChange={(v) => {
+            const newValue = v
+              ? [...value, option.value]
+              : value.filter((val) => val !== option.value);
 
-          setValue(newValue);
-          setFilter({ ...filter, value: newValue });
-        }}
-        disabled={disabled}
-      >
-        <div className="flex gap-4">
-          <div className="flex gap-2">
-            {Icon && <Icon className="text-muted-foreground" />}
-            {option.label}
+            setValue(newValue);
+            setFilter({ ...filter, value: newValue });
+          }}
+          disabled={disabled}
+        >
+          <div className="flex gap-4">
+            <div className="flex gap-2">
+              {Icon && <Icon className="text-muted-foreground" />}
+              {option.label}
+            </div>
+            {count !== null && (
+              <MenuShortcut>{formatNumber(count)}</MenuShortcut>
+            )}
           </div>
-          {count !== null && <MenuShortcut>{formatNumber(count)}</MenuShortcut>}
-        </div>
-      </MenuCheckboxItem>
-    );
-  });
+        </MenuCheckboxItem>
+      );
+    });
 }
 
 function FilterValueControllerTemporal({
