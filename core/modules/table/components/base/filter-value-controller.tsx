@@ -48,15 +48,14 @@ function FilterValueControllerErrorFallback({
 }
 
 export function FilterValueController({ context }: FilterValueControllerProps) {
-  const filterType = context.filter.type;
+  const { type, operator } = context.filter;
 
   const isDisabled = useMemo(
-    () =>
-      EMPTY_FILTER_OPERATOR_VALUES.some((v) => v === context.filter.operator),
-    [context.filter.operator],
+    () => EMPTY_FILTER_OPERATOR_VALUES.some((v) => v === operator),
+    [operator],
   );
 
-  switch (filterType) {
+  switch (type) {
     case "string":
       return (
         <FilterValueControllerString context={context} disabled={isDisabled} />
@@ -96,7 +95,7 @@ export function FilterValueController({ context }: FilterValueControllerProps) {
       );
 
     default:
-      return <FilterValueControllerErrorFallback filterType={filterType} />;
+      return <FilterValueControllerErrorFallback filterType={type} />;
   }
 }
 
@@ -506,18 +505,16 @@ function FilterValueControllerTemporal({
       <FilterOperatorSelector context={context} />
 
       {filter.operator.includes("between") ? (
-        <>
-          <Calendar
-            mode="range"
-            selected={{ from: value[0], to: value[1] }}
-            onSelect={(dateRange) => {
-              if (dateRange) setValue([dateRange.from, dateRange.to]);
-            }}
-            defaultMonth={value[0] ?? undefined}
-            disabled={disabled}
-            autoFocus
-          />
-        </>
+        <Calendar
+          mode="range"
+          selected={{ from: value[0], to: value[1] }}
+          onSelect={(dateRange) => {
+            if (dateRange) setValue([dateRange.from, dateRange.to]);
+          }}
+          defaultMonth={value[0] ?? undefined}
+          disabled={disabled}
+          autoFocus
+        />
       ) : (
         <>
           <Calendar
