@@ -29,7 +29,7 @@ export function FilterValueDisplayPopup({
 
   const trigger = (
     <Button {...props}>
-      <FilterValueDisplay filter={context.filter} />
+      <FilterValueDisplay context={context} />
     </Button>
   );
 
@@ -51,47 +51,63 @@ export function FilterValueDisplayPopup({
   );
 }
 
-export type FilterValueDisplayProps<T extends FilterType> = Extract<
-  Filter,
-  { type: T }
->;
+export type FilterValueDisplayProps<T extends FilterType> = {
+  context: Pick<ColumnFilterContext, "columnMeta"> & {
+    filter: Extract<Filter, { type: T }>;
+  };
+};
 
-export function FilterValueDisplay({ filter }: { filter: Filter }) {
+export function FilterValueDisplay({
+  context,
+}: {
+  context: ColumnFilterContext;
+}) {
+  const { filter, columnMeta } = context;
   const filterType = filter.type;
+
   switch (filterType) {
     case "string":
-      return <FilterValueDisplayString {...filter} />;
+      return <FilterValueDisplayString context={{ filter, columnMeta }} />;
+
     case "number":
-      return <FilterValueDisplayNumber {...filter} />;
+      return <FilterValueDisplayNumber context={{ filter, columnMeta }} />;
+
     case "boolean":
-      return <FilterValueDisplayBoolean {...filter} />;
+      return <FilterValueDisplayBoolean context={{ filter, columnMeta }} />;
+
     case "option":
     case "multi-option":
-      return <FilterValueDisplayOptions {...filter} />;
+      return <FilterValueDisplayOptions context={{ filter, columnMeta }} />;
+
     case "date-time":
     case "date":
     case "time":
-      return <FilterValueDisplayTemporal {...filter} />;
+      return <FilterValueDisplayTemporal context={{ filter, columnMeta }} />;
+
     default:
       return `Filter type "${filterType}" is not supported.`;
   }
 }
 
+const MAX_STRING_LENGTH = 20;
 function FilterValueDisplayString({
-  value,
+  context,
 }: FilterValueDisplayProps<"string">) {
-  const maxStringLength = 20;
+  const { value } = context.filter;
+
   const displayValue =
-    value.length > maxStringLength
-      ? `${value.slice(0, maxStringLength)}...`
+    value.length > MAX_STRING_LENGTH
+      ? `${value.slice(0, MAX_STRING_LENGTH)}...`
       : value;
+
   return !!displayValue ? displayValue : <EllipsisIcon />;
 }
 
 function FilterValueDisplayNumber({
-  operator,
-  value,
+  context,
 }: FilterValueDisplayProps<"number">) {
+  const { operator, value } = context.filter;
+
   const [start, end] = value;
   if (!start) return <EllipsisIcon />;
 
@@ -102,25 +118,34 @@ function FilterValueDisplayNumber({
 }
 
 function FilterValueDisplayBoolean({
-  value,
+  context,
 }: FilterValueDisplayProps<"boolean">) {
-  return String(value);
+  const { filter, columnMeta } = context;
+
+  if (columnMeta?.booleanLabels)
+    return columnMeta.booleanLabels[filter.value ? "true" : "false"];
+
+  return String(filter.value);
 }
 
 function FilterValueDisplayOptions({
-  value,
+  context,
 }: FilterValueDisplayProps<"option" | "multi-option">) {
+  const { value } = context.filter;
+
   if (value.length === 0) return <EllipsisIcon />;
+
   if (value.length > 2)
     return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;
+
   return value.join(", ");
 }
 
 function FilterValueDisplayTemporal({
-  type,
-  operator,
-  value,
+  context,
 }: FilterValueDisplayProps<"date-time" | "date" | "time">) {
+  const { type, operator, value } = context.filter;
+
   const [start, end] = value;
   if (!start) return <EllipsisIcon />;
 

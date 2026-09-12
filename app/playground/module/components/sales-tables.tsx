@@ -86,7 +86,7 @@ export function SaleDataGrid() {
 
   const { data, mutate, isLoading } = useSWR(
     "/dg/sales",
-    async () => await getSales(1),
+    async () => await getSales(2),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,

@@ -233,6 +233,11 @@ export const saleDGColumns = columnHelper.columns([
       label: "Paid",
       icon: CheckCircle2Icon,
 
+      booleanLabels: {
+        true: "paid",
+        false: "unpaid",
+      },
+
       editor: {
         type: "boolean:switch",
       },
