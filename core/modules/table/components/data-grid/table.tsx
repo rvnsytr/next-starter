@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { toast } from "@/core/components/ui/toast";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { DataGridEditState, TableProps } from "@/core/modules/table/types";
 import {
@@ -75,6 +76,25 @@ function rowSelectionKey(
   }
 
   return key;
+}
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    !!target.closest(
+      [
+        "a",
+        "button",
+        "input",
+        "select",
+        "textarea",
+        "label",
+        "[contenteditable=true]",
+        "[role=button]",
+        "[data-grid-interactive]",
+      ].join(", "),
+    )
+  );
 }
 
 export function DataGrid({
@@ -200,6 +220,7 @@ export function DataGrid({
           void navigator.clipboard.writeText(
             toTsv(table.getSelectedCellRangesData()),
           );
+          toast.add({ type: "info", title: "Copied to clipboard" });
         },
       },
       {
@@ -536,20 +557,24 @@ export function DataGrid({
                               data-pinned={!!pinPosition}
                               id={cell.id}
                               onMouseDown={(e) => {
-                                if (!!edit) return;
+                                if (edit || isInteractiveTarget(e.target))
+                                  return;
                                 return cell.getSelectionStartHandler()(e);
                               }}
                               onMouseEnter={(e) => {
-                                if (!!edit) return;
+                                if (edit || isInteractiveTarget(e.target))
+                                  return;
                                 return cell.getSelectionExtendHandler()(e);
                               }}
-                              onClick={() => {
+                              onClick={(e) => {
+                                if (isInteractiveTarget(e.target)) return;
                                 if (edit?.cellId !== cell.id) {
                                   setEdit(null);
                                   table.setFocusedCell(row.id, cell.column.id);
                                 }
                               }}
-                              onDoubleClick={() => {
+                              onDoubleClick={(e) => {
+                                if (isInteractiveTarget(e.target)) return;
                                 if (canEdit && edit?.cellId !== cell.id) {
                                   table.resetCellSelection(true);
                                   setEdit({
