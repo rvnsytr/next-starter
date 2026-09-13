@@ -122,10 +122,13 @@ export function DataGrid({
     [table.options.meta?.loading],
   );
 
-  const allLeafColumnsLength = useMemo(
-    () => table.getAllLeafColumns().length,
-    [table],
-  );
+  const { columnLength, hasFooter } = useMemo(() => {
+    const leafColumns = table.getAllLeafColumns();
+    return {
+      columnLength: leafColumns.length,
+      hasFooter: leafColumns.some((column) => !!column.columnDef.footer),
+    };
+  }, [table]);
 
   const withResizeIndicator = useMemo(
     () => table.options.columnResizeMode !== "onChange",
@@ -423,7 +426,7 @@ export function DataGrid({
           Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={allLeafColumnsLength}>
+                <TableCell colSpan={columnLength}>
                   <Skeleton className="h-7 w-full" />
                 </TableCell>
               </TableRow>
@@ -648,7 +651,7 @@ export function DataGrid({
         ) : (
           <TableRow>
             <TableCell
-              colSpan={allLeafColumnsLength}
+              colSpan={columnLength}
               className="text-muted-foreground py-4 text-center whitespace-pre-line"
             >
               {placeholder ?? messages.empty}
@@ -657,66 +660,68 @@ export function DataGrid({
         )}
       </TableBody>
 
-      <TableFooter>
-        {isLoading ? (
-          <TableRow>
-            <TableCell colSpan={allLeafColumnsLength}>
-              <Skeleton className="h-7 w-full" />
-            </TableCell>
-          </TableRow>
-        ) : (
-          table.getFooterGroups().map((footerGroup) => (
-            <TableRow key={footerGroup.id}>
-              {footerGroup.headers.map((f) => (
-                <table.AppFooter key={f.id} header={f}>
-                  {(footer) => {
-                    if (footer.isPlaceholder) return null;
-
-                    const {
-                      isPlaceholder,
-                      rowSpan = footer.rowSpan,
-                      colSpan = footer.colSpan,
-                      style: footerStyle,
-                      className: footerClassName,
-                      ...restFooterProps
-                    } = footer.column.columnDef.meta?.footerProps ?? {};
-
-                    const pinPosition = footer.column.getIsPinned();
-                    if (!pinPosition && isPlaceholder) return null;
-
-                    return (
-                      <TableCell
-                        key={footer.id}
-                        data-pinned={!!pinPosition}
-                        rowSpan={rowSpan}
-                        colSpan={colSpan}
-                        style={{
-                          ...footerStyle,
-                          width: footer.getSize(),
-                          left: footer.column.getStart("start"),
-                          right: footer.column.getAfter("end"),
-                        }}
-                        className={cn(
-                          "relative z-10",
-
-                          !!pinPosition && "sticky z-20 backdrop-blur-xs",
-                          pinPosition === "start" && "left-0 pl-4",
-                          pinPosition === "end" && "right-0 pr-4",
-
-                          footerClassName,
-                        )}
-                        {...restFooterProps}
-                      >
-                        <footer.FlexRender />
-                      </TableCell>
-                    );
-                  }}
-                </table.AppFooter>
-              ))}
+      {hasFooter && (
+        <TableFooter>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columnLength}>
+                <Skeleton className="h-7 w-full" />
+              </TableCell>
             </TableRow>
-          ))
-        )}
-      </TableFooter>
+          ) : (
+            table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((f) => (
+                  <table.AppFooter key={f.id} header={f}>
+                    {(footer) => {
+                      if (footer.isPlaceholder) return null;
+
+                      const {
+                        isPlaceholder,
+                        rowSpan = footer.rowSpan,
+                        colSpan = footer.colSpan,
+                        style: footerStyle,
+                        className: footerClassName,
+                        ...restFooterProps
+                      } = footer.column.columnDef.meta?.footerProps ?? {};
+
+                      const pinPosition = footer.column.getIsPinned();
+                      if (!pinPosition && isPlaceholder) return null;
+
+                      return (
+                        <TableCell
+                          key={footer.id}
+                          data-pinned={!!pinPosition}
+                          rowSpan={rowSpan}
+                          colSpan={colSpan}
+                          style={{
+                            ...footerStyle,
+                            width: footer.getSize(),
+                            left: footer.column.getStart("start"),
+                            right: footer.column.getAfter("end"),
+                          }}
+                          className={cn(
+                            "relative z-10",
+
+                            !!pinPosition && "sticky z-20 backdrop-blur-xs",
+                            pinPosition === "start" && "left-0 pl-4",
+                            pinPosition === "end" && "right-0 pr-4",
+
+                            footerClassName,
+                          )}
+                          {...restFooterProps}
+                        >
+                          <footer.FlexRender />
+                        </TableCell>
+                      );
+                    }}
+                  </table.AppFooter>
+                ))}
+              </TableRow>
+            ))
+          )}
+        </TableFooter>
+      )}
     </Table>
   );
 }

@@ -27,10 +27,13 @@ export function DataControllerTable({
     [table.options.meta?.loading],
   );
 
-  const allLeafColumnsLength = useMemo(
-    () => table.getAllLeafColumns().length,
-    [table],
-  );
+  const { columnLength, hasFooter } = useMemo(() => {
+    const leafColumns = table.getAllLeafColumns();
+    return {
+      columnLength: leafColumns.length,
+      hasFooter: leafColumns.some((column) => !!column.columnDef.footer),
+    };
+  }, [table]);
 
   return (
     <Table {...props}>
@@ -70,7 +73,7 @@ export function DataControllerTable({
           Array.from({ length: table.state.pagination.pageSize }).map(
             (_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={allLeafColumnsLength}>
+                <TableCell colSpan={columnLength}>
                   <Skeleton className="h-7 w-full" />
                 </TableCell>
               </TableRow>
@@ -108,7 +111,7 @@ export function DataControllerTable({
         ) : (
           <TableRow>
             <TableCell
-              colSpan={allLeafColumnsLength}
+              colSpan={columnLength}
               className="text-muted-foreground py-4 text-center whitespace-pre-line"
             >
               {placeholder ?? messages.empty}
@@ -117,47 +120,49 @@ export function DataControllerTable({
         )}
       </TableBody>
 
-      <TableFooter>
-        {isLoading ? (
-          <TableRow>
-            <TableCell colSpan={allLeafColumnsLength}>
-              <Skeleton className="h-7 w-full" />
-            </TableCell>
-          </TableRow>
-        ) : (
-          table.getFooterGroups().map((footerGroup) => (
-            <TableRow key={footerGroup.id}>
-              {footerGroup.headers.map((f) => (
-                <table.AppFooter key={f.id} header={f}>
-                  {(footer) => {
-                    const {
-                      isPlaceholder,
-                      rowSpan = footer.rowSpan,
-                      colSpan = footer.colSpan,
-                      className: footerClassName,
-                      ...restFooterProps
-                    } = footer.column.columnDef.meta?.footerProps ?? {};
-
-                    if (footer.isPlaceholder || isPlaceholder) return null;
-
-                    return (
-                      <TableCell
-                        key={footer.id}
-                        rowSpan={rowSpan}
-                        colSpan={colSpan}
-                        className={cn("relative z-10", footerClassName)}
-                        {...restFooterProps}
-                      >
-                        <footer.FlexRender />
-                      </TableCell>
-                    );
-                  }}
-                </table.AppFooter>
-              ))}
+      {hasFooter && (
+        <TableFooter>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columnLength}>
+                <Skeleton className="h-7 w-full" />
+              </TableCell>
             </TableRow>
-          ))
-        )}
-      </TableFooter>
+          ) : (
+            table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((f) => (
+                  <table.AppFooter key={f.id} header={f}>
+                    {(footer) => {
+                      const {
+                        isPlaceholder,
+                        rowSpan = footer.rowSpan,
+                        colSpan = footer.colSpan,
+                        className: footerClassName,
+                        ...restFooterProps
+                      } = footer.column.columnDef.meta?.footerProps ?? {};
+
+                      if (footer.isPlaceholder || isPlaceholder) return null;
+
+                      return (
+                        <TableCell
+                          key={footer.id}
+                          rowSpan={rowSpan}
+                          colSpan={colSpan}
+                          className={cn("relative z-10", footerClassName)}
+                          {...restFooterProps}
+                        >
+                          <footer.FlexRender />
+                        </TableCell>
+                      );
+                    }}
+                  </table.AppFooter>
+                ))}
+              </TableRow>
+            ))
+          )}
+        </TableFooter>
+      )}
     </Table>
   );
 }
