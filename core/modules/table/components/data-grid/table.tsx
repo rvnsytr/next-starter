@@ -619,12 +619,13 @@ export function DataGrid({
                                 !isFocused && edges?.left && "cell-edge-left",
 
                                 isEdit && "cursor-default px-0 py-1",
+
+                                cellClassName,
+
                                 isCellEdited &&
                                   !isEdit &&
                                   !isRowRemoved &&
-                                  "bg-warning/32",
-
-                                cellClassName,
+                                  "bg-warning/32 dark:bg-warning/32",
                               )}
                               {...restCellProps}
                             >
