@@ -4,7 +4,6 @@ import Link from "next/link";
 import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
 import { ThemeToggle } from "../theme-toggle";
 import { Separator } from "../ui/separator";
-import { ShimmerText } from "../ui/shimmer-text";
 import { SidebarToggle } from "../ui/sidebar";
 import { SidebarAppSiteHeaderAvatar } from "./site-header-avatar";
 
@@ -17,9 +16,9 @@ export function SidebarAppSiteHeader() {
           <Separator orientation="vertical" className="h-4" />
           <Link
             href="/dashboard"
-            className="mx-2 font-mono text-sm font-medium tracking-tight"
+            className="shimmer mx-2 font-mono text-sm font-medium tracking-tight"
           >
-            <ShimmerText>{appConfig.name}</ShimmerText>
+            {appConfig.name}
           </Link>
 
           <DynamicBreadcrumb className="hidden md:flex" fallback />

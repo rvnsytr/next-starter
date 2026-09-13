@@ -16,12 +16,10 @@ export default function Page() {
   return (
     <div
       className={cn(
-        "container flex min-h-dvh flex-col gap-y-4 px-0 py-8 lg:border-x",
+        "flex flex-col gap-y-4 px-0 py-4",
         "*:data-[slot=separator]:border-t *:data-[slot=separator]:border-dashed *:data-[slot=separator]:bg-transparent",
       )}
     >
-      <Separator />
-
       <div className="flex justify-between gap-4 px-4">
         <Button
           variant="outline"
@@ -38,7 +36,7 @@ export default function Page() {
 
       <Separator />
 
-      <DashboardPageHeader className="mx-4">
+      <DashboardPageHeader>
         <DashboardPageTitle>Data Table</DashboardPageTitle>
         <DashboardPageDescription>
           Built using{" "}
@@ -49,14 +47,6 @@ export default function Page() {
       </DashboardPageHeader>
 
       <Separator />
-
-      {/* <SaleDataController /> */}
-
-      {/* <Separator  /> */}
-
-      {/* <SaleDataTable /> */}
-
-      {/* <Separator  /> */}
 
       <SaleDataGrid />
     </div>

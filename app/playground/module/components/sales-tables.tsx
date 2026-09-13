@@ -86,7 +86,7 @@ export function SaleDataGrid() {
 
   const { data, mutate, isLoading } = useSWR(
     "/dg/sales",
-    async () => await getSales(10),
+    async () => await getSales(20),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -168,7 +168,7 @@ export function SaleDataGrid() {
       <table.Layout>
         <table.Table
           variant="bordered"
-          containerProps={{ className: "rounded-none border-x-0" }}
+          containerProps={{ className: "border-x-0" }}
         />
       </table.Layout>
     </table.AppTable>

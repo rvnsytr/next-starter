@@ -1,5 +1,4 @@
 import { cn } from "cn";
-import { ScrollArea } from "./scroll-area";
 
 export type TableVariant = "default" | "card" | "bordered";
 
@@ -10,26 +9,20 @@ export function Table({
   ...props
 }: React.ComponentProps<"table"> & {
   variant?: TableVariant;
-  containerProps?: React.ComponentProps<typeof ScrollArea>;
+  containerProps?: React.ComponentProps<"div">;
 }) {
-  const {
-    className: containerClassName,
-    withScrollbar = false,
-    scrollFade = true,
-    ...restContainerProps
-  } = containerProps ?? {};
+  const { className: containerClassName, ...restContainerProps } =
+    containerProps ?? {};
 
   return (
-    <ScrollArea
+    <div
       data-slot="table-container"
       data-variant={variant}
       className={cn(
-        "relative min-h-auto w-full",
-        variant === "bordered" && "overflow-hidden rounded-lg border",
+        "relative w-full overflow-x-auto",
+        variant === "bordered" && "border",
         containerClassName,
       )}
-      withScrollbar={withScrollbar}
-      scrollFade={scrollFade}
       {...restContainerProps}
     >
       <table
@@ -40,7 +33,7 @@ export function Table({
         )}
         {...props}
       />
-    </ScrollArea>
+    </div>
   );
 }
 
@@ -51,7 +44,7 @@ export function TableHeader({
   return (
     <thead
       data-slot="table-header"
-      className={cn("**:[tr]:border-b", className)}
+      className={cn("sticky top-0 **:[tr]:border-b", className)}
       {...props}
     />
   );

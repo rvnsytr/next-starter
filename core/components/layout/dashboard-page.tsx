@@ -26,8 +26,7 @@ export function DashboardPageHeader({
     <header
       data-slot="dashboard-page-header"
       className={cn(
-        "group/dashboard-page-header @container/dashboard-page-header grid auto-rows-min items-start gap-1 has-data-[slot=dashboard-page-action]:grid-cols-[1fr_auto] has-data-[slot=dashboard-page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
-        "px-4 lg:px-0",
+        "group/dashboard-page-header @container/dashboard-page-header grid auto-rows-min items-start gap-1 px-4 has-data-[slot=dashboard-page-action]:grid-cols-[1fr_auto] has-data-[slot=dashboard-page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
         className,
       )}
       {...props}
