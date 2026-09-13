@@ -1,5 +1,5 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 
 type BaseSelectAllCheckboxProps = React.ComponentProps<typeof Checkbox>;
 

@@ -18,7 +18,6 @@ import {
   saveChanges,
   setNestedValue,
 } from "@/core/modules/table/utils";
-import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import {
@@ -27,6 +26,7 @@ import {
   CellSelectionState,
   RowData,
 } from "@tanstack/react-table";
+import { cn } from "cn";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { CellEditorController } from "./cell-editor-controller";

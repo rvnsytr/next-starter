@@ -1,7 +1,8 @@
 import { Badge, CustomColorBadge } from "@/core/components/ui/badge";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { cn, formatNumber } from "@/core/utils";
+import { formatNumber } from "@/core/utils";
 import { sharedSchemas } from "@/shared/schema";
+import { cn } from "cn";
 import { formatDate } from "date-fns";
 import {
   CalendarCheck2Icon,

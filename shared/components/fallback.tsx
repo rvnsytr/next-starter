@@ -4,7 +4,7 @@ import {
   AlertTitle,
 } from "@/core/components/ui/alert";
 import { Spinner, SpinnerProps } from "@/core/components/ui/spinner";
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { TriangleAlertIcon } from "lucide-react";
 import { appConfig } from "../configs";
 

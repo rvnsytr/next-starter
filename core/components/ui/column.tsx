@@ -1,5 +1,5 @@
-import { cn } from "@/core/utils";
 import { CellContext, HeaderContext } from "@tanstack/react-table";
+import { cn } from "cn";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,

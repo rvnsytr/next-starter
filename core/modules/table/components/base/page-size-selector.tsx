@@ -6,7 +6,8 @@ import {
   SelectValue,
 } from "@/core/components/ui/select";
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "@/core/modules/table/constants";
-import { cn, formatNumber } from "@/core/utils";
+import { formatNumber } from "@/core/utils";
+import { cn } from "cn";
 
 export type PageSizeSelectorProps = React.ComponentProps<typeof SelectTrigger>;
 

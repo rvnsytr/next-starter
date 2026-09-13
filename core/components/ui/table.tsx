@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { ScrollArea } from "./scroll-area";
 
 export type TableVariant = "default" | "card" | "bordered";

@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
 import { VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 import { createContext, useContext } from "react";
 import { toggleVariants } from "./toggle";
 

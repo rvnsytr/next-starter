@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 
 type ShineBorderProps = React.ComponentProps<"div"> & {
   // Width of the border in pixels

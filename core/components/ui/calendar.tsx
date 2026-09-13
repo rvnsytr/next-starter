@@ -1,7 +1,8 @@
 "use client";
 
-import { cn, formatLocalizedDate } from "@/core/utils";
+import { formatLocalizedDate } from "@/core/utils";
 import { DayPicker } from "@daypicker/react";
+import { cn } from "cn";
 import { id } from "date-fns/locale";
 import {
   ChevronDownIcon,

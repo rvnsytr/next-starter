@@ -10,11 +10,11 @@ import {
   DataGridCellEditorType,
 } from "@/core/modules/table/types";
 import { Override } from "@/core/types";
-import { cn } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
+import { cn } from "cn";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";

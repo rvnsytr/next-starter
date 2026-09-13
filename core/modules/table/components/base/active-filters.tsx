@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { ColumnFilterResult } from "@/core/modules/table/types";
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { XIcon } from "lucide-react";
 import { FilterOperatorSelector } from "./filter-operator-selector";
 import { FilterValueController } from "./filter-value-controller";

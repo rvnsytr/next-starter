@@ -1,6 +1,6 @@
 // ? Sync with [Card Component](../ui/card.tsx)
 
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 
 export function DashboardPage({
   className,

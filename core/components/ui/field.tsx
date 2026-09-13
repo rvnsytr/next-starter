@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
+import { cn } from "cn";
 import { useMemo } from "react";
 import { FieldError as FieldErrorType } from "react-hook-form";
 

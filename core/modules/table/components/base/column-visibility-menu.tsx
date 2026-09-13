@@ -7,12 +7,12 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { ColumnMeta } from "@/core/modules/table/types";
-import { cn } from "@/core/utils";
 import {
   formatForDisplay,
   HotkeySequence,
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
+import { cn } from "cn";
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
 

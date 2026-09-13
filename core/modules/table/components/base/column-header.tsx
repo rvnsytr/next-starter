@@ -11,8 +11,8 @@ import {
 import { TooltipPopup } from "@/core/components/ui/tooltip";
 import { SORT_ICONS } from "@/core/modules/table/constants";
 import { ColumnMeta } from "@/core/modules/table/types";
-import { cn } from "@/core/utils";
 import { ColumnPinningPosition, SortDirection } from "@tanstack/react-table";
+import { cn } from "cn";
 import {
   ArrowLeftToLineIcon,
   ArrowRightToLineIcon,

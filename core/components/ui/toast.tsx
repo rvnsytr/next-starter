@@ -1,8 +1,8 @@
 "use client";
 
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { cn } from "@/core/utils";
 import { Toast } from "@base-ui/react/toast";
+import { cn } from "cn";
 import {
   AlertTriangleIcon,
   CheckIcon,

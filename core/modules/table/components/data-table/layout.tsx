@@ -3,7 +3,8 @@ import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableLayoutProps } from "@/core/modules/table/types";
-import { cn, formatNumber } from "@/core/utils";
+import { formatNumber } from "@/core/utils";
+import { cn } from "cn";
 import { useMemo } from "react";
 import { ColumnVisibilityMenuProps } from "../base/column-visibility-menu";
 

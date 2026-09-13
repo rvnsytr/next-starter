@@ -8,7 +8,8 @@ import {
 } from "@/core/components/ui/tooltip";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { cn, formatNumber } from "@/core/utils";
+import { formatNumber } from "@/core/utils";
+import { cn } from "cn";
 import { InfoIcon } from "lucide-react";
 import { useMemo } from "react";
 import { DataTableLayoutProps } from "../data-table/layout";

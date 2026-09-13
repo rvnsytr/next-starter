@@ -1,11 +1,11 @@
 "use client";
 
 import { useIsMobile } from "@/core/hooks/use-media-query";
-import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { formatForDisplay, Hotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import { cva, VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 import { SidebarCloseIcon, SidebarOpenIcon } from "lucide-react";
 import {
   createContext,

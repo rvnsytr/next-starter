@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete";
+import { cn } from "cn";
 import { ChevronsUpDownIcon, XIcon } from "lucide-react";
 import { Button } from "./button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./input-group";

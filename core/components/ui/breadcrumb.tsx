@@ -1,6 +1,6 @@
-import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
+import { cn } from "cn";
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
 export function Breadcrumb(props: React.ComponentProps<"nav">) {

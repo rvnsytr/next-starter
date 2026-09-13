@@ -1,5 +1,5 @@
-import { cn } from "@/core/utils";
 import { cva, VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
 const alertVariants = cva(
   "relative grid w-full items-start gap-x-2 gap-y-1 rounded-lg border px-3.5 py-3 text-card-foreground text-sm has-[>svg]:has-data-[slot=alert-action]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-data-[slot=alert-action]:grid-cols-[1fr_auto] has-[>svg]:gap-x-2 **:[svg]:h-lh **:[svg]:w-4",

@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 import { mergeProps } from "@base-ui/react/merge-props";
+import { cn } from "cn";
 
 export type TextareaProps = React.ComponentPropsWithoutRef<"textarea"> &
   React.RefAttributes<HTMLTextAreaElement> & {

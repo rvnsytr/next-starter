@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { Label } from "./label";
 
 export type DetailListData = {

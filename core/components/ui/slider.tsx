@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
+import { cn } from "cn";
 import { useMemo } from "react";
 
 export function Slider({

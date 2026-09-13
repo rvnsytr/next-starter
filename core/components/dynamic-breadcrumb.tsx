@@ -1,9 +1,9 @@
 "use client";
 
+import { cn } from "cn";
 import Link from "next/link";
 import { Fragment } from "react";
 import { useDynamicBreadcrumb } from "../providers/dynamic-breadcrumb";
-import { cn } from "../utils";
 import {
   Breadcrumb,
   BreadcrumbEllipsis,

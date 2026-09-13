@@ -132,7 +132,7 @@ function SidebarAppContentCollapsible({
                     <SidebarMenuSubButton
                       className="flex justify-between"
                       render={
-                        <Link href={(itm.href as Route) ?? subHref}>
+                        <Link href={(itm.href ?? subHref) as Route}>
                           <span className="line-clamp-1">{itm.label}</span>
                           <LinkSpinner />
                         </Link>

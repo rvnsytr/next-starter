@@ -8,6 +8,7 @@ import {
   useHotkeySequence,
   useHotkeySequences,
 } from "@tanstack/react-hotkeys";
+import { cn } from "cn";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -20,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useMemo, useState, useTransition } from "react";
 import { useCopyToClipboard } from "../hooks/use-copy-to-clipboard";
 import { useIsMounted } from "../hooks/use-is-mounted";
-import { cn, toCase } from "../utils";
+import { toCase } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import {
   Command,

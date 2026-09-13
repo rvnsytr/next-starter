@@ -11,8 +11,8 @@ import {
 } from "@/core/components/ui/table";
 import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { TableProps } from "@/core/modules/table/types";
-import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
+import { cn } from "cn";
 import { useMemo } from "react";
 
 export function DataControllerTable({

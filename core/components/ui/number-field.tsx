@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { NumberField as NumberFieldPrimitive } from "@base-ui/react/number-field";
+import { cn } from "cn";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { createContext, useContext, useId } from "react";
 import { Label } from "./label";

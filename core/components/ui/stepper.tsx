@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
+import { cn } from "cn";
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { createContext, useCallback, useContext, useState } from "react";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
+import { cn } from "cn";
 import { CheckIcon, ChevronsUpDownIcon, XIcon } from "lucide-react";
 import { createContext, useContext, useRef } from "react";
 import { Button } from "./button";

@@ -11,8 +11,8 @@ import {
 } from "@/core/components/ui/table";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableProps } from "@/core/modules/table/types";
-import { cn } from "@/core/utils";
 import { messages } from "@/shared/messages";
+import { cn } from "cn";
 import { useMemo } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 

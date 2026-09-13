@@ -1,4 +1,4 @@
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { Button, ButtonProps } from "./button";
 
 export function PulsatingButton({

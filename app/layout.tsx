@@ -3,11 +3,11 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
-import { cn } from "@/core/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/configs";
 import { GlobalShortcuts } from "@/shared/providers/global-shortcuts";
 import "@/styles/globals.css";
+import { cn } from "cn";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";

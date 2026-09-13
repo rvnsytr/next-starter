@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { Dialog as CommandDialogPrimitive } from "@base-ui/react/dialog";
+import { cn } from "cn";
 import { SearchIcon } from "lucide-react";
 import {
   Autocomplete,

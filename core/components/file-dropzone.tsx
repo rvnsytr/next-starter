@@ -2,6 +2,7 @@
 
 import { FILE_TYPE_META, FileTypeDef } from "@/shared/constants";
 import { messages } from "@/shared/messages";
+import { cn } from "cn";
 import {
   BrushCleaningIcon,
   ChevronLeftIcon,
@@ -19,7 +20,7 @@ import {
   useStatelessFileUpload,
 } from "../hooks/use-file-upload";
 import { FileMetadata, FileWithPreview } from "../types";
-import { cn, formatBytes } from "../utils";
+import { formatBytes } from "../utils";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button, ResetButton } from "./ui/button";
 import { ButtonGroup } from "./ui/button-group";

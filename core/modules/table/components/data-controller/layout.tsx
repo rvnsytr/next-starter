@@ -3,7 +3,8 @@ import { Label } from "@/core/components/ui/label";
 import { useIsDesktop } from "@/core/hooks/use-media-query";
 import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { TableLayoutProps } from "@/core/modules/table/types";
-import { cn, formatNumber } from "@/core/utils";
+import { formatNumber } from "@/core/utils";
+import { cn } from "cn";
 import { useMemo } from "react";
 
 export function DataControllerLayout({

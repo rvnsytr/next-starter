@@ -4,6 +4,7 @@ import { FILE_TYPE_META } from "@/shared/constants";
 import { messages } from "@/shared/messages";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "cn";
 import {
   ChevronsUpDown,
   FileSpreadsheetIcon,
@@ -20,7 +21,6 @@ import { TextMorph } from "torph/react";
 import z from "zod";
 import { FileWithPreview } from "../types";
 import {
-  cn,
   formatCsvRange,
   formatNumber,
   formatNumberRange,

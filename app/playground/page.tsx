@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/core/components/theme-toggle";
 import { Button } from "@/core/components/ui/button";
 import { Separator } from "@/core/components/ui/separator";
 import { LinkSpinner } from "@/core/components/ui/spinner";
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { SaleDataGrid } from "./module/components/sales-tables";

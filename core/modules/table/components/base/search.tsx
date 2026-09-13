@@ -4,12 +4,12 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
-import { cn } from "@/core/utils";
 import {
   formatForDisplay,
   HotkeySequence,
   useHotkeySequence,
 } from "@tanstack/react-hotkeys";
+import { cn } from "cn";
 import { SearchIcon } from "lucide-react";
 import { useRef } from "react";
 

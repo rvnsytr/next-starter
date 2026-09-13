@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { createContext, useContext, useId, useMemo } from "react";
 import type { TooltipValueType } from "recharts";
 import * as RechartsPrimitive from "recharts";

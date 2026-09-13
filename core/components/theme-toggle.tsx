@@ -2,11 +2,11 @@
 
 import { Theme, THEME_META, THEME_TOGGLE_HOTKEY } from "@/shared/constants";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
+import { cn } from "cn";
 import { useTheme } from "next-themes";
 import { ComponentProps } from "react";
 import { useIsMounted } from "../hooks/use-is-mounted";
 import { useIsMobile } from "../hooks/use-media-query";
-import { cn } from "../utils";
 import { Button, ButtonProps, buttonVariants } from "./ui/button";
 import { Kbd } from "./ui/kbd";
 import { Skeleton } from "./ui/skeleton";

@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/core/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
+import { cn } from "cn";
 
 export function ScrollArea({
   scrollFade = false,

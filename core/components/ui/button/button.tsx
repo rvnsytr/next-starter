@@ -1,6 +1,6 @@
-import { cn } from "@/core/utils";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
 export const buttonVariants = cva(
   "group/button relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent font-medium text-sm outline-none transition-shadow active:not-aria-[haspopup]:translate-y-px before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 **:[svg:not([class*='opacity-'])]:opacity-80 **:[svg:not([class*='size-'])]:size-4 **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg]:shrink-0",
