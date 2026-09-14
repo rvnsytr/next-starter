@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { toast } from "@/core/components/ui/toast";
+import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { DataGridEditState, TableProps } from "@/core/modules/table/types";
 import {
@@ -376,11 +377,13 @@ export function DataGrid({
                               right: header.column.getAfter("end"),
                             }}
                             className={cn(
-                              "relative z-10",
+                              TABLE_CELL_CLASS.base,
 
-                              !!pinPosition && "bg-background/90 sticky z-20",
-                              pinPosition === "start" && "left-0 pl-4",
-                              pinPosition === "end" && "right-0 pr-4",
+                              !!pinPosition && TABLE_CELL_CLASS.pin,
+                              pinPosition === "start" &&
+                                TABLE_CELL_CLASS.pinLeft,
+                              pinPosition === "end" &&
+                                TABLE_CELL_CLASS.pinRight,
 
                               headerClassName,
                             )}
@@ -427,7 +430,7 @@ export function DataGrid({
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={columnLength}>
-                  <Skeleton className="h-7 w-full" />
+                  <Skeleton className={TABLE_CELL_CLASS.skeleton} />
                 </TableCell>
               </TableRow>
             ),
@@ -519,7 +522,7 @@ export function DataGrid({
                             let keys = editorMeta.key ? [editorMeta.key] : [];
                             if (!keys.length) {
                               keys = [
-                                ...getParentColumns(c.column).map(
+                                ...getParentColumns(cell.column).map(
                                   (pc) =>
                                     pc.columnDef.meta?.editor?.key ?? pc.id,
                                 ),
@@ -594,11 +597,13 @@ export function DataGrid({
                                 right: cell.column.getAfter("end"),
                               }}
                               className={cn(
-                                "z-10",
+                                TABLE_CELL_CLASS.base,
 
-                                !!pinPosition && "bg-background/90 sticky z-20",
-                                pinPosition === "start" && "left-0 pl-4",
-                                pinPosition === "end" && "right-0 pr-4",
+                                !!pinPosition && TABLE_CELL_CLASS.pin,
+                                pinPosition === "start" &&
+                                  TABLE_CELL_CLASS.pinLeft,
+                                pinPosition === "end" &&
+                                  TABLE_CELL_CLASS.pinRight,
 
                                 canSelect &&
                                   "cell-selectable cursor-cell select-none",
@@ -629,12 +634,16 @@ export function DataGrid({
                               )}
                               {...restCellProps}
                             >
-                              {isEdit ? (
+                              {canEdit ? (
                                 <CellEditorController
-                                  defaultValue={cell.getValue()}
-                                  columnMeta={columnMeta}
-                                  editorMeta={editorMeta}
-                                  onSubmit={onCellEditorSubmit}
+                                  context={{
+                                    defaultValue: cell.getValue(),
+                                    columnMeta: columnMeta,
+                                    editorMeta: editorMeta,
+                                    onSubmit: onCellEditorSubmit,
+                                  }}
+                                  render={<cell.FlexRender />}
+                                  edit={isEdit}
                                 />
                               ) : (
                                 <cell.FlexRender />
@@ -653,7 +662,7 @@ export function DataGrid({
           <TableRow>
             <TableCell
               colSpan={columnLength}
-              className="text-muted-foreground py-4 text-center whitespace-pre-line"
+              className={TABLE_CELL_CLASS.empty}
             >
               {placeholder ?? messages.empty}
             </TableCell>
@@ -666,7 +675,7 @@ export function DataGrid({
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={columnLength}>
-                <Skeleton className="h-7 w-full" />
+                <Skeleton className={TABLE_CELL_CLASS.skeleton} />
               </TableCell>
             </TableRow>
           ) : (
@@ -702,11 +711,11 @@ export function DataGrid({
                             right: footer.column.getAfter("end"),
                           }}
                           className={cn(
-                            "relative z-10",
+                            TABLE_CELL_CLASS.base,
 
-                            !!pinPosition && "sticky z-20 backdrop-blur-xs",
-                            pinPosition === "start" && "left-0 pl-4",
-                            pinPosition === "end" && "right-0 pr-4",
+                            !!pinPosition && TABLE_CELL_CLASS.pinFooter,
+                            pinPosition === "start" && TABLE_CELL_CLASS.pinLeft,
+                            pinPosition === "end" && TABLE_CELL_CLASS.pinRight,
 
                             footerClassName,
                           )}

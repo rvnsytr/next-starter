@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
 import { TableProps } from "@/core/modules/table/types";
 import { messages } from "@/shared/messages";
@@ -92,9 +93,9 @@ export function DataTable({
                               right: header.column.getAfter("end"),
                             }}
                             className={cn(
-                              "relative z-10",
+                              TABLE_CELL_CLASS.base,
 
-                              !!pinPosition && "bg-background/90 sticky z-20",
+                              !!pinPosition && TABLE_CELL_CLASS.pin,
                               pinPosition === "start" && "left-0 pl-4",
                               pinPosition === "end" && "right-0 pr-4",
 
@@ -143,7 +144,7 @@ export function DataTable({
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={columnLength}>
-                  <Skeleton className="h-7 w-full" />
+                  <Skeleton className={TABLE_CELL_CLASS.skeleton} />
                 </TableCell>
               </TableRow>
             ),
@@ -154,11 +155,12 @@ export function DataTable({
               {row.getVisibleCells().map((c) => (
                 <table.AppCell key={c.id} cell={c}>
                   {(cell) => {
-                    const cellPropsMeta = cell.column.columnDef.meta?.cellProps;
+                    const columnMeta = cell.column.columnDef.meta;
+
                     const cellProps =
-                      typeof cellPropsMeta === "function"
-                        ? cellPropsMeta(cell.getValue())
-                        : cellPropsMeta;
+                      typeof columnMeta?.cellProps === "function"
+                        ? columnMeta.cellProps(cell.getValue())
+                        : columnMeta?.cellProps;
 
                     const {
                       style: cellStyle,
@@ -179,9 +181,9 @@ export function DataTable({
                           right: cell.column.getAfter("end"),
                         }}
                         className={cn(
-                          "z-10",
+                          TABLE_CELL_CLASS.base,
 
-                          !!pinPosition && "bg-background/90 sticky z-20",
+                          !!pinPosition && TABLE_CELL_CLASS.pin,
                           pinPosition === "start" && "left-0 pl-4",
                           pinPosition === "end" && "right-0 pr-4",
 
@@ -201,7 +203,7 @@ export function DataTable({
           <TableRow>
             <TableCell
               colSpan={columnLength}
-              className="text-muted-foreground py-4 text-center whitespace-pre-line"
+              className={TABLE_CELL_CLASS.empty}
             >
               {placeholder ?? messages.empty}
             </TableCell>
@@ -214,7 +216,7 @@ export function DataTable({
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={columnLength}>
-                <Skeleton className="h-7 w-full" />
+                <Skeleton className={TABLE_CELL_CLASS.skeleton} />
               </TableCell>
             </TableRow>
           ) : (
@@ -250,9 +252,9 @@ export function DataTable({
                             right: footer.column.getAfter("end"),
                           }}
                           className={cn(
-                            "relative z-10",
+                            TABLE_CELL_CLASS.base,
 
-                            !!pinPosition && "sticky z-20 backdrop-blur-xs",
+                            !!pinPosition && TABLE_CELL_CLASS.pinFooter,
                             pinPosition === "start" && "left-0 pl-4",
                             pinPosition === "end" && "right-0 pr-4",
 

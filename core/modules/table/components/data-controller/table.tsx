@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { TableProps } from "@/core/modules/table/types";
 import { messages } from "@/shared/messages";
@@ -55,7 +56,7 @@ export function DataControllerTable({
                       key={header.id}
                       colSpan={header.colSpan}
                       rowSpan={header.rowSpan}
-                      className={cn("relative z-10", headerClassName)}
+                      className={cn(TABLE_CELL_CLASS.base, headerClassName)}
                       {...restHeaderProps}
                     >
                       <header.FlexRender />
@@ -74,7 +75,7 @@ export function DataControllerTable({
             (_, i) => (
               <TableRow key={i}>
                 <TableCell colSpan={columnLength}>
-                  <Skeleton className="h-7 w-full" />
+                  <Skeleton className={TABLE_CELL_CLASS.skeleton} />
                 </TableCell>
               </TableRow>
             ),
@@ -85,11 +86,12 @@ export function DataControllerTable({
               {row.getAllCells().map((c) => (
                 <table.AppCell key={c.id} cell={c}>
                   {(cell) => {
-                    const cellPropsMeta = cell.column.columnDef.meta?.cellProps;
+                    const columnMeta = cell.column.columnDef.meta;
+
                     const cellProps =
-                      typeof cellPropsMeta === "function"
-                        ? cellPropsMeta(cell.getValue())
-                        : cellPropsMeta;
+                      typeof columnMeta?.cellProps === "function"
+                        ? columnMeta.cellProps(cell.getValue())
+                        : columnMeta?.cellProps;
 
                     const { className: cellClassName, ...restCellProps } =
                       cellProps ?? {};
@@ -97,7 +99,7 @@ export function DataControllerTable({
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn("z-10", cellClassName)}
+                        className={cn(TABLE_CELL_CLASS.base, cellClassName)}
                         {...restCellProps}
                       >
                         <cell.FlexRender />
@@ -112,7 +114,7 @@ export function DataControllerTable({
           <TableRow>
             <TableCell
               colSpan={columnLength}
-              className="text-muted-foreground py-4 text-center whitespace-pre-line"
+              className={TABLE_CELL_CLASS.empty}
             >
               {placeholder ?? messages.empty}
             </TableCell>
@@ -125,7 +127,7 @@ export function DataControllerTable({
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={columnLength}>
-                <Skeleton className="h-7 w-full" />
+                <Skeleton className={TABLE_CELL_CLASS.skeleton} />
               </TableCell>
             </TableRow>
           ) : (
@@ -149,7 +151,7 @@ export function DataControllerTable({
                           key={footer.id}
                           rowSpan={rowSpan}
                           colSpan={colSpan}
-                          className={cn("relative z-10", footerClassName)}
+                          className={cn(TABLE_CELL_CLASS.base, footerClassName)}
                           {...restFooterProps}
                         >
                           <footer.FlexRender />
