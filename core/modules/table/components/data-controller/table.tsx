@@ -1,4 +1,3 @@
-import { Skeleton } from "@/core/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { TableRowSkeleton } from "@/core/modules/table/components/base/table-row-skeleton";
 import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { TableProps } from "@/core/modules/table/types";
@@ -72,13 +72,7 @@ export function DataControllerTable({
       <TableBody>
         {isLoading ? (
           Array.from({ length: table.state.pagination.pageSize }).map(
-            (_, i) => (
-              <TableRow key={i}>
-                <TableCell colSpan={columnLength}>
-                  <Skeleton className={TABLE_CELL_CLASS.skeleton} />
-                </TableCell>
-              </TableRow>
-            ),
+            (_, i) => <TableRowSkeleton key={i} columnLength={columnLength} />,
           )
         ) : table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
@@ -125,11 +119,7 @@ export function DataControllerTable({
       {hasFooter && (
         <TableFooter>
           {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columnLength}>
-                <Skeleton className={TABLE_CELL_CLASS.skeleton} />
-              </TableCell>
-            </TableRow>
+            <TableRowSkeleton columnLength={columnLength} />
           ) : (
             table.getFooterGroups().map((footerGroup) => (
               <TableRow key={footerGroup.id}>

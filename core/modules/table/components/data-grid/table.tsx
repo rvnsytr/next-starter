@@ -1,5 +1,4 @@
 import { ScrollArea } from "@/core/components/ui/scroll-area";
-import { Skeleton } from "@/core/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -11,6 +10,7 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import { toast } from "@/core/components/ui/toast";
+import { TableRowSkeleton } from "@/core/modules/table/components/base/table-row-skeleton";
 import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { DataGridEditState, TableProps } from "@/core/modules/table/types";
@@ -427,13 +427,7 @@ export function DataGrid({
       <TableBody>
         {isLoading ? (
           Array.from({ length: table.state.pagination.pageSize }).map(
-            (_, i) => (
-              <TableRow key={i}>
-                <TableCell colSpan={columnLength}>
-                  <Skeleton className={TABLE_CELL_CLASS.skeleton} />
-                </TableCell>
-              </TableRow>
-            ),
+            (_, i) => <TableRowSkeleton key={i} columnLength={columnLength} />,
           )
         ) : table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
@@ -669,11 +663,7 @@ export function DataGrid({
       {hasFooter && (
         <TableFooter>
           {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columnLength}>
-                <Skeleton className={TABLE_CELL_CLASS.skeleton} />
-              </TableCell>
-            </TableRow>
+            <TableRowSkeleton columnLength={columnLength} />
           ) : (
             table.getFooterGroups().map((footerGroup) => (
               <TableRow key={footerGroup.id}>

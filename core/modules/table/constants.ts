@@ -15,7 +15,6 @@ export const DEFAULT_FILTER_TYPE = "string";
 export const DEFAULT_CELL_EDITOR_TYPE = "string";
 
 export const TABLE_CELL_CLASS = {
-  skeleton: "h-7 w-full",
   empty: "text-muted-foreground py-4 text-center whitespace-pre-line",
 
   resizeHandler:
