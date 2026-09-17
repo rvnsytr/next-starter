@@ -399,7 +399,7 @@ export function DataGrid({
                                   onDoubleClick={() =>
                                     header.column.resetSize()
                                   }
-                                  className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none"
+                                  className={TABLE_CELL_CLASS.resizeHandler}
                                 />
 
                                 {isResizing && (
@@ -407,7 +407,7 @@ export function DataGrid({
                                     style={{
                                       transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
                                     }}
-                                    className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
+                                    className={TABLE_CELL_CLASS.resizeIndicator}
                                   />
                                 )}
                               </>
@@ -511,15 +511,13 @@ export function DataGrid({
                           );
 
                           const onCellEditorSubmit = (data: CellData) => {
-                            if (!isEdit) return;
-
                             const { newRows, updateRow } = dataGridContext;
                             const addedRows = newRows.form.getValues("rows");
 
-                            const rowId = edit.rowId;
+                            const rowId = edit?.rowId ?? cell.row.id;
                             const rowData = row.original;
 
-                            let keys = editorMeta.key ? [editorMeta.key] : [];
+                            let keys = editorMeta?.key ? [editorMeta.key] : [];
                             if (!keys.length) {
                               keys = [
                                 ...getParentColumns(cell.column).map(
@@ -636,14 +634,12 @@ export function DataGrid({
                             >
                               {canEdit ? (
                                 <CellEditorController
-                                  context={{
-                                    defaultValue: cell.getValue(),
-                                    columnMeta: columnMeta,
-                                    editorMeta: editorMeta,
-                                    onSubmit: onCellEditorSubmit,
-                                  }}
-                                  render={<cell.FlexRender />}
+                                  defaultValue={cell.getValue()}
+                                  columnMeta={columnMeta}
+                                  editorMeta={editorMeta}
+                                  onSubmit={onCellEditorSubmit}
                                   edit={isEdit}
+                                  render={<cell.FlexRender />}
                                 />
                               ) : (
                                 <cell.FlexRender />

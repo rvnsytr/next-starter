@@ -395,7 +395,7 @@ function FilterValueControllerOption({
           disabled={disabled}
         >
           <div className="flex gap-4">
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {Icon && <Icon className="text-muted-foreground" />}
               {option.label}
             </div>

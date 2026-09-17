@@ -91,7 +91,7 @@ export const numberFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   }
 
   const { operator, value } = filterResult.data;
-  if (value.length === 0) return true;
+  if (!value.length) return true;
 
   switch (operator) {
     case "equals":

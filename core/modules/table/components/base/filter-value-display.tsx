@@ -133,7 +133,7 @@ function FilterValueDisplayOptions({
 }: FilterValueDisplayProps<"option" | "multi-option">) {
   const { value } = context.filter;
 
-  if (value.length === 0) return <EllipsisIcon />;
+  if (!value.length) return <EllipsisIcon />;
 
   if (value.length > 2)
     return value.slice(0, 2).join(", ") + `, and ${value.length - 2} more`;

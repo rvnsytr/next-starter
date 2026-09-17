@@ -183,7 +183,7 @@ export function setNestedValue(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any,
 ) {
-  if (keys.length === 0) return object;
+  if (!keys.length) return object;
 
   const result = { ...object };
   let current = result;

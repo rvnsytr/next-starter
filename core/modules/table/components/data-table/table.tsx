@@ -96,8 +96,10 @@ export function DataTable({
                               TABLE_CELL_CLASS.base,
 
                               !!pinPosition && TABLE_CELL_CLASS.pin,
-                              pinPosition === "start" && "left-0 pl-4",
-                              pinPosition === "end" && "right-0 pr-4",
+                              pinPosition === "start" &&
+                                TABLE_CELL_CLASS.pinLeft,
+                              pinPosition === "end" &&
+                                TABLE_CELL_CLASS.pinRight,
 
                               headerClassName,
                             )}
@@ -113,7 +115,7 @@ export function DataTable({
                                   onDoubleClick={() =>
                                     header.column.resetSize()
                                   }
-                                  className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none"
+                                  className={TABLE_CELL_CLASS.resizeHandler}
                                 />
 
                                 {isResizing && (
@@ -121,7 +123,7 @@ export function DataTable({
                                     style={{
                                       transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
                                     }}
-                                    className="border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed"
+                                    className={TABLE_CELL_CLASS.resizeIndicator}
                                   />
                                 )}
                               </>
@@ -184,8 +186,8 @@ export function DataTable({
                           TABLE_CELL_CLASS.base,
 
                           !!pinPosition && TABLE_CELL_CLASS.pin,
-                          pinPosition === "start" && "left-0 pl-4",
-                          pinPosition === "end" && "right-0 pr-4",
+                          pinPosition === "start" && TABLE_CELL_CLASS.pinLeft,
+                          pinPosition === "end" && TABLE_CELL_CLASS.pinRight,
 
                           cellClassName,
                         )}
@@ -255,8 +257,8 @@ export function DataTable({
                             TABLE_CELL_CLASS.base,
 
                             !!pinPosition && TABLE_CELL_CLASS.pinFooter,
-                            pinPosition === "start" && "left-0 pl-4",
-                            pinPosition === "end" && "right-0 pr-4",
+                            pinPosition === "start" && TABLE_CELL_CLASS.pinLeft,
+                            pinPosition === "end" && TABLE_CELL_CLASS.pinRight,
 
                             footerClassName,
                           )}

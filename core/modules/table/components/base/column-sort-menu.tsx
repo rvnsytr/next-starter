@@ -91,7 +91,7 @@ export function ColumnSortMenuItemContent({
 }) {
   const Icon = meta?.icon;
   return (
-    <div className={cn("flex gap-2", className)} {...props}>
+    <div className={cn("flex items-center gap-2", className)} {...props}>
       {Icon && <Icon className="text-muted-foreground" />}
       {meta?.label ?? columnId}
     </div>

@@ -18,6 +18,11 @@ export const TABLE_CELL_CLASS = {
   skeleton: "h-7 w-full",
   empty: "text-muted-foreground py-4 text-center whitespace-pre-line",
 
+  resizeHandler:
+    "absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none select-none",
+  resizeIndicator:
+    "border-primary pointer-events-none absolute top-0 right-0 h-full w-px border-r border-dashed",
+
   base: "relative z-10",
 
   pin: "bg-background/90 sticky z-20",
