@@ -13,43 +13,9 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-
-type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
-  context: DataGridCellEditContext & {
-    edit: DataGridEditState | null;
-    setEdit: React.Dispatch<React.SetStateAction<DataGridEditState | null>>;
-    exitCell: () => void;
-    handleCellEdit: (
-      newValue: CellData,
-      context: DataGridCellEditContext,
-    ) => void;
-  };
-};
-
-export function TableCellEditorController({
-  context,
-  ...props
-}: TableCellEditorControllerProps) {
-  switch (context.columnMeta?.editor?.type) {
-    case "string":
-    case "string:textarea": {
-      const editorMeta = context.columnMeta.editor;
-      return (
-        <TableCellEditorString
-          context={context}
-          editorMeta={editorMeta}
-          {...props}
-        />
-      );
-    }
-
-    default:
-      return <TableCell {...props} />;
-  }
-}
 
 // function isInteractiveTarget(target: EventTarget | null) {
 //   return (
@@ -76,6 +42,49 @@ function errorToast(errorMessage?: string) {
   toast.add({ type: "error", title, description });
 }
 
+type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
+  context: DataGridCellEditContext & {
+    currentEdit: DataGridEditState | null;
+    setCurrentEdit: React.Dispatch<
+      React.SetStateAction<DataGridEditState | null>
+    >;
+    exitCell: () => void;
+    handleCellEdit: (
+      newValue: CellData,
+      context: DataGridCellEditContext,
+    ) => void;
+  };
+};
+
+export function TableCellEditorController({
+  context,
+  ...props
+}: TableCellEditorControllerProps) {
+  switch (context.columnMeta?.editor?.type) {
+    case "string":
+    case "string:textarea":
+      return (
+        <TableCellEditorString
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    case "number":
+      return (
+        <TableCellEditorNumber
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    default:
+      return <TableCell {...props} />;
+  }
+}
+
 type TableCellEditorProps<T extends DataGridCellEditorType> =
   TableCellEditorControllerProps & {
     editorMeta: Extract<DataGridCellEditorMeta, { type: T }>;
@@ -96,15 +105,8 @@ function TableCellEditorString({
     [editorMeta.schema],
   );
 
-  const isEdit = useMemo(
-    () => context.edit?.cellId === context.cellId,
-    [context.edit, context.cellId],
-  );
-
-  const getCurrentValue = useCallback(
-    () => schema.catch("").parse(context.cellData),
-    [context.cellData, schema],
-  );
+  const getCurrentValue = () => schema.catch("").parse(context.cellData);
+  const isEdit = context.currentEdit?.cellId === context.cellId;
 
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
@@ -119,7 +121,7 @@ function TableCellEditorString({
   const onFormSubmit = form.handleSubmit(
     (formData: FormSchema) => {
       context.handleCellEdit(formData.value, context);
-      context.setEdit(null);
+      context.setCurrentEdit(null);
     },
     (e) => errorToast(e.value?.message),
   );
@@ -130,7 +132,7 @@ function TableCellEditorString({
     <TableCell
       onDoubleClick={(e) => {
         onDoubleClick?.(e);
-        if (!context.edit) context.setEdit(context);
+        if (!context.currentEdit) context.setCurrentEdit(context);
       }}
       className={cn(isEdit && "px-0 py-1", className)}
       {...props}
@@ -160,7 +162,7 @@ function TableCellEditorString({
                     onBlur={() => {
                       onBlur();
                       form.setValue("value", getCurrentValue());
-                      context.setEdit(null);
+                      context.setCurrentEdit(null);
                     }}
                     onKeyDown={(e) => {
                       if (e.ctrlKey && e.key === "Enter") {
@@ -193,7 +195,97 @@ function TableCellEditorString({
                   onBlur={() => {
                     onBlur();
                     form.setValue("value", getCurrentValue());
-                    context.setEdit(null);
+                    context.setCurrentEdit(null);
+                  }}
+                  unstyled
+                  {...field}
+                  {...inputProps}
+                />
+              );
+            }}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorNumber({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"number">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const schema = useMemo(
+    () =>
+      editorMeta.schema ??
+      sharedSchemas.number({ coerce: true, withRequired: true }),
+    [editorMeta.schema],
+  );
+
+  const getCurrentValue = () => schema.catch(0).parse(context.cellData);
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: getCurrentValue() },
+  });
+
+  useEffect(() => {
+    if (isEdit) form.setFocus("value");
+  }, [form, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    (formData: FormSchema) => {
+      context.handleCellEdit(formData.value, context);
+      context.setCurrentEdit(null);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  const label = context.columnMeta?.label?.toLowerCase() ?? "a number";
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && "px-0 py-1", className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field: { onBlur, ...field }, fieldState }) => {
+              const {
+                type = "number",
+                placeholder = `Enter ${label}`,
+                className: inputCn,
+                ...inputProps
+              } = editorMeta.props ?? {};
+
+              return (
+                <Input
+                  type={type}
+                  placeholder={placeholder}
+                  className={cn(
+                    fieldState.invalid && "*:text-destructive",
+                    inputCn,
+                  )}
+                  onBlur={() => {
+                    onBlur();
+                    form.setValue("value", getCurrentValue());
+                    context.setCurrentEdit(null);
                   }}
                   unstyled
                   {...field}
