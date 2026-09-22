@@ -29,4 +29,6 @@ export const TABLE_CELL_CLASS = {
 
   pinLeft: "left-0 pl-4",
   pinRight: "right-0 pr-4",
+
+  cellEditPadding: "px-0 py-1",
 };

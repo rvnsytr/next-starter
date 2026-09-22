@@ -1,8 +1,11 @@
+import { Checkbox } from "@/core/components/ui/checkbox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import { Switch } from "@/core/components/ui/switch";
 import { TableCell } from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
+import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import {
   DataGridCellEditContext,
   DataGridCellEditorMeta,
@@ -74,6 +77,16 @@ export function TableCellEditorController({
     case "number":
       return (
         <TableCellEditorNumber
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    case "boolean":
+    case "boolean:switch":
+      return (
+        <TableCellEditorBoolean
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
@@ -160,9 +173,9 @@ function TableCellEditorString({
                       textareaCn,
                     )}
                     onBlur={() => {
-                      onBlur();
                       form.setValue("value", getCurrentValue());
                       context.setCurrentEdit(null);
+                      onBlur();
                     }}
                     onKeyDown={(e) => {
                       if (e.ctrlKey && e.key === "Enter") {
@@ -193,9 +206,9 @@ function TableCellEditorString({
                     inputCn,
                   )}
                   onBlur={() => {
-                    onBlur();
                     form.setValue("value", getCurrentValue());
                     context.setCurrentEdit(null);
+                    onBlur();
                   }}
                   unstyled
                   {...field}
@@ -283,13 +296,131 @@ function TableCellEditorNumber({
                     inputCn,
                   )}
                   onBlur={() => {
-                    onBlur();
                     form.setValue("value", getCurrentValue());
                     context.setCurrentEdit(null);
+                    onBlur();
                   }}
                   unstyled
                   {...field}
                   {...inputProps}
+                />
+              );
+            }}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorBoolean({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"boolean" | "boolean:switch">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? sharedSchemas.boolean(),
+    [editorMeta.schema],
+  );
+
+  const getCurrentValue = () => schema.catch(true).parse(context.cellData);
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: getCurrentValue() },
+  });
+
+  useEffect(() => {
+    if (isEdit) form.setFocus("value");
+  }, [form, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    (formData: FormSchema) => {
+      context.handleCellEdit(formData.value, context);
+      context.setCurrentEdit(null);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field: { value, onChange, onBlur, ...field } }) => {
+              if (editorMeta.type === "boolean") {
+                const {
+                  onKeyDown,
+                  className: checkboxCn,
+                  ...checkboxProps
+                } = editorMeta.props ?? {};
+
+                return (
+                  <Checkbox
+                    checked={value}
+                    onCheckedChange={onChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        onFormSubmit();
+                      }
+
+                      onKeyDown?.(e);
+                    }}
+                    onBlur={() => {
+                      onFormSubmit();
+                      onBlur();
+                    }}
+                    className={cn("mx-auto", checkboxCn)}
+                    {...field}
+                    {...checkboxProps}
+                  />
+                );
+              }
+
+              const {
+                onKeyDown,
+                className: switchCn,
+                ...switchProps
+              } = editorMeta.props ?? {};
+
+              return (
+                <Switch
+                  checked={value}
+                  onCheckedChange={onChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onFormSubmit();
+                    }
+
+                    onKeyDown?.(e);
+                  }}
+                  onBlur={() => {
+                    onFormSubmit();
+                    onBlur();
+                  }}
+                  className={cn("mx-auto", switchCn)}
+                  {...field}
+                  {...switchProps}
                 />
               );
             }}

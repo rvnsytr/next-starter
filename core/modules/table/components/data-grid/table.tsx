@@ -24,7 +24,7 @@ import {
   setNestedValue,
 } from "@/core/modules/table/utils";
 import { messages } from "@/shared/messages";
-import { useHotkeys } from "@tanstack/react-hotkeys";
+import { useHotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
   CellData,
   CellSelectionBounds,
@@ -196,6 +196,7 @@ export function DataGrid({
     return () => sub.unsubscribe();
   }, [table.atoms.cellSelection, currentEdit]);
 
+  useHotkey("Escape", () => exitCell());
   useHotkeys(
     [
       {
@@ -251,10 +252,6 @@ export function DataGrid({
         options: { enabled: !currentEdit },
       },
       {
-        hotkey: "Escape",
-        callback: () => exitCell(),
-      },
-      {
         hotkey: "Enter",
         callback: () => {
           const cellSelectionState = table.state.cellSelection;
@@ -307,7 +304,7 @@ export function DataGrid({
         },
       },
     ],
-    { target: tableRef },
+    { target: tableRef, enabled: !currentEdit },
   );
 
   const { className: containerClassName, ...restContainerProps } =
