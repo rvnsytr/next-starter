@@ -23,10 +23,7 @@ export function DataControllerTable({
 }: TableProps) {
   const table = dataController.useTableContext();
 
-  const isLoading = useMemo(
-    () => table.options.meta?.loading ?? false,
-    [table.options.meta?.loading],
-  );
+  const isLoading = table.options.meta?.loading ?? false;
 
   const { columnLength, hasFooter } = useMemo(() => {
     const leafColumns = table.getAllLeafColumns();

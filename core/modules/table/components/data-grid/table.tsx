@@ -102,11 +102,8 @@ export function DataGrid({
     null,
   );
 
-  // TODO: remove useMemo; reading this boolean is cheaper than memo bookkeeping.
-  const isLoading = useMemo(
-    () => table.options.meta?.loading ?? false,
-    [table.options.meta?.loading],
-  );
+  const isLoading = table.options.meta?.loading ?? false;
+  const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
   const { columnLength, hasFooter } = useMemo(() => {
     const leafColumns = table.getAllLeafColumns();
@@ -115,12 +112,6 @@ export function DataGrid({
       hasFooter: leafColumns.some((column) => !!column.columnDef.footer),
     };
   }, [table]);
-
-  // TODO: remove useMemo; this boolean expression is trivial.
-  const withResizeIndicator = useMemo(
-    () => table.options.columnResizeMode !== "onChange",
-    [table.options.columnResizeMode],
-  );
 
   const originalData = useMemo(() => {
     const meta = table.options.meta;

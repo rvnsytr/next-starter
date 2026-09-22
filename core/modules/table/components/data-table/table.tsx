@@ -25,10 +25,8 @@ export function DataTable({
 }: TableProps) {
   const table = dataTable.useTableContext();
 
-  const isLoading = useMemo(
-    () => table.options.meta?.loading ?? false,
-    [table.options.meta?.loading],
-  );
+  const isLoading = table.options.meta?.loading ?? false;
+  const withResizeIndicator = table.options.columnResizeMode !== "onChange";
 
   const { columnLength, hasFooter } = useMemo(() => {
     const leafColumns = table.getAllLeafColumns();
@@ -37,11 +35,6 @@ export function DataTable({
       hasFooter: leafColumns.some((column) => !!column.columnDef.footer),
     };
   }, [table]);
-
-  const withResizeIndicator = useMemo(
-    () => table.options.columnResizeMode !== "onChange",
-    [table.options.columnResizeMode],
-  );
 
   return (
     <Table style={{ width: table.getTotalSize(), ...style }} {...props}>
