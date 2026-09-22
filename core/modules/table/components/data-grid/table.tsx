@@ -98,8 +98,11 @@ export function DataGrid({
   const tableRef = useRef<HTMLDivElement>(null);
 
   const dataGridContext = useDataGrid();
-  const [edit, setEdit] = useState<DataGridEditState | null>(null);
+  const [currentEdit, setCurrentEdit] = useState<DataGridEditState | null>(
+    null,
+  );
 
+  // TODO: remove useMemo; reading this boolean is cheaper than memo bookkeeping.
   const isLoading = useMemo(
     () => table.options.meta?.loading ?? false,
     [table.options.meta?.loading],
@@ -113,6 +116,7 @@ export function DataGrid({
     };
   }, [table]);
 
+  // TODO: remove useMemo; this boolean expression is trivial.
   const withResizeIndicator = useMemo(
     () => table.options.columnResizeMode !== "onChange",
     [table.options.columnResizeMode],
@@ -134,14 +138,14 @@ export function DataGrid({
   }, [dataGridContext, table.options.meta]);
 
   const exitCell = useCallback(() => {
-    if (edit) {
+    if (currentEdit) {
       setTimeout(() => {
         tableRef.current?.focus({ preventScroll: true });
-        table.setFocusedCell(edit.rowId, edit.columnId);
+        table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
       }, 0);
     } else if (table.state.cellSelection.length > 0)
       table.resetCellSelection(true);
-  }, [edit, table]);
+  }, [currentEdit, table]);
 
   const handleCellEdit = useCallback(
     (newValue: CellData, context: DataGridCellEditContext) => {
@@ -190,15 +194,16 @@ export function DataGrid({
 
   useEffect(() => {
     const sub = table.atoms.cellSelection.subscribe((s) => {
-      if (!s.length || !edit) return;
+      if (!s.length || !currentEdit) return;
 
       const rowId = s[0].anchorRowId;
       const columnId = s[0].anchorColumnId;
-      if (rowId !== edit.rowId || columnId !== edit.columnId) setEdit(null);
+      if (rowId !== currentEdit.rowId || columnId !== currentEdit.columnId)
+        setCurrentEdit(null);
     });
 
     return () => sub.unsubscribe();
-  }, [table.atoms.cellSelection, edit]);
+  }, [table.atoms.cellSelection, currentEdit]);
 
   useHotkeys(
     [
@@ -242,7 +247,7 @@ export function DataGrid({
       {
         hotkey: "Mod+A",
         callback: () => table.selectAllCells(),
-        options: { enabled: !edit },
+        options: { enabled: !currentEdit },
       },
       {
         hotkey: "Mod+C",
@@ -252,7 +257,7 @@ export function DataGrid({
           );
           toast.add({ type: "info", title: "Copied to clipboard" });
         },
-        options: { enabled: !edit },
+        options: { enabled: !currentEdit },
       },
       {
         hotkey: "Escape",
@@ -279,7 +284,7 @@ export function DataGrid({
             columnId === css.focusColumnId &&
             cellId
           ) {
-            setEdit({ rowId, columnId, cellId });
+            setCurrentEdit({ rowId, columnId, cellId });
           }
         },
       },
@@ -513,8 +518,8 @@ export function DataGrid({
                                 cellData: cell.getValue(),
                                 columnMeta,
 
-                                edit,
-                                setEdit,
+                                currentEdit,
+                                setCurrentEdit,
                                 exitCell,
                                 handleCellEdit,
                               }}
@@ -522,16 +527,16 @@ export function DataGrid({
                               onMouseEnter={cell.getSelectionExtendHandler()}
                               // onClick={(e) => {
                               //   if (isInteractiveTarget(e.target)) return;
-                              //   if (edit?.cellId !== cell.id) {
-                              //     setEdit(null);
+                              //   if (currentEdit?.cellId !== cell.id) {
+                              //     setCurrentEdit(null);
                               //     table.setFocusedCell(row.id, cell.column.id);
                               //   }
                               // }}
                               // onDoubleClick={(e) => {
                               //   if (isInteractiveTarget(e.target)) return;
-                              //   if (canEdit && edit?.cellId !== cell.id) {
+                              //   if (canEdit && currentEdit?.cellId !== cell.id) {
                               //     table.resetCellSelection(true);
-                              //     setEdit({
+                              //     setCurrentEdit({
                               //       rowId: row.id,
                               //       columnId: cell.column.id,
                               //       cellId: cell.id,
