@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/core/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -23,6 +22,7 @@ import {
   hasNestedKey,
   setNestedValue,
 } from "@/core/modules/table/utils";
+import { Override } from "@/core/types";
 import { messages } from "@/shared/messages";
 import { useHotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import {
@@ -32,7 +32,7 @@ import {
   RowData,
 } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { useDataGrid } from "./provider";
 import { TableCellEditorController } from "./table-cell-editor";
@@ -88,12 +88,10 @@ export function DataGrid({
   style,
   containerProps,
   ...props
-}: TableProps & {
-  containerProps?: Omit<
-    React.ComponentProps<typeof ScrollArea>,
-    "ref" | "tabIndex"
-  >;
-}) {
+}: Override<
+  TableProps,
+  { containerProps?: Omit<React.ComponentProps<"div">, "ref" | "tabIndex"> }
+>) {
   const table = dataGrid.useTableContext();
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -127,16 +125,6 @@ export function DataGrid({
     const currentChanges = dataGridContext.getChanges();
     table.options.meta?.onChange?.(currentChanges);
   }, [dataGridContext, table.options.meta]);
-
-  const exitCell = useCallback(() => {
-    if (currentEdit) {
-      setTimeout(() => {
-        tableRef.current?.focus({ preventScroll: true });
-        table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
-      }, 0);
-    } else if (table.state.cellSelection.length > 0)
-      table.resetCellSelection(true);
-  }, [currentEdit, table]);
 
   const handleCellEdit = useCallback(
     (newValue: CellData, context: DataGridCellEditContext) => {
@@ -178,23 +166,21 @@ export function DataGrid({
       }
 
       handleChanges();
-      exitCell();
     },
-    [dataGridContext, exitCell, handleChanges, originalData, table],
+    [dataGridContext, handleChanges, originalData, table],
   );
 
-  useEffect(() => {
-    const sub = table.atoms.cellSelection.subscribe((s) => {
-      if (!s.length || !currentEdit) return;
-
-      const rowId = s[0].anchorRowId;
-      const columnId = s[0].anchorColumnId;
-      if (rowId !== currentEdit.rowId || columnId !== currentEdit.columnId)
-        setCurrentEdit(null);
-    });
-
-    return () => sub.unsubscribe();
-  }, [table.atoms.cellSelection, currentEdit]);
+  const exitCell = useCallback(() => {
+    if (currentEdit) {
+      setCurrentEdit(null);
+      setTimeout(() => {
+        tableRef.current?.focus({ preventScroll: true });
+        table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
+      }, 0);
+    } else if (table.state.cellSelection.length > 0) {
+      table.resetCellSelection(true);
+    }
+  }, [currentEdit, table]);
 
   useHotkey("Escape", () => exitCell());
   useHotkeys(
@@ -513,24 +499,6 @@ export function DataGrid({
                               }}
                               onMouseDown={cell.getSelectionStartHandler()}
                               onMouseEnter={cell.getSelectionExtendHandler()}
-                              // onClick={(e) => {
-                              //   if (isInteractiveTarget(e.target)) return;
-                              //   if (currentEdit?.cellId !== cell.id) {
-                              //     setCurrentEdit(null);
-                              //     table.setFocusedCell(row.id, cell.column.id);
-                              //   }
-                              // }}
-                              // onDoubleClick={(e) => {
-                              //   if (isInteractiveTarget(e.target)) return;
-                              //   if (canEdit && currentEdit?.cellId !== cell.id) {
-                              //     table.resetCellSelection(true);
-                              //     setCurrentEdit({
-                              //       rowId: row.id,
-                              //       columnId: cell.column.id,
-                              //       cellId: cell.id,
-                              //     });
-                              //   }
-                              // }}
                               style={{
                                 ...cellStyle,
                                 width: cell.column.getSize(),

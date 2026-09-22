@@ -122,12 +122,12 @@ const useAppTable = <
       data: resolvedData,
       getRowId,
       meta: {
+        ...restMeta,
         original: data,
         onChange: (ctx: DataGridChanges<TData>) => {
           setChanges(ctx);
           onChange?.(ctx);
         },
-        ...restMeta,
       } as DataGridTableMeta<RowData> & { original: TData },
     },
     selector,

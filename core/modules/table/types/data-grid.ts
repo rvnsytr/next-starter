@@ -33,6 +33,11 @@ export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   onChange?: (context: DataGridChanges<TData>) => void;
 };
 
+export type DataGridColumnMeta = ColumnMeta & {
+  /** Configuration for an inline cell editor. */
+  editor?: DataGridCellEditorMeta;
+};
+
 export type DataGridCellEditorType = DataGridCellEditorMeta["type"];
 
 type ExcludedCellEditorProps =
@@ -118,22 +123,14 @@ export type DataGridCellEditorMeta =
       }
     >;
 
-export type DataGridColumnMeta = ColumnMeta & {
-  /** Configuration for an inline cell editor. */
-  editor?: DataGridCellEditorMeta;
-};
-
 export type DataGridEditState = {
   rowId: string;
   columnId: string;
   cellId: string;
 };
 
-export type DataGridCellEditContext = {
-  rowId: string;
+export type DataGridCellEditContext = DataGridEditState & {
   rowData: RowData;
-  columnId: string;
-  cellId: string;
   cellData: CellData;
   columnMeta?: DataGridColumnMeta;
 };
