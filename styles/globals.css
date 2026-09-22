@@ -359,7 +359,6 @@
 
 @utility cell-selectable {
   user-select: none;
-  cursor: cell;
   --cell-edge-top: 0 0 0 0 transparent;
   --cell-edge-right: 0 0 0 0 transparent;
   --cell-edge-bottom: 0 0 0 0 transparent;

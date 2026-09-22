@@ -142,6 +142,10 @@ export const saleDGColumns = columnHelper.columns([
         label: k,
         icon: v.icon,
       })),
+
+      editor: {
+        type: "option",
+      },
     },
   }),
 
@@ -175,16 +179,21 @@ export const saleDGColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Amount" align="end" />,
     cell: (c) => {
       const amount = c.getValue();
+
+      const isPositive = amount > 0;
       const isNegative = amount < 0;
-      const Icon = isNegative ? TrendingDown : TrendingUp;
+
+      const Icon = isPositive ? TrendingUp : isNegative ? TrendingDown : null;
+
       return (
         <div
           className={cn(
-            "flex items-center justify-end gap-x-2 text-right font-medium tabular-nums",
-            isNegative ? "text-destructive" : "text-success",
+            "text-muted-foreground flex items-center justify-end gap-x-2 text-right font-medium tabular-nums",
+            isPositive && "text-success",
+            isNegative && "text-destructive",
           )}
         >
-          <Icon className="size-3.5" />
+          {Icon && <Icon className="size-3.5" />}
           {isNegative ? "-" : ""}${formatNumber(Math.abs(amount))}
         </div>
       );
@@ -203,13 +212,16 @@ export const saleDGColumns = columnHelper.columns([
         type: "number",
       },
 
-      cellProps: (value) => ({
-        className: cn(
-          typeof value === "number" && value >= 0
-            ? "bg-success/10 dark:bg-success/20"
-            : "bg-destructive/10 dark:bg-destructive/20",
-        ),
-      }),
+      cellProps: (value) => {
+        const isNumber = typeof value === "number";
+        return {
+          className: cn(
+            "bg-muted dark:bg-muted",
+            isNumber && value > 0 && "bg-success/10 dark:bg-success/20",
+            isNumber && value < 0 && "bg-destructive/10 dark:bg-destructive/20",
+          ),
+        };
+      },
     },
   }),
 

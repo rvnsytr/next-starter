@@ -94,7 +94,7 @@ const useAppTable = <
   const [changes, setChanges] = useState<DataGridChanges<TData>>({
     added: [],
     updated: [],
-    removed: [], // todo: will be used for ('onChange' save mode)
+    removed: [],
   });
 
   const resolvedData = useMemo(() => {

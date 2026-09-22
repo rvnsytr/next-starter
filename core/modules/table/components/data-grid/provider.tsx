@@ -31,11 +31,11 @@ type AddRowsFieldArray = UseFieldArrayReturn<AddRowsFormValues, "rows", "id">;
 
 export type DataGridContextValue = {
   count: CountChanges;
+  newRows: { form: AddRowsForm; fieldArray: AddRowsFieldArray };
   getChanges: () => DataGridChanges<RowData>;
   updateRow: (params: DataGridUpdateChange<RowData>) => void;
   removeRows: (params: DataGridRemoveChange<RowData>[]) => void;
   clearChanges: () => void;
-  newRows: { form: AddRowsForm; fieldArray: AddRowsFieldArray };
 };
 
 export const DataGridContext = createContext<DataGridContextValue | undefined>(

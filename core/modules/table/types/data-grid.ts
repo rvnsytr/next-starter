@@ -2,10 +2,11 @@
 
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { InputProps } from "@/core/components/ui/input";
+import { Select } from "@/core/components/ui/select";
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
-import { RowData } from "@tanstack/react-table";
+import { CellData, RowData } from "@tanstack/react-table";
 import { z } from "zod";
 import { DataTableTableComponents } from "./data-table";
 import { ColumnMeta, TableMeta } from "./meta";
@@ -20,16 +21,6 @@ export type DataGridTableComponents = DataTableTableComponents & {
 export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   /** Default values used when adding a new row. */
   defaultValues: TData;
-
-  /**
-   * Determines when Data Grid changes are submitted.
-   *
-   * - `onSave` - Accumulates changes until they are explicitly saved.
-   * - `onChange` - Submits changes immediately after each cell edit is applied.
-   *
-   * @default "onSave"
-   */
-  saveMode?: "onSave" | "onChange";
 
   /**
    * Callback invoked when accumulated Data Grid changes are submitted.
@@ -53,7 +44,8 @@ type ExcludedCellEditorProps =
   | "onBlur"
   | "unstyled"
   | "checked"
-  | "onCheckedChange";
+  | "onCheckedChange"
+  | "onValueChange";
 
 export type CellEditorMetaBase = {
   /**
@@ -113,6 +105,17 @@ export type DataGridCellEditorMeta =
           ExcludedCellEditorProps
         >;
       }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "option";
+        schema?: z.ZodType<string, any>;
+        props?: Omit<
+          React.ComponentProps<typeof Select>,
+          ExcludedCellEditorProps
+        >;
+      }
     >;
 
 export type DataGridColumnMeta = ColumnMeta & {
@@ -124,6 +127,15 @@ export type DataGridEditState = {
   rowId: string;
   columnId: string;
   cellId: string;
+};
+
+export type DataGridCellEditContext = {
+  rowId: string;
+  rowData: RowData;
+  columnId: string;
+  cellId: string;
+  cellData: CellData;
+  columnMeta?: DataGridColumnMeta;
 };
 
 export type DataGridChanges<TData extends RowData> = {
