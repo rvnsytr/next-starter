@@ -345,7 +345,6 @@ export function DataGrid({
 
                           <TableHead
                             key={header.id}
-                            data-pinned={!!pinPosition}
                             colSpan={header.colSpan}
                             rowSpan={header.rowSpan}
                             style={{
@@ -483,7 +482,6 @@ export function DataGrid({
                             <TableCellEditorController
                               key={cell.id}
                               id={cell.id}
-                              data-pinned={!!pinPosition}
                               context={{
                                 rowId: row.id,
                                 rowData: row.original,
@@ -590,7 +588,6 @@ export function DataGrid({
                       return (
                         <TableCell
                           key={footer.id}
-                          data-pinned={!!pinPosition}
                           rowSpan={rowSpan}
                           colSpan={colSpan}
                           style={{

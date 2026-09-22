@@ -76,7 +76,6 @@ export function DataTable({
 
                           <TableHead
                             key={header.id}
-                            data-pinned={!!pinPosition}
                             colSpan={header.colSpan}
                             rowSpan={header.rowSpan}
                             style={{
@@ -162,7 +161,6 @@ export function DataTable({
                     return (
                       <TableCell
                         key={cell.id}
-                        data-pinned={!!pinPosition}
                         style={{
                           ...cellStyle,
                           width: cell.column.getSize(),
@@ -227,7 +225,6 @@ export function DataTable({
                       return (
                         <TableCell
                           key={footer.id}
-                          data-pinned={!!pinPosition}
                           rowSpan={rowSpan}
                           colSpan={colSpan}
                           style={{
