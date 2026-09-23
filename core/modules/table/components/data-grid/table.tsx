@@ -193,8 +193,13 @@ export function DataGrid({
   );
 
   useEffect(() => {
-    const sub = table.atoms.cellSelection.subscribe(() => {
-      if (currentEdit) setCurrentEdit(null);
+    const sub = table.atoms.cellSelection.subscribe((s) => {
+      if (!s.length || !currentEdit) return;
+
+      const rowId = s[0].anchorRowId;
+      const columnId = s[0].anchorColumnId;
+      if (rowId !== currentEdit.rowId || columnId !== currentEdit.columnId)
+        setCurrentEdit(null);
     });
 
     return () => sub.unsubscribe();

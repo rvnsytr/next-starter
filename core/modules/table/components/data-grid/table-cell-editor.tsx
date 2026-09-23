@@ -1,6 +1,12 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import {
+  Menu,
+  MenuCheckboxItem,
+  MenuPopup,
+  MenuTrigger,
+} from "@/core/components/ui/menu";
 import { Switch } from "@/core/components/ui/switch";
 import { TableCell } from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
@@ -92,6 +98,15 @@ export function TableCellEditorController({
     case "boolean:switch":
       return (
         <TableCellEditorBoolean
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    case "option":
+      return (
+        <TableCellEditorOption
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
@@ -371,6 +386,114 @@ function TableCellEditorBoolean({
           />
         </Form>
       )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorOption({
+  context,
+  editorMeta,
+  className,
+  onMouseDown,
+  onMouseEnter,
+  children,
+  ...props
+}: TableCellEditorProps<"option">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? sharedSchemas.string({ withRequired: true }),
+    [editorMeta.schema],
+  );
+
+  const currentValue = useMemo(
+    () => schema.catch("").parse(context.cellData),
+    [context.cellData, schema],
+  );
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentValue },
+  });
+
+  const items = useMemo(() => {
+    if (!context.columnMeta?.options || !context.columnMeta.options.length)
+      return [];
+
+    return context.columnMeta.options.sort((a, b) => {
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return 1;
+      return 0;
+    });
+  }, [context.columnMeta]);
+
+  useEffect(() => {
+    if (!context.isCellEdited) {
+      const formValue = form.getValues("value");
+      if (currentValue !== formValue) form.setValue("value", currentValue);
+    }
+  }, [context.isCellEdited, currentValue, form]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => context.handleCellEdit(value, context),
+    (e) => errorToast(e.value?.message),
+  );
+
+  return (
+    <TableCell
+      onMouseDown={(e) => {
+        if (isInteractiveTarget(e.target)) return;
+        onMouseDown?.(e);
+      }}
+      onMouseEnter={(e) => {
+        if (isInteractiveTarget(e.target)) return;
+        onMouseEnter?.(e);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      <Form onSubmit={onFormSubmit}>
+        <Controller
+          name="value"
+          control={form.control}
+          render={({ field: { value, onChange } }) => (
+            <Menu
+              open={isEdit}
+              onOpenChange={(v) => {
+                if (v && !context.currentEdit) context.setCurrentEdit(context);
+                else if (!v && context.currentEdit)
+                  context.setCurrentEdit(null);
+              }}
+            >
+              <MenuTrigger>{children}</MenuTrigger>
+
+              <MenuPopup>
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <MenuCheckboxItem
+                      key={item.value}
+                      checked={value === item.value}
+                      onCheckedChange={() => {
+                        onChange(item.value);
+                        if (item.value !== currentValue) onFormSubmit();
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {Icon && <Icon className="text-muted-foreground" />}
+                        {item.label}
+                      </div>
+                    </MenuCheckboxItem>
+                  );
+                })}
+              </MenuPopup>
+            </Menu>
+          )}
+        />
+      </Form>
     </TableCell>
   );
 }
