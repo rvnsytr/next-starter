@@ -33,7 +33,7 @@ import {
   RowData,
 } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { useDataGrid } from "./provider";
 import { TableCellEditorController } from "./table-cell-editor";
@@ -122,6 +122,19 @@ export function DataGrid({
     [dataGridContext],
   );
 
+  const exitCell = useCallback(() => {
+    if (currentEdit) {
+      setTimeout(() => {
+        tableRef.current?.focus();
+        table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
+      }, 0);
+
+      setCurrentEdit(null);
+    } else if (table.state.cellSelection.length > 0) {
+      table.resetCellSelection(true);
+    }
+  }, [currentEdit, table]);
+
   const handleChanges = useCallback(() => {
     const currentChanges = dataGridContext.getChanges();
     table.options.meta?.onChange?.(currentChanges);
@@ -171,21 +184,20 @@ export function DataGrid({
       }
 
       const isSilent = options?.silent ?? false;
-      if (!isSilent) handleChanges();
+      if (!isSilent) {
+        handleChanges();
+        exitCell();
+      }
     },
-    [dataGridContext, handleChanges, originalData, table],
+    [dataGridContext, exitCell, handleChanges, originalData, table],
   );
 
-  const exitCell = useCallback(() => {
-    if (currentEdit) {
-      setCurrentEdit(null);
-      setTimeout(() => {
-        tableRef.current?.focus({ preventScroll: true });
-        table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
-      }, 0);
-    } else if (table.state.cellSelection.length > 0) {
-      table.resetCellSelection(true);
-    }
+  useEffect(() => {
+    const sub = table.atoms.cellSelection.subscribe(() => {
+      if (currentEdit) setCurrentEdit(null);
+    });
+
+    return () => sub.unsubscribe();
   }, [currentEdit, table]);
 
   useHotkey("Escape", () => exitCell());
@@ -505,7 +517,6 @@ export function DataGrid({
 
                                 currentEdit,
                                 setCurrentEdit,
-                                exitCell,
                                 handleCellEdit,
                               }}
                               onMouseDown={cell.getSelectionStartHandler()}

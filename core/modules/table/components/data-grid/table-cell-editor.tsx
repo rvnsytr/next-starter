@@ -17,7 +17,7 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -56,7 +56,6 @@ type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
     setCurrentEdit: React.Dispatch<
       React.SetStateAction<DataGridEditState | null>
     >;
-    exitCell: () => void;
     handleCellEdit: (
       newValue: CellData,
       context: DataGridCellEditContext,
@@ -126,7 +125,7 @@ function TableCellEditorString({
     [editorMeta.schema],
   );
 
-  const getCurrentValue = useCallback(
+  const currentValue = useMemo(
     () => schema.catch("").parse(context.cellData),
     [context.cellData, schema],
   );
@@ -134,17 +133,17 @@ function TableCellEditorString({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: getCurrentValue() },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: getCurrentValue() });
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
-  }, [form, getCurrentValue, isEdit]);
+  }, [form, currentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => context.handleCellEdit(formData.value, context),
+    ({ value }: FormSchema) => context.handleCellEdit(value, context),
     (e) => errorToast(e.value?.message),
   );
 
@@ -166,7 +165,7 @@ function TableCellEditorString({
           <Controller
             name="value"
             control={form.control}
-            render={({ field: { onBlur, ...field }, fieldState }) => {
+            render={({ field, fieldState }) => {
               if (editorMeta.type === "string:textarea") {
                 const {
                   placeholder = `Enter ${label}`,
@@ -187,10 +186,6 @@ function TableCellEditorString({
                         e.preventDefault();
                         onFormSubmit();
                       }
-                    }}
-                    onBlur={() => {
-                      onBlur();
-                      if (context.currentEdit) context.setCurrentEdit(null);
                     }}
                     unstyled
                     {...field}
@@ -214,10 +209,6 @@ function TableCellEditorString({
                     fieldState.invalid && "*:text-destructive",
                     inputCn,
                   )}
-                  onBlur={() => {
-                    onBlur();
-                    if (context.currentEdit) context.setCurrentEdit(null);
-                  }}
                   unstyled
                   {...field}
                   {...inputProps}
@@ -251,7 +242,7 @@ function TableCellEditorBoolean({
     [editorMeta.schema],
   );
 
-  const getCurrentValue = useCallback(
+  const currentValue = useMemo(
     () => schema.catch(true).parse(context.cellData),
     [context.cellData, schema],
   );
@@ -259,48 +250,36 @@ function TableCellEditorBoolean({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: getCurrentValue() },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
     if (isEdit || (alwaysEditable && context.isSelected))
       return form.setFocus("value");
 
-    if (alwaysEditable) return;
+    if (alwaysEditable) {
+      const formValue = form.getValues("value");
 
-    form.resetDefaultValues({ value: getCurrentValue() });
+      if (!context.isCellEdited && currentValue !== formValue)
+        form.setValue("value", currentValue);
+
+      return;
+    }
+
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
-  }, [
-    alwaysEditable,
-    context.cellId,
-    context.isSelected,
-    form,
-    getCurrentValue,
-    isEdit,
-  ]);
-
-  useEffect(() => {
-    if (!alwaysEditable || context.isSelected) return;
-
-    const formValue = form.getValues("value");
-    const cellValue = getCurrentValue();
-
-    if (!context.isCellEdited && cellValue !== formValue)
-      form.setValue("value", cellValue);
   }, [
     alwaysEditable,
     context.isCellEdited,
     context.isSelected,
+    currentValue,
     form,
-    getCurrentValue,
+    isEdit,
   ]);
 
   const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => {
-      const { handleCellEdit, exitCell } = context;
-      handleCellEdit(formData.value, context, { silent: alwaysEditable });
-      if (!alwaysEditable) exitCell();
-    },
+    ({ value }: FormSchema) =>
+      context.handleCellEdit(value, context, { silent: alwaysEditable }),
     (e) => errorToast(e.value?.message),
   );
 
@@ -335,7 +314,7 @@ function TableCellEditorBoolean({
           <Controller
             name="value"
             control={form.control}
-            render={({ field: { value, onChange, onBlur, ...field } }) => {
+            render={({ field: { value, onChange, ...field } }) => {
               if (editorMeta.type === "boolean:switch") {
                 const {
                   onKeyDown,
@@ -354,10 +333,6 @@ function TableCellEditorBoolean({
                       }
 
                       onKeyDown?.(e);
-                    }}
-                    onBlur={() => {
-                      onBlur();
-                      if (context.currentEdit) context.setCurrentEdit(null);
                     }}
                     className={cn("mx-auto", switchCn)}
                     {...field}
@@ -386,10 +361,6 @@ function TableCellEditorBoolean({
                     }
 
                     onKeyDown?.(e);
-                  }}
-                  onBlur={() => {
-                    onBlur();
-                    if (context.currentEdit) context.setCurrentEdit(null);
                   }}
                   className={cn("mx-auto", checkboxCn)}
                   {...field}
