@@ -14,6 +14,7 @@ import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import {
   DataGridCellEditContext,
+  DataGridCellEditOptions,
   DataGridEditState,
   TableProps,
 } from "@/core/modules/table/types";
@@ -127,7 +128,11 @@ export function DataGrid({
   }, [dataGridContext, table.options.meta]);
 
   const handleCellEdit = useCallback(
-    (newValue: CellData, context: DataGridCellEditContext) => {
+    (
+      newValue: CellData,
+      context: DataGridCellEditContext,
+      options?: DataGridCellEditOptions,
+    ) => {
       const column = table.getColumn(context.columnId);
       if (!column) return;
 
@@ -165,7 +170,8 @@ export function DataGrid({
         }
       }
 
-      handleChanges();
+      const isSilent = options?.silent ?? false;
+      if (!isSilent) handleChanges();
     },
     [dataGridContext, handleChanges, originalData, table],
   );
@@ -241,13 +247,16 @@ export function DataGrid({
         hotkey: "Enter",
         callback: () => {
           const cellSelectionState = table.state.cellSelection;
+
           if (!cellSelectionState.length) return;
 
           const css = cellSelectionState[0];
           const column = table.getColumn(css.anchorColumnId);
 
-          const canEdit = !!column?.columnDef.meta?.editor;
-          if (!canEdit) return;
+          const meta = column?.columnDef.meta?.editor;
+
+          if (!meta || ("alwaysEditable" in meta && meta.alwaysEditable))
+            return;
 
           const rowId = css.anchorRowId;
           const columnId = css.anchorColumnId;
@@ -490,6 +499,10 @@ export function DataGrid({
                                 cellData: cell.getValue(),
                                 columnMeta,
 
+                                isSelected,
+                                isFocused,
+                                isCellEdited,
+
                                 currentEdit,
                                 setCurrentEdit,
                                 exitCell,
@@ -515,20 +528,12 @@ export function DataGrid({
                                 canSelect && "cell-selectable select-none",
                                 isFocused && "cell-edge",
 
-                                // (isFocused || isEdit) && "cell-edge",
-
                                 !isFocused && edges?.top && "cell-edge-top",
                                 !isFocused && edges?.right && "cell-edge-right",
                                 !isFocused &&
                                   edges?.bottom &&
                                   "cell-edge-bottom",
                                 !isFocused && edges?.left && "cell-edge-left",
-
-                                isSelected &&
-                                  !isAddedRow &&
-                                  !isCellEdited &&
-                                  !isRemovedRow &&
-                                  "bg-muted dark:bg-muted/50",
 
                                 cellClassName,
 

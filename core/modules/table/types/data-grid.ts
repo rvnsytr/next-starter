@@ -94,6 +94,7 @@ export type DataGridCellEditorMeta =
       {
         type: "boolean";
         schema?: z.ZodType<boolean, any>;
+        alwaysEditable?: boolean;
         props?: Omit<
           React.ComponentProps<typeof Checkbox>,
           ExcludedCellEditorProps
@@ -105,6 +106,7 @@ export type DataGridCellEditorMeta =
       {
         type: "boolean:switch";
         schema?: z.ZodType<boolean, any>;
+        alwaysEditable?: boolean;
         props?: Omit<
           React.ComponentProps<typeof Switch>,
           ExcludedCellEditorProps
@@ -133,6 +135,14 @@ export type DataGridCellEditContext = DataGridEditState & {
   rowData: RowData;
   cellData: CellData;
   columnMeta?: DataGridColumnMeta;
+};
+
+export type DataGridCellEditOptions = {
+  /**
+   * Whether the edit should be applied silently without triggering change handlers.
+   * @default false
+   */
+  silent?: boolean;
 };
 
 export type DataGridChanges<TData extends RowData> = {

@@ -252,7 +252,8 @@ export const saleDGColumns = columnHelper.columns([
       },
 
       editor: {
-        type: "boolean:switch",
+        type: "boolean",
+        alwaysEditable: true,
       },
     },
   }),

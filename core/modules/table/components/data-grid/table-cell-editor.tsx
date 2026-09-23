@@ -8,6 +8,7 @@ import { toast } from "@/core/components/ui/toast";
 import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import {
   DataGridCellEditContext,
+  DataGridCellEditOptions,
   DataGridCellEditorMeta,
   DataGridCellEditorType,
   DataGridEditState,
@@ -16,28 +17,28 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-// function isInteractiveTarget(target: EventTarget | null) {
-//   return (
-//     target instanceof Element &&
-//     !!target.closest(
-//       [
-//         "a",
-//         "button",
-//         "input",
-//         "select",
-//         "textarea",
-//         "label",
-//         "[contenteditable=true]",
-//         "[role=button]",
-//         "[data-grid-interactive]",
-//       ].join(", "),
-//     )
-//   );
-// }
+const interactiveTargetSelector = [
+  "a",
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "label",
+  "[role=button]",
+  '[data-slot="checkbox"]',
+  '[data-slot="switch"]',
+  "[data-grid-interactive]",
+].join(", ");
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return (
+    target instanceof Element && !!target.closest(interactiveTargetSelector)
+  );
+}
 
 function errorToast(errorMessage?: string) {
   const title = "Invalid value";
@@ -47,6 +48,10 @@ function errorToast(errorMessage?: string) {
 
 type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
   context: DataGridCellEditContext & {
+    isSelected: boolean;
+    isFocused: boolean;
+    isCellEdited: boolean;
+
     currentEdit: DataGridEditState | null;
     setCurrentEdit: React.Dispatch<
       React.SetStateAction<DataGridEditState | null>
@@ -55,6 +60,7 @@ type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
     handleCellEdit: (
       newValue: CellData,
       context: DataGridCellEditContext,
+      options?: DataGridCellEditOptions,
     ) => void;
   };
 };
@@ -74,14 +80,14 @@ export function TableCellEditorController({
         />
       );
 
-    case "number":
-      return (
-        <TableCellEditorNumber
-          context={context}
-          editorMeta={context.columnMeta.editor}
-          {...props}
-        />
-      );
+    // case "number":
+    //   return (
+    //     <TableCellEditorNumber
+    //       context={context}
+    //       editorMeta={context.columnMeta.editor}
+    //       {...props}
+    //     />
+    //   );
 
     case "boolean":
     case "boolean:switch":
@@ -113,13 +119,17 @@ function TableCellEditorString({
 }: TableCellEditorProps<"string" | "string:textarea">) {
   type FormSchema = z.infer<typeof formSchema>;
 
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
   const schema = useMemo(
     () => editorMeta.schema ?? sharedSchemas.string({ withRequired: true }),
     [editorMeta.schema],
   );
 
-  const getCurrentValue = () => schema.catch("").parse(context.cellData);
-  const isEdit = context.currentEdit?.cellId === context.cellId;
+  const getCurrentValue = useCallback(
+    () => schema.catch("").parse(context.cellData),
+    [context.cellData, schema],
+  );
 
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
@@ -128,14 +138,13 @@ function TableCellEditorString({
   });
 
   useEffect(() => {
-    if (isEdit) form.setFocus("value");
-  }, [form, isEdit]);
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({ value: getCurrentValue() });
+    form.reset();
+  }, [form, getCurrentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => {
-      context.handleCellEdit(formData.value, context);
-      context.setCurrentEdit(null);
-    },
+    (formData: FormSchema) => context.handleCellEdit(formData.value, context),
     (e) => errorToast(e.value?.message),
   );
 
@@ -147,7 +156,7 @@ function TableCellEditorString({
         onDoubleClick?.(e);
         if (!context.currentEdit) context.setCurrentEdit(context);
       }}
-      className={cn(isEdit && "px-0 py-1", className)}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
       {...props}
     >
       {!isEdit && children}
@@ -170,18 +179,18 @@ function TableCellEditorString({
                     placeholder={placeholder}
                     className={cn(
                       fieldState.invalid && "*:text-destructive",
+                      "leading-normal",
                       textareaCn,
                     )}
-                    onBlur={() => {
-                      form.setValue("value", getCurrentValue());
-                      context.setCurrentEdit(null);
-                      onBlur();
-                    }}
                     onKeyDown={(e) => {
                       if (e.ctrlKey && e.key === "Enter") {
                         e.preventDefault();
                         onFormSubmit();
                       }
+                    }}
+                    onBlur={() => {
+                      onBlur();
+                      if (context.currentEdit) context.setCurrentEdit(null);
                     }}
                     unstyled
                     {...field}
@@ -206,99 +215,8 @@ function TableCellEditorString({
                     inputCn,
                   )}
                   onBlur={() => {
-                    form.setValue("value", getCurrentValue());
-                    context.setCurrentEdit(null);
                     onBlur();
-                  }}
-                  unstyled
-                  {...field}
-                  {...inputProps}
-                />
-              );
-            }}
-          />
-        </Form>
-      )}
-    </TableCell>
-  );
-}
-
-function TableCellEditorNumber({
-  context,
-  editorMeta,
-  className,
-  onDoubleClick,
-  children,
-  ...props
-}: TableCellEditorProps<"number">) {
-  type FormSchema = z.infer<typeof formSchema>;
-
-  const schema = useMemo(
-    () =>
-      editorMeta.schema ??
-      sharedSchemas.number({ coerce: true, withRequired: true }),
-    [editorMeta.schema],
-  );
-
-  const getCurrentValue = () => schema.catch(0).parse(context.cellData);
-  const isEdit = context.currentEdit?.cellId === context.cellId;
-
-  const formSchema = z.object({ value: schema });
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { value: getCurrentValue() },
-  });
-
-  useEffect(() => {
-    if (isEdit) form.setFocus("value");
-  }, [form, isEdit]);
-
-  const onFormSubmit = form.handleSubmit(
-    (formData: FormSchema) => {
-      context.handleCellEdit(formData.value, context);
-      context.setCurrentEdit(null);
-    },
-    (e) => errorToast(e.value?.message),
-  );
-
-  const label = context.columnMeta?.label?.toLowerCase() ?? "a number";
-
-  return (
-    <TableCell
-      onDoubleClick={(e) => {
-        onDoubleClick?.(e);
-        if (!context.currentEdit) context.setCurrentEdit(context);
-      }}
-      className={cn(isEdit && "px-0 py-1", className)}
-      {...props}
-    >
-      {!isEdit && children}
-
-      {isEdit && (
-        <Form onSubmit={onFormSubmit}>
-          <Controller
-            name="value"
-            control={form.control}
-            render={({ field: { onBlur, ...field }, fieldState }) => {
-              const {
-                type = "number",
-                placeholder = `Enter ${label}`,
-                className: inputCn,
-                ...inputProps
-              } = editorMeta.props ?? {};
-
-              return (
-                <Input
-                  type={type}
-                  placeholder={placeholder}
-                  className={cn(
-                    fieldState.invalid && "*:text-destructive",
-                    inputCn,
-                  )}
-                  onBlur={() => {
-                    form.setValue("value", getCurrentValue());
-                    context.setCurrentEdit(null);
-                    onBlur();
+                    if (context.currentEdit) context.setCurrentEdit(null);
                   }}
                   unstyled
                   {...field}
@@ -317,19 +235,26 @@ function TableCellEditorBoolean({
   context,
   editorMeta,
   className,
+  onMouseDown,
+  onMouseEnter,
   onDoubleClick,
   children,
   ...props
 }: TableCellEditorProps<"boolean" | "boolean:switch">) {
   type FormSchema = z.infer<typeof formSchema>;
 
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+  const alwaysEditable = editorMeta.alwaysEditable ?? false;
+
   const schema = useMemo(
     () => editorMeta.schema ?? sharedSchemas.boolean(),
     [editorMeta.schema],
   );
 
-  const getCurrentValue = () => schema.catch(true).parse(context.cellData);
-  const isEdit = context.currentEdit?.cellId === context.cellId;
+  const getCurrentValue = useCallback(
+    () => schema.catch(true).parse(context.cellData),
+    [context.cellData, schema],
+  );
 
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
@@ -338,43 +263,88 @@ function TableCellEditorBoolean({
   });
 
   useEffect(() => {
-    if (isEdit) form.setFocus("value");
-  }, [form, isEdit]);
+    if (isEdit || (alwaysEditable && context.isSelected))
+      return form.setFocus("value");
+
+    if (alwaysEditable) return;
+
+    form.resetDefaultValues({ value: getCurrentValue() });
+    form.reset();
+  }, [
+    alwaysEditable,
+    context.cellId,
+    context.isSelected,
+    form,
+    getCurrentValue,
+    isEdit,
+  ]);
+
+  useEffect(() => {
+    if (!alwaysEditable || context.isSelected) return;
+
+    const formValue = form.getValues("value");
+    const cellValue = getCurrentValue();
+
+    if (!context.isCellEdited && cellValue !== formValue)
+      form.setValue("value", cellValue);
+  }, [
+    alwaysEditable,
+    context.isCellEdited,
+    context.isSelected,
+    form,
+    getCurrentValue,
+  ]);
 
   const onFormSubmit = form.handleSubmit(
     (formData: FormSchema) => {
-      context.handleCellEdit(formData.value, context);
-      context.setCurrentEdit(null);
+      const { handleCellEdit, exitCell } = context;
+      handleCellEdit(formData.value, context, { silent: alwaysEditable });
+      if (!alwaysEditable) exitCell();
     },
     (e) => errorToast(e.value?.message),
   );
 
   return (
     <TableCell
+      onMouseDown={(e) => {
+        if (!alwaysEditable) return onMouseDown?.(e);
+        if (isInteractiveTarget(e.target)) return;
+        onMouseDown?.(e);
+      }}
+      onMouseEnter={(e) => {
+        if (!alwaysEditable) return onMouseEnter?.(e);
+        if (isInteractiveTarget(e.target)) return;
+        onMouseEnter?.(e);
+      }}
       onDoubleClick={(e) => {
+        if (alwaysEditable) return;
         onDoubleClick?.(e);
         if (!context.currentEdit) context.setCurrentEdit(context);
       }}
-      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      className={cn(
+        isEdit && TABLE_CELL_CLASS.cellEditPadding,
+        alwaysEditable && context.isSelected && "cell-edge",
+        className,
+      )}
       {...props}
     >
-      {!isEdit && children}
+      {!isEdit && !alwaysEditable && children}
 
-      {isEdit && (
+      {(isEdit || alwaysEditable) && (
         <Form onSubmit={onFormSubmit}>
           <Controller
             name="value"
             control={form.control}
             render={({ field: { value, onChange, onBlur, ...field } }) => {
-              if (editorMeta.type === "boolean") {
+              if (editorMeta.type === "boolean:switch") {
                 const {
                   onKeyDown,
-                  className: checkboxCn,
-                  ...checkboxProps
+                  className: switchCn,
+                  ...switchProps
                 } = editorMeta.props ?? {};
 
                 return (
-                  <Checkbox
+                  <Switch
                     checked={value}
                     onCheckedChange={onChange}
                     onKeyDown={(e) => {
@@ -386,26 +356,29 @@ function TableCellEditorBoolean({
                       onKeyDown?.(e);
                     }}
                     onBlur={() => {
-                      onFormSubmit();
                       onBlur();
+                      if (context.currentEdit) context.setCurrentEdit(null);
                     }}
-                    className={cn("mx-auto", checkboxCn)}
+                    className={cn("mx-auto", switchCn)}
                     {...field}
-                    {...checkboxProps}
+                    {...switchProps}
                   />
                 );
               }
 
               const {
                 onKeyDown,
-                className: switchCn,
-                ...switchProps
+                className: checkboxCn,
+                ...checkboxProps
               } = editorMeta.props ?? {};
 
               return (
-                <Switch
+                <Checkbox
                   checked={value}
-                  onCheckedChange={onChange}
+                  onCheckedChange={(e) => {
+                    onChange(e);
+                    if (alwaysEditable) onFormSubmit();
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -415,12 +388,12 @@ function TableCellEditorBoolean({
                     onKeyDown?.(e);
                   }}
                   onBlur={() => {
-                    onFormSubmit();
                     onBlur();
+                    if (context.currentEdit) context.setCurrentEdit(null);
                   }}
-                  className={cn("mx-auto", switchCn)}
+                  className={cn("mx-auto", checkboxCn)}
                   {...field}
-                  {...switchProps}
+                  {...checkboxProps}
                 />
               );
             }}
