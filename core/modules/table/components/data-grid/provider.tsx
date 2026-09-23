@@ -47,15 +47,8 @@ export const DataGridProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [count, setCount] = useState<CountChanges>({
-    updated: 0,
-    removed: 0,
-  });
-
-  const rowChanges = useRef<RowChanges>({
-    updated: [],
-    removed: [],
-  });
+  const [count, setCount] = useState<CountChanges>({ updated: 0, removed: 0 });
+  const rowChanges = useRef<RowChanges>({ updated: [], removed: [] });
 
   const newRowsForm: AddRowsForm = useForm<AddRowsFormValues>({
     resolver: zodResolver(z.object({ rows: z.array(z.unknown()) })),
