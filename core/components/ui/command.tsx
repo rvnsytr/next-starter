@@ -117,11 +117,8 @@ function CommandInput({
         size={size}
         startAddon={<SearchIcon />}
         inputGroupProps={{
-          className: cn(
-            "z-10 border-transparent! bg-transparent! shadow-none",
-            className,
-          ),
-          disableFocusStyle: true,
+          className: cn(className),
+          unstyled: true,
         }}
         autoFocus
         {...props}

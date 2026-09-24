@@ -26,12 +26,12 @@ const inputGroupAddonVariants = cva(
 
 export function InputGroup({
   size = "default",
-  disableFocusStyle = false,
+  unstyled = false,
   className,
   ...props
 }: React.ComponentProps<"div"> & {
   size?: InputProps["size"];
-  disableFocusStyle?: boolean;
+  unstyled?: boolean;
 }) {
   return (
     <div
@@ -39,28 +39,42 @@ export function InputGroup({
       role="group"
       className={cn(
         // Base
-        "relative inline-flex w-full min-w-0 items-center rounded-lg border text-sm transition-shadow",
-        // Size
-        "h-8",
-        size === "sm" && "h-7",
-        size === "lg" && "h-9",
-        // Colors
-        "border-input bg-background text-foreground ring-ring/24 dark:bg-input/32 shadow-xs/5",
-        // Autofill
-        "has-autofill:bg-foreground/4 dark:has-autofill:bg-foreground/8",
+        "relative inline-flex w-full min-w-0 items-center",
+
+        // Styled wrapper
+        !unstyled && [
+          "rounded-lg border text-sm transition-shadow",
+
+          // Size
+          "h-8",
+          size === "sm" && "h-7",
+          size === "lg" && "h-9",
+
+          // Colors
+          "border-input bg-background text-foreground ring-ring/24 dark:bg-input/32 shadow-xs/5",
+
+          // Autofill
+          "has-autofill:bg-foreground/4 dark:has-autofill:bg-foreground/8",
+
+          // Disabled
+          "has-[input:disabled,textarea:disabled]:opacity-64",
+
+          // Focus
+          "has-[input:focus-visible,textarea:focus-visible]:border-ring has-[input:focus-visible,textarea:focus-visible]:ring-[3px]",
+
+          // Invalid
+          "has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive/50 dark:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
+
+          // Focus Invalid
+          "has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/20 dark:has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
+        ],
+
         // Layout
         "has-data-[align=block-end]:h-auto has-data-[align=block-end]:flex-col has-data-[align=block-start]:h-auto has-data-[align=block-start]:flex-col",
-        // Disabled
-        "has-[input:disabled,textarea:disabled]:opacity-64",
-        // Focus
-        !disableFocusStyle &&
-          "has-[input:focus-visible,textarea:focus-visible]:border-ring has-[input:focus-visible,textarea:focus-visible]:ring-[3px]",
-        // Invalid
-        "has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive/50 dark:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
-        // Focus Invalid
-        "has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:border-destructive has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/20 dark:has-[input:focus-visible,textarea:focus-visible]:has-[input[aria-invalid],textarea[aria-invalid]]:ring-destructive/40",
+
         // Textarea
         "**:[textarea]:min-h-20.5 **:[textarea]:resize-none **:[textarea]:py-[calc(--spacing(3)-1px)]",
+
         // Misc
         "*:[[data-slot=input-control],[data-slot=textarea-control]]:contents *:[[data-slot=input-control],[data-slot=textarea-control]]:before:hidden",
         className,
@@ -82,6 +96,9 @@ export function InputGroupAddon({
       className={cn(inputGroupAddonVariants({ align }), className)}
       onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
         const target = e.target as HTMLElement;
+
+        if (!e.currentTarget.contains(target)) return;
+
         const isInteractive = target.closest(
           "button, a, input, select, textarea, [role='button'], [role='combobox'], [role='listbox'], [data-slot='select-trigger']",
         );
@@ -117,10 +134,10 @@ export function InputGroupText({
   );
 }
 
-export function InputGroupInput(props: InputProps) {
+export function InputGroupInput(props: Omit<InputProps, "unstyled">) {
   return <Input unstyled {...props} />;
 }
 
-export function InputGroupTextarea(props: TextareaProps) {
+export function InputGroupTextarea(props: Omit<TextareaProps, "unstyled">) {
   return <Textarea unstyled {...props} />;
 }

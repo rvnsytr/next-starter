@@ -16,8 +16,8 @@ export const ComboboxContext: React.Context<{
   multiple: boolean;
 }>({ chipsRef: null, multiple: false });
 
-export function Combobox<Value, Multiple extends boolean | undefined = false>(
-  props: ComboboxPrimitive.Root.Props<Value, Multiple>,
+export function Combobox<TValue, TMultiple extends boolean | undefined = false>(
+  props: ComboboxPrimitive.Root.Props<TValue, TMultiple>,
 ) {
   const chipsRef = useRef<Element | null>(null);
   return (
@@ -338,8 +338,12 @@ export function ComboboxChips({
   className,
   children,
   startAddon,
+  unstyled = false,
   ...props
-}: ComboboxPrimitive.Chips.Props & { startAddon?: React.ReactNode }) {
+}: ComboboxPrimitive.Chips.Props & {
+  startAddon?: React.ReactNode;
+  unstyled?: boolean;
+}) {
   const { chipsRef } = useContext(ComboboxContext);
 
   return (
@@ -347,7 +351,9 @@ export function ComboboxChips({
       ref={chipsRef as React.Ref<HTMLDivElement> | null}
       data-slot="combobox-chips"
       className={cn(
-        "border-input bg-background ring-ring/24 focus-within:ring-ring/50 focus-within:border-ring has-aria-invalid:border-destructive/50 focus-within:has-aria-invalid:border-destructive focus-within:has-aria-invalid:ring-destructive/20 dark:focus-within:has-aria-invalid:ring-destructive/40 dark:not-has-disabled:bg-input/32 dark:has-aria-invalid:ring-destructive/40 relative inline-flex min-h-8 w-full flex-wrap gap-1 rounded-lg border p-[calc(--spacing(1)-1px)] text-sm shadow-xs/5 transition-shadow outline-none *:min-h-6 not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-64 has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5 has-[:disabled,:focus-within,[aria-invalid]]:shadow-none dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+        "relative inline-flex min-h-8 w-full flex-wrap items-center gap-1 text-sm outline-none *:min-h-6 has-disabled:pointer-events-none has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5",
+        !unstyled &&
+          "border-input bg-background ring-ring/24 focus-within:ring-ring/50 focus-within:border-ring has-aria-invalid:border-destructive/50 focus-within:has-aria-invalid:border-destructive focus-within:has-aria-invalid:ring-destructive/20 dark:focus-within:has-aria-invalid:ring-destructive/40 dark:not-has-disabled:bg-input/32 dark:has-aria-invalid:ring-destructive/40 rounded-lg border p-[calc(--spacing(1)-1px)] shadow-xs/5 transition-shadow not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:ring-[3px] has-disabled:opacity-64 has-[:disabled,:focus-within,[aria-invalid]]:shadow-none dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/6%)]",
         className,
       )}
       {...props}
@@ -367,6 +373,7 @@ export function ComboboxChips({
 }
 
 export function ComboboxChip({
+  className,
   children,
   removeProps,
   ...props
@@ -376,7 +383,10 @@ export function ComboboxChip({
   return (
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
-      className="bg-accent text-accent-foreground flex items-center rounded-[calc(var(--radius-md)-1px)] ps-2 text-xs/(--text-xs--line-height) font-medium outline-none **:[svg:not([class*='size-'])]:size-3.5"
+      className={cn(
+        "bg-accent text-accent-foreground flex items-center rounded-[calc(var(--radius-md)-1px)] ps-2 text-xs/(--text-xs--line-height) font-medium outline-none **:[svg:not([class*='size-'])]:size-3.5",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -385,11 +395,17 @@ export function ComboboxChip({
   );
 }
 
-export function ComboboxChipRemove(props: ComboboxPrimitive.ChipRemove.Props) {
+export function ComboboxChipRemove({
+  className,
+  ...props
+}: ComboboxPrimitive.ChipRemove.Props) {
   return (
     <ComboboxPrimitive.ChipRemove
       data-slot="combobox-chip-remove"
-      className="**[svg:not([class*='size-'])]:size-3.5 h-full shrink-0 cursor-pointer px-1.5 opacity-80 hover:opacity-100"
+      className={cn(
+        "**[svg:not([class*='size-'])]:size-3.5 h-full shrink-0 cursor-pointer px-1.5 opacity-80 hover:opacity-100",
+        className,
+      )}
       aria-label="Remove"
       {...props}
     >
