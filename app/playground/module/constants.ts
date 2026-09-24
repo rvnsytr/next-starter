@@ -9,22 +9,22 @@ import {
 export type SaleStatus = (typeof saleStatuses)[number];
 
 export const saleStatuses = [
-  "Pending",
-  "Processing",
-  "Completed",
-  "Refunded",
-  "Cancelled",
+  "pending",
+  "processing",
+  "completed",
+  "refunded",
+  "cancelled",
 ] as const;
 
 export const saleStatusMeta: Record<
   SaleStatus,
   { color: string; icon: LucideIcon }
 > = {
-  Pending: { color: "#F59E0B", icon: ClockIcon },
-  Processing: { color: "#3B82F6", icon: ArrowsUpFromLineIcon },
-  Completed: { color: "#10B981", icon: PackageCheckIcon },
-  Refunded: { color: "#8B5CF6", icon: PackageXIcon },
-  Cancelled: { color: "#EF4444", icon: PackageXIcon },
+  pending: { color: "#F59E0B", icon: ClockIcon },
+  processing: { color: "#3B82F6", icon: ArrowsUpFromLineIcon },
+  completed: { color: "#10B981", icon: PackageCheckIcon },
+  refunded: { color: "#8B5CF6", icon: PackageXIcon },
+  cancelled: { color: "#EF4444", icon: PackageXIcon },
 };
 
 export type Product = (typeof products)[number];

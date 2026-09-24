@@ -6,6 +6,17 @@ export type TableMeta = {
   loading?: boolean;
 };
 
+export type ColumnValueOption = {
+  /** The value of the option */
+  value: string;
+  /** The label of the option */
+  label: string;
+  /** The icon associated with the option */
+  icon?: LucideIcon;
+  /** The count of items for the option */
+  count?: number;
+};
+
 export type ColumnMeta = {
   /** The label displayed in the column header */
   label?: string;
@@ -28,16 +39,7 @@ export type ColumnMeta = {
   };
 
   /** The available options for option-based filters */
-  options?: {
-    /** The value of the option */
-    value: string;
-    /** The label of the option */
-    label: string;
-    /** The icon associated with the option */
-    icon?: LucideIcon;
-    /** The count of items for the option */
-    count?: number;
-  }[];
+  options?: ColumnValueOption[];
 
   /** Props applied to the column's header cell (`<th>`) */
   headerProps?: React.ComponentProps<"th">;

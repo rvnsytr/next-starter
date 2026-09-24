@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Checkbox } from "@/core/components/ui/checkbox";
+import {
+  Combobox,
+  ComboboxChipsInput,
+  ComboboxInput,
+  ComboboxPopup,
+} from "@/core/components/ui/combobox";
 import { InputProps } from "@/core/components/ui/input";
-import { Select } from "@/core/components/ui/select";
 import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
@@ -115,11 +120,37 @@ export type DataGridCellEditorMeta =
     >
   | Override<
       CellEditorMetaBase,
-      {
-        type: "option";
-        schema?: z.ZodType<string, any>;
+      (
+        | {
+            type: "option";
+            schema?: z.ZodType<string, any>;
+            inputProps?: Omit<
+              React.ComponentProps<typeof ComboboxInput>,
+              ExcludedCellEditorProps | "inputGroupProps"
+            >;
+          }
+        | {
+            type: "multi-option";
+            schema?: z.ZodType<string[], any>;
+            inputProps?: Omit<
+              React.ComponentProps<typeof ComboboxChipsInput>,
+              ExcludedCellEditorProps
+            >;
+          }
+      ) & {
+        /**
+         * Whether the user can create new items that are not in the predefined list.
+         *
+         * @default false
+         */
+        createable?: boolean;
+
         props?: Omit<
-          React.ComponentProps<typeof Select>,
+          React.ComponentProps<typeof Combobox>,
+          ExcludedCellEditorProps | "items" | "isItemEqualToValue" | "multiple"
+        >;
+        popupProps?: Omit<
+          React.ComponentProps<typeof ComboboxPopup>,
           ExcludedCellEditorProps
         >;
       }

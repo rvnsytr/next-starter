@@ -123,7 +123,9 @@ export const saleDGColumns = columnHelper.columns([
 
       return (
         <div className="flex justify-center">
-          <CustomColorBadge color={color}>{status}</CustomColorBadge>
+          <CustomColorBadge color={color} className="capitalize">
+            {status}
+          </CustomColorBadge>
         </div>
       );
     },
@@ -154,9 +156,9 @@ export const saleDGColumns = columnHelper.columns([
     cell: (c) => (
       <div className="flex flex-wrap gap-1">
         {c.getValue().map((product) => (
-          <CustomColorBadge key={product} color={productMeta[product].color}>
+          <Badge key={product} variant="outline">
             {product}
-          </CustomColorBadge>
+          </Badge>
         ))}
       </div>
     ),
@@ -172,6 +174,11 @@ export const saleDGColumns = columnHelper.columns([
       icon: PackageIcon,
 
       options: Object.keys(productMeta).map((k) => ({ value: k, label: k })),
+
+      editor: {
+        type: "multi-option",
+        createable: true,
+      },
     },
   }),
 

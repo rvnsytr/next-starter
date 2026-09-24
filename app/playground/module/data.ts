@@ -66,7 +66,7 @@ const randomDates = () => {
 };
 
 const randomAmount = (status: SaleStatus) => {
-  if (status === "Refunded") {
+  if (status === "refunded") {
     return -faker.number.float({
       min: 20,
       max: 2500,
@@ -95,7 +95,7 @@ export const createSale = (): Sale => {
     notes: faker.lorem.paragraph({ min: 1, max: 3 }),
     amount: randomAmount(status),
     isPaid:
-      status === "Refunded"
+      status === "refunded"
         ? true
         : faker.datatype.boolean({ probability: 0.75 }),
     purchasedAt: faker.date.recent({ days: 30 }),

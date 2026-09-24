@@ -1,18 +1,25 @@
 import { Checkbox } from "@/core/components/ui/checkbox";
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxPopup,
+  ComboboxValue,
+} from "@/core/components/ui/combobox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
-import {
-  Menu,
-  MenuCheckboxItem,
-  MenuPopup,
-  MenuTrigger,
-} from "@/core/components/ui/menu";
 import { Switch } from "@/core/components/ui/switch";
 import { TableCell } from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
 import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import {
+  ColumnValueOption,
   DataGridCellEditContext,
   DataGridCellEditOptions,
   DataGridCellEditorMeta,
@@ -23,7 +30,8 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useEffect, useMemo } from "react";
+import { PlusIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -105,6 +113,7 @@ export function TableCellEditorController({
       );
 
     case "option":
+    case "multi-option":
       return (
         <TableCellEditorOption
           context={context}
@@ -153,8 +162,7 @@ function TableCellEditorString({
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: currentValue });
-    form.reset();
+    form.setValue("value", currentValue);
   }, [form, currentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
@@ -185,6 +193,7 @@ function TableCellEditorString({
                 const {
                   placeholder = `Enter ${label}`,
                   className: textareaCn,
+                  onKeyDown,
                   ...textareaProps
                 } = editorMeta.props ?? {};
 
@@ -201,6 +210,8 @@ function TableCellEditorString({
                         e.preventDefault();
                         onFormSubmit();
                       }
+
+                      onKeyDown?.(e);
                     }}
                     unstyled
                     {...field}
@@ -240,7 +251,6 @@ function TableCellEditorString({
 function TableCellEditorBoolean({
   context,
   editorMeta,
-  className,
   onMouseDown,
   onMouseEnter,
   onDoubleClick,
@@ -281,8 +291,7 @@ function TableCellEditorBoolean({
       return;
     }
 
-    form.resetDefaultValues({ value: currentValue });
-    form.reset();
+    form.setValue("value", currentValue);
   }, [
     alwaysEditable,
     context.isCellEdited,
@@ -315,11 +324,6 @@ function TableCellEditorBoolean({
         onDoubleClick?.(e);
         if (!context.currentEdit) context.setCurrentEdit(context);
       }}
-      className={cn(
-        isEdit && TABLE_CELL_CLASS.cellEditPadding,
-        alwaysEditable && context.isSelected && "cell-edge",
-        className,
-      )}
       {...props}
     >
       {!isEdit && !alwaysEditable && children}
@@ -390,57 +394,98 @@ function TableCellEditorBoolean({
   );
 }
 
+type ColumnItem = ColumnValueOption & { createItem?: boolean };
+
 function TableCellEditorOption({
   context,
   editorMeta,
   className,
   onMouseDown,
   onMouseEnter,
+  onDoubleClick,
   children,
   ...props
-}: TableCellEditorProps<"option">) {
+}: TableCellEditorProps<"option" | "multi-option">) {
   type FormSchema = z.infer<typeof formSchema>;
+
+  const [createableItems, setCreateableItems] = useState<ColumnItem[]>([]);
 
   const isEdit = context.currentEdit?.cellId === context.cellId;
 
-  const schema = useMemo(
-    () => editorMeta.schema ?? sharedSchemas.string({ withRequired: true }),
-    [editorMeta.schema],
+  const config = useMemo(() => {
+    const baseSchema = sharedSchemas.string({ withRequired: true });
+
+    if (editorMeta.type === "option")
+      return {
+        multiple: false as const,
+        schema: editorMeta.schema ?? baseSchema,
+      };
+
+    return {
+      multiple: true as const,
+      schema: editorMeta.schema ?? baseSchema.array(),
+    };
+  }, [editorMeta.schema, editorMeta.type]);
+
+  const currentValue = useMemo(() => {
+    if (config.multiple) return config.schema.catch([]).parse(context.cellData);
+    return config.schema.catch("").parse(context.cellData);
+  }, [config.multiple, config.schema, context.cellData]);
+
+  const [query, setQuery] = useState<string>(
+    typeof currentValue === "string" ? currentValue : "",
   );
 
-  const currentValue = useMemo(
-    () => schema.catch("").parse(context.cellData),
-    [context.cellData, schema],
-  );
-
-  const formSchema = z.object({ value: schema });
+  const formSchema = z.object({ value: config.schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { value: currentValue },
   });
 
-  const items = useMemo(() => {
-    if (!context.columnMeta?.options || !context.columnMeta.options.length)
-      return [];
-
-    return context.columnMeta.options.sort((a, b) => {
+  const columnItems: ColumnItem[] = useMemo(() => {
+    const items = [
+      ...(context.columnMeta?.options ?? []),
+      ...(editorMeta.createable ? createableItems : []),
+    ].sort((a, b) => {
       if (a.value < b.value) return -1;
       if (a.value > b.value) return 1;
       return 0;
     });
-  }, [context.columnMeta]);
+
+    const itemsMap = new Map(
+      items.map((item) => [item.value.toLowerCase(), item]),
+    );
+
+    const itemsArr = Array.from(itemsMap.values());
+
+    const createItem: ColumnItem = {
+      value: query,
+      label: `Create "${query}"`,
+      icon: PlusIcon,
+      createItem: true,
+    };
+
+    const withCreateItem =
+      editorMeta.createable && query && !itemsMap.has(query.toLowerCase());
+
+    return withCreateItem ? [...itemsArr, createItem] : itemsArr;
+  }, [context.columnMeta, createableItems, editorMeta.createable, query]);
 
   useEffect(() => {
-    if (!context.isCellEdited) {
-      const formValue = form.getValues("value");
-      if (currentValue !== formValue) form.setValue("value", currentValue);
-    }
-  }, [context.isCellEdited, currentValue, form]);
+    if (isEdit) return form.setFocus("value");
+    form.setValue("value", currentValue);
+  }, [context.isCellEdited, currentValue, form, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => context.handleCellEdit(value, context),
     (e) => errorToast(e.value?.message),
   );
+
+  const {
+    placeholder = `Select ${config.multiple ? "some" : "an"} item…`,
+    onKeyDown,
+    ...restInputProps
+  } = editorMeta.inputProps ?? {};
 
   return (
     <TableCell
@@ -452,48 +497,149 @@ function TableCellEditorOption({
         if (isInteractiveTarget(e.target)) return;
         onMouseEnter?.(e);
       }}
-      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(
+        isEdit && !config.multiple && TABLE_CELL_CLASS.cellEditPadding,
+        className,
+      )}
       {...props}
     >
-      <Form onSubmit={onFormSubmit}>
-        <Controller
-          name="value"
-          control={form.control}
-          render={({ field: { value, onChange } }) => (
-            <Menu
-              open={isEdit}
-              onOpenChange={(v) => {
-                if (v && !context.currentEdit) context.setCurrentEdit(context);
-                else if (!v && context.currentEdit)
-                  context.setCurrentEdit(null);
-              }}
-            >
-              <MenuTrigger>{children}</MenuTrigger>
+      {!isEdit && children}
 
-              <MenuPopup>
-                {items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <MenuCheckboxItem
-                      key={item.value}
-                      checked={value === item.value}
-                      onCheckedChange={() => {
-                        onChange(item.value);
-                        if (item.value !== currentValue) onFormSubmit();
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {Icon && <Icon className="text-muted-foreground" />}
-                        {item.label}
-                      </div>
-                    </MenuCheckboxItem>
-                  );
-                })}
-              </MenuPopup>
-            </Menu>
-          )}
-        />
-      </Form>
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field: { value: fieldValue, onChange, ...field } }) => (
+              <Combobox
+                items={columnItems}
+                value={fieldValue}
+                onValueChange={(value) => {
+                  if (editorMeta.createable) {
+                    const newValues = Array.isArray(value) ? value : [value];
+                    if (!newValues.every((v) => typeof v === "string")) return;
+
+                    const itemsMap = new Map(
+                      columnItems
+                        .filter((v) => !v.createItem)
+                        .map((v) => [v.value.toLowerCase(), v]),
+                    );
+
+                    const newItems = newValues
+                      .filter((v) => !itemsMap.has(v.toLowerCase()))
+                      .map((v) => ({ value: v.toLowerCase(), label: v }));
+
+                    if (newItems.length) {
+                      setCreateableItems((prev) => {
+                        const existing = new Set(
+                          prev.map((item) => item.value.toLowerCase()),
+                        );
+
+                        return [
+                          ...prev,
+                          ...newItems.filter(
+                            (item) => !existing.has(item.value),
+                          ),
+                        ];
+                      });
+
+                      setQuery("");
+                    }
+                  }
+
+                  onChange(value);
+                }}
+                isItemEqualToValue={(a, b) => {
+                  console.log("a", a, "b", b);
+                  return a === b;
+                }}
+                inputValue={query}
+                onInputValueChange={setQuery}
+                multiple={config.multiple}
+                {...editorMeta.props}
+              >
+                {config.multiple ? (
+                  <ComboboxChips unstyled>
+                    <ComboboxValue>
+                      {(items: string[]) => (
+                        <>
+                          {items.map((item) => (
+                            <ComboboxChip key={item}>{item}</ComboboxChip>
+                          ))}
+
+                          <ComboboxChipsInput
+                            placeholder={placeholder}
+                            onKeyDown={(e) => {
+                              if (e.ctrlKey && e.key === "Enter") {
+                                e.preventDefault();
+                                onFormSubmit();
+                              }
+
+                              onKeyDown?.(e);
+                            }}
+                            {...field}
+                            {...restInputProps}
+                          />
+                        </>
+                      )}
+                    </ComboboxValue>
+                  </ComboboxChips>
+                ) : (
+                  <ComboboxInput
+                    inputGroupProps={{ unstyled: true }}
+                    placeholder={placeholder}
+                    onKeyDown={(e) => {
+                      if (e.ctrlKey && e.key === "Enter") {
+                        e.preventDefault();
+                        onFormSubmit();
+                      }
+
+                      onKeyDown?.(e);
+                    }}
+                    {...field}
+                    {...restInputProps}
+                  />
+                )}
+
+                <ComboboxPopup {...editorMeta.popupProps}>
+                  <ComboboxEmpty>No items found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item: (typeof columnItems)[number]) => {
+                      const Icon = item.icon;
+                      const Content = (
+                        <div className="flex items-center gap-2">
+                          {Icon && <Icon />}
+                          {item.label}
+                        </div>
+                      );
+
+                      if (item.createItem) {
+                        return (
+                          <ComboboxItem
+                            key={item.value}
+                            value={item.value}
+                            render={Content}
+                          />
+                        );
+                      }
+
+                      return (
+                        <ComboboxItem key={item.value} value={item.value}>
+                          {Content}
+                        </ComboboxItem>
+                      );
+                    }}
+                  </ComboboxList>
+                </ComboboxPopup>
+              </Combobox>
+            )}
+          />
+        </Form>
+      )}
     </TableCell>
   );
 }
