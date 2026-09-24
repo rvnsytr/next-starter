@@ -32,7 +32,7 @@ import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 const interactiveTargetSelector = [
@@ -149,7 +149,7 @@ function TableCellEditorString({
     [editorMeta.schema],
   );
 
-  const currentValue = useMemo(
+  const currentCellValue = useMemo(
     () => schema.catch("").parse(context.cellData),
     [context.cellData, schema],
   );
@@ -157,13 +157,14 @@ function TableCellEditorString({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentValue },
+    defaultValues: { value: currentCellValue },
   });
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.setValue("value", currentValue);
-  }, [form, currentValue, isEdit]);
+    form.resetDefaultValues({ value: currentCellValue });
+    form.reset();
+  }, [form, currentCellValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => context.handleCellEdit(value, context),
@@ -267,7 +268,7 @@ function TableCellEditorBoolean({
     [editorMeta.schema],
   );
 
-  const currentValue = useMemo(
+  const currentCellValue = useMemo(
     () => schema.catch(true).parse(context.cellData),
     [context.cellData, schema],
   );
@@ -275,7 +276,7 @@ function TableCellEditorBoolean({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentValue },
+    defaultValues: { value: currentCellValue },
   });
 
   useEffect(() => {
@@ -285,18 +286,21 @@ function TableCellEditorBoolean({
     if (alwaysEditable) {
       const formValue = form.getValues("value");
 
-      if (!context.isCellEdited && currentValue !== formValue)
-        form.setValue("value", currentValue);
+      if (!context.isCellEdited && currentCellValue !== formValue) {
+        form.resetDefaultValues({ value: currentCellValue });
+        form.reset();
+      }
 
       return;
     }
 
-    form.setValue("value", currentValue);
+    form.resetDefaultValues({ value: currentCellValue });
+    form.reset();
   }, [
     alwaysEditable,
     context.isCellEdited,
     context.isSelected,
-    currentValue,
+    currentCellValue,
     form,
     isEdit,
   ]);
@@ -427,20 +431,35 @@ function TableCellEditorOption({
     };
   }, [editorMeta.schema, editorMeta.type]);
 
-  const currentValue = useMemo(() => {
+  const currentCellValue = useMemo(() => {
     if (config.multiple) return config.schema.catch([]).parse(context.cellData);
     return config.schema.catch("").parse(context.cellData);
   }, [config.multiple, config.schema, context.cellData]);
 
-  const [query, setQuery] = useState<string>(
-    typeof currentValue === "string" ? currentValue : "",
-  );
-
-  const formSchema = z.object({ value: config.schema });
+  const formSchema = z.object({ value: config.schema, query: z.string() });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentValue },
+    defaultValues: {
+      value: currentCellValue,
+      query: typeof currentCellValue === "string" ? currentCellValue : "",
+    },
   });
+
+  const query = useWatch({ control: form.control, name: "query" });
+
+  useEffect(() => {
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({
+      value: currentCellValue,
+      query: typeof currentCellValue === "string" ? currentCellValue : "",
+    });
+    form.reset();
+  }, [context.isCellEdited, currentCellValue, form, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => context.handleCellEdit(value, context),
+    (e) => errorToast(e.value?.message),
+  );
 
   const columnItems: ColumnItem[] = useMemo(() => {
     const items = [
@@ -469,17 +488,12 @@ function TableCellEditorOption({
       editorMeta.createable && query && !itemsMap.has(query.toLowerCase());
 
     return withCreateItem ? [...itemsArr, createItem] : itemsArr;
-  }, [context.columnMeta, createableItems, editorMeta.createable, query]);
-
-  useEffect(() => {
-    if (isEdit) return form.setFocus("value");
-    form.setValue("value", currentValue);
-  }, [context.isCellEdited, currentValue, form, isEdit]);
-
-  const onFormSubmit = form.handleSubmit(
-    ({ value }: FormSchema) => context.handleCellEdit(value, context),
-    (e) => errorToast(e.value?.message),
-  );
+  }, [
+    context.columnMeta?.options,
+    createableItems,
+    editorMeta.createable,
+    query,
+  ]);
 
   const {
     placeholder = `Select ${config.multiple ? "some" : "an"} item…`,
@@ -514,155 +528,139 @@ function TableCellEditorOption({
           <Controller
             name="value"
             control={form.control}
-            render={({ field: { value: fieldValue, onChange, ...field } }) => (
-              <Combobox
-                items={columnItems}
-                value={fieldValue}
-                onValueChange={(value) => {
-                  if (editorMeta.createable && value) {
-                    const itemsMap = new Map(
-                      columnItems
-                        .filter((v) => !v.createItem)
-                        .map((v) => [v.value.toLowerCase(), v]),
-                    );
+            render={({ field: { value, onChange, ...field } }) => {
+              return (
+                <Controller
+                  name="query"
+                  control={form.control}
+                  render={({
+                    field: { value: queryValue, onChange: onQueryChange },
+                  }) => (
+                    <Combobox
+                      items={columnItems}
+                      value={value}
+                      onValueChange={(newValue) => {
+                        if (editorMeta.createable && newValue) {
+                          const itemsMap = new Map(
+                            columnItems
+                              .filter((v) => !v.createItem)
+                              .map((v) => [v.value.toLowerCase(), v]),
+                          );
 
-                    const newValues = Array.isArray(value) ? value : [value];
-                    const newItems = newValues
-                      .filter((v) => !itemsMap.has(v.toLowerCase()))
-                      .map((v) => ({ value: v.toLowerCase(), label: v }));
+                          const newValues = Array.isArray(newValue)
+                            ? newValue
+                            : [newValue];
+                          const newItems = newValues
+                            .filter((v) => !itemsMap.has(v.toLowerCase()))
+                            .map((v) => ({ value: v.toLowerCase(), label: v }));
 
-                    if (newItems.length) {
-                      setCreateableItems((prev) => {
-                        const existing = new Set(
-                          prev.map((item) => item.value.toLowerCase()),
-                        );
+                          if (newItems.length) {
+                            setCreateableItems((prev) => {
+                              const existing = new Set(
+                                prev.map((item) => item.value.toLowerCase()),
+                              );
 
-                        return [
-                          ...prev,
-                          ...newItems.filter(
-                            (item) => !existing.has(item.value),
-                          ),
-                        ];
-                      });
+                              return [
+                                ...prev,
+                                ...newItems.filter(
+                                  (item) => !existing.has(item.value),
+                                ),
+                              ];
+                            });
 
-                      setQuery("");
-                    }
-                  }
+                            form.reset();
+                          }
+                        }
 
-                  onChange(value);
-                }}
-                isItemEqualToValue={(a, b) => a === b}
-                inputValue={query}
-                onInputValueChange={setQuery}
-                multiple={config.multiple}
-                {...editorMeta.props}
-              >
-                {config.multiple ? (
-                  <ComboboxChips unstyled>
-                    <ComboboxValue>
-                      {(items: string[]) => (
-                        <>
-                          {items.map((item) => (
-                            <ComboboxChip key={item}>{item}</ComboboxChip>
-                          ))}
+                        onChange(newValue);
+                      }}
+                      isItemEqualToValue={(a, b) => a === b}
+                      multiple={config.multiple}
+                      inputValue={queryValue}
+                      onInputValueChange={onQueryChange}
+                      {...editorMeta.props}
+                    >
+                      {config.multiple ? (
+                        <ComboboxChips unstyled>
+                          <ComboboxValue>
+                            {(items: string[]) => (
+                              <>
+                                {items.map((item) => (
+                                  <ComboboxChip key={item}>{item}</ComboboxChip>
+                                ))}
 
-                          <ComboboxChipsInput
-                            placeholder={placeholder}
-                            onKeyDown={(e) => {
-                              if (e.ctrlKey && e.key === "Enter") {
-                                e.preventDefault();
-                                onFormSubmit();
-                              }
+                                <ComboboxChipsInput
+                                  placeholder={placeholder}
+                                  onKeyDown={(e) => {
+                                    if (e.ctrlKey && e.key === "Enter") {
+                                      e.preventDefault();
+                                      onFormSubmit();
+                                    }
 
-                              onKeyDown?.(e);
-                            }}
-                            {...field}
-                            {...restInputProps}
-                          />
-                        </>
+                                    onKeyDown?.(e);
+                                  }}
+                                  {...field}
+                                  {...restInputProps}
+                                />
+                              </>
+                            )}
+                          </ComboboxValue>
+                        </ComboboxChips>
+                      ) : (
+                        <ComboboxInput
+                          inputGroupProps={{ unstyled: true }}
+                          placeholder={placeholder}
+                          onKeyDown={(e) => {
+                            if (e.ctrlKey && e.key === "Enter") {
+                              e.preventDefault();
+                              onFormSubmit();
+                            }
+
+                            onKeyDown?.(e);
+                          }}
+                          {...field}
+                          {...restInputProps}
+                        />
                       )}
-                    </ComboboxValue>
-                  </ComboboxChips>
-                ) : (
-                  <ComboboxInput
-                    inputGroupProps={{ unstyled: true }}
-                    placeholder={placeholder}
-                    onKeyDown={(e) => {
-                      if (e.ctrlKey && e.key === "Enter") {
-                        e.preventDefault();
-                        onFormSubmit();
-                      }
 
-                      onKeyDown?.(e);
-                    }}
-                    {...field}
-                    {...restInputProps}
-                  />
-                )}
+                      <ComboboxPopup {...editorMeta.popupProps}>
+                        <ComboboxEmpty>No items found.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(item: (typeof columnItems)[number]) => {
+                            const Icon = item.icon;
+                            const Content = (
+                              <div className="flex items-center gap-2">
+                                {Icon && <Icon />}
+                                {item.label}
+                              </div>
+                            );
 
-                <ComboboxPopup {...editorMeta.popupProps}>
-                  <ComboboxEmpty>No items found.</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item: (typeof columnItems)[number]) => {
-                      const Icon = item.icon;
-                      const Content = (
-                        <div className="flex items-center gap-2">
-                          {Icon && <Icon />}
-                          {item.label}
-                        </div>
-                      );
+                            if (item.createItem) {
+                              return (
+                                <ComboboxItem
+                                  key={item.value}
+                                  value={item.value}
+                                  render={Content}
+                                />
+                              );
+                            }
 
-                      if (item.createItem) {
-                        return (
-                          <ComboboxItem
-                            key={item.value}
-                            value={item.value}
-                            render={Content}
-                          />
-                        );
-                      }
-
-                      return (
-                        <ComboboxItem key={item.value} value={item.value}>
-                          {Content}
-                        </ComboboxItem>
-                      );
-                    }}
-                  </ComboboxList>
-                </ComboboxPopup>
-              </Combobox>
-            )}
+                            return (
+                              <ComboboxItem key={item.value} value={item.value}>
+                                {Content}
+                              </ComboboxItem>
+                            );
+                          }}
+                        </ComboboxList>
+                      </ComboboxPopup>
+                    </Combobox>
+                  )}
+                />
+              );
+            }}
           />
         </Form>
       )}
     </TableCell>
   );
-}
-
-const items = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-  { value: "grape", label: "Grape" },
-];
-
-export function CB() {
-  <Combobox
-    items={items}
-    value={items[0]}
-    onValueChange={(v) => console.log(v)}
-    isItemEqualToValue={(v) => v.value === v.value}
-  >
-    <ComboboxInput placeholder="Select an item..." />
-    <ComboboxPopup>
-      <ComboboxEmpty>No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.value} value={item}>
-            {item.label}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxPopup>
-  </Combobox>;
 }
