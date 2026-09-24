@@ -519,16 +519,14 @@ function TableCellEditorOption({
                 items={columnItems}
                 value={fieldValue}
                 onValueChange={(value) => {
-                  if (editorMeta.createable) {
-                    const newValues = Array.isArray(value) ? value : [value];
-                    if (!newValues.every((v) => typeof v === "string")) return;
-
+                  if (editorMeta.createable && value) {
                     const itemsMap = new Map(
                       columnItems
                         .filter((v) => !v.createItem)
                         .map((v) => [v.value.toLowerCase(), v]),
                     );
 
+                    const newValues = Array.isArray(value) ? value : [value];
                     const newItems = newValues
                       .filter((v) => !itemsMap.has(v.toLowerCase()))
                       .map((v) => ({ value: v.toLowerCase(), label: v }));
@@ -553,10 +551,7 @@ function TableCellEditorOption({
 
                   onChange(value);
                 }}
-                isItemEqualToValue={(a, b) => {
-                  console.log("a", a, "b", b);
-                  return a === b;
-                }}
+                isItemEqualToValue={(a, b) => a === b}
                 inputValue={query}
                 onInputValueChange={setQuery}
                 multiple={config.multiple}
@@ -642,4 +637,32 @@ function TableCellEditorOption({
       )}
     </TableCell>
   );
+}
+
+const items = [
+  { value: "apple", label: "Apple" },
+  { value: "banana", label: "Banana" },
+  { value: "orange", label: "Orange" },
+  { value: "grape", label: "Grape" },
+];
+
+export function CB() {
+  <Combobox
+    items={items}
+    value={items[0]}
+    onValueChange={(v) => console.log(v)}
+    isItemEqualToValue={(v) => v.value === v.value}
+  >
+    <ComboboxInput placeholder="Select an item..." />
+    <ComboboxPopup>
+      <ComboboxEmpty>No results found.</ComboboxEmpty>
+      <ComboboxList>
+        {(item) => (
+          <ComboboxItem key={item.value} value={item}>
+            {item.label}
+          </ComboboxItem>
+        )}
+      </ComboboxList>
+    </ComboboxPopup>
+  </Combobox>;
 }

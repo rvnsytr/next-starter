@@ -57,6 +57,16 @@ type ExcludedCellEditorProps =
   | "onCheckedChange"
   | "onValueChange";
 
+type CellEditorComboboxProps<TMultiple extends boolean> = Omit<
+  React.ComponentProps<typeof Combobox<string, TMultiple>>,
+  | ExcludedCellEditorProps
+  | "items"
+  | "isItemEqualToValue"
+  | "inputValue"
+  | "onInputValueChange"
+  | "multiple"
+>;
+
 export type CellEditorMetaBase = {
   /**
    * Override the column id used when writing the value back to the row.
@@ -120,37 +130,34 @@ export type DataGridCellEditorMeta =
     >
   | Override<
       CellEditorMetaBase,
-      (
-        | {
-            type: "option";
-            schema?: z.ZodType<string, any>;
-            inputProps?: Omit<
-              React.ComponentProps<typeof ComboboxInput>,
-              ExcludedCellEditorProps | "inputGroupProps"
-            >;
-          }
-        | {
-            type: "multi-option";
-            schema?: z.ZodType<string[], any>;
-            inputProps?: Omit<
-              React.ComponentProps<typeof ComboboxChipsInput>,
-              ExcludedCellEditorProps
-            >;
-          }
-      ) & {
-        /**
-         * Whether the user can create new items that are not in the predefined list.
-         *
-         * @default false
-         */
+      {
+        type: "option";
+        schema?: z.ZodType<string, any>;
         createable?: boolean;
-
-        props?: Omit<
-          React.ComponentProps<typeof Combobox>,
-          ExcludedCellEditorProps | "items" | "isItemEqualToValue" | "multiple"
-        >;
+        props?: CellEditorComboboxProps<false>;
         popupProps?: Omit<
           React.ComponentProps<typeof ComboboxPopup>,
+          ExcludedCellEditorProps
+        >;
+        inputProps?: Omit<
+          React.ComponentProps<typeof ComboboxInput>,
+          ExcludedCellEditorProps | "inputGroupProps"
+        >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "multi-option";
+        schema?: z.ZodType<string[], any>;
+        createable?: boolean;
+        props?: CellEditorComboboxProps<true>;
+        popupProps?: Omit<
+          React.ComponentProps<typeof ComboboxPopup>,
+          ExcludedCellEditorProps
+        >;
+        inputProps?: Omit<
+          React.ComponentProps<typeof ComboboxChipsInput>,
           ExcludedCellEditorProps
         >;
       }
