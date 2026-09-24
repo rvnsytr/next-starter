@@ -4,6 +4,7 @@ import {
   DataGridUpdateChange,
 } from "@/core/modules/table/types";
 import { getNestedProperty, setNestedValue } from "@/core/modules/table/utils";
+import { isEqual } from "@/core/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RowData } from "@tanstack/react-table";
 import {
@@ -90,7 +91,7 @@ export const DataGridProvider = ({
       (acc, [k, v]) => {
         const keys = k.split(".");
         const originalData = getNestedProperty(originalRowData, keys);
-        if (originalData !== v) acc = setNestedValue(acc, keys, v);
+        if (!isEqual(originalData, v)) acc = setNestedValue(acc, keys, v);
         return acc;
       },
       {} as Partial<RowData>,

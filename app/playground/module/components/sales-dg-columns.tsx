@@ -147,6 +147,7 @@ export const saleDGColumns = columnHelper.columns([
 
       editor: {
         type: "option",
+        props: { defaultOpen: true },
       },
     },
   }),
