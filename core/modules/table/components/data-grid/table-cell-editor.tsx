@@ -27,6 +27,7 @@ import {
   DataGridCellEditorType,
   DataGridEditState,
 } from "@/core/modules/table/types";
+import { isEqual } from "@/core/utils";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
@@ -71,6 +72,8 @@ type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
     setCurrentEdit: React.Dispatch<
       React.SetStateAction<DataGridEditState | null>
     >;
+
+    exitCellEdit: () => void;
     handleCellEdit: (
       newValue: CellData,
       context: DataGridCellEditContext,
@@ -168,7 +171,10 @@ function TableCellEditorString({
   }, [form, currentCellValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
-    ({ value }: FormSchema) => context.handleCellEdit(value, context),
+    ({ value }: FormSchema) => {
+      if (value === currentCellValue) return context.exitCellEdit();
+      context.handleCellEdit(value, context);
+    },
     (e) => errorToast(e.value?.message),
   );
 
@@ -307,8 +313,11 @@ function TableCellEditorBoolean({
   ]);
 
   const onFormSubmit = form.handleSubmit(
-    ({ value }: FormSchema) =>
-      context.handleCellEdit(value, context, { silent: alwaysEditable }),
+    ({ value }: FormSchema) => {
+      if (!alwaysEditable && value === currentCellValue)
+        return context.exitCellEdit();
+      context.handleCellEdit(value, context, { silent: alwaysEditable });
+    },
     (e) => errorToast(e.value?.message),
   );
 
@@ -459,13 +468,15 @@ function TableCellEditorOption({
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      const values = Array.isArray(value) ? value : [value];
-      const submittedValues = new Set(values.map((v) => v.toLowerCase()));
+      const submittedValues = new Set(
+        (Array.isArray(value) ? value : [value]).map((v) => v.toLowerCase()),
+      );
 
       setCreateableItems((items) =>
         items.filter((item) => submittedValues.has(item.value.toLowerCase())),
       );
 
+      if (isEqual(value, currentCellValue)) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),

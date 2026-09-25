@@ -122,7 +122,7 @@ export function DataGrid({
     [dataGridContext],
   );
 
-  const exitCell = useCallback(() => {
+  const exitCellEdit = useCallback(() => {
     if (currentEdit) {
       setTimeout(() => {
         tableRef.current?.focus();
@@ -186,10 +186,10 @@ export function DataGrid({
       const isSilent = options?.silent ?? false;
       if (!isSilent) {
         handleChanges();
-        exitCell();
+        exitCellEdit();
       }
     },
-    [dataGridContext, exitCell, handleChanges, originalData, table],
+    [dataGridContext, exitCellEdit, handleChanges, originalData, table],
   );
 
   useEffect(() => {
@@ -205,7 +205,7 @@ export function DataGrid({
     return () => sub.unsubscribe();
   }, [currentEdit, table]);
 
-  useHotkey("Escape", () => exitCell());
+  useHotkey("Escape", () => exitCellEdit());
   useHotkeys(
     [
       {
@@ -522,6 +522,8 @@ export function DataGrid({
 
                                 currentEdit,
                                 setCurrentEdit,
+
+                                exitCellEdit,
                                 handleCellEdit,
                               }}
                               onMouseDown={cell.getSelectionStartHandler()}
