@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import {
+  Autocomplete,
+  AutocompleteInput,
+  AutocompletePopup,
+} from "@/core/components/ui/autocomplete";
 import { Checkbox } from "@/core/components/ui/checkbox";
 import {
   Combobox,
@@ -12,6 +17,7 @@ import { Switch } from "@/core/components/ui/switch";
 import { Textarea } from "@/core/components/ui/textarea";
 import { DeepPartial, Override } from "@/core/types";
 import { CellData, RowData } from "@tanstack/react-table";
+import { SWRConfiguration } from "swr";
 import { z } from "zod";
 import { DataTableTableComponents } from "./data-table";
 import { ColumnMeta, TableMeta } from "./meta";
@@ -125,6 +131,26 @@ export type DataGridCellEditorMeta =
           React.ComponentProps<typeof Switch>,
           ExcludedCellEditorProps
         >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "string:autocomplete";
+        onSearch: (value: string) => Promise<string[]> | string[];
+        props?: Omit<
+          React.ComponentProps<typeof Autocomplete>,
+          ExcludedCellEditorProps
+        >;
+        inputProps?: Omit<
+          React.ComponentProps<typeof AutocompleteInput>,
+          ExcludedCellEditorProps
+        >;
+        popupProps?: Omit<
+          React.ComponentProps<typeof AutocompletePopup>,
+          ExcludedCellEditorProps
+        >;
+        queryConfig?: SWRConfiguration;
       }
     >
   | Override<

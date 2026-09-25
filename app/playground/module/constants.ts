@@ -6,6 +6,16 @@ import {
   PackageXIcon,
 } from "lucide-react";
 
+export type Location = (typeof locations)[number];
+
+export const locations = [
+  "New York",
+  "Los Angeles",
+  "Chicago",
+  "Houston",
+  "Phoenix",
+] as const;
+
 export type SaleStatus = (typeof saleStatuses)[number];
 
 export const saleStatuses = [
@@ -59,6 +69,7 @@ export type Sale = {
   id: string;
   customerName: string;
   customerEmail: string;
+  location: string;
   salesRep: string | null;
   notes: string;
   amount: number;

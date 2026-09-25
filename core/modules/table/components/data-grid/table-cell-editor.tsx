@@ -1,3 +1,12 @@
+import {
+  Autocomplete,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePopup,
+  AutocompleteStatus,
+} from "@/core/components/ui/autocomplete";
 import { CustomColorBadge } from "@/core/components/ui/badge";
 import { Checkbox } from "@/core/components/ui/checkbox";
 import {
@@ -14,10 +23,12 @@ import {
 } from "@/core/components/ui/combobox";
 import { Form } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
+import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { Switch } from "@/core/components/ui/switch";
 import { TableCell } from "@/core/components/ui/table";
 import { Textarea } from "@/core/components/ui/textarea";
 import { toast } from "@/core/components/ui/toast";
+import { useDebounce } from "@/core/hooks/use-debounce";
 import { TABLE_CELL_CLASS } from "@/core/modules/table/constants";
 import {
   ColumnValueOption,
@@ -36,6 +47,7 @@ import { cn } from "cn";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import useSWR from "swr";
 import { z } from "zod";
 
 const interactiveTargetSelector = [
@@ -111,6 +123,15 @@ export function TableCellEditorController({
     case "boolean:switch":
       return (
         <TableCellEditorBoolean
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    case "string:autocomplete":
+      return (
+        <TableCellEditorAutoComplete
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
@@ -410,6 +431,139 @@ function TableCellEditorBoolean({
 }
 
 type ColumnItem = ColumnValueOption & { createItem?: boolean };
+
+function TableCellEditorAutoComplete({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"string:autocomplete">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? z.string(),
+    [editorMeta.schema],
+  );
+
+  const currentCellValue = useMemo(
+    () => schema.catch("").parse(context.cellData),
+    [context.cellData, schema],
+  );
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentCellValue },
+  });
+
+  useEffect(() => {
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({ value: currentCellValue });
+    form.reset();
+  }, [form, currentCellValue, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => {
+      if (value === currentCellValue) return context.exitCellEdit();
+      context.handleCellEdit(value, context);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  const formValue = useWatch({ control: form.control, name: "value" });
+  const debouncedValue = useDebounce(formValue);
+
+  const key = useMemo(
+    () => `/editor/string-autocomplete/${context.columnId}/${debouncedValue}`,
+    [context.columnId, debouncedValue],
+  );
+
+  const {
+    data: items = [],
+    isLoading,
+    isValidating,
+  } = useSWR(
+    key,
+    async () => await editorMeta.onSearch(debouncedValue),
+    editorMeta.queryConfig,
+  );
+
+  const {
+    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
+    onKeyDown,
+    endAddon = <LoadingSpinner loading={isLoading || isValidating} />,
+    ...restInputProps
+  } = editorMeta.inputProps ?? {};
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field: { value, onChange, ...field } }) => (
+              <Autocomplete
+                items={items}
+                value={value}
+                onValueChange={onChange}
+                filter={null}
+                {...editorMeta.props}
+              >
+                <AutocompleteInput
+                  inputGroupProps={{ unstyled: true }}
+                  placeholder={placeholder}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey && e.key === "Enter") {
+                      e.preventDefault();
+                      onFormSubmit();
+                    }
+
+                    onKeyDown?.(e);
+                  }}
+                  endAddon={endAddon}
+                  {...field}
+                  {...restInputProps}
+                />
+
+                <AutocompletePopup {...editorMeta.popupProps}>
+                  <AutocompleteStatus className="text-muted-foreground text-center">
+                    {isLoading || isValidating
+                      ? "Searching..."
+                      : `${items.length} result found`}
+                  </AutocompleteStatus>
+
+                  <AutocompleteEmpty>{messages.empty}</AutocompleteEmpty>
+
+                  <AutocompleteList>
+                    {(item: string) => (
+                      <AutocompleteItem key={item} value={item}>
+                        {item}
+                      </AutocompleteItem>
+                    )}
+                  </AutocompleteList>
+                </AutocompletePopup>
+              </Autocomplete>
+            )}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
 
 function TableCellEditorOption({
   context,

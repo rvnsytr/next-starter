@@ -1,29 +1,11 @@
 import { faker } from "@faker-js/faker";
-import { Product, products, SaleStatus, saleStatuses } from "./constants";
-
-export type Sale = {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  salesRep: string | null;
-  notes: string;
-  amount: number;
-  isPaid: boolean;
-  purchasedAt: Date;
-  status: SaleStatus;
-  products: Product[];
-  shippingAddress: {
-    city: string;
-    country: string;
-  };
-  deliveryPeriod: {
-    from: Date;
-    to: Date;
-  };
-  availableDates: Date[];
-  preferredTime: string;
-  deliveryTimes: string[];
-};
+import {
+  locations,
+  products,
+  Sale,
+  SaleStatus,
+  saleStatuses,
+} from "./constants";
 
 const randomItem = <T>(items: readonly T[]): T => {
   return faker.helpers.arrayElement(items);
@@ -81,6 +63,7 @@ const randomAmount = (status: SaleStatus) => {
 };
 
 export const createSale = (): Sale => {
+  const location = randomItem(locations);
   const status = randomItem(saleStatuses);
   const deliveryPeriod = randomDateRange();
 
@@ -88,7 +71,7 @@ export const createSale = (): Sale => {
     id: faker.string.uuid(),
     customerName: faker.person.fullName(),
     customerEmail: faker.internet.email().toLowerCase(),
-    // Some sales don't have an assigned representative yet.
+    location,
     salesRep: faker.datatype.boolean({ probability: 0.8 })
       ? faker.person.fullName()
       : null,

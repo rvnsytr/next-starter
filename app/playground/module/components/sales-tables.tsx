@@ -105,6 +105,7 @@ export function SaleDataGrid() {
         id: crypto.randomUUID(),
         customerName: "",
         customerEmail: "",
+        location: "",
         salesRep: "",
         notes: "",
         amount: 0,

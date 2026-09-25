@@ -1,6 +1,6 @@
 import { Badge, CustomColorBadge } from "@/core/components/ui/badge";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { formatNumber } from "@/core/utils";
+import { delay, formatNumber } from "@/core/utils";
 import { sharedSchemas } from "@/shared/schema";
 import { cn } from "cn";
 import { formatDate } from "date-fns";
@@ -13,12 +13,13 @@ import {
   DollarSignIcon,
   MailIcon,
   MapPinIcon,
+  MapPinnedIcon,
   PackageIcon,
   TrendingDown,
   TrendingUp,
   UserRoundIcon,
 } from "lucide-react";
-import { Sale, productMeta, saleStatusMeta } from "../constants";
+import { Sale, locations, productMeta, saleStatusMeta } from "../constants";
 
 const columnHelper = dataGrid.createAppColumnHelper<Sale>();
 
@@ -91,6 +92,40 @@ export const saleDGColumns = columnHelper.columns([
         schema: sharedSchemas.email,
         props: {
           type: "email",
+        },
+      },
+    },
+  }),
+
+  columnHelper.accessor("location", {
+    header: (c) => <c.header.ColumnHeader label="Location" />,
+    cell: (c) => c.getValue(),
+
+    filterFn: "string",
+
+    minSize: 200,
+    size: 200,
+
+    meta: {
+      label: "Location",
+      icon: MapPinnedIcon,
+
+      editor: {
+        type: "string:autocomplete",
+        onSearch: async (v) => {
+          await delay(1);
+
+          const items = locations.filter((location) =>
+            location.toLowerCase().includes(v.toLowerCase()),
+          );
+
+          return items;
+        },
+        props: { autoHighlight: true },
+        queryConfig: {
+          revalidateIfStale: false,
+          revalidateOnFocus: false,
+          revalidateOnReconnect: false,
         },
       },
     },
