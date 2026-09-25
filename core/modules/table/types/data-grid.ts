@@ -61,7 +61,6 @@ type CellEditorComboboxProps<TMultiple extends boolean> = Omit<
   React.ComponentProps<typeof Combobox<string, TMultiple>>,
   | ExcludedCellEditorProps
   | "items"
-  | "isItemEqualToValue"
   | "inputValue"
   | "onInputValueChange"
   | "multiple"
