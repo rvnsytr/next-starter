@@ -18,37 +18,41 @@ export const saleStatuses = [
 
 export const saleStatusMeta: Record<
   SaleStatus,
-  { color: string; icon: LucideIcon }
+  { label: string; color: string; icon: LucideIcon }
 > = {
-  pending: { color: "#F59E0B", icon: ClockIcon },
-  processing: { color: "#3B82F6", icon: ArrowsUpFromLineIcon },
-  completed: { color: "#10B981", icon: PackageCheckIcon },
-  refunded: { color: "#8B5CF6", icon: PackageXIcon },
-  cancelled: { color: "#EF4444", icon: PackageXIcon },
+  pending: { label: "Pending", color: "#F59E0B", icon: ClockIcon },
+  processing: {
+    label: "On Process",
+    color: "#3B82F6",
+    icon: ArrowsUpFromLineIcon,
+  },
+  completed: { label: "Completed", color: "#10B981", icon: PackageCheckIcon },
+  refunded: { label: "Refunded", color: "#8B5CF6", icon: PackageXIcon },
+  cancelled: { label: "Cancelled", color: "#EF4444", icon: PackageXIcon },
 };
 
 export type Product = (typeof products)[number];
 
 export const products = [
-  "Laptop",
-  "Monitor",
-  "Keyboard",
-  "Mouse",
-  "Headphones",
-  "Webcam",
-  "Desk",
-  "Chair",
+  "laptop",
+  "monitor",
+  "keyboard",
+  "mouse",
+  "headphones",
+  "webcam",
+  "desk",
+  "chair",
 ] as const;
 
-export const productMeta: Record<Product, { color: string }> = {
-  Laptop: { color: "#6366F1" },
-  Monitor: { color: "#06B6D4" },
-  Keyboard: { color: "#8B5CF6" },
-  Mouse: { color: "#EC4899" },
-  Headphones: { color: "#F97316" },
-  Webcam: { color: "#14B8A6" },
-  Desk: { color: "#A16207" },
-  Chair: { color: "#64748B" },
+export const productMeta: Record<Product, { label: string; color: string }> = {
+  laptop: { label: "Laptop", color: "#6366F1" },
+  monitor: { label: "Monitor", color: "#06B6D4" },
+  keyboard: { label: "Keyboard", color: "#8B5CF6" },
+  mouse: { label: "Mouse", color: "#EC4899" },
+  headphones: { label: "Headphones", color: "#F97316" },
+  webcam: { label: "Webcam", color: "#14B8A6" },
+  desk: { label: "Desk", color: "#A16207" },
+  chair: { label: "Chair", color: "#64748B" },
 };
 
 export type Sale = {

@@ -15,6 +15,8 @@ export type ColumnValueOption = {
   icon?: LucideIcon;
   /** The count of items for the option */
   count?: number;
+  /** The color associated with the option */
+  color?: string;
 };
 
 export type ColumnMeta = {

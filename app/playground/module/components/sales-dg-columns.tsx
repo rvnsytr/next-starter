@@ -118,13 +118,11 @@ export const saleDGColumns = columnHelper.columns([
   columnHelper.accessor("status", {
     header: (c) => <c.header.ColumnHeader label="Status" align="center" />,
     cell: (c) => {
-      const status = c.getValue();
-      const { color } = saleStatusMeta[status];
-
+      const { label, color, icon: Icon } = saleStatusMeta[c.getValue()];
       return (
         <div className="flex justify-center">
-          <CustomColorBadge color={color} className="capitalize">
-            {status}
+          <CustomColorBadge color={color}>
+            <Icon /> {label}
           </CustomColorBadge>
         </div>
       );
@@ -141,7 +139,7 @@ export const saleDGColumns = columnHelper.columns([
 
       options: Object.entries(saleStatusMeta).map(([k, v]) => ({
         value: k,
-        label: k,
+        label: v.label,
         icon: v.icon,
       })),
 
@@ -156,11 +154,20 @@ export const saleDGColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Products" />,
     cell: (c) => (
       <div className="flex flex-wrap gap-1">
-        {c.getValue().map((product) => (
-          <Badge key={product} variant="outline">
-            {product}
-          </Badge>
-        ))}
+        {c.getValue().map((product: string) => {
+          const key = Object.keys(productMeta).find((k) => k === product);
+          const selected = key
+            ? productMeta[key as keyof typeof productMeta]
+            : undefined;
+          return (
+            <CustomColorBadge
+              key={product}
+              color={selected?.color || "primary"}
+            >
+              {selected?.label || product}
+            </CustomColorBadge>
+          );
+        })}
       </div>
     ),
 
@@ -174,7 +181,11 @@ export const saleDGColumns = columnHelper.columns([
       label: "Products",
       icon: PackageIcon,
 
-      options: Object.keys(productMeta).map((k) => ({ value: k, label: k })),
+      options: Object.entries(productMeta).map(([k, v]) => ({
+        value: k,
+        label: v.label,
+        color: v.color,
+      })),
 
       editor: {
         type: "multi-option",
