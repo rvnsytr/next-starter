@@ -384,7 +384,7 @@ export function ComboboxChip({
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
       className={cn(
-        "bg-accent text-accent-foreground flex items-center rounded-[calc(var(--radius-md)-1px)] ps-2 text-xs/(--text-xs--line-height) font-medium outline-none **:[svg:not([class*='size-'])]:size-3.5",
+        "bg-accent text-accent-foreground flex items-center rounded-sm ps-2 text-xs/(--text-xs--line-height) font-medium outline-none **:[svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
