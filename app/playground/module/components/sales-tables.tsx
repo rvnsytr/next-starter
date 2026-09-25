@@ -110,7 +110,7 @@ export function SaleDataGrid() {
         amount: 0,
         isPaid: false,
         purchasedAt: new Date(),
-        status: "Pending",
+        status: "pending",
         products: [],
         shippingAddress: {
           city: "",

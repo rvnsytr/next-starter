@@ -134,13 +134,13 @@ export type DataGridCellEditorMeta =
         schema?: z.ZodType<string, any>;
         createable?: boolean;
         props?: CellEditorComboboxProps<false>;
-        popupProps?: Omit<
-          React.ComponentProps<typeof ComboboxPopup>,
-          ExcludedCellEditorProps
-        >;
         inputProps?: Omit<
           React.ComponentProps<typeof ComboboxInput>,
           ExcludedCellEditorProps | "inputGroupProps"
+        >;
+        popupProps?: Omit<
+          React.ComponentProps<typeof ComboboxPopup>,
+          ExcludedCellEditorProps
         >;
       }
     >
@@ -151,12 +151,12 @@ export type DataGridCellEditorMeta =
         schema?: z.ZodType<string[], any>;
         createable?: boolean;
         props?: CellEditorComboboxProps<true>;
-        popupProps?: Omit<
-          React.ComponentProps<typeof ComboboxPopup>,
-          ExcludedCellEditorProps
-        >;
         inputProps?: Omit<
           React.ComponentProps<typeof ComboboxChipsInput>,
+          ExcludedCellEditorProps
+        >;
+        popupProps?: Omit<
+          React.ComponentProps<typeof ComboboxPopup>,
           ExcludedCellEditorProps
         >;
       }

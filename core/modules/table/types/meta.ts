@@ -17,6 +17,8 @@ export type ColumnValueOption = {
   count?: number;
   /** The color associated with the option */
   color?: string;
+  /** Whether the option is disabled */
+  disabled?: boolean;
 };
 
 export type ColumnMeta = {

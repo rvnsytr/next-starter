@@ -28,6 +28,7 @@ import {
   DataGridEditState,
 } from "@/core/modules/table/types";
 import { isEqual } from "@/core/utils";
+import { messages } from "@/shared/messages";
 import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
@@ -149,7 +150,7 @@ function TableCellEditorString({
   const isEdit = context.currentEdit?.cellId === context.cellId;
 
   const schema = useMemo(
-    () => editorMeta.schema ?? sharedSchemas.string({ withRequired: true }),
+    () => editorMeta.schema ?? z.string(),
     [editorMeta.schema],
   );
 
@@ -414,8 +415,6 @@ function TableCellEditorOption({
   context,
   editorMeta,
   className,
-  onMouseDown,
-  onMouseEnter,
   onDoubleClick,
   children,
   ...props
@@ -525,19 +524,11 @@ function TableCellEditorOption({
   const {
     placeholder = `Select ${config.multiple ? "some" : "an"} item...`,
     onKeyDown,
-    ...restInputProps
+    ...inputProps
   } = editorMeta.inputProps ?? {};
 
   return (
     <TableCell
-      onMouseDown={(e) => {
-        if (isInteractiveTarget(e.target)) return;
-        onMouseDown?.(e);
-      }}
-      onMouseEnter={(e) => {
-        if (isInteractiveTarget(e.target)) return;
-        onMouseEnter?.(e);
-      }}
       onDoubleClick={(e) => {
         onDoubleClick?.(e);
         if (!context.currentEdit) context.setCurrentEdit(context);
@@ -610,19 +601,25 @@ function TableCellEditorOption({
                               {items.map((item) => {
                                 const selected = findItem(item);
 
-                                if (selected?.color)
+                                if (selected?.color) {
+                                  const Icon = selected.icon;
                                   return (
                                     <ComboboxChip
                                       key={item}
+                                      removeProps={{
+                                        disabled: selected.disabled,
+                                      }}
                                       render={
                                         <CustomColorBadge
                                           color={selected.color}
                                         >
+                                          {Icon && <Icon />}
                                           {selected.label}
                                         </CustomColorBadge>
                                       }
                                     />
                                   );
+                                }
 
                                 return (
                                   <ComboboxChip key={item}>{item}</ComboboxChip>
@@ -640,7 +637,7 @@ function TableCellEditorOption({
                                   onKeyDown?.(e);
                                 }}
                                 {...field}
-                                {...restInputProps}
+                                {...inputProps}
                               />
                             </>
                           )}
@@ -659,12 +656,12 @@ function TableCellEditorOption({
                           onKeyDown?.(e);
                         }}
                         {...field}
-                        {...restInputProps}
+                        {...inputProps}
                       />
                     )}
 
                     <ComboboxPopup {...editorMeta.popupProps}>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
+                      <ComboboxEmpty>{messages.empty}</ComboboxEmpty>
                       <ComboboxList>
                         {(item: (typeof columnItems)[number]) => {
                           const Icon = item.icon;
@@ -687,7 +684,11 @@ function TableCellEditorOption({
                           }
 
                           return (
-                            <ComboboxItem key={item.value} value={item.value}>
+                            <ComboboxItem
+                              key={item.value}
+                              value={item.value}
+                              disabled={item.disabled}
+                            >
                               {Content}
                             </ComboboxItem>
                           );
