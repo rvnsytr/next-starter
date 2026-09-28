@@ -117,9 +117,7 @@ function DialogHeader({
   return useRender({
     defaultTagName: "div",
     props: mergeProps<"div">(
-      {
-        className: cn("flex flex-col gap-2 p-4 text-left", className),
-      },
+      { className: cn("flex flex-col gap-2 p-4 text-left", className) },
       props,
     ),
     render,

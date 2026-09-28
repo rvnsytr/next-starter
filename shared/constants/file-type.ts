@@ -39,7 +39,7 @@ export const FILE_TYPES = [
 
 const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   image: {
-    label: "gambar",
+    label: "image",
     icon: ImageIcon,
     maxSize: toBytes(2),
     accept: "image/png, image/jpeg, image/svg+xml, image/webp",
@@ -55,7 +55,7 @@ const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 
   document: {
-    label: "dokumen",
+    label: "document",
     icon: FileTextIcon,
     maxSize: toBytes(2),
     accept: [
@@ -66,7 +66,7 @@ const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 
   spreadsheet: {
-    label: "lembar kerja (spreadsheet)",
+    label: "spreadsheet",
     icon: FileSpreadsheetIcon,
     maxSize: toBytes(2),
     accept: [
@@ -77,7 +77,7 @@ const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 
   presentation: {
-    label: "presentasi (ppt)",
+    label: "presentation",
     icon: TableIcon,
     maxSize: toBytes(10),
     accept: [
@@ -88,7 +88,7 @@ const META: Omit<FileTypeMeta, "file" | "office-document"> = {
   },
 
   archive: {
-    label: "arsip",
+    label: "archive",
     icon: FileArchiveIcon,
     maxSize: toBytes(20),
     accept: [
@@ -125,7 +125,7 @@ const META: Omit<FileTypeMeta, "file" | "office-document"> = {
 
 export const FILE_TYPE_META: FileTypeMeta = {
   file: {
-    label: "berkas",
+    label: "file",
     icon: FileIcon,
     maxSize: Math.max(...Object.values(META).map((c) => c.maxSize)),
     accept: "*",
@@ -133,7 +133,7 @@ export const FILE_TYPE_META: FileTypeMeta = {
   },
 
   "office-document": {
-    label: "dokumen kantor",
+    label: "office document",
     icon: FilesIcon,
     maxSize: toBytes(10),
     accept: [

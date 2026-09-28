@@ -1,7 +1,6 @@
 "use client";
 
 import { FILE_TYPE_META, FileTypeDef } from "@/shared/constants";
-import { messages } from "@/shared/messages";
 import { cn } from "cn";
 import {
   BrushCleaningIcon,
@@ -41,13 +40,29 @@ export type FileDropzoneProps = Pick<
 > &
   Partial<Pick<FileTypeDef, "label" | "icon" | "extensions">> &
   FileUploadOptions & {
+    /** Initial files to populate the dropzone with */
     initialFiles?: FileMetadata[];
+
+    /** Controlled files for the dropzone */
     files?: FileWithPreview[];
+
+    /**
+     * Whether the files in the dropzone can be sorted
+     * @default false
+     */
     sortable?: boolean;
+
+    /** Custom class names for the dropzone components */
     classNames?: {
+      /** Class name for the dropzone container */
       container?: string;
+      /** Class name for the dropzone */
       dropzone?: string;
+
+      /** Class name for the files container */
       files?: string;
+
+      /** Class name for an individual file */
       file?: string;
     };
     onClear?: () => void;
@@ -143,38 +158,32 @@ export function FileDropzone({
           </EmptyMedia>
 
           <EmptyTitle className="text-sm">
-            Seret dan lepaskan {label.toLowerCase()} di sini, atau klik untuk
-            mengunggah
+            Drag and drop {label.toLowerCase()} here, or click to upload
           </EmptyTitle>
 
           <EmptyDescription
             className={cn(
-              "flex flex-col items-center gap-y-1 text-center text-xs",
+              "flex flex-col items-center gap-y-2 text-center text-xs",
               "**:[b]:font-normal **:[svg]:hidden **:[svg]:size-4 sm:**:[svg]:block",
             )}
           >
             <span>
               {extensions.length ? (
-                <span>
-                  Mendukung <b>{extensions.join(", ")}</b>
-                </span>
+                <span>{extensions.join(", ")}</span>
               ) : (
-                <span>Mendukung berbagai jenis {label}</span>
+                <span>Supports various types of {label}</span>
               )}
             </span>
 
             {maxSize && (
               <span>
-                Ukuran maksimum <b>{formatBytes(maxSize)}</b>
+                Maximum size <b>{formatBytes(maxSize)}</b>
               </span>
             )}
 
             {maxFiles && (
               <span>
-                {`Maksimal `}
-                <b>
-                  {maxFiles} {label}
-                </b>
+                Max <b>{`${maxFiles} ${label}s`}</b>
               </span>
             )}
           </EmptyDescription>
@@ -391,8 +400,7 @@ export function FileDropzone({
               variant="destructive-outline"
               onClick={clearErrors}
             >
-              <BrushCleaningIcon />
-              {messages.actions.clear}
+              <BrushCleaningIcon /> Clear
             </Button>
           </AlertAction>
         </Alert>
