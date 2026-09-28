@@ -25,7 +25,7 @@ export function saveChanges(
   const res = tableMeta?.onSave?.(context.getChanges()) ?? false;
   if (!res) return;
   context.clearChanges();
-  tableMeta?.onChange?.(context.getChanges());
+  tableMeta?.onEditChange?.(context.getChanges());
 }
 
 export function calculateRowNumber(

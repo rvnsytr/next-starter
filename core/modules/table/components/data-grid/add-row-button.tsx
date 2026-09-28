@@ -42,7 +42,7 @@ export function DataGridAddRowButton({
   const addNewRow = useCallback(() => {
     newRows.fieldArray.append(table.options.meta?.defaultValues);
     const currentChanges = getChanges();
-    table.options.meta?.onChange?.(currentChanges);
+    table.options.meta?.onEditChange?.(currentChanges);
 
     const focusedCell = table.getFocusedCell();
 

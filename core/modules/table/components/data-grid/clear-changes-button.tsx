@@ -21,7 +21,7 @@ export function DataGridClearChangesButton({
       variant={variant}
       onClick={(e) => {
         clearChanges();
-        table.options.meta?.onChange?.(getChanges());
+        table.options.meta?.onEditChange?.(getChanges());
         onClick?.(e);
       }}
       {...props}

@@ -126,6 +126,10 @@ export function SaleDataGrid() {
         deliveryTimes: [],
       },
 
+      onEditChange: () => {
+        console.log("Edit!");
+      },
+
       onSave: (ctx) => {
         mutate(
           (prev) => {

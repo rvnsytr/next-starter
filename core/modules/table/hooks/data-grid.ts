@@ -89,7 +89,7 @@ const useAppTable = <
   selector?: AppTableSelector<TData, TSelected>,
 ): ReturnType<typeof dataGridUseAppTable<TData, TSelected>> => {
   const { data, getRowId, meta, ...restOptions } = tableOptions;
-  const { onChange, ...restMeta } = meta;
+  const { onEditChange, ...restMeta } = meta;
 
   const [changes, setChanges] = useState<DataGridChanges<TData>>({
     added: [],
@@ -124,9 +124,9 @@ const useAppTable = <
       meta: {
         ...restMeta,
         original: data,
-        onChange: (ctx: DataGridChanges<TData>) => {
-          setChanges(ctx);
-          onChange?.(ctx);
+        onEditChange: (ctx: DataGridChanges<TData>, silent) => {
+          if (!silent) setChanges(ctx);
+          onEditChange?.(ctx, silent);
         },
       } as DataGridTableMeta<RowData> & { original: TData },
     },

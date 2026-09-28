@@ -135,11 +135,6 @@ export function DataGrid({
     }
   }, [currentEdit, table]);
 
-  const handleChanges = useCallback(() => {
-    const currentChanges = dataGridContext.getChanges();
-    table.options.meta?.onChange?.(currentChanges);
-  }, [dataGridContext, table.options.meta]);
-
   const handleCellEdit = useCallback(
     (
       newValue: CellData,
@@ -183,13 +178,11 @@ export function DataGrid({
         }
       }
 
-      const isSilent = options?.silent ?? false;
-      if (!isSilent) {
-        handleChanges();
-        exitCellEdit();
-      }
+      const silent = options?.silent ?? false;
+      table.options.meta?.onEditChange?.(dataGridContext.getChanges(), silent);
+      if (!silent) exitCellEdit();
     },
-    [dataGridContext, exitCellEdit, handleChanges, originalData, table],
+    [dataGridContext, exitCellEdit, originalData, table],
   );
 
   useEffect(() => {
@@ -312,7 +305,8 @@ export function DataGrid({
           removeRows(removedRows);
 
           const hasAddedRows = rowIds.length !== removedRows.length;
-          if (hasAddedRows) handleChanges();
+          if (hasAddedRows)
+            table.options.meta?.onEditChange?.(dataGridContext.getChanges());
         },
       },
     ],

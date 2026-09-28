@@ -41,7 +41,7 @@ export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   onSave?: (context: DataGridChanges<TData>) => boolean;
 
   /** Callback invoked when the Data Grid data changes, either through row additions/removals or cell edits. */
-  onChange?: (context: DataGridChanges<TData>) => void;
+  onEditChange?: (context: DataGridChanges<TData>, silent?: boolean) => void;
 };
 
 export type DataGridColumnMeta = ColumnMeta & {
