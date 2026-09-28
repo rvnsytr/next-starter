@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   BOOLEAN_FILTER_OPERATOR_VALUES,
-  DATE_TIME_FILTER_OPERATOR_VALUES,
   MULTI_OPTION_FILTER_OPERATOR_VALUES,
   NUMBER_FILTER_OPERATOR_VALUES,
   OPTION_FILTER_OPERATOR_VALUES,
@@ -40,34 +39,11 @@ export const multiOptionFilterSchema = z.object({
   value: z.string().array(),
 });
 
-export const temporalFilterValueSchema = z.tuple([
-  z.date().optional(),
-  z.date().optional(),
-]);
-
-export const dateTimeFilterSchema = z.object({
-  type: z.literal("date-time"),
-  operator: z.enum(DATE_TIME_FILTER_OPERATOR_VALUES),
-  value: temporalFilterValueSchema,
-});
-
-export const dateFilterSchema = z.object({
-  type: z.literal("date"),
+export const temporalFilterSchema = z.object({
+  type: z.literal("temporal"),
   operator: z.enum(TEMPORAL_FILTER_OPERATOR_VALUES),
-  value: temporalFilterValueSchema,
+  value: z.tuple([z.date().optional(), z.date().optional()]),
 });
-
-export const timeFilterSchema = z.object({
-  type: z.literal("time"),
-  operator: z.enum(TEMPORAL_FILTER_OPERATOR_VALUES),
-  value: temporalFilterValueSchema,
-});
-
-export const temporalFilterSchema = z.discriminatedUnion("type", [
-  dateTimeFilterSchema,
-  dateFilterSchema,
-  timeFilterSchema,
-]);
 
 export const filterTypeSchema = z.enum([
   "string",
@@ -75,9 +51,7 @@ export const filterTypeSchema = z.enum([
   "boolean",
   "option",
   "multi-option",
-  "date-time",
-  "date",
-  "time",
+  "temporal",
 ]);
 
 export const filterSchema = z.compile(
@@ -87,8 +61,6 @@ export const filterSchema = z.compile(
     booleanFilterSchema,
     optionFilterSchema,
     multiOptionFilterSchema,
-    dateTimeFilterSchema,
-    dateFilterSchema,
-    timeFilterSchema,
+    temporalFilterSchema,
   ]),
 );

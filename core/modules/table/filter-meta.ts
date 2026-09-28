@@ -48,26 +48,10 @@ export const filterMeta: {
       value: [],
     },
   },
-  "date-time": {
+  temporal: {
     popupType: "popover",
     defaultValue: {
-      type: "date-time",
-      operator: "is",
-      value: [new Date()],
-    },
-  },
-  date: {
-    popupType: "popover",
-    defaultValue: {
-      type: "date",
-      operator: "is",
-      value: [new Date()],
-    },
-  },
-  time: {
-    popupType: "popover",
-    defaultValue: {
-      type: "time",
+      type: "temporal",
       operator: "is",
       value: [new Date()],
     },

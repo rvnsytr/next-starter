@@ -214,10 +214,10 @@ export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   }
 };
 
-export const dateTimeFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+export const temporalFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   if (!fv) return true;
 
-  const filterType: FilterType = "date-time";
+  const filterType: FilterType = "temporal";
   const filterResult = validateValue(fv, temporalFilterSchema);
 
   if (!filterResult.success) {

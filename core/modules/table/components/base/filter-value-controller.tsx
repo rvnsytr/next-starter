@@ -85,9 +85,7 @@ export function FilterValueController({ context }: FilterValueControllerProps) {
         />
       );
 
-    case "date-time":
-    case "date":
-    case "time":
+    case "temporal":
       return (
         <FilterValueControllerTemporal
           context={context}
@@ -477,13 +475,9 @@ function FilterValueControllerTemporal({
   disabled = false,
 }: FilterValueControllerProps) {
   const { filter, setFilter, columnMeta } = context;
-  const defaultFilterType: FilterType = "date-time";
+  const defaultFilterType: FilterType = "temporal";
 
-  const isFilterValid =
-    filter.type === defaultFilterType ||
-    filter.type === "date" ||
-    filter.type === "time";
-
+  const isFilterValid = filter.type === defaultFilterType;
   const defaultValue = isFilterValid
     ? filter.value
     : filterMeta[defaultFilterType].defaultValue.value;
@@ -491,21 +485,16 @@ function FilterValueControllerTemporal({
   const [value, setValue] = useState(defaultValue);
 
   const options = useMemo(() => {
-    let inputType = "date";
     let formatStr = "yyyy-MM-dd";
+    let inputType = "date";
 
     if (filter.operator === "exactly") {
       formatStr = "yyyy-MM-dd'T'HH:mm";
       inputType = "datetime-local";
     }
 
-    if (filter.type === "time") {
-      formatStr = "HH:mm";
-      inputType = "time";
-    }
-
     return { inputType, formatStr };
-  }, [filter.type, filter.operator]);
+  }, [filter.operator]);
 
   useEffect(() => {
     if (!isFilterValid) return;

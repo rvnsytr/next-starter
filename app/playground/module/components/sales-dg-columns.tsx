@@ -319,7 +319,7 @@ export const saleDGColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Purchased At" />,
     cell: (c) => formatDate(c.getValue(), "PPPp"),
 
-    filterFn: "date-time",
+    filterFn: "temporal",
 
     minSize: 250,
     size: 250,

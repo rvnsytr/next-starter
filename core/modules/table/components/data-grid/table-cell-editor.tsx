@@ -44,6 +44,7 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
+import { format } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -242,7 +243,7 @@ function TableCellEditorText({
               else if (typeof fieldValue === "boolean")
                 value = String(fieldValue);
               else if (fieldValue instanceof Date)
-                value = fieldValue.toISOString().slice(0, 16);
+                value = format(fieldValue, "yyyy-MM-dd'T'HH:mm");
 
               return (
                 <Input

@@ -19,15 +19,14 @@ import {
 } from "@tanstack/react-table";
 import {
   booleanFilterFn,
-  dateTimeFilterFn,
   FilterFn,
-  FilterType,
   multiOptionFilterFn,
   numberFilterFn,
   optionFilterFn,
   stringFilterFn,
+  temporalFilterFn,
 } from "../filters";
-import { ColumnMeta, TableMeta } from "../types";
+import { ColumnMeta, FilterType, TableMeta } from "../types";
 
 export const serverDataControllerFeatures = {
   columnFacetingFeature,
@@ -40,9 +39,7 @@ export const serverDataControllerFeatures = {
     boolean: booleanFilterFn,
     option: optionFilterFn,
     "multi-option": multiOptionFilterFn,
-    "date-time": dateTimeFilterFn,
-    date: dateTimeFilterFn,
-    time: dateTimeFilterFn,
+    temporal: temporalFilterFn,
   } satisfies Record<FilterType, FilterFn>,
   globalFilteringFeature,
   rowPaginationFeature,
