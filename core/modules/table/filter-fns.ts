@@ -3,7 +3,7 @@ import {
   endOfDay,
   isAfter,
   isBefore,
-  isEqual,
+  isEqual as isDateEqual,
   isWithinInterval,
   startOfDay,
   startOfMinute,
@@ -30,7 +30,7 @@ export const filterFn_dateExactly = constructFilterFn({
   filter: (dataValue: Date | undefined, filter: TemporalFilter) => {
     const filterValue = filter.value[0];
     if (!dataValue || !filterValue) return false;
-    return isEqual(startOfMinute(dataValue), startOfMinute(filterValue));
+    return isDateEqual(startOfMinute(dataValue), startOfMinute(filterValue));
   },
   autoRemove: temporalFilterAutoRemove,
 });

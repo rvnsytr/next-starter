@@ -200,7 +200,7 @@ function TableCellEditorText({
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentCellValue) return context.exitCellEdit();
+      if (isEqual(value, currentCellValue)) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),

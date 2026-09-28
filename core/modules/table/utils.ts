@@ -198,19 +198,30 @@ export function setNestedValue(
   return result;
 }
 
+export function isPlainObject(
+  value: unknown,
+): value is Record<string, unknown> {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mergeNested<T extends Record<string, any>>(
   target: T,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   source: Record<string, any>,
 ): T {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: Record<string, any> = { ...target };
+  const result: Record<string, unknown> = { ...target };
 
-  for (const [key, value] of Object.entries(source)) {
-    if (value !== null && typeof value === "object" && !Array.isArray(value))
-      result[key] = mergeNested(result[key] ?? {}, value);
-    else result[key] = value;
+  for (const [key, sourceValue] of Object.entries(source)) {
+    const targetValue = result[key];
+    const canMerge = isPlainObject(targetValue) && isPlainObject(sourceValue);
+    result[key] = canMerge
+      ? mergeNested(targetValue, sourceValue)
+      : sourceValue;
   }
 
   return result as T;
