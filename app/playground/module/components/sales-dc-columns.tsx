@@ -12,6 +12,7 @@ import {
   DollarSignIcon,
   MailIcon,
   MapPinIcon,
+  MapPinnedIcon,
   PackageIcon,
   TrendingDown,
   TrendingUp,
@@ -66,6 +67,18 @@ export const saleDCColumns = columnHelper.columns([
     },
   }),
 
+  columnHelper.accessor("location", {
+    header: (c) => <c.header.ColumnHeader label="Location" />,
+    cell: (c) => c.getValue(),
+
+    filterFn: "string",
+
+    meta: {
+      label: "Location",
+      icon: MapPinnedIcon,
+    },
+  }),
+
   columnHelper.accessor("salesRep", {
     header: (c) => <c.header.ColumnHeader label="Sales Rep" />,
     cell: (c) => c.getValue() ?? "-",
@@ -81,12 +94,12 @@ export const saleDCColumns = columnHelper.columns([
   columnHelper.accessor("status", {
     header: (c) => <c.header.ColumnHeader label="Status" align="center" />,
     cell: (c) => {
-      const status = c.getValue();
-      const { color } = saleStatusMeta[status];
-
+      const { label, color, icon: Icon } = saleStatusMeta[c.getValue()];
       return (
         <div className="flex justify-center">
-          <CustomColorBadge color={color}>{status}</CustomColorBadge>
+          <CustomColorBadge color={color}>
+            <Icon /> {label}
+          </CustomColorBadge>
         </div>
       );
     },
@@ -99,7 +112,7 @@ export const saleDCColumns = columnHelper.columns([
 
       options: Object.entries(saleStatusMeta).map(([k, v]) => ({
         value: k,
-        label: k,
+        label: v.label,
         icon: v.icon,
       })),
     },
@@ -109,21 +122,35 @@ export const saleDCColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Products" />,
     cell: (c) => (
       <div className="flex flex-wrap gap-1">
-        {c.getValue().map((product) => (
-          <CustomColorBadge key={product} color={productMeta[product].color}>
-            {product}
-          </CustomColorBadge>
-        ))}
+        {c.getValue().map((product: string) => {
+          const key = Object.keys(productMeta).find((k) => k === product);
+          const selected = key
+            ? productMeta[key as keyof typeof productMeta]
+            : undefined;
+          return (
+            <CustomColorBadge
+              key={product}
+              color={selected?.color || "primary"}
+            >
+              {selected?.label || product}
+            </CustomColorBadge>
+          );
+        })}
       </div>
     ),
 
     filterFn: "multi-option",
+    getUniqueValues: (r) => r.products,
 
     meta: {
       label: "Products",
       icon: PackageIcon,
 
-      options: Object.keys(productMeta).map((k) => ({ value: k, label: k })),
+      options: Object.entries(productMeta).map(([k, v]) => ({
+        value: k,
+        label: v.label,
+        color: v.color,
+      })),
     },
   }),
 
@@ -131,16 +158,21 @@ export const saleDCColumns = columnHelper.columns([
     header: (c) => <c.header.ColumnHeader label="Amount" align="end" />,
     cell: (c) => {
       const amount = c.getValue();
+
+      const isPositive = amount > 0;
       const isNegative = amount < 0;
-      const Icon = isNegative ? TrendingDown : TrendingUp;
+
+      const Icon = isPositive ? TrendingUp : isNegative ? TrendingDown : null;
+
       return (
         <div
           className={cn(
-            "flex items-center justify-end gap-x-2 text-right font-medium tabular-nums",
-            isNegative ? "text-destructive" : "text-success",
+            "text-muted-foreground flex items-center justify-end gap-x-2 text-right font-medium tabular-nums",
+            isPositive && "text-success",
+            isNegative && "text-destructive",
           )}
         >
-          <Icon className="size-3.5" />
+          {Icon && <Icon className="size-3.5" />}
           {isNegative ? "-" : ""}${formatNumber(Math.abs(amount))}
         </div>
       );
@@ -152,13 +184,16 @@ export const saleDCColumns = columnHelper.columns([
       label: "Sale Amount",
       icon: DollarSignIcon,
 
-      cellProps: (value) => ({
-        className: cn(
-          typeof value === "number" && value >= 0
-            ? "bg-success/10 dark:bg-success/20"
-            : "bg-destructive/10 dark:bg-destructive/20",
-        ),
-      }),
+      cellProps: (value) => {
+        const isNumber = typeof value === "number";
+        return {
+          className: cn(
+            "bg-muted dark:bg-muted",
+            isNumber && value > 0 && "bg-success/10 dark:bg-success/20",
+            isNumber && value < 0 && "bg-destructive/10 dark:bg-destructive/20",
+          ),
+        };
+      },
     },
   }),
 
@@ -179,12 +214,19 @@ export const saleDCColumns = columnHelper.columns([
     meta: {
       label: "Paid",
       icon: CheckCircle2Icon,
+
+      booleanLabels: {
+        true: "paid",
+        false: "unpaid",
+      },
     },
   }),
 
   columnHelper.accessor("purchasedAt", {
     header: (c) => <c.header.ColumnHeader label="Purchased At" />,
     cell: (c) => formatDate(c.getValue(), "PPPp"),
+
+    filterFn: "temporal",
 
     meta: {
       label: "Purchased At",
