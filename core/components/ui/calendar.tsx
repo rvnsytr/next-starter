@@ -84,7 +84,7 @@ function CalendarContent({
 
       return acc;
     },
-    { ...defaultClassNames } as typeof defaultClassNames,
+    { ...defaultClassNames },
   );
 
   return (

@@ -4,20 +4,18 @@ import { useCallback, useRef, useState } from "react";
 
 export function useViewTransition() {
   const activeCount = useRef(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, startTransitioning] = useState(false);
 
   const startTransition = useCallback((callback: () => void) => {
-    if (!document.startViewTransition) return callback();
-
     const transition = document.startViewTransition(() => {
       activeCount.current++;
-      setIsTransitioning(true);
+      startTransitioning(true);
       callback();
     });
 
     transition.finished.finally(() => {
       activeCount.current--;
-      if (activeCount.current === 0) setIsTransitioning(false);
+      if (activeCount.current === 0) startTransitioning(false);
     });
   }, []);
 

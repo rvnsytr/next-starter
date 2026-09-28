@@ -60,11 +60,11 @@ export function formatNumberRange(nums: number[], minRangeSize = 10) {
   if (!nums.length) return [];
 
   const result: string[] = [];
-  let start = nums[0]!;
-  let prev = nums[0]!;
+  let start = nums[0];
+  let prev = nums[0];
 
   for (let i = 1; i <= nums.length; i++) {
-    const curr = nums[i]!;
+    const curr = nums[i];
 
     if (curr === prev + 1) {
       prev = curr;

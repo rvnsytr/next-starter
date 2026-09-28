@@ -71,10 +71,10 @@ export function useCarousel() {
 }
 
 export function Carousel({
-  orientation = "horizontal",
   opts,
   setApi,
   plugins,
+  orientation,
   className,
   children,
   ...props
@@ -122,7 +122,7 @@ export function Carousel({
         api,
         opts,
         orientation:
-          orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+          orientation ?? (opts?.axis === "y" ? "vertical" : "horizontal"),
         scrollPrev,
         scrollNext,
         canScrollPrev,

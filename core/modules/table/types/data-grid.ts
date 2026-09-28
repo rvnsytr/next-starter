@@ -84,7 +84,7 @@ export type CellEditorMetaBase = {
   type: "string";
 
   /** Optional Zod schema used to validate the value before committing. */
-  schema?: z.ZodType<string, any>;
+  schema?: z.ZodType<any, any>;
 
   /** Props passed to the input component. */
   props?: Omit<InputProps, ExcludedCellEditorProps>;
@@ -137,6 +137,7 @@ export type DataGridCellEditorMeta =
       CellEditorMetaBase,
       {
         type: "string:autocomplete";
+        schema?: z.ZodType<string, any>;
         onSearch: (value: string) => Promise<string[]> | string[];
         props?: Omit<
           React.ComponentProps<typeof Autocomplete>,

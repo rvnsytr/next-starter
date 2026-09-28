@@ -64,10 +64,10 @@ const defaultMode: ReadExcelSheetMode = "include";
 
 type ImportDialogFormSchema = z.infer<typeof importDialogSchema>;
 
-export type ImportDialogProps<T, K extends string> = {
+export type ImportDialogProps<T, TKey extends string> = {
   id?: string;
 
-  source: Record<K, Omit<ImportDialogFormSchema["source"][number], "key">>;
+  source: Record<TKey, Omit<ImportDialogFormSchema["source"][number], "key">>;
   defaultValues?: Partial<Omit<ImportDialogFormSchema, "source">>;
 
   onSubmit: (data: {
@@ -75,7 +75,7 @@ export type ImportDialogProps<T, K extends string> = {
     sheet: string;
     mode: ReadExcelSheetMode;
     rows: number[];
-    source: Record<K, number>;
+    source: Record<TKey, number>;
   }) => Promise<T>;
   onSuccess?: (response: T) => string | undefined;
   onError?: (error: unknown) => string | undefined;
@@ -104,7 +104,7 @@ const importDialogSchema = z.object({
     .array(),
 });
 
-export function ImportDialog<T, K extends string>({
+export function ImportDialog<T, TKey extends string>({
   id = "import-dialog-form",
 
   source,
@@ -121,7 +121,7 @@ export function ImportDialog<T, K extends string>({
 
   renderTrigger,
   children,
-}: ImportDialogProps<T, K>) {
+}: ImportDialogProps<T, TKey>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [mode, setMode] = useState<ReadExcelSheetMode>(defaultMode);
 
@@ -157,7 +157,7 @@ export function ImportDialog<T, K extends string>({
         ...formData,
         source: Object.fromEntries(
           formData.source.map((v) => [v.key, v.column]),
-        ) as Record<K, number>,
+        ) as Record<TKey, number>,
         rows: parse(formData.rows),
       }),
       {

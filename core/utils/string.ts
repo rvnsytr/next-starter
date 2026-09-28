@@ -70,10 +70,10 @@ export function toCase(
   }
 }
 
-export function transformKeys<T, C extends TransformableStringCase>(
+export function transformKeys<T, TCase extends TransformableStringCase>(
   value: T,
-  keyCase: C,
-): TransformKeys<T, C> {
+  keyCase: TCase,
+): TransformKeys<T, TCase> {
   const transform = (val: unknown): unknown => {
     if (Array.isArray(val)) return val.map(transform);
 
@@ -90,5 +90,5 @@ export function transformKeys<T, C extends TransformableStringCase>(
     );
   };
 
-  return transform(value) as TransformKeys<T, C>;
+  return transform(value) as TransformKeys<T, TCase>;
 }

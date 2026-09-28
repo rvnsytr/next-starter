@@ -52,10 +52,7 @@ async function DashboardAuthProvider({
   const session = await auth.api.getSession({ headers });
   if (!session) redirect(createSignInURL(reqUrl) as Route);
 
-  const isAuthorized = hasRouteAccess(
-    reqUrl.pathname as Route,
-    session.user.role,
-  );
+  const isAuthorized = hasRouteAccess(reqUrl.pathname, session.user.role);
   if (!isAuthorized) return notFound();
 
   return <AuthProvider session={session}>{children}</AuthProvider>;

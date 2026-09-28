@@ -70,7 +70,9 @@ export function Scrollspy({
 
     anchorElementsRef.current.forEach((anchor, idx) => {
       const sectionId = anchor.getAttribute(`data-${dataAttribute}-anchor`);
-      const sectionElement = document.getElementById(sectionId!);
+      if (!sectionId) return;
+
+      const sectionElement = document.getElementById(sectionId);
       if (!sectionElement) return;
 
       let customOffset = offset;
@@ -105,7 +107,7 @@ export function Scrollspy({
 
     const activeAnchor = anchorElementsRef.current[activeIdx];
     const sectionId =
-      activeAnchor?.getAttribute(`data-${dataAttribute}-anchor`) ?? null;
+      activeAnchor.getAttribute(`data-${dataAttribute}-anchor`) ?? null;
 
     setActiveSection(sectionId);
   }, [targetRef, dataAttribute, offset, setActiveSection]);
@@ -162,9 +164,9 @@ export function Scrollspy({
     if (hash) {
       const targetElement = document.querySelector(
         `[data-${dataAttribute}-anchor="${hash}"]`,
-      ) as HTMLElement;
+      );
 
-      if (targetElement) scrollTo(targetElement)();
+      if (targetElement) scrollTo(targetElement as HTMLElement)();
     }
   }, [dataAttribute, scrollTo]);
 

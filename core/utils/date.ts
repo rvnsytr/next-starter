@@ -1,4 +1,4 @@
-import { format, isAfter, isBefore, isValid, parse, set } from "date-fns";
+import { format, isValid, parse, set } from "date-fns";
 import { id } from "date-fns/locale";
 
 export function timeOfDayText(date = new Date()) {
@@ -7,10 +7,6 @@ export function timeOfDayText(date = new Date()) {
   if (hour < 15) return "afternoon";
   if (hour < 18) return "evening";
   return "night";
-}
-
-export function isDateInRange(from: Date, to: Date, date: Date) {
-  return isBefore(from, date) && isAfter(to, date);
 }
 
 export function mergeDateAndTime(date: Date, time: Date) {
@@ -63,12 +59,4 @@ export function formatDateRange(start: Date, end: Date) {
     return `${formatLocalizedDate(start, "MMM d")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
 
   return `${formatLocalizedDate(start, "MMM d, yyyy")} - ${formatLocalizedDate(end, "MMM d, yyyy")}`;
-}
-
-export function formatSecondsToDHMS(totalSeconds: number) {
-  const days = Math.floor(totalSeconds / (24 * 3600));
-  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return { days, hours, minutes, seconds };
 }

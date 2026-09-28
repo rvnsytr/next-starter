@@ -1,5 +1,5 @@
 import { sharedSchemas } from "@/shared/schema";
-import z from "zod";
+import type { infer as ZodInfer } from "zod";
 import {
   countSchema,
   getActionResponseSchema,
@@ -26,10 +26,10 @@ export type DeepPartial<T> = T extends Builtin
       ? { [K in keyof T]?: DeepPartial<T[K]> }
       : T;
 
-export type Override<T, U> = Omit<T, keyof U> & U;
+export type Override<T, TOverride> = Omit<T, keyof TOverride> & TOverride;
 
-export type OmitByType<T, V> = {
-  [K in keyof T as T[K] extends V ? never : K]: T[K];
+export type OmitByType<T, TValue> = {
+  [K in keyof T as T[K] extends TValue ? never : K]: T[K];
 };
 
 export type StringCase =
@@ -40,51 +40,53 @@ export type TransformableStringCase = Extract<
   "snake" | "kebab" | "camel"
 >;
 
-export type SnakeCase<S extends string> = S extends `${infer A}${infer B}`
-  ? B extends Uncapitalize<B>
-    ? `${Lowercase<A>}${SnakeCase<B>}`
-    : `${Lowercase<A>}_${SnakeCase<B>}`
-  : S;
+export type SnakeCase<TString extends string> =
+  TString extends `${infer A}${infer B}`
+    ? B extends Uncapitalize<B>
+      ? `${Lowercase<A>}${SnakeCase<B>}`
+      : `${Lowercase<A>}_${SnakeCase<B>}`
+    : TString;
 
-export type KebabCase<S extends string> =
-  SnakeCase<S> extends `${infer A}_${infer B}`
+export type KebabCase<TString extends string> =
+  SnakeCase<TString> extends `${infer A}_${infer B}`
     ? `${A}-${KebabCase<B>}`
-    : SnakeCase<S>;
+    : SnakeCase<TString>;
 
-export type CamelCase<S extends string> = S extends `${infer A}_${infer B}`
-  ? `${A}${Capitalize<CamelCase<B>>}`
-  : S;
+export type CamelCase<TString extends string> =
+  TString extends `${infer A}_${infer B}`
+    ? `${A}${Capitalize<CamelCase<B>>}`
+    : TString;
 
 export type TransformKeys<
   T,
-  C extends TransformableStringCase,
+  TCase extends TransformableStringCase,
 > = T extends Builtin
   ? T
   : T extends readonly (infer U)[]
-    ? readonly TransformKeys<U, C>[]
+    ? readonly TransformKeys<U, TCase>[]
     : T extends object
       ? {
           [
             K in keyof T as K extends string
-              ? C extends "snake"
+              ? TCase extends "snake"
                 ? SnakeCase<K>
-                : C extends "kebab"
+                : TCase extends "kebab"
                   ? KebabCase<K>
                   : CamelCase<K>
               : K
-          ]: TransformKeys<T[K], C>;
+          ]: TransformKeys<T[K], TCase>;
         }
       : T;
 
-export type FileMetadata = z.infer<typeof sharedSchemas.fileMetadata>;
+export type FileMetadata = ZodInfer<typeof sharedSchemas.fileMetadata>;
 
-export type FileWithPreview = z.infer<
+export type FileWithPreview = ZodInfer<
   ReturnType<typeof sharedSchemas.fileWithPreview>
 >;
 
-export type Count = z.infer<typeof countSchema>;
+export type Count = ZodInfer<typeof countSchema>;
 
-export type ActionResponse<T = unknown> = z.infer<
+export type ActionResponse<T = unknown> = ZodInfer<
   ReturnType<typeof getActionResponseSchema<T>>
 >;
 
@@ -95,7 +97,7 @@ export type ActionSuccess<T = unknown> = Extract<
 
 export type ActionError = Extract<ActionResponse, { success: false }>;
 
-export type ApiResponse<T = unknown> = z.infer<
+export type ApiResponse<T = unknown> = ZodInfer<
   ReturnType<typeof getApiResponseSchema<T>>
 >;
 

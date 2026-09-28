@@ -4,7 +4,7 @@ export function getFileInfo(file: File | FileMetadata) {
   return {
     name: file.name,
     size: file.size,
-    type: file.type ?? "",
+    type: file.type,
     extension: `.${file.name.split(".").pop()}`,
   };
 }

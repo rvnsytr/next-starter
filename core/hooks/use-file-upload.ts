@@ -117,7 +117,7 @@ export function useStatelessFileUpload(
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
-      if (!newFiles || newFiles.length === 0) return;
+      if (!newFiles.length) return;
 
       const newFilesArray = Array.from(newFiles);
       const err: string[] = [];
@@ -281,7 +281,7 @@ export function useStatelessFileUpload(
 
       if (inputRef.current?.disabled) return;
 
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (e.dataTransfer.files.length > 0) {
         if (!multiple) addFiles([e.dataTransfer.files[0]]);
         else addFiles(e.dataTransfer.files);
       }

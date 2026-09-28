@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { S3Client } from "@aws-sdk/client-s3";
 
 export const S3_PUBLIC_ENDPOINT = process.env.S3_PUBLIC_ENDPOINT!;

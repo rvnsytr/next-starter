@@ -47,7 +47,9 @@ export const auth = betterAuth({
 
   socialProviders: {
     github: {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clientId: process.env.GITHUB_CLIENT_ID!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
   },

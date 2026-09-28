@@ -32,9 +32,9 @@ export function formatZodError<T>(
     return { success, message: messages.error, error };
 
   const firstIssue = zodError.issues[0];
-  let message = firstIssue?.message ?? "Validation error";
+  let message = firstIssue.message;
 
-  if (options?.withPath && firstIssue?.path.length) {
+  if (options?.withPath && firstIssue.path.length) {
     const paths = firstIssue.path.filter(Boolean);
     message = `[${paths.join(".")}] ${firstIssue.message}`;
   }

@@ -169,9 +169,8 @@ export function hasAccess(access: RouteAccess, role?: Role) {
   return false;
 }
 
-export function hasRouteAccess(route: Route, role: Role) {
-  if (!route) return false;
-  const config = routeConfig[route];
+export function hasRouteAccess(route: string | null, role: Role) {
+  const config = route ? routeConfig[route as keyof typeof routeConfig] : null;
   if (!config) return false;
   return hasAccess(config.access, role);
 }

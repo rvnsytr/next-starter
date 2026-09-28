@@ -28,7 +28,7 @@ const fetcher = async <T>(
 
 fetcher.postJson = async <T>(
   url: string,
-  config: Omit<ApiFetcherConfig<T>, "method">,
+  config?: Omit<ApiFetcherConfig<T>, "method">,
 ) => {
   const { headers, ...restConfig } = config ?? {};
   return await fetcher(url, {
