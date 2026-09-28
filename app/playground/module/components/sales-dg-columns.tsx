@@ -19,6 +19,7 @@ import {
   TrendingUp,
   UserRoundIcon,
 } from "lucide-react";
+import { z } from "zod";
 import { Sale, locations, productMeta, saleStatusMeta } from "../constants";
 
 const columnHelper = dataGrid.createAppColumnHelper<Sale>();
@@ -68,7 +69,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: UserRoundIcon,
 
       editor: {
-        type: "string",
+        type: "string:input",
         schema: sharedSchemas.string({ min: 1 }),
       },
     },
@@ -88,7 +89,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: MailIcon,
 
       editor: {
-        type: "string",
+        type: "string:input",
         schema: sharedSchemas.email,
         props: {
           type: "email",
@@ -145,7 +146,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: UserRoundIcon,
 
       editor: {
-        type: "string",
+        type: "string:input",
       },
     },
   }),
@@ -179,7 +180,7 @@ export const saleDGColumns = columnHelper.columns([
       })),
 
       editor: {
-        type: "option",
+        type: "string:option",
         props: { defaultOpen: true },
       },
     },
@@ -223,7 +224,7 @@ export const saleDGColumns = columnHelper.columns([
       })),
 
       editor: {
-        type: "multi-option",
+        type: "string:multi-option",
         createable: true,
       },
     },
@@ -263,7 +264,9 @@ export const saleDGColumns = columnHelper.columns([
       icon: DollarSignIcon,
 
       editor: {
-        type: "number",
+        type: "string:input",
+        schema: z.coerce.number(),
+        props: { type: "number" },
       },
 
       cellProps: (value) => {
@@ -306,7 +309,7 @@ export const saleDGColumns = columnHelper.columns([
       },
 
       editor: {
-        type: "boolean",
+        type: "boolean:checkbox",
         alwaysEditable: true,
       },
     },
@@ -324,6 +327,12 @@ export const saleDGColumns = columnHelper.columns([
     meta: {
       label: "Purchased At",
       icon: CalendarCheck2Icon,
+
+      editor: {
+        type: "string:input",
+        schema: z.coerce.date(),
+        props: { type: "datetime-local" },
+      },
     },
   }),
 
@@ -366,7 +375,7 @@ export const saleDGColumns = columnHelper.columns([
           label: "City",
 
           editor: {
-            type: "string",
+            type: "string:input",
           },
         },
       }),
@@ -385,7 +394,7 @@ export const saleDGColumns = columnHelper.columns([
           label: "Country",
 
           editor: {
-            type: "string",
+            type: "string:input",
           },
         },
       }),

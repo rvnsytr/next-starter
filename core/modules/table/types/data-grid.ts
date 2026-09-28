@@ -81,10 +81,10 @@ export type CellEditorMetaBase = {
   key?: string;
 
   /** Controls which input component is rendered and which Zod schema is expected. */
-  type: "string";
+  type: "string:input";
 
   /** Optional Zod schema used to validate the value before committing. */
-  schema?: z.ZodType<any, any>;
+  schema?: z.ZodType<string | number | boolean | Date, any>;
 
   /** Props passed to the input component. */
   props?: Omit<InputProps, ExcludedCellEditorProps>;
@@ -96,39 +96,9 @@ export type DataGridCellEditorMeta =
       CellEditorMetaBase,
       {
         type: "string:textarea";
+        schema?: z.ZodType<string, any>;
         props?: Omit<
           React.ComponentProps<typeof Textarea>,
-          ExcludedCellEditorProps
-        >;
-      }
-    >
-  | Override<
-      CellEditorMetaBase,
-      {
-        type: "number";
-        schema?: z.ZodType<number, any>;
-      }
-    >
-  | Override<
-      CellEditorMetaBase,
-      {
-        type: "boolean";
-        schema?: z.ZodType<boolean, any>;
-        alwaysEditable?: boolean;
-        props?: Omit<
-          React.ComponentProps<typeof Checkbox>,
-          ExcludedCellEditorProps
-        >;
-      }
-    >
-  | Override<
-      CellEditorMetaBase,
-      {
-        type: "boolean:switch";
-        schema?: z.ZodType<boolean, any>;
-        alwaysEditable?: boolean;
-        props?: Omit<
-          React.ComponentProps<typeof Switch>,
           ExcludedCellEditorProps
         >;
       }
@@ -157,7 +127,7 @@ export type DataGridCellEditorMeta =
   | Override<
       CellEditorMetaBase,
       {
-        type: "option";
+        type: "string:option";
         schema?: z.ZodType<string, any>;
         createable?: boolean;
         props?: CellEditorComboboxProps<false>;
@@ -174,7 +144,7 @@ export type DataGridCellEditorMeta =
   | Override<
       CellEditorMetaBase,
       {
-        type: "multi-option";
+        type: "string:multi-option";
         schema?: z.ZodType<string[], any>;
         createable?: boolean;
         props?: CellEditorComboboxProps<true>;
@@ -184,6 +154,30 @@ export type DataGridCellEditorMeta =
         >;
         popupProps?: Omit<
           React.ComponentProps<typeof ComboboxPopup>,
+          ExcludedCellEditorProps
+        >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "boolean:checkbox";
+        schema?: z.ZodType<boolean, any>;
+        alwaysEditable?: boolean;
+        props?: Omit<
+          React.ComponentProps<typeof Checkbox>,
+          ExcludedCellEditorProps
+        >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "boolean:switch";
+        schema?: z.ZodType<boolean, any>;
+        alwaysEditable?: boolean;
+        props?: Omit<
+          React.ComponentProps<typeof Switch>,
           ExcludedCellEditorProps
         >;
       }

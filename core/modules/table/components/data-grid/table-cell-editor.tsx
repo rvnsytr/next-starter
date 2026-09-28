@@ -100,29 +100,18 @@ export function TableCellEditorController({
   ...props
 }: TableCellEditorControllerProps) {
   switch (context.columnMeta?.editor?.type) {
-    case "string":
-    case "string:textarea":
+    case "string:input":
       return (
-        <TableCellEditorString
+        <TableCellEditorText
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
         />
       );
 
-    // case "number":
-    //   return (
-    //     <TableCellEditorNumber
-    //       context={context}
-    //       editorMeta={context.columnMeta.editor}
-    //       {...props}
-    //     />
-    //   );
-
-    case "boolean":
-    case "boolean:switch":
+    case "string:textarea":
       return (
-        <TableCellEditorBoolean
+        <TableCellEditorTextarea
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
@@ -138,10 +127,20 @@ export function TableCellEditorController({
         />
       );
 
-    case "option":
-    case "multi-option":
+    case "string:option":
+    case "string:multi-option":
       return (
         <TableCellEditorOption
+          context={context}
+          editorMeta={context.columnMeta.editor}
+          {...props}
+        />
+      );
+
+    case "boolean:checkbox":
+    case "boolean:switch":
+      return (
+        <TableCellEditorBoolean
           context={context}
           editorMeta={context.columnMeta.editor}
           {...props}
@@ -158,14 +157,131 @@ type TableCellEditorProps<T extends DataGridCellEditorType> =
     editorMeta: Extract<DataGridCellEditorMeta, { type: T }>;
   };
 
-function TableCellEditorString({
+function TableCellEditorText({
   context,
   editorMeta,
   className,
   onDoubleClick,
   children,
   ...props
-}: TableCellEditorProps<"string" | "string:textarea">) {
+}: TableCellEditorProps<"string:input">) {
+  type FormSchema = z.infer<typeof formSchema>;
+  type TValue = z.infer<typeof schema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? z.string(),
+    [editorMeta.schema],
+  );
+
+  const currentCellValue = useMemo(() => {
+    let defaultValue: TValue = "";
+
+    if (schema instanceof z.ZodString) defaultValue = "";
+    else if (schema instanceof z.ZodNumber) defaultValue = 0;
+    else if (schema instanceof z.ZodBoolean) defaultValue = false;
+    else if (schema instanceof z.ZodDate) defaultValue = new Date();
+
+    return schema.catch(defaultValue).parse(context.cellData);
+  }, [context.cellData, schema]);
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentCellValue },
+  });
+
+  useEffect(() => {
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({ value: currentCellValue });
+    form.reset();
+  }, [form, currentCellValue, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => {
+      if (value === currentCellValue) return context.exitCellEdit();
+      context.handleCellEdit(value, context);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  const {
+    type = "text",
+    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
+    className: inputCn,
+    onKeyDown,
+    ...inputProps
+  } = editorMeta.props ?? {};
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({
+              field: { value: fieldValue, ...field },
+              fieldState,
+            }) => {
+              let value: TValue = "";
+
+              if (typeof fieldValue === "string") value = fieldValue;
+              else if (typeof fieldValue === "number")
+                value = String(fieldValue);
+              else if (typeof fieldValue === "boolean")
+                value = String(fieldValue);
+              else if (fieldValue instanceof Date)
+                value = fieldValue.toISOString().slice(0, 16);
+
+              return (
+                <Input
+                  type={type}
+                  value={value}
+                  placeholder={placeholder}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey && e.key === "Enter") {
+                      e.preventDefault();
+                      onFormSubmit();
+                    }
+
+                    onKeyDown?.(e);
+                  }}
+                  className={cn(
+                    fieldState.invalid && "*:text-destructive",
+                    inputCn,
+                  )}
+                  unstyled
+                  {...field}
+                  {...inputProps}
+                />
+              );
+            }}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorTextarea({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"string:textarea">) {
   type FormSchema = z.infer<typeof formSchema>;
 
   const isEdit = context.currentEdit?.cellId === context.cellId;
@@ -200,7 +316,12 @@ function TableCellEditorString({
     (e) => errorToast(e.value?.message),
   );
 
-  const label = context.columnMeta?.label?.toLowerCase() ?? "a value";
+  const {
+    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
+    className: textareaCn,
+    onKeyDown,
+    ...textareaProps
+  } = editorMeta.props ?? {};
 
   return (
     <TableCell
@@ -219,207 +340,24 @@ function TableCellEditorString({
             name="value"
             control={form.control}
             render={({ field, fieldState }) => {
-              if (editorMeta.type === "string:textarea") {
-                const {
-                  placeholder = `Enter ${label}`,
-                  className: textareaCn,
-                  onKeyDown,
-                  ...textareaProps
-                } = editorMeta.props ?? {};
-
-                return (
-                  <Textarea
-                    placeholder={placeholder}
-                    className={cn(
-                      fieldState.invalid && "*:text-destructive",
-                      "leading-normal",
-                      textareaCn,
-                    )}
-                    onKeyDown={(e) => {
-                      if (e.ctrlKey && e.key === "Enter") {
-                        e.preventDefault();
-                        onFormSubmit();
-                      }
-
-                      onKeyDown?.(e);
-                    }}
-                    unstyled
-                    {...field}
-                    {...textareaProps}
-                  />
-                );
-              }
-
-              const {
-                type = "text",
-                placeholder = `Enter ${label}`,
-                className: inputCn,
-                ...inputProps
-              } = editorMeta.props ?? {};
-
               return (
-                <Input
-                  type={type}
+                <Textarea
                   placeholder={placeholder}
                   className={cn(
                     fieldState.invalid && "*:text-destructive",
-                    inputCn,
+                    textareaCn,
                   )}
-                  unstyled
-                  {...field}
-                  {...inputProps}
-                />
-              );
-            }}
-          />
-        </Form>
-      )}
-    </TableCell>
-  );
-}
-
-function TableCellEditorBoolean({
-  context,
-  editorMeta,
-  onMouseDown,
-  onMouseEnter,
-  onDoubleClick,
-  children,
-  ...props
-}: TableCellEditorProps<"boolean" | "boolean:switch">) {
-  type FormSchema = z.infer<typeof formSchema>;
-
-  const isEdit = context.currentEdit?.cellId === context.cellId;
-  const alwaysEditable = editorMeta.alwaysEditable ?? false;
-
-  const schema = useMemo(
-    () => editorMeta.schema ?? sharedSchemas.boolean(),
-    [editorMeta.schema],
-  );
-
-  const currentCellValue = useMemo(
-    () => schema.catch(true).parse(context.cellData),
-    [context.cellData, schema],
-  );
-
-  const formSchema = z.object({ value: schema });
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { value: currentCellValue },
-  });
-
-  useEffect(() => {
-    if (isEdit || (alwaysEditable && context.isSelected))
-      return form.setFocus("value");
-
-    if (alwaysEditable) {
-      const formValue = form.getValues("value");
-
-      if (!context.isCellEdited && currentCellValue !== formValue) {
-        form.resetDefaultValues({ value: currentCellValue });
-        form.reset();
-      }
-
-      return;
-    }
-
-    form.resetDefaultValues({ value: currentCellValue });
-    form.reset();
-  }, [
-    alwaysEditable,
-    context.isCellEdited,
-    context.isSelected,
-    currentCellValue,
-    form,
-    isEdit,
-  ]);
-
-  const onFormSubmit = form.handleSubmit(
-    ({ value }: FormSchema) => {
-      if (!alwaysEditable && value === currentCellValue)
-        return context.exitCellEdit();
-      context.handleCellEdit(value, context, { silent: alwaysEditable });
-    },
-    (e) => errorToast(e.value?.message),
-  );
-
-  return (
-    <TableCell
-      onMouseDown={(e) => {
-        if (!alwaysEditable) return onMouseDown?.(e);
-        if (isInteractiveTarget(e.target)) return;
-        onMouseDown?.(e);
-      }}
-      onMouseEnter={(e) => {
-        if (!alwaysEditable) return onMouseEnter?.(e);
-        if (isInteractiveTarget(e.target)) return;
-        onMouseEnter?.(e);
-      }}
-      onDoubleClick={(e) => {
-        if (alwaysEditable) return;
-        onDoubleClick?.(e);
-        if (!context.currentEdit) context.setCurrentEdit(context);
-      }}
-      {...props}
-    >
-      {!isEdit && !alwaysEditable && children}
-
-      {(isEdit || alwaysEditable) && (
-        <Form onSubmit={onFormSubmit}>
-          <Controller
-            name="value"
-            control={form.control}
-            render={({ field: { value, onChange, ...field } }) => {
-              if (editorMeta.type === "boolean:switch") {
-                const {
-                  onKeyDown,
-                  className: switchCn,
-                  ...switchProps
-                } = editorMeta.props ?? {};
-
-                return (
-                  <Switch
-                    checked={value}
-                    onCheckedChange={onChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        onFormSubmit();
-                      }
-
-                      onKeyDown?.(e);
-                    }}
-                    className={cn("mx-auto", switchCn)}
-                    {...field}
-                    {...switchProps}
-                  />
-                );
-              }
-
-              const {
-                onKeyDown,
-                className: checkboxCn,
-                ...checkboxProps
-              } = editorMeta.props ?? {};
-
-              return (
-                <Checkbox
-                  checked={value}
-                  onCheckedChange={(e) => {
-                    onChange(e);
-                    if (alwaysEditable) onFormSubmit();
-                  }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
+                    if (e.ctrlKey && e.key === "Enter") {
                       e.preventDefault();
                       onFormSubmit();
                     }
 
                     onKeyDown?.(e);
                   }}
-                  className={cn("mx-auto", checkboxCn)}
+                  unstyled
                   {...field}
-                  {...checkboxProps}
+                  {...textareaProps}
                 />
               );
             }}
@@ -572,7 +510,7 @@ function TableCellEditorOption({
   onDoubleClick,
   children,
   ...props
-}: TableCellEditorProps<"option" | "multi-option">) {
+}: TableCellEditorProps<"string:option" | "string:multi-option">) {
   type FormSchema = z.infer<typeof formSchema>;
 
   const [createableItems, setCreateableItems] = useState<ColumnItem[]>([]);
@@ -582,7 +520,7 @@ function TableCellEditorOption({
   const config = useMemo(() => {
     const baseSchema = sharedSchemas.string({ withRequired: true });
 
-    if (editorMeta.type === "option")
+    if (editorMeta.type === "string:option")
       return {
         multiple: false as const,
         schema: editorMeta.schema ?? baseSchema,
@@ -853,6 +791,158 @@ function TableCellEditorOption({
                 )}
               />
             )}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorBoolean({
+  context,
+  editorMeta,
+  onMouseDown,
+  onMouseEnter,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"boolean:checkbox" | "boolean:switch">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+  const alwaysEditable = editorMeta.alwaysEditable ?? false;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? sharedSchemas.boolean(),
+    [editorMeta.schema],
+  );
+
+  const currentCellValue = useMemo(
+    () => schema.catch(true).parse(context.cellData),
+    [context.cellData, schema],
+  );
+
+  const formSchema = z.object({ value: schema });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentCellValue },
+  });
+
+  useEffect(() => {
+    if (isEdit || (alwaysEditable && context.isSelected))
+      return form.setFocus("value");
+
+    if (alwaysEditable) {
+      const formValue = form.getValues("value");
+
+      if (!context.isCellEdited && currentCellValue !== formValue) {
+        form.resetDefaultValues({ value: currentCellValue });
+        form.reset();
+      }
+
+      return;
+    }
+
+    form.resetDefaultValues({ value: currentCellValue });
+    form.reset();
+  }, [
+    alwaysEditable,
+    context.isCellEdited,
+    context.isSelected,
+    currentCellValue,
+    form,
+    isEdit,
+  ]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => {
+      if (!alwaysEditable && value === currentCellValue)
+        return context.exitCellEdit();
+      context.handleCellEdit(value, context, { silent: alwaysEditable });
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  return (
+    <TableCell
+      onMouseDown={(e) => {
+        if (!alwaysEditable) return onMouseDown?.(e);
+        if (isInteractiveTarget(e.target)) return;
+        onMouseDown?.(e);
+      }}
+      onMouseEnter={(e) => {
+        if (!alwaysEditable) return onMouseEnter?.(e);
+        if (isInteractiveTarget(e.target)) return;
+        onMouseEnter?.(e);
+      }}
+      onDoubleClick={(e) => {
+        if (alwaysEditable) return;
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      {...props}
+    >
+      {!isEdit && !alwaysEditable && children}
+
+      {(isEdit || alwaysEditable) && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field: { value, onChange, ...field } }) => {
+              if (editorMeta.type === "boolean:switch") {
+                const {
+                  onKeyDown,
+                  className: switchCn,
+                  ...switchProps
+                } = editorMeta.props ?? {};
+
+                return (
+                  <Switch
+                    checked={value}
+                    onCheckedChange={onChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        onFormSubmit();
+                      }
+
+                      onKeyDown?.(e);
+                    }}
+                    className={cn("mx-auto", switchCn)}
+                    {...field}
+                    {...switchProps}
+                  />
+                );
+              }
+
+              const {
+                onKeyDown,
+                className: checkboxCn,
+                ...checkboxProps
+              } = editorMeta.props ?? {};
+
+              return (
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(e) => {
+                    onChange(e);
+                    if (alwaysEditable) onFormSubmit();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onFormSubmit();
+                    }
+
+                    onKeyDown?.(e);
+                  }}
+                  className={cn("mx-auto", checkboxCn)}
+                  {...field}
+                  {...checkboxProps}
+                />
+              );
+            }}
           />
         </Form>
       )}
