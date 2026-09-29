@@ -1,4 +1,4 @@
-import { isEqual as isEqualDate } from "date-fns";
+import { isEqual as isDateEqual } from "date-fns";
 
 export function isEqual(left: unknown, right: unknown): boolean {
   const visited = new WeakMap<object, WeakSet<object>>();
@@ -18,7 +18,7 @@ export function isEqual(left: unknown, right: unknown): boolean {
       return (
         first instanceof Date &&
         second instanceof Date &&
-        isEqualDate(first, second)
+        isDateEqual(first, second)
       );
 
     const seen = visited.get(first);

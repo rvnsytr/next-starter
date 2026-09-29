@@ -175,6 +175,17 @@ export type DataGridCellEditorMeta =
   | Override<
       CellEditorMetaBase,
       {
+        type: "temporal";
+        schema?: z.ZodType<Date, any>;
+        inputProps?: Override<
+          Omit<InputProps, ExcludedCellEditorProps>,
+          { type: "datetime-local" | "date" | "time" }
+        >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
         type: "boolean:checkbox";
         schema?: z.ZodType<boolean, any>;
         alwaysEditable?: boolean;

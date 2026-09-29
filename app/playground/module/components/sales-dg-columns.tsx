@@ -324,9 +324,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: CalendarCheck2Icon,
 
       editor: {
-        type: "string:input",
-        schema: z.coerce.date(),
-        props: { type: "datetime-local" },
+        type: "temporal",
       },
     },
   }),
@@ -422,6 +420,11 @@ export const saleDGColumns = columnHelper.columns([
         meta: {
           label: "Delivery From",
           icon: CalendarDaysIcon,
+
+          editor: {
+            type: "temporal",
+            inputProps: { type: "date" },
+          },
         },
       }),
 
@@ -483,6 +486,11 @@ export const saleDGColumns = columnHelper.columns([
     meta: {
       label: "Preferred Time",
       icon: Clock3Icon,
+
+      editor: {
+        type: "temporal",
+        inputProps: { type: "time" },
+      },
     },
   }),
 
