@@ -3,17 +3,17 @@ import { FilterType } from "./types";
 export type StringFilterOperator =
   (typeof STRING_FILTER_OPERATORS)[number]["value"];
 
-export type NumberFilterOperator =
-  (typeof NUMBER_FILTER_OPERATORS)[number]["value"];
-
-export type BooleanFilterOperator =
-  (typeof BOOLEAN_FILTER_OPERATORS)[number]["value"];
-
 export type OptionFilterOperator =
   (typeof OPTION_FILTER_OPERATORS)[number]["value"];
 
 export type MultiOptionFilterOperator =
   (typeof MULTI_OPTION_FILTER_OPERATORS)[number]["value"];
+
+export type NumberFilterOperator =
+  (typeof NUMBER_FILTER_OPERATORS)[number]["value"];
+
+export type BooleanFilterOperator =
+  (typeof BOOLEAN_FILTER_OPERATORS)[number]["value"];
 
 export type TemporalFilterOperator =
   (typeof TEMPORAL_FILTER_OPERATORS)[number]["value"];
@@ -33,6 +33,20 @@ export const STRING_FILTER_OPERATORS = [
   ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
+export const OPTION_FILTER_OPERATORS = [
+  { value: "is_any_of", label: "is any of" },
+  { value: "is_none_of", label: "is none of" },
+  ...EMPTY_FILTER_OPERATORS,
+] as const;
+
+export const MULTI_OPTION_FILTER_OPERATORS = [
+  { value: "contains_any", label: "contains any" },
+  { value: "contains_all", label: "contains all" },
+  { value: "contains_none", label: "contains none of" },
+  { value: "exactly_matches", label: "exactly matches" },
+  ...EMPTY_FILTER_OPERATORS,
+] as const;
+
 export const NUMBER_FILTER_OPERATORS = [
   { value: "equals", label: "equals" },
   { value: "not_equals", label: "does not equal" },
@@ -49,20 +63,6 @@ export const NUMBER_FILTER_OPERATORS = [
 
 export const BOOLEAN_FILTER_OPERATORS = [
   { value: "is", label: "is" },
-  ...EMPTY_FILTER_OPERATORS,
-] as const;
-
-export const OPTION_FILTER_OPERATORS = [
-  { value: "is_any_of", label: "is any of" },
-  { value: "is_none_of", label: "is none of" },
-  ...EMPTY_FILTER_OPERATORS,
-] as const;
-
-export const MULTI_OPTION_FILTER_OPERATORS = [
-  { value: "contains_any", label: "contains any" },
-  { value: "contains_all", label: "contains all" },
-  { value: "contains_none", label: "contains none of" },
-  { value: "exactly_matches", label: "exactly matches" },
   ...EMPTY_FILTER_OPERATORS,
 ] as const;
 
@@ -87,6 +87,13 @@ export const STRING_FILTER_OPERATOR_VALUES = STRING_FILTER_OPERATORS.map(
   (op) => op.value,
 );
 
+export const OPTION_FILTER_OPERATOR_VALUES = OPTION_FILTER_OPERATORS.map(
+  (op) => op.value,
+);
+
+export const MULTI_OPTION_FILTER_OPERATOR_VALUES =
+  MULTI_OPTION_FILTER_OPERATORS.map((op) => op.value);
+
 export const NUMBER_FILTER_OPERATOR_VALUES = NUMBER_FILTER_OPERATORS.map(
   (op) => op.value,
 );
@@ -94,13 +101,6 @@ export const NUMBER_FILTER_OPERATOR_VALUES = NUMBER_FILTER_OPERATORS.map(
 export const BOOLEAN_FILTER_OPERATOR_VALUES = BOOLEAN_FILTER_OPERATORS.map(
   (op) => op.value,
 );
-
-export const OPTION_FILTER_OPERATOR_VALUES = OPTION_FILTER_OPERATORS.map(
-  (op) => op.value,
-);
-
-export const MULTI_OPTION_FILTER_OPERATOR_VALUES =
-  MULTI_OPTION_FILTER_OPERATORS.map((op) => op.value);
 
 export const TEMPORAL_FILTER_OPERATOR_VALUES = TEMPORAL_FILTER_OPERATORS.map(
   (op) => op.value,
@@ -110,14 +110,14 @@ export function getFilterOperators(filterType: FilterType) {
   switch (filterType) {
     case "string":
       return STRING_FILTER_OPERATORS;
-    case "number":
-      return NUMBER_FILTER_OPERATORS;
-    case "boolean":
-      return BOOLEAN_FILTER_OPERATORS;
     case "option":
       return OPTION_FILTER_OPERATORS;
     case "multi-option":
       return MULTI_OPTION_FILTER_OPERATORS;
+    case "number":
+      return NUMBER_FILTER_OPERATORS;
+    case "boolean":
+      return BOOLEAN_FILTER_OPERATORS;
     case "temporal":
       return TEMPORAL_FILTER_OPERATORS;
     default:

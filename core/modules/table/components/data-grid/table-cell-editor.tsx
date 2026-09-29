@@ -168,6 +168,8 @@ type TableCellEditorProps<T extends DataGridCellEditorType> =
     editorMeta: Extract<DataGridCellEditorMeta, { type: T }>;
   };
 
+type ColumnItem = ColumnValueOption & { createItem?: boolean };
+
 const parser = {
   number: z.compile(z.coerce.number()),
   date: z.compile(z.coerce.date()),
@@ -259,111 +261,6 @@ function TableCellEditorText({
 
                   onChange(v);
                 }}
-                onKeyDown={(e) => {
-                  if (e.ctrlKey && e.key === "Enter") {
-                    e.preventDefault();
-                    onFormSubmit();
-                  }
-
-                  onKeyDown?.(e);
-                }}
-                className={cn(
-                  fieldState.invalid && "*:text-destructive",
-                  inputCn,
-                )}
-                unstyled
-                {...field}
-                {...inputProps}
-              />
-            )}
-          />
-        </Form>
-      )}
-    </TableCell>
-  );
-}
-
-function TableCellEditorTemporal({
-  context,
-  editorMeta,
-  className,
-  onDoubleClick,
-  children,
-  ...props
-}: TableCellEditorProps<"temporal">) {
-  type FormSchema = z.infer<typeof formSchema>;
-
-  const isEdit = context.currentEdit?.cellId === context.cellId;
-
-  const schema = useMemo(
-    () => editorMeta.schema ?? z.date(),
-    [editorMeta.schema],
-  );
-
-  const { currentValue, currentValueStr } = useMemo(() => {
-    const cellData = schema.catch(new Date()).parse(context.cellData);
-    return {
-      currentValue: cellData,
-      currentValueStr: format(cellData, "yyyy-MM-dd'T'HH:mm"),
-    };
-  }, [context.cellData, schema]);
-
-  const formSchema = z.object({ value: z.string() });
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { value: currentValueStr },
-  });
-
-  useEffect(() => {
-    if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: currentValueStr });
-    form.reset();
-  }, [form, currentValueStr, isEdit]);
-
-  const onFormSubmit = form.handleSubmit(
-    ({ value }: FormSchema) => {
-      const parsed = parser.date.safeParse(value);
-      if (!parsed.success)
-        return errorToast(formatZodError(parsed.error).message);
-
-      const parsedValue = parsed.data;
-
-      if (isEqual(startOfMinute(parsedValue), startOfMinute(currentValue)))
-        return context.exitCellEdit();
-
-      context.handleCellEdit(value, context);
-    },
-    (e) => errorToast(e.value?.message),
-  );
-
-  const {
-    type = "datetime-local",
-    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
-    className: inputCn,
-    onKeyDown,
-    ...inputProps
-  } = editorMeta.inputProps ?? {};
-
-  return (
-    <TableCell
-      onDoubleClick={(e) => {
-        onDoubleClick?.(e);
-        if (!context.currentEdit) context.setCurrentEdit(context);
-      }}
-      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
-      {...props}
-    >
-      {!isEdit && children}
-
-      {isEdit && (
-        <Form onSubmit={onFormSubmit}>
-          <Controller
-            name="value"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Input
-                type={type}
-                placeholder={placeholder}
                 onKeyDown={(e) => {
                   if (e.ctrlKey && e.key === "Enter") {
                     e.preventDefault();
@@ -481,8 +378,6 @@ function TableCellEditorTextarea({
     </TableCell>
   );
 }
-
-type ColumnItem = ColumnValueOption & { createItem?: boolean };
 
 function TableCellEditorAutoComplete({
   context,
@@ -1057,6 +952,111 @@ function TableCellEditorBoolean({
                 />
               );
             }}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorTemporal({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"temporal">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? z.date(),
+    [editorMeta.schema],
+  );
+
+  const { currentValue, currentValueStr } = useMemo(() => {
+    const cellData = schema.catch(new Date()).parse(context.cellData);
+    return {
+      currentValue: cellData,
+      currentValueStr: format(cellData, "yyyy-MM-dd'T'HH:mm"),
+    };
+  }, [context.cellData, schema]);
+
+  const formSchema = z.object({ value: z.string() });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentValueStr },
+  });
+
+  useEffect(() => {
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({ value: currentValueStr });
+    form.reset();
+  }, [form, currentValueStr, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => {
+      const parsed = parser.date.safeParse(value);
+      if (!parsed.success)
+        return errorToast(formatZodError(parsed.error).message);
+
+      const parsedValue = parsed.data;
+
+      if (isEqual(startOfMinute(parsedValue), startOfMinute(currentValue)))
+        return context.exitCellEdit();
+
+      context.handleCellEdit(value, context);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  const {
+    type = "datetime-local",
+    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
+    className: inputCn,
+    onKeyDown,
+    ...inputProps
+  } = editorMeta.inputProps ?? {};
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Input
+                type={type}
+                placeholder={placeholder}
+                onKeyDown={(e) => {
+                  if (e.ctrlKey && e.key === "Enter") {
+                    e.preventDefault();
+                    onFormSubmit();
+                  }
+
+                  onKeyDown?.(e);
+                }}
+                className={cn(
+                  fieldState.invalid && "*:text-destructive",
+                  inputCn,
+                )}
+                unstyled
+                {...field}
+                {...inputProps}
+              />
+            )}
           />
         </Form>
       )}

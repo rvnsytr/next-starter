@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { filterSchema } from "../schema";
+import { filterSchema } from "../filter-schema";
 import { ColumnMeta } from "./meta";
 
 export type Filter = z.infer<typeof filterSchema>;

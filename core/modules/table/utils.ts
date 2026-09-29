@@ -9,7 +9,7 @@ import {
 import { DataGridContextValue } from "./components/data-grid/provider";
 import { DEFAULT_FILTER_TYPE } from "./constants";
 import { filterMeta } from "./filter-meta";
-import { filterSchema, filterTypeSchema } from "./schema";
+import { filterSchema, filterTypeSchema } from "./filter-schema";
 import {
   ColumnMeta,
   DataGridTableMeta,

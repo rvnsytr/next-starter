@@ -9,7 +9,7 @@ import {
   startOfMinute,
 } from "date-fns";
 import { z } from "zod";
-import { temporalFilterSchema } from "./schema";
+import { temporalFilterSchema } from "./filter-schema";
 
 export const filterFn_arrExactlyMatches = constructFilterFn({
   filter: (dataValue: string[], filterValue: string[]) => {

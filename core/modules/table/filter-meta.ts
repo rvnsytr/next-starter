@@ -16,22 +16,6 @@ export const filterMeta: {
       value: "",
     },
   },
-  number: {
-    popupType: "popover",
-    defaultValue: {
-      type: "number",
-      operator: "equals",
-      value: [0],
-    },
-  },
-  boolean: {
-    popupType: "popover",
-    defaultValue: {
-      type: "boolean",
-      operator: "is",
-      value: true,
-    },
-  },
   option: {
     popupType: "menu",
     defaultValue: {
@@ -46,6 +30,22 @@ export const filterMeta: {
       type: "multi-option",
       operator: "contains_any",
       value: [],
+    },
+  },
+  number: {
+    popupType: "popover",
+    defaultValue: {
+      type: "number",
+      operator: "equals",
+      value: [0],
+    },
+  },
+  boolean: {
+    popupType: "popover",
+    defaultValue: {
+      type: "boolean",
+      operator: "is",
+      value: true,
     },
   },
   temporal: {

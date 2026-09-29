@@ -5,7 +5,7 @@ import {
   MenuPopup,
   MenuTrigger,
 } from "@/core/components/ui/menu";
-import { getFilterOperators } from "@/core/modules/table/operators";
+import { getFilterOperators } from "@/core/modules/table/filter-operators";
 import { ColumnFilterContext, Filter } from "@/core/modules/table/types";
 import { useMemo } from "react";
 

@@ -6,12 +6,24 @@ import {
   OPTION_FILTER_OPERATOR_VALUES,
   STRING_FILTER_OPERATOR_VALUES,
   TEMPORAL_FILTER_OPERATOR_VALUES,
-} from "./operators";
+} from "./filter-operators";
 
 export const stringFilterSchema = z.object({
   type: z.literal("string"),
   operator: z.enum(STRING_FILTER_OPERATOR_VALUES),
   value: z.string(),
+});
+
+export const optionFilterSchema = z.object({
+  type: z.literal("option"),
+  operator: z.enum(OPTION_FILTER_OPERATOR_VALUES),
+  value: z.string().array(),
+});
+
+export const multiOptionFilterSchema = z.object({
+  type: z.literal("multi-option"),
+  operator: z.enum(MULTI_OPTION_FILTER_OPERATOR_VALUES),
+  value: z.string().array(),
 });
 
 export const numberFilterSchema = z.object({
@@ -27,18 +39,6 @@ export const booleanFilterSchema = z.object({
   value: z.boolean(),
 });
 
-export const optionFilterSchema = z.object({
-  type: z.literal("option"),
-  operator: z.enum(OPTION_FILTER_OPERATOR_VALUES),
-  value: z.string().array(),
-});
-
-export const multiOptionFilterSchema = z.object({
-  type: z.literal("multi-option"),
-  operator: z.enum(MULTI_OPTION_FILTER_OPERATOR_VALUES),
-  value: z.string().array(),
-});
-
 export const temporalFilterSchema = z.object({
   type: z.literal("temporal"),
   operator: z.enum(TEMPORAL_FILTER_OPERATOR_VALUES),
@@ -47,20 +47,20 @@ export const temporalFilterSchema = z.object({
 
 export const filterTypeSchema = z.enum([
   "string",
-  "number",
-  "boolean",
   "option",
   "multi-option",
+  "number",
+  "boolean",
   "temporal",
 ]);
 
 export const filterSchema = z.compile(
   z.discriminatedUnion("type", [
     stringFilterSchema,
-    numberFilterSchema,
-    booleanFilterSchema,
     optionFilterSchema,
     multiOptionFilterSchema,
+    numberFilterSchema,
+    booleanFilterSchema,
     temporalFilterSchema,
   ]),
 );

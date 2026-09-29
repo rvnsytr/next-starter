@@ -17,7 +17,7 @@ import { Slider } from "@/core/components/ui/slider";
 import { Switch } from "@/core/components/ui/switch";
 import { useDebounce } from "@/core/hooks/use-debounce";
 import { filterMeta } from "@/core/modules/table/filter-meta";
-import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/operators";
+import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/filter-operators";
 import { ColumnFilterContext, FilterType } from "@/core/modules/table/types";
 import { formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";

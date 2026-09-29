@@ -33,7 +33,7 @@ import {
   optionFilterSchema,
   stringFilterSchema,
   temporalFilterSchema,
-} from "./schema";
+} from "./filter-schema";
 import { FilterType } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,6 +68,68 @@ export const stringFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
       return filterFn_startsWith(row, columnId, value, addMeta);
     case "ends_with":
       return filterFn_endsWith(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const optionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
+
+  const filterType: FilterType = "option";
+  const filterResult = validateValue(fv, optionFilterSchema);
+
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
+    return false;
+  }
+
+  const { operator, value } = filterResult.data;
+
+  switch (operator) {
+    case "is_any_of":
+      return filterFn_arrHas(row, columnId, value, addMeta);
+    case "is_none_of":
+      return !filterFn_arrHas(row, columnId, value, addMeta);
+    case "is_empty":
+      return filterFn_empty(row, columnId, value, addMeta);
+    case "is_not_empty":
+      return filterFn_notEmpty(row, columnId, value, addMeta);
+    default: {
+      console.error(getErrorMessage(operator, filterType));
+      return false;
+    }
+  }
+};
+
+export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
+  if (!fv) return true;
+
+  const filterType: FilterType = "multi-option";
+  const filterResult = validateValue(fv, multiOptionFilterSchema);
+
+  if (!filterResult.success) {
+    console.error(`FilterFn Error: ${filterResult.message}`);
+    return false;
+  }
+
+  const { operator, value } = filterResult.data;
+
+  switch (operator) {
+    case "contains_any":
+      return filterFn_arrIncludesSome(row, columnId, value, addMeta);
+    case "contains_all":
+      return filterFn_arrIncludesAll(row, columnId, value, addMeta);
+    case "contains_none":
+      return !filterFn_arrIncludesSome(row, columnId, value, addMeta);
+    case "exactly_matches":
+      return filterFn_arrExactlyMatches(row, columnId, value, addMeta);
     case "is_empty":
       return filterFn_empty(row, columnId, value, addMeta);
     case "is_not_empty":
@@ -141,68 +203,6 @@ export const booleanFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
   switch (operator) {
     case "is":
       return filterFn_equals(row, columnId, value, addMeta);
-    case "is_empty":
-      return filterFn_empty(row, columnId, value, addMeta);
-    case "is_not_empty":
-      return filterFn_notEmpty(row, columnId, value, addMeta);
-    default: {
-      console.error(getErrorMessage(operator, filterType));
-      return false;
-    }
-  }
-};
-
-export const optionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
-  if (!fv) return true;
-
-  const filterType: FilterType = "option";
-  const filterResult = validateValue(fv, optionFilterSchema);
-
-  if (!filterResult.success) {
-    console.error(`FilterFn Error: ${filterResult.message}`);
-    return false;
-  }
-
-  const { operator, value } = filterResult.data;
-
-  switch (operator) {
-    case "is_any_of":
-      return filterFn_arrHas(row, columnId, value, addMeta);
-    case "is_none_of":
-      return !filterFn_arrHas(row, columnId, value, addMeta);
-    case "is_empty":
-      return filterFn_empty(row, columnId, value, addMeta);
-    case "is_not_empty":
-      return filterFn_notEmpty(row, columnId, value, addMeta);
-    default: {
-      console.error(getErrorMessage(operator, filterType));
-      return false;
-    }
-  }
-};
-
-export const multiOptionFilterFn: FilterFn = (row, columnId, fv, addMeta) => {
-  if (!fv) return true;
-
-  const filterType: FilterType = "multi-option";
-  const filterResult = validateValue(fv, multiOptionFilterSchema);
-
-  if (!filterResult.success) {
-    console.error(`FilterFn Error: ${filterResult.message}`);
-    return false;
-  }
-
-  const { operator, value } = filterResult.data;
-
-  switch (operator) {
-    case "contains_any":
-      return filterFn_arrIncludesSome(row, columnId, value, addMeta);
-    case "contains_all":
-      return filterFn_arrIncludesAll(row, columnId, value, addMeta);
-    case "contains_none":
-      return !filterFn_arrIncludesSome(row, columnId, value, addMeta);
-    case "exactly_matches":
-      return filterFn_arrExactlyMatches(row, columnId, value, addMeta);
     case "is_empty":
       return filterFn_empty(row, columnId, value, addMeta);
     case "is_not_empty":

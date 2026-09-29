@@ -5,7 +5,7 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/operators";
+import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/filter-operators";
 import {
   ColumnFilterContext,
   Filter,
@@ -79,9 +79,7 @@ export function FilterValueDisplay({
     case "multi-option":
       return <FilterValueDisplayOptions context={{ filter, columnMeta }} />;
 
-    case "date-time":
-    case "date":
-    case "time":
+    case "temporal":
       return <FilterValueDisplayTemporal context={{ filter, columnMeta }} />;
 
     default:
@@ -143,15 +141,14 @@ function FilterValueDisplayOptions({
 
 function FilterValueDisplayTemporal({
   context,
-}: FilterValueDisplayProps<"date-time" | "date" | "time">) {
-  const { type, operator, value } = context.filter;
+}: FilterValueDisplayProps<"temporal">) {
+  const { operator, value } = context.filter;
 
   const [start, end] = value;
   if (!start) return <EllipsisIcon />;
 
   let formatStr = "PPP";
-  if (type === "date-time" && operator === "exactly") formatStr = "PPPp";
-  if (type === "time") formatStr = "p";
+  if (operator === "exactly") formatStr = "PPPp";
 
   if (operator.includes("between") && !!end)
     return `${format(start, formatStr)} - ${format(end, formatStr)}`;
