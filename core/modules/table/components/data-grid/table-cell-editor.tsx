@@ -44,7 +44,6 @@ import { sharedSchemas } from "@/shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CellData } from "@tanstack/react-table";
 import { cn } from "cn";
-import { format } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -101,7 +100,8 @@ export function TableCellEditorController({
   ...props
 }: TableCellEditorControllerProps) {
   switch (context.columnMeta?.editor?.type) {
-    case "string:input":
+    case "string":
+    case "number":
       return (
         <TableCellEditorText
           context={context}
@@ -165,55 +165,56 @@ function TableCellEditorText({
   onDoubleClick,
   children,
   ...props
-}: TableCellEditorProps<"string:input">) {
+}: TableCellEditorProps<"string" | "number">) {
   type FormSchema = z.infer<typeof formSchema>;
-  type TValue = z.infer<typeof schema>;
 
   const isEdit = context.currentEdit?.cellId === context.cellId;
 
-  const schema = useMemo(
-    () => editorMeta.schema ?? z.string(),
-    [editorMeta.schema],
-  );
+  const { schema, currentValue, defaultInputType } = useMemo(() => {
+    if (editorMeta.type === "number") {
+      const sc = editorMeta.schema ?? z.number();
+      return {
+        schema: sc,
+        currentValue: sc.catch(0).parse(context.cellData),
+        defaultInputType: "number",
+      };
+    }
 
-  const currentCellValue = useMemo(() => {
-    let defaultValue: TValue = "";
-
-    if (schema instanceof z.ZodString) defaultValue = "";
-    else if (schema instanceof z.ZodNumber) defaultValue = 0;
-    else if (schema instanceof z.ZodBoolean) defaultValue = false;
-    else if (schema instanceof z.ZodDate) defaultValue = new Date();
-
-    return schema.catch(defaultValue).parse(context.cellData);
-  }, [context.cellData, schema]);
+    const sc = editorMeta.schema ?? z.string();
+    return {
+      schema: sc,
+      currentValue: sc.catch("").parse(context.cellData),
+      defaultInputType: "text",
+    };
+  }, [context.cellData, editorMeta.schema, editorMeta.type]);
 
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentCellValue },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: currentCellValue });
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
-  }, [form, currentCellValue, isEdit]);
+  }, [form, currentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (isEqual(value, currentCellValue)) return context.exitCellEdit();
+      if (value === currentValue) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),
   );
 
   const {
-    type = "text",
+    type = defaultInputType,
     placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
     className: inputCn,
     onKeyDown,
     ...inputProps
-  } = editorMeta.props ?? {};
+  } = editorMeta.inputProps ?? {};
 
   return (
     <TableCell
@@ -231,24 +232,109 @@ function TableCellEditorText({
           <Controller
             name="value"
             control={form.control}
-            render={({
-              field: { value: fieldValue, ...field },
-              fieldState,
-            }) => {
-              let value: TValue = "";
+            render={({ field: { onChange, ...field }, fieldState }) => (
+              <Input
+                type={type}
+                placeholder={placeholder}
+                onChange={(e) => {
+                  const v = e.target.value;
 
-              if (typeof fieldValue === "string") value = fieldValue;
-              else if (typeof fieldValue === "number")
-                value = String(fieldValue);
-              else if (typeof fieldValue === "boolean")
-                value = String(fieldValue);
-              else if (fieldValue instanceof Date)
-                value = format(fieldValue, "yyyy-MM-dd'T'HH:mm");
+                  if (editorMeta.type === "number" && v) {
+                    const parsed = Number(v);
+                    return onChange(isNaN(parsed) ? v : parsed);
+                  }
 
+                  onChange(v);
+                }}
+                onKeyDown={(e) => {
+                  if (e.ctrlKey && e.key === "Enter") {
+                    e.preventDefault();
+                    onFormSubmit();
+                  }
+
+                  onKeyDown?.(e);
+                }}
+                className={cn(
+                  fieldState.invalid && "*:text-destructive",
+                  inputCn,
+                )}
+                unstyled
+                {...field}
+                {...inputProps}
+              />
+            )}
+          />
+        </Form>
+      )}
+    </TableCell>
+  );
+}
+
+function TableCellEditorTemporal({
+  context,
+  editorMeta,
+  className,
+  onDoubleClick,
+  children,
+  ...props
+}: TableCellEditorProps<"temporal">) {
+  type FormSchema = z.infer<typeof formSchema>;
+
+  const isEdit = context.currentEdit?.cellId === context.cellId;
+
+  const schema = useMemo(
+    () => editorMeta.schema ?? z.date(),
+    [editorMeta.schema],
+  );
+
+  const formSchema = z.object({ value: z.string() });
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { value: currentValue },
+  });
+
+  useEffect(() => {
+    if (isEdit) return form.setFocus("value");
+    form.resetDefaultValues({ value: currentValue });
+    form.reset();
+  }, [form, currentValue, isEdit]);
+
+  const onFormSubmit = form.handleSubmit(
+    ({ value }: FormSchema) => {
+      if (value === currentValue) return context.exitCellEdit();
+      context.handleCellEdit(value, context);
+    },
+    (e) => errorToast(e.value?.message),
+  );
+
+  const {
+    type = defaultInputType,
+    placeholder = `Enter ${context.columnMeta?.label?.toLowerCase() ?? "a value"}`,
+    className: inputCn,
+    onKeyDown,
+    ...inputProps
+  } = editorMeta.inputProps ?? {};
+
+  return (
+    <TableCell
+      onDoubleClick={(e) => {
+        onDoubleClick?.(e);
+        if (!context.currentEdit) context.setCurrentEdit(context);
+      }}
+      className={cn(isEdit && TABLE_CELL_CLASS.cellEditPadding, className)}
+      {...props}
+    >
+      {!isEdit && children}
+
+      {isEdit && (
+        <Form onSubmit={onFormSubmit}>
+          <Controller
+            name="value"
+            control={form.control}
+            render={({ field, fieldState }) => {
               return (
                 <Input
                   type={type}
-                  value={value}
                   placeholder={placeholder}
                   onKeyDown={(e) => {
                     if (e.ctrlKey && e.key === "Enter") {
@@ -292,7 +378,7 @@ function TableCellEditorTextarea({
     [editorMeta.schema],
   );
 
-  const currentCellValue = useMemo(
+  const currentValue = useMemo(
     () => schema.catch("").parse(context.cellData),
     [context.cellData, schema],
   );
@@ -300,18 +386,18 @@ function TableCellEditorTextarea({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentCellValue },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: currentCellValue });
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
-  }, [form, currentCellValue, isEdit]);
+  }, [form, currentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentCellValue) return context.exitCellEdit();
+      if (value === currentValue) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),
@@ -388,7 +474,7 @@ function TableCellEditorAutoComplete({
     [editorMeta.schema],
   );
 
-  const currentCellValue = useMemo(
+  const currentValue = useMemo(
     () => schema.catch("").parse(context.cellData),
     [context.cellData, schema],
   );
@@ -396,18 +482,18 @@ function TableCellEditorAutoComplete({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentCellValue },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
-    form.resetDefaultValues({ value: currentCellValue });
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
-  }, [form, currentCellValue, isEdit]);
+  }, [form, currentValue, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentCellValue) return context.exitCellEdit();
+      if (value === currentValue) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),
@@ -533,7 +619,7 @@ function TableCellEditorOption({
     };
   }, [editorMeta.schema, editorMeta.type]);
 
-  const currentCellValue = useMemo(() => {
+  const currentValue = useMemo(() => {
     if (config.multiple) return config.schema.catch([]).parse(context.cellData);
     return config.schema.catch("").parse(context.cellData);
   }, [config.multiple, config.schema, context.cellData]);
@@ -542,8 +628,8 @@ function TableCellEditorOption({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      value: currentCellValue,
-      query: typeof currentCellValue === "string" ? currentCellValue : "",
+      value: currentValue,
+      query: typeof currentValue === "string" ? currentValue : "",
     },
   });
 
@@ -552,11 +638,11 @@ function TableCellEditorOption({
   useEffect(() => {
     if (isEdit) return form.setFocus("value");
     form.resetDefaultValues({
-      value: currentCellValue,
-      query: typeof currentCellValue === "string" ? currentCellValue : "",
+      value: currentValue,
+      query: typeof currentValue === "string" ? currentValue : "",
     });
     form.reset();
-  }, [context.isCellEdited, currentCellValue, form, isEdit]);
+  }, [context.isCellEdited, currentValue, form, isEdit]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
@@ -568,7 +654,7 @@ function TableCellEditorOption({
         items.filter((item) => submittedValues.has(item.value.toLowerCase())),
       );
 
-      if (isEqual(value, currentCellValue)) return context.exitCellEdit();
+      if (isEqual(value, currentValue)) return context.exitCellEdit();
       context.handleCellEdit(value, context);
     },
     (e) => errorToast(e.value?.message),
@@ -818,7 +904,7 @@ function TableCellEditorBoolean({
     [editorMeta.schema],
   );
 
-  const currentCellValue = useMemo(
+  const currentValue = useMemo(
     () => schema.catch(true).parse(context.cellData),
     [context.cellData, schema],
   );
@@ -826,7 +912,7 @@ function TableCellEditorBoolean({
   const formSchema = z.object({ value: schema });
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: { value: currentCellValue },
+    defaultValues: { value: currentValue },
   });
 
   useEffect(() => {
@@ -836,28 +922,28 @@ function TableCellEditorBoolean({
     if (alwaysEditable) {
       const formValue = form.getValues("value");
 
-      if (!context.isCellEdited && currentCellValue !== formValue) {
-        form.resetDefaultValues({ value: currentCellValue });
+      if (!context.isCellEdited && currentValue !== formValue) {
+        form.resetDefaultValues({ value: currentValue });
         form.reset();
       }
 
       return;
     }
 
-    form.resetDefaultValues({ value: currentCellValue });
+    form.resetDefaultValues({ value: currentValue });
     form.reset();
   }, [
     alwaysEditable,
     context.isCellEdited,
     context.isSelected,
-    currentCellValue,
+    currentValue,
     form,
     isEdit,
   ]);
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (!alwaysEditable && value === currentCellValue)
+      if (!alwaysEditable && value === currentValue)
         return context.exitCellEdit();
       context.handleCellEdit(value, context, { silent: alwaysEditable });
     },

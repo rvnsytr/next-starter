@@ -81,13 +81,16 @@ export type CellEditorMetaBase = {
   key?: string;
 
   /** Controls which input component is rendered and which Zod schema is expected. */
-  type: "string:input";
+  type: "string";
 
   /** Optional Zod schema used to validate the value before committing. */
-  schema?: z.ZodType<string | number | boolean | Date, any>;
+  schema?: z.ZodType<string, any>;
 
   /** Props passed to the input component. */
-  props?: Omit<InputProps, ExcludedCellEditorProps>;
+  inputProps?: Override<
+    Omit<InputProps, ExcludedCellEditorProps>,
+    { type: "text" | "password" | "email" | "color" | "search" | "url" }
+  >;
 };
 
 export type DataGridCellEditorMeta =
@@ -155,6 +158,17 @@ export type DataGridCellEditorMeta =
         popupProps?: Omit<
           React.ComponentProps<typeof ComboboxPopup>,
           ExcludedCellEditorProps
+        >;
+      }
+    >
+  | Override<
+      CellEditorMetaBase,
+      {
+        type: "number";
+        schema?: z.ZodType<number, any>;
+        inputProps?: Override<
+          Omit<InputProps, ExcludedCellEditorProps>,
+          { type: "number" | "tel" | "range" }
         >;
       }
     >

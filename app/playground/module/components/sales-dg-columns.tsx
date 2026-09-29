@@ -19,7 +19,6 @@ import {
   TrendingUp,
   UserRoundIcon,
 } from "lucide-react";
-import { z } from "zod";
 import { Sale, locations, productMeta, saleStatusMeta } from "../constants";
 
 const columnHelper = dataGrid.createAppColumnHelper<Sale>();
@@ -69,7 +68,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: UserRoundIcon,
 
       editor: {
-        type: "string:input",
+        type: "string",
         schema: sharedSchemas.string({ min: 1 }),
       },
     },
@@ -89,9 +88,9 @@ export const saleDGColumns = columnHelper.columns([
       icon: MailIcon,
 
       editor: {
-        type: "string:input",
+        type: "string",
         schema: sharedSchemas.email,
-        props: {
+        inputProps: {
           type: "email",
         },
       },
@@ -146,7 +145,7 @@ export const saleDGColumns = columnHelper.columns([
       icon: UserRoundIcon,
 
       editor: {
-        type: "string:input",
+        type: "string",
       },
     },
   }),
@@ -263,11 +262,7 @@ export const saleDGColumns = columnHelper.columns([
       label: "Sale Amount",
       icon: DollarSignIcon,
 
-      editor: {
-        type: "string:input",
-        schema: z.coerce.number(),
-        props: { type: "number" },
-      },
+      editor: { type: "number" },
 
       cellProps: (value) => {
         const isNumber = typeof value === "number";
@@ -375,7 +370,7 @@ export const saleDGColumns = columnHelper.columns([
           label: "City",
 
           editor: {
-            type: "string:input",
+            type: "string",
           },
         },
       }),
@@ -394,7 +389,7 @@ export const saleDGColumns = columnHelper.columns([
           label: "Country",
 
           editor: {
-            type: "string:input",
+            type: "string",
           },
         },
       }),
