@@ -180,9 +180,8 @@ export function DataGrid({
 
       const silent = options?.silent ?? false;
       table.options.meta?.onEditChange?.(dataGridContext.getChanges(), silent);
-      if (!silent) exitCellEdit();
     },
-    [dataGridContext, exitCellEdit, originalData, table],
+    [dataGridContext, originalData, table],
   );
 
   useEffect(() => {

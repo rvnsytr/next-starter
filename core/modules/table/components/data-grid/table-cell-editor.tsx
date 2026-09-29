@@ -219,8 +219,8 @@ function TableCellEditorText({
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentValue) return context.exitCellEdit();
-      context.handleCellEdit(value, context);
+      if (value !== currentValue) context.handleCellEdit(value, context);
+      context.exitCellEdit();
     },
     (e) => errorToast(e.value?.message),
   );
@@ -321,8 +321,8 @@ function TableCellEditorTextarea({
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentValue) return context.exitCellEdit();
-      context.handleCellEdit(value, context);
+      if (value !== currentValue) context.handleCellEdit(value, context);
+      context.exitCellEdit();
     },
     (e) => errorToast(e.value?.message),
   );
@@ -415,8 +415,8 @@ function TableCellEditorAutoComplete({
 
   const onFormSubmit = form.handleSubmit(
     ({ value }: FormSchema) => {
-      if (value === currentValue) return context.exitCellEdit();
-      context.handleCellEdit(value, context);
+      if (value !== currentValue) context.handleCellEdit(value, context);
+      context.exitCellEdit();
     },
     (e) => errorToast(e.value?.message),
   );
@@ -576,8 +576,8 @@ function TableCellEditorOption({
         items.filter((item) => submittedValues.has(item.value.toLowerCase())),
       );
 
-      if (isEqual(value, currentValue)) return context.exitCellEdit();
-      context.handleCellEdit(value, context);
+      if (!isEqual(value, currentValue)) context.handleCellEdit(value, context);
+      context.exitCellEdit();
     },
     (e) => errorToast(e.value?.message),
   );
@@ -1004,10 +1004,10 @@ function TableCellEditorTemporal({
 
       const parsedValue = parsed.data;
 
-      if (isEqual(startOfMinute(parsedValue), startOfMinute(currentValue)))
-        return context.exitCellEdit();
+      if (!isEqual(startOfMinute(parsedValue), startOfMinute(currentValue)))
+        context.handleCellEdit(value, context);
 
-      context.handleCellEdit(value, context);
+      context.exitCellEdit();
     },
     (e) => errorToast(e.value?.message),
   );
