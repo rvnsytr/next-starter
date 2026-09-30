@@ -137,7 +137,7 @@ export function getParentColumns<T extends { parent?: T }>(node: T): T[] {
   const parents: T[] = [];
   let current = node.parent;
 
-  while (!!current) {
+  while (current) {
     parents.push(current);
     current = current.parent;
   }

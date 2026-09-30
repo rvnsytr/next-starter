@@ -41,7 +41,7 @@ export function SidebarAppHeader() {
       },
     ];
 
-    if (!!session.impersonatedBy)
+    if (session.impersonatedBy)
       actionItems.unshift({
         type: "action",
         label: "Kembali ke akun saya",

@@ -30,7 +30,7 @@ export function CopyButton({
     <Button
       data-slot="copy-button"
       aria-label={isCopied ? defaultLabel.copied : defaultLabel.copy}
-      size={size ?? (!!label ? "default" : "icon")}
+      size={size ?? (label ? "default" : "icon")}
       disabled={isCopied || disabled}
       onClick={(e) => {
         onClick?.(e);

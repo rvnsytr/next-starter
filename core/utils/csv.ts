@@ -20,7 +20,7 @@ export function getExcelColumnKey(columnNumber: number): string {
     n = Math.floor(n / 26);
   }
 
-  return !!result ? result : "-";
+  return result || "-";
 }
 
 export function formatCsvRange(input: string, options?: FormatCsvRangeOptions) {

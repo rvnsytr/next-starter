@@ -14,7 +14,7 @@ export function ScrollToTopButton({
   return (
     <Button
       data-slot="scroll-to-top-button"
-      size={size ?? (!!children ? "default" : "icon-lg")}
+      size={size ?? (children ? "default" : "icon-lg")}
       className={cn(
         "fixed right-6 bottom-6 z-40 lg:right-10 lg:bottom-8",
         className,

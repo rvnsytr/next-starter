@@ -23,17 +23,16 @@ export default defineConfig([
       /** Disabled rules */
       "import/order": "off",
       "sort-imports": "off",
-      "no-extra-boolean-cast": "off", // TODO: remove later
-      "@typescript-eslint/consistent-type-imports": "off", // TODO: remove later
+      "@typescript-eslint/consistent-type-imports": "off",
     },
   },
   globalIgnores([
     "node_modules/**",
-    ".next/**",
     "out/**",
     "build/**",
-    "next-env.d.ts",
     "eslint.config.mjs",
+    ".next/**",
+    "next-env.d.ts",
     "next.config.js",
     "postcss.config.mjs",
   ]),

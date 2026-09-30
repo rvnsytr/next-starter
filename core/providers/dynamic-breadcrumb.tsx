@@ -8,7 +8,7 @@ import { getRouteHierarchy, normalizeRoute } from "../route";
 
 type DynamicBreadcrumbContent = { href: Route; label: string };
 
-type DynamicBreadcrumbContextType = {
+type DynamicBreadcrumbContextValue = {
   breadcrumbs: DynamicBreadcrumbContent[];
   setBreadcrumbs: React.Dispatch<
     React.SetStateAction<DynamicBreadcrumbContent[]>
@@ -16,7 +16,7 @@ type DynamicBreadcrumbContextType = {
 };
 
 const DynamicBreadcrumbContext = createContext<
-  DynamicBreadcrumbContextType | undefined
+  DynamicBreadcrumbContextValue | undefined
 >(undefined);
 
 export function DynamicBreadcrumbProvider({

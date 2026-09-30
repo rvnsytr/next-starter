@@ -98,7 +98,7 @@ function FilterValueDisplayString({
       ? `${value.slice(0, MAX_STRING_LENGTH)}...`
       : value;
 
-  return !!displayValue ? displayValue : <EllipsisIcon />;
+  return displayValue || <EllipsisIcon />;
 }
 
 function FilterValueDisplayNumber({
