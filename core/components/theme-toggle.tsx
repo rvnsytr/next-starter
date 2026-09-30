@@ -36,9 +36,9 @@ export function ThemeToggle({
   }) {
   const isMobile = useIsMobile();
   const isMounted = useIsMounted();
-  const { theme: currentTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
-  const { icon: Icon } = THEME_META[(currentTheme ?? "system") as Theme];
+  const { icon: Icon } = THEME_META[(theme ?? "system") as Theme];
 
   if (!isMounted)
     return <Skeleton className={cn(buttonVariants({ size }), className)} />;
@@ -49,7 +49,7 @@ export function ThemeToggle({
       variant={variant}
       onClick={(e) => {
         onClick?.(e);
-        setTheme(nextTheme(currentTheme));
+        setTheme(nextTheme(theme));
       }}
       className={className}
       disabled={disabled}

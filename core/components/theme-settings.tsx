@@ -9,13 +9,13 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 export function ThemeSettings() {
   const isMounted = useIsMounted();
-  const { theme: currentTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   if (!isMounted) return <LoadingFallback variant="frame" />;
 
   return (
     <RadioGroup
-      value={currentTheme}
+      value={theme}
       defaultValue="system"
       onValueChange={(v) => setTheme(v)}
       className="grid grid-cols-3"

@@ -226,32 +226,6 @@
     }
   }
 
-  --animate-shine: shine var(--duration) infinite linear;
-  @keyframes shine {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    to {
-      background-position: 0% 0%;
-    }
-  }
-
-  --animate-caret-blink: 1s ease-out infinite caret-blink;
-  @keyframes caret-blink {
-    0%,
-    70%,
-    to {
-      opacity: 1;
-    }
-    20%,
-    50% {
-      opacity: 0;
-    }
-  }
-
   --animate-toast-success-odd: toast-success-odd 0.32s
     cubic-bezier(0.5, 1, 0.89, 1);
   @keyframes toast-success-odd {
@@ -426,10 +400,6 @@
   h6 {
     @apply scroll-m-20 text-lg font-semibold tracking-tight;
   }
-
-  /* p {
-    @apply leading-7;
-  } */
 
   b,
   strong {
