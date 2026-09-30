@@ -1,4 +1,3 @@
-import { ACTIVITY_EVENT_TYPES } from "@/modules/activity/constants";
 import { index, snakeCase, uniqueIndex } from "drizzle-orm/pg-core";
 import { roles } from "../permission";
 
@@ -140,24 +139,24 @@ export const verification = snakeCase.table(
   (t) => [index("IDX_verifications_identifier").on(t.identifier)],
 );
 
-export const activities = snakeCase.table(
-  "activities",
-  (t) => ({
-    id: t.uuid().primaryKey().defaultRandom(),
+// export const histories = snakeCase.table(
+//   "histories",
+//   (t) => ({
+//     id: t.uuid().primaryKey().defaultRandom(),
 
-    userId: t
-      .uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    entityId: t.text(),
+//     userId: t
+//       .uuid()
+//       .notNull()
+//       .references(() => users.id, { onDelete: "cascade" }),
+//     entityId: t.text(),
 
-    eventType: t.text({ enum: ACTIVITY_EVENT_TYPES }).notNull(),
-    data: t.text(),
+//     eventType: t.text().notNull(),
+//     data: t.text(),
 
-    createdAt: t.timestamp().notNull().defaultNow(),
-  }),
-  (t) => [
-    index("IDX_activities_type").on(t.eventType),
-    index("IDX_activities_user_id_created_at").on(t.userId, t.createdAt),
-  ],
-);
+//     createdAt: t.timestamp().notNull().defaultNow(),
+//   }),
+//   (t) => [
+//     index("IDX_activities_type").on(t.eventType),
+//     index("IDX_activities_user_id_created_at").on(t.userId, t.createdAt),
+//   ],
+// );

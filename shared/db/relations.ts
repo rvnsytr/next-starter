@@ -11,10 +11,10 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.users.id,
       to: r.accounts.userId,
     }),
-    activities: r.many.activities({
-      from: r.users.id,
-      to: r.activities.userId,
-    }),
+    // activities: r.many.activities({
+    //   from: r.users.id,
+    //   to: r.activities.userId,
+    // }),
     file: r.one.files({
       from: r.users.image,
       to: r.files.id,
@@ -36,10 +36,10 @@ export const relations = defineRelations(schema, (r) => ({
     }),
   },
 
-  activity: {
-    user: r.one.users({
-      from: r.activities.userId,
-      to: r.users.id,
-    }),
-  },
+  // activity: {
+  //   user: r.one.users({
+  //     from: r.activities.userId,
+  //     to: r.users.id,
+  //   }),
+  // },
 }));
