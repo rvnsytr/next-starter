@@ -205,7 +205,7 @@ function AnchoredToasts({
               data-slot="toast-positioner"
               toast={toast}
               sideOffset={positionerProps.sideOffset ?? 4}
-              className="z-50 max-w-[min(--spacing(64),var(--available-width))]"
+              className="z-60 max-w-[min(--spacing(64),var(--available-width))]"
             >
               <Toast.Root
                 data-slot="toast-popup"

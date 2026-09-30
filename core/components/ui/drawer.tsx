@@ -212,7 +212,7 @@ export function DrawerPopup({
                   size="icon"
                   variant="ghost"
                   aria-label="Close"
-                  className="absolute inset-e-2 top-2"
+                  className="absolute inset-e-2 top-2 z-1"
                 >
                   <XIcon />
                 </Button>
@@ -528,15 +528,15 @@ export function DrawerMenuCheckboxItem({
       className={cn(
         "text-foreground hover:bg-accent hover:text-accent-foreground grid min-h-9 w-full cursor-default items-center gap-2 rounded-sm px-2 py-1 text-base outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 sm:min-h-8 sm:text-sm **:[svg]:pointer-events-none **:[svg]:-mx-0.5 **:[svg]:shrink-0 **:[svg:not([class*='opacity-'])]:opacity-80 **:[svg:not([class*='size-'])]:size-4.5 sm:**:[svg:not([class*='size-'])]:size-4",
         variant === "switch"
-          ? "grid-cols-[1fr_auto] gap-4 pe-1.5"
-          : "grid-cols-[1rem_1fr] pe-4",
+          ? "grid-cols-[minmax(0,1fr)_auto] gap-4 pe-1.5"
+          : "grid-cols-[1rem_minmax(0,1fr)] pe-4",
         className,
       )}
       {...props}
     >
       {variant === "switch" ? (
         <>
-          <span className="col-start-1">{children}</span>
+          <span className="col-start-1 min-w-0 wrap-anywhere">{children}</span>
           <CheckboxPrimitive.Indicator
             className="focus-visible:ring-ring focus-visible:ring-offset-background data-checked:bg-primary data-unchecked:bg-input col-start-2 inline-flex h-[calc(var(--thumb-size)+2px)] w-[calc(var(--thumb-size)*2-2px)] shrink-0 items-center rounded-full p-px inset-shadow-[0_1px_--theme(--color-black/4%)] transition-[background-color,box-shadow] duration-200 outline-none [--thumb-size:--spacing(4)] focus-visible:ring-2 focus-visible:ring-offset-1 data-disabled:opacity-64 sm:[--thumb-size:--spacing(3)]"
             keepMounted
@@ -561,7 +561,7 @@ export function DrawerMenuCheckboxItem({
               <path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
             </svg>
           </CheckboxPrimitive.Indicator>
-          <span className="col-start-2">{children}</span>
+          <span className="col-start-2 min-w-0 wrap-anywhere">{children}</span>
         </>
       )}
     </CheckboxPrimitive.Root>
@@ -593,7 +593,7 @@ export function DrawerMenuRadioItem({
       value={value}
       className={cn(
         "text-foreground hover:bg-accent hover:text-accent-foreground grid min-h-9 w-full cursor-default items-center gap-2 rounded-sm px-2 py-1 text-base outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-64 sm:min-h-8 sm:text-sm [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4",
-        "grid-cols-[1rem_1fr] items-center pe-4",
+        "grid-cols-[1rem_minmax(0,1fr)] items-center pe-4",
         className,
       )}
       {...props}
@@ -613,7 +613,7 @@ export function DrawerMenuRadioItem({
           <path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
         </svg>
       </RadioPrimitive.Indicator>
-      <span className="col-start-2">{children}</span>
+      <span className="col-start-2 min-w-0 wrap-anywhere">{children}</span>
     </RadioPrimitive.Root>
   );
 }

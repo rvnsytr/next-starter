@@ -169,7 +169,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[1rem_1fr] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -177,7 +177,7 @@ function SelectItem({
       <SelectPrimitive.ItemIndicator className="col-start-1">
         <CheckIcon />
       </SelectPrimitive.ItemIndicator>
-      <SelectPrimitive.ItemText className="col-start-2 min-w-0">
+      <SelectPrimitive.ItemText className="col-start-2 min-w-0 wrap-anywhere">
         {children}
       </SelectPrimitive.ItemText>
     </SelectPrimitive.Item>

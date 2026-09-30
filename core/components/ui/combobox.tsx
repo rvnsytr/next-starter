@@ -16,9 +16,11 @@ export const ComboboxContext: React.Context<{
   multiple: boolean;
 }>({ chipsRef: null, multiple: false });
 
-export function Combobox<TValue, TMultiple extends boolean | undefined = false>(
-  props: ComboboxPrimitive.Root.Props<TValue, TMultiple>,
-) {
+export function Combobox<
+  TValue,
+  TMultiple extends boolean | undefined = false,
+  TItem = TValue,
+>(props: ComboboxPrimitive.Root.Props<TValue, TMultiple, TItem>) {
   const chipsRef = useRef<Element | null>(null);
   return (
     <ComboboxContext.Provider value={{ chipsRef, multiple: !!props.multiple }}>
@@ -215,7 +217,7 @@ export function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[1rem_1fr] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground grid min-h-7 cursor-default grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-sm outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 **:[svg]:pointer-events-none **:[svg]:shrink-0 **:[svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -223,7 +225,7 @@ export function ComboboxItem({
       <ComboboxPrimitive.ItemIndicator className="col-start-1">
         <CheckIcon />
       </ComboboxPrimitive.ItemIndicator>
-      <div className="col-start-2">{children}</div>
+      <div className="col-start-2 min-w-0 wrap-anywhere">{children}</div>
     </ComboboxPrimitive.Item>
   );
 }
@@ -413,6 +415,9 @@ export function ComboboxChipRemove({
     </ComboboxPrimitive.ChipRemove>
   );
 }
+
+export const createComboboxItems: typeof ComboboxPrimitive.createItems =
+  ComboboxPrimitive.createItems;
 
 export const useComboboxFilter: typeof ComboboxPrimitive.useFilter =
   ComboboxPrimitive.useFilter;
