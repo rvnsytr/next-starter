@@ -42,6 +42,13 @@ export type DataGridTableMeta<TData extends RowData> = TableMeta & {
 
   /** Callback invoked when the Data Grid data changes, either through row additions/removals or cell edits. */
   onEditChange?: (context: DataGridChanges<TData>, silent?: boolean) => void;
+
+  /**
+   * Determines whether cell editing is enabled for the current row.
+   *
+   * When omitted, cell editing is enabled for all rows.
+   */
+  enableCellEditForRow?: (context: TData) => boolean;
 };
 
 export type DataGridColumnMeta = ColumnMeta & {
@@ -72,6 +79,8 @@ type CellEditorComboboxProps<TMultiple extends boolean> = Omit<
   | "multiple"
 >;
 
+export type CellEditorScope = "insert-only" | "update-only" | "both";
+
 export type CellEditorMetaBase = {
   /**
    * Override the column id used when writing the value back to the row.
@@ -85,6 +94,17 @@ export type CellEditorMetaBase = {
 
   /** Optional Zod schema used to validate the value before committing. */
   schema?: z.ZodType<string, any>;
+
+  /**
+   * Determines the scope in which the cell editor is active.
+   *
+   * - `"insert-only"`: The editor is only active when inserting new rows.
+   * - `"update-only"`: The editor is only active when updating existing rows.
+   * - `"both"`: The editor is active for both inserting and updating rows.
+   *
+   * @default "both"
+   */
+  scope?: CellEditorScope;
 
   /** Props passed to the input component. */
   inputProps?: Override<

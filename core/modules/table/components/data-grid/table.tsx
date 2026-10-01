@@ -19,6 +19,7 @@ import {
   TableProps,
 } from "@/core/modules/table/types";
 import {
+  canCellEditForScope,
   getParentColumns,
   hasNestedKey,
   setNestedValue,
@@ -33,10 +34,13 @@ import {
   RowData,
 } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { useDataGrid } from "./provider";
-import { TableCellEditorController } from "./table-cell-editor";
+import {
+  TableCellEditorContext,
+  TableCellEditorController,
+} from "./table-cell-editor";
 
 // @see https://tanstack.com/table/latest/docs/framework/react/guide/cell-selection#copying-a-selection
 function escapeTsvValue(value: unknown) {
@@ -94,7 +98,6 @@ export function DataGrid({
   { containerProps?: Omit<React.ComponentProps<"div">, "ref" | "tabIndex"> }
 >) {
   const table = dataGrid.useTableContext();
-  const tableRef = useRef<HTMLDivElement>(null);
 
   const dataGridContext = useDataGrid();
   const [currentEdit, setCurrentEdit] = useState<DataGridEditState | null>(
@@ -122,13 +125,20 @@ export function DataGrid({
     [dataGridContext],
   );
 
+  const canCellEditForRow = useCallback(
+    (rowData: RowData) => {
+      const tableMeta = table.options.meta;
+      if (!tableMeta?.enableCellEditForRow) return true;
+      return tableMeta.enableCellEditForRow(rowData);
+    },
+    [table.options.meta],
+  );
+
   const exitCellEdit = useCallback(() => {
     if (currentEdit) {
       setTimeout(() => {
-        tableRef.current?.focus();
         table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
       }, 0);
-
       setCurrentEdit(null);
     } else if (table.state.cellSelection.length > 0) {
       table.resetCellSelection(true);
@@ -198,119 +208,133 @@ export function DataGrid({
   }, [currentEdit, table]);
 
   useHotkey("Escape", () => exitCellEdit());
-  useHotkeys(
-    [
-      {
-        hotkey: "ArrowUp",
-        callback: () => table.moveCellSelection("up"),
+  useHotkeys([
+    {
+      hotkey: "ArrowUp",
+      callback: () => table.moveCellSelection("up"),
+    },
+    {
+      hotkey: "ArrowDown",
+      callback: () => table.moveCellSelection("down"),
+    },
+    {
+      hotkey: "ArrowLeft",
+      callback: () => table.moveCellSelection("left"),
+    },
+    {
+      hotkey: "ArrowRight",
+      callback: () => table.moveCellSelection("right"),
+    },
+    {
+      hotkey: "Tab",
+      callback: () => table.moveCellSelection("right"),
+      options: { conflictBehavior: "allow" },
+    },
+    {
+      hotkey: "Shift+ArrowUp",
+      callback: () => table.extendCellSelection("up"),
+    },
+    {
+      hotkey: "Shift+ArrowDown",
+      callback: () => table.extendCellSelection("down"),
+    },
+    {
+      hotkey: "Shift+ArrowLeft",
+      callback: () => table.extendCellSelection("left"),
+    },
+    {
+      hotkey: "Shift+ArrowRight",
+      callback: () => table.extendCellSelection("right"),
+    },
+    {
+      hotkey: "Mod+A",
+      callback: () => table.selectAllCells(),
+      options: { enabled: !currentEdit },
+    },
+    {
+      hotkey: "Mod+C",
+      callback: () => {
+        void navigator.clipboard.writeText(
+          toTsv(table.getSelectedCellRangesData()),
+        );
+        toast.add({ type: "info", title: "Copied to clipboard" });
       },
-      {
-        hotkey: "ArrowDown",
-        callback: () => table.moveCellSelection("down"),
-      },
-      {
-        hotkey: "ArrowLeft",
-        callback: () => table.moveCellSelection("left"),
-      },
-      {
-        hotkey: "ArrowRight",
-        callback: () => table.moveCellSelection("right"),
-      },
-      {
-        hotkey: "Tab",
-        callback: () => table.moveCellSelection("right"),
-        options: { conflictBehavior: "allow" },
-      },
-      {
-        hotkey: "Shift+ArrowUp",
-        callback: () => table.extendCellSelection("up"),
-      },
-      {
-        hotkey: "Shift+ArrowDown",
-        callback: () => table.extendCellSelection("down"),
-      },
-      {
-        hotkey: "Shift+ArrowLeft",
-        callback: () => table.extendCellSelection("left"),
-      },
-      {
-        hotkey: "Shift+ArrowRight",
-        callback: () => table.extendCellSelection("right"),
-      },
-      {
-        hotkey: "Mod+A",
-        callback: () => table.selectAllCells(),
-        options: { enabled: !currentEdit },
-      },
-      {
-        hotkey: "Mod+C",
-        callback: () => {
-          void navigator.clipboard.writeText(
-            toTsv(table.getSelectedCellRangesData()),
-          );
-          toast.add({ type: "info", title: "Copied to clipboard" });
-        },
-        options: { enabled: !currentEdit },
-      },
-      {
-        hotkey: "Enter",
-        callback: () => {
-          const cellSelectionState = table.state.cellSelection;
+      options: { enabled: !currentEdit },
+    },
+    {
+      hotkey: "Enter",
+      callback: () => {
+        const cellSelectionState = table.state.cellSelection;
 
-          if (!cellSelectionState.length) return;
+        if (!cellSelectionState.length) return;
 
-          const css = cellSelectionState[0];
-          const column = table.getColumn(css.anchorColumnId);
+        const css = cellSelectionState[0];
 
-          const meta = column?.columnDef.meta?.editor;
+        const row = table.getRow(css.anchorRowId);
+        const column = table.getColumn(css.anchorColumnId);
 
-          if (!meta || ("alwaysEditable" in meta && meta.alwaysEditable))
-            return;
+        const columnEditorMeta = column?.columnDef.meta?.editor;
+        if (!columnEditorMeta) return;
 
-          const rowId = css.anchorRowId;
-          const columnId = css.anchorColumnId;
-          const cellId = table.getFocusedCell()?.id;
+        const isColumnAlwaysEditable =
+          "alwaysEditable" in columnEditorMeta &&
+          columnEditorMeta.alwaysEditable;
 
-          if (
-            rowId === css.focusRowId &&
-            columnId === css.focusColumnId &&
-            cellId
-          ) {
-            setCurrentEdit({ rowId, columnId, cellId });
-          }
-        },
+        if (isColumnAlwaysEditable) return;
+
+        const isAddedRow = originalData.every((r, i) => {
+          const rowId = table.options.getRowId?.(r, i);
+          return row.id !== rowId;
+        });
+
+        const scope = columnEditorMeta.scope;
+
+        const canEdit =
+          canCellEditForScope({ scope, isAddedRow }) &&
+          canCellEditForRow(row.original);
+
+        if (!canEdit) return;
+
+        const cellId = table.getFocusedCell()?.id;
+
+        if (
+          row.id === css.focusRowId &&
+          column.id === css.focusColumnId &&
+          cellId
+        ) {
+          setCurrentEdit({ rowId: row.id, columnId: column.id, cellId });
+        }
       },
-      {
-        hotkey: "Delete",
-        callback: () => {
-          const { newRows, removeRows } = dataGridContext;
+    },
+    {
+      hotkey: "Delete",
+      callback: () => {
+        const { newRows, removeRows } = dataGridContext;
 
-          const rowIds = table.getCellSelectionRowIds();
-          const addedRows = newRows.form.getValues("rows");
+        const rowIds = table.getCellSelectionRowIds();
+        const addedRows = newRows.form.getValues("rows");
 
-          const removedRows = rowIds
-            .map((rowId) => ({ rowId, rowData: table.getRow(rowId).original }))
-            .filter((row) => {
-              const addedRowIndex = addedRows.findIndex(
-                (r, i) => table.options.getRowId?.(r, i) === row.rowId,
-              );
+        const removedRows = rowIds
+          .map((rowId) => ({ rowId, rowData: table.getRow(rowId).original }))
+          .filter((row) => {
+            const addedRowIndex = addedRows.findIndex(
+              (r, i) => table.options.getRowId?.(r, i) === row.rowId,
+            );
 
-              const isAddedRow = addedRowIndex >= 0;
-              if (isAddedRow) newRows.fieldArray.remove(addedRowIndex);
+            const isAddedRow = addedRowIndex >= 0;
+            if (isAddedRow) newRows.fieldArray.remove(addedRowIndex);
 
-              return !isAddedRow;
-            });
+            return !isAddedRow;
+          });
 
-          removeRows(removedRows);
+        removeRows(removedRows);
 
-          const hasAddedRows = rowIds.length !== removedRows.length;
-          if (hasAddedRows)
-            table.options.meta?.onEditChange?.(dataGridContext.getChanges());
-        },
+        const hasAddedRows = rowIds.length !== removedRows.length;
+        if (hasAddedRows)
+          table.options.meta?.onEditChange?.(dataGridContext.getChanges());
       },
-    ],
-    { target: tableRef, enabled: !currentEdit },
-  );
+    },
+  ]);
 
   const { className: containerClassName, ...restContainerProps } =
     containerProps ?? {};
@@ -319,7 +343,6 @@ export function DataGrid({
     <Table
       style={{ width: table.getTotalSize(), ...style }}
       containerProps={{
-        ref: tableRef,
         tabIndex: 0,
         className: cn("outline-none", containerClassName),
         ...restContainerProps,
@@ -491,17 +514,22 @@ export function DataGrid({
                             ? cell.getSelectionEdges()
                             : null;
 
-                          const isCellEdited = rowChanges.updated.some(
-                            (r) =>
-                              r.rowId === row.id &&
-                              hasNestedKey(r.changes, cell.column.id),
-                          );
+                          const scope = columnMeta?.editor?.scope;
 
-                          return (
-                            <TableCellEditorController
-                              key={cell.id}
-                              id={cell.id}
-                              context={{
+                          const canEdit =
+                            canCellEditForScope({ scope, isAddedRow }) &&
+                            canCellEditForRow(row.original);
+
+                          const isCellEdited =
+                            canEdit &&
+                            rowChanges.updated.some(
+                              (r) =>
+                                r.rowId === row.id &&
+                                hasNestedKey(r.changes, cell.column.id),
+                            );
+
+                          const context: TableCellEditorContext | null = canEdit
+                            ? {
                                 rowId: row.id,
                                 rowData: row.original,
                                 columnId: cell.column.id,
@@ -518,7 +546,14 @@ export function DataGrid({
 
                                 exitCellEdit,
                                 handleCellEdit,
-                              }}
+                              }
+                            : null;
+
+                          return (
+                            <TableCellEditorController
+                              key={cell.id}
+                              id={cell.id}
+                              context={context}
                               onMouseDown={cell.getSelectionStartHandler()}
                               onMouseEnter={cell.getSelectionExtendHandler()}
                               style={{

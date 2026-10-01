@@ -38,6 +38,7 @@ import {
   DataGridCellEditorType,
   DataGridEditState,
 } from "@/core/modules/table/types";
+import { Override } from "@/core/types";
 import { formatZodError, isEqual } from "@/core/utils";
 import { messages } from "@/shared/messages";
 import { sharedSchemas } from "@/shared/schema";
@@ -76,30 +77,39 @@ function errorToast(errorMessage?: string) {
   toast.add({ type: "error", title, description });
 }
 
-type TableCellEditorControllerProps = React.ComponentProps<typeof TableCell> & {
-  context: DataGridCellEditContext & {
-    isSelected: boolean;
-    isFocused: boolean;
-    isCellEdited: boolean;
+export type TableCellEditorContext = DataGridCellEditContext & {
+  isSelected: boolean;
+  isFocused: boolean;
+  isCellEdited: boolean;
 
-    currentEdit: DataGridEditState | null;
-    setCurrentEdit: React.Dispatch<
-      React.SetStateAction<DataGridEditState | null>
-    >;
+  currentEdit: DataGridEditState | null;
+  setCurrentEdit: React.Dispatch<
+    React.SetStateAction<DataGridEditState | null>
+  >;
 
-    exitCellEdit: () => void;
-    handleCellEdit: (
-      newValue: CellData,
-      context: DataGridCellEditContext,
-      options?: DataGridCellEditOptions,
-    ) => void;
-  };
+  exitCellEdit: () => void;
+  handleCellEdit: (
+    newValue: CellData,
+    context: DataGridCellEditContext,
+    options?: DataGridCellEditOptions,
+  ) => void;
+};
+
+export type TableCellEditorControllerProps = React.ComponentProps<
+  typeof TableCell
+> & {
+  context: TableCellEditorContext;
 };
 
 export function TableCellEditorController({
   context,
   ...props
-}: TableCellEditorControllerProps) {
+}: Override<
+  TableCellEditorControllerProps,
+  { context: TableCellEditorContext | null }
+>) {
+  if (!context) return <TableCell {...props} />;
+
   switch (context.columnMeta?.editor?.type) {
     case "string":
     case "number":

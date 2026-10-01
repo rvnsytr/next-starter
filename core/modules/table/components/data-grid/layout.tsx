@@ -19,12 +19,20 @@ import { useDataGrid } from "./provider";
 import { SaveChangesButtonProps } from "./save-changes-button";
 
 export type DataGridLayoutProps = DataTableLayoutProps & {
+  /**
+   * Whether the "Add Row" button is enabled in the Data Grid.
+   *
+   * @default `false`
+   */
+  disabledAddRows?: boolean;
+
   addRowButtonProps?: AddRowButtonProps;
   clearChangesButtonProps?: ClearChangesButtonProps;
   saveChangesButtonProps?: SaveChangesButtonProps;
 };
 
 export function DataGridLayout({
+  disabledAddRows = false,
   activeFiltersProps,
   activeFiltersContainerProps,
   clearFiltersProps,
@@ -136,10 +144,12 @@ export function DataGridLayout({
               />
             </ButtonGroup>
 
-            <table.AddRowButton
-              shortcut={addNewRowButtonShortcut}
-              {...restAddNewRowButtonProps}
-            />
+            {!disabledAddRows && (
+              <table.AddRowButton
+                shortcut={addNewRowButtonShortcut}
+                {...restAddNewRowButtonProps}
+              />
+            )}
 
             <EditorToolbar
               clearChangesButtonProps={clearChangesButtonProps}

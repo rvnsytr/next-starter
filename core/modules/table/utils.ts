@@ -11,6 +11,7 @@ import { DEFAULT_FILTER_TYPE } from "./constants";
 import { filterMeta } from "./filter-meta";
 import { filterSchema, filterTypeSchema } from "./filter-schema";
 import {
+  CellEditorScope,
   ColumnMeta,
   DataGridTableMeta,
   Filter,
@@ -22,7 +23,7 @@ export function saveChanges(
   context: DataGridContextValue,
   tableMeta?: DataGridTableMeta<RowData>,
 ) {
-  const res = tableMeta?.onSave?.(context.getChanges()) ?? false;
+  const res = tableMeta?.onSave?.(context.getChanges()) ?? true;
   if (!res) return;
   context.clearChanges();
   tableMeta?.onEditChange?.(context.getChanges());
@@ -131,6 +132,18 @@ export function resolveColumnFilter({
       },
     },
   };
+}
+
+export function canCellEditForScope(context: {
+  scope?: CellEditorScope;
+  isAddedRow: boolean;
+}) {
+  const { scope = "both", isAddedRow } = context;
+  return (
+    scope === "both" ||
+    (scope === "insert-only" && isAddedRow) ||
+    (scope === "update-only" && !isAddedRow)
+  );
 }
 
 export function getParentColumns<T extends { parent?: T }>(node: T): T[] {
