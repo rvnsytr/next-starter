@@ -26,14 +26,14 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <DashboardPage className="items-center">
-      <Card id="tema" className="w-full lg:max-w-xl" asPageCard>
+      <Card id="theme" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
-            <SunMoonIcon /> Tema
+            <SunMoonIcon /> Theme
           </CardTitle>
           <CardDescription>
-            Sesuaikan tampilan dan nuansa <b>{appConfig.name}</b> sesuai
-            preferensi Anda.
+            Customize the look and feel of <b>{appConfig.name}</b> to match your
+            preferences.
           </CardDescription>
 
           <CardAction>
@@ -48,13 +48,13 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Card id="sesi-aktif" className="w-full lg:max-w-xl" asPageCard>
+      <Card id="active-sessions" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
-            <ShieldIcon /> Sesi Aktif
+            <ShieldIcon /> Active sessions
           </CardTitle>
           <CardDescription>
-            Lihat dan kelola sesi yang saat ini sedang aktif pada akun Anda.
+            View and manage the sessions currently active on your account.
           </CardDescription>
         </CardHeader>
 
@@ -67,13 +67,13 @@ export default function Page() {
         </CardFooter>
       </Card>
 
-      <Card id="ubah-kata-sandi" className="w-full lg:max-w-xl" asPageCard>
+      <Card id="change-password" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
-            <LockKeyholeIcon /> Ubah Kata Sandi
+            <LockKeyholeIcon /> Change password
           </CardTitle>
           <CardDescription>
-            Gunakan kata sandi yang kuat untuk menjaga keamanan akun Anda.
+            Use a strong password to keep your account secure.
           </CardDescription>
         </CardHeader>
 

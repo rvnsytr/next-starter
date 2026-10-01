@@ -38,7 +38,10 @@ export function SidebarAppContent() {
     [user.role],
   );
 
-  const activeRoute = getActiveRoute(menu, pathname);
+  const activeRoute = useMemo(
+    () => getActiveRoute(menu, pathname),
+    [menu, pathname],
+  );
 
   return (
     <SidebarContent>
@@ -75,7 +78,7 @@ function SidebarAppContentCollapsible({
   const { isMobile, toggleSidebar } = useSidebar();
   const { title } = routeConfig[data.route];
 
-  const iconElement = data.icon && <data.icon />;
+  const Icon = data.icon && <data.icon />;
 
   const [open, setOpen] = useState(isActive);
   useEffect(() => {
@@ -87,7 +90,7 @@ function SidebarAppContentCollapsible({
     return (
       <SidebarMenuItem>
         <SidebarMenuButton disabled>
-          {iconElement}
+          {Icon}
           <span className="line-clamp-1">{title}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -109,7 +112,7 @@ function SidebarAppContentCollapsible({
         tooltip={title}
         render={<Link href={data.route} />}
       >
-        <LinkSpinner icon={{ base: iconElement }} />
+        <LinkSpinner icon={{ base: Icon }} />
         <span className="line-clamp-1">{title}</span>
       </SidebarMenuButton>
 

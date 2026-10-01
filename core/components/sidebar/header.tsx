@@ -33,7 +33,7 @@ export function SidebarAppHeader() {
     const actionItems: QuickSearchItem[] = [
       {
         type: "action",
-        label: "Keluar",
+        label: "Sign out",
         // TODO: variant: "destructive",
         icon: <LogOutIcon />,
         callback: () =>
@@ -44,15 +44,15 @@ export function SidebarAppHeader() {
     if (session.impersonatedBy)
       actionItems.unshift({
         type: "action",
-        label: "Kembali ke akun saya",
+        label: "Back to my account",
         icon: <Layers2Icon />,
         callback: stopImpersonateUser,
       });
 
     return [
       ...getAccessibleMenus(menuConfig.dashboard, user.role),
-      { group: "Navigasi", items: menuConfig["dashboard-footer"] },
-      { group: "Aksi", items: actionItems },
+      { group: "Navigation", items: menuConfig["dashboard-footer"] },
+      { group: "Actions", items: actionItems },
     ];
   }, [router, user.role, session.impersonatedBy]);
 

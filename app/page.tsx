@@ -11,11 +11,7 @@ import { Button } from "@/core/components/ui/button";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { GithubIcon } from "@/shared/components/icons";
 import { appConfig } from "@/shared/configs";
-import {
-  ArrowRightIcon,
-  ExternalLinkIcon,
-  TestTubeDiagonalIcon,
-} from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
@@ -47,43 +43,16 @@ export default function Page() {
         />
       </div>
 
-      <div className="flex gap-2">
-        {/* <Button
-          nativeButton={false}
-          render={
-            <Link href="/dashboard">
-              Docs
-              <LinkSpinner icon={{ base: <ExternalLinkIcon /> }} />
-            </Link>
-          }
-        /> */}
-
-        <Button disabled>
-          Docs <ExternalLinkIcon />
-        </Button>
-
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={
-            <Link href="/playground">
-              <LinkSpinner icon={{ base: <TestTubeDiagonalIcon /> }} />
-              Playground
-            </Link>
-          }
-        />
-
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={
-            <Link href="/dashboard">
-              Dashboard
-              <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
-            </Link>
-          }
-        />
-      </div>
+      <Button
+        variant="outline"
+        nativeButton={false}
+        render={
+          <Link href="/dashboard">
+            Dashboard
+            <LinkSpinner icon={{ base: <ArrowRightIcon /> }} />
+          </Link>
+        }
+      />
     </div>
   );
 }

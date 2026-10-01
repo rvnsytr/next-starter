@@ -26,6 +26,7 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           <ImpersonateUserBadge />
+
           <ThemeToggle align="end" />
 
           <Separator orientation="vertical" className="h-4" />

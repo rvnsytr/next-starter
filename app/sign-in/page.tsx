@@ -12,11 +12,13 @@ import { getRouteTitle } from "@/core/route";
 import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
+import { LoadingFallback } from "@/shared/components/fallback";
 import { FooterNote } from "@/shared/components/footer-note";
 import { appConfig } from "@/shared/configs";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = { title: getRouteTitle("/sign-in") };
 
@@ -29,8 +31,7 @@ export default function Page() {
             <Link href="/">{appConfig.name}</Link>
           </CardTitle>
           <CardDescription>
-            Masuk ke Dashboard {appConfig.name} dengan aman menggunakan akun
-            Anda.
+            Sign in to {appConfig.name} securely using your account.
           </CardDescription>
         </CardHeader>
 
@@ -38,15 +39,17 @@ export default function Page() {
           <Tabs defaultValue="sign-in">
             <TabsList className="w-full">
               <TabsTab value="sign-in">
-                <LogInIcon /> Masuk
+                <LogInIcon /> Sign in
               </TabsTab>
               <TabsTab value="sign-up">
-                <UserRoundPlusIcon /> Daftar
+                <UserRoundPlusIcon /> Sign up
               </TabsTab>
             </TabsList>
 
             <TabsPanel value="sign-in">
-              <SignInForm />
+              <Suspense fallback={<LoadingFallback variant="frame" />}>
+                <SignInForm />
+              </Suspense>
             </TabsPanel>
             <TabsPanel value="sign-up">
               <SignUpForm />
@@ -54,7 +57,7 @@ export default function Page() {
           </Tabs>
 
           <Marker variant="separator">
-            <MarkerContent className="text-xs">Atau</MarkerContent>
+            <MarkerContent className="text-xs">Or</MarkerContent>
           </Marker>
 
           <SignOnGithubButton />

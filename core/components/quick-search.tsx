@@ -107,7 +107,7 @@ export function QuickSearch({
   type,
   data: propData,
   shortcut,
-  placeholder = "Pencarian cepat",
+  placeholder = "Quick search...",
   shortcutsOnlyWhenOpen = false,
   size = "default",
   className,

@@ -3,7 +3,6 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
-import { LoadingFallback } from "@/shared/components/fallback";
 import { appConfig } from "@/shared/configs";
 import { GlobalShortcuts } from "@/shared/providers/global-shortcuts";
 import "@/styles/globals.css";
@@ -12,11 +11,10 @@ import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Suspense } from "react";
 import z from "zod";
-import { id } from "zod/locales";
+import { en } from "zod/locales";
 
-z.config(id());
+z.config(en());
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -56,17 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <AnchoredToastProvider>
                 <main className="relative isolate flex min-h-svh flex-col">
                   <GridPattern className="stroke-muted/60 dark:stroke-muted/20" />
-                  <Suspense
-                    fallback={
-                      <LoadingFallback
-                        variant="orbit"
-                        className="size-6"
-                        containerClassName="min-h-svh"
-                      />
-                    }
-                  >
-                    {children}
-                  </Suspense>
+                  {children}
                 </main>
 
                 <GlobalShortcuts />

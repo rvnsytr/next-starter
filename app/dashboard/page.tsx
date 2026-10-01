@@ -7,8 +7,8 @@ import {
 
 export default function Page() {
   return (
-    <DashboardPage>
-      <DashboardPageHeader className="border-b">
+    <DashboardPage className="px-0">
+      <DashboardPageHeader className="border-b px-4">
         <DashboardPageTitle>Dashboard</DashboardPageTitle>
         <DashboardPageDescription>
           Welcome to the dashboard! Here you can find an overview of your

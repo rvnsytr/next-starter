@@ -252,7 +252,8 @@ function Sidebar({
 
 function SidebarToggle({
   align = "start",
-  className,
+  size = "icon",
+  variant = "ghost",
   onClick,
   ...props
 }: ButtonProps & Pick<React.ComponentProps<typeof TooltipPopup>, "align">) {
@@ -263,11 +264,10 @@ function SidebarToggle({
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      size="icon-sm"
-      variant="ghost"
-      className={cn("*:transition", className)}
-      onClick={(event) => {
-        onClick?.(event);
+      size={size}
+      variant={variant}
+      onClick={(e) => {
+        onClick?.(e);
         toggleSidebar();
       }}
       {...props}

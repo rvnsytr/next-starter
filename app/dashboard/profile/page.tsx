@@ -20,13 +20,13 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <DashboardPage className="items-center px-0">
-      <Card id="informasi-pribadi" className="w-full lg:max-w-xl" asPageCard>
+      <Card id="personal-information" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader className="border-b">
           <CardTitle>
-            <UserRoundIcon /> Informasi Pribadi
+            <UserRoundIcon /> Personal information
           </CardTitle>
           <CardDescription>
-            Perbarui dan kelola informasi profil <b>{appConfig.name}</b> Anda.
+            Update and manage your <b>{appConfig.name}</b> profile information.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
             <ProfileBadges />

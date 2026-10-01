@@ -48,7 +48,7 @@ export type FileDropzoneProps = Pick<
 
     /**
      * Whether the files in the dropzone can be sorted
-     * @default false
+     * @default `false`
      */
     sortable?: boolean;
 

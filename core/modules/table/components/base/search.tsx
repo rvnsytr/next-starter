@@ -27,7 +27,7 @@ const DEFAULT_SHORTCUT: HotkeySequence = ["/"];
 
 export function Search({
   shortcut,
-  placeholder = "Cari...",
+  placeholder = "Search...",
   className,
   ...props
 }: SearchProps) {

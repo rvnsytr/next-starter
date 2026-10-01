@@ -222,7 +222,7 @@ export type DataGridCellEditContext = DataGridEditState & {
 export type DataGridCellEditOptions = {
   /**
    * Whether the edit should be applied silently without triggering change handlers.
-   * @default false
+   * @default `false`
    */
   silent?: boolean;
 };
