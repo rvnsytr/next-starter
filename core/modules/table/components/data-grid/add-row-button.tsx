@@ -34,7 +34,6 @@ export function DataGridAddRowButton({
   size = "default",
   variant = "outline",
   onClick,
-  disabled = false,
   ...props
 }: AddRowButtonProps) {
   const table = dataGrid.useTableContext();
@@ -71,7 +70,6 @@ export function DataGridAddRowButton({
               addNewRow();
               onClick?.(e);
             }}
-            disabled={disabled || table.options.meta?.disabledAddRow}
             {...props}
           >
             <ListPlusIcon /> Add Row
