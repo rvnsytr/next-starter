@@ -34,7 +34,7 @@ export function RevokeOtherSessionsButton() {
         success: () => {
           setIsLoading(false);
           mutateListSessions();
-          return { title: "Semua sesi aktif lainnya berhasil diakhiri." };
+          return { title: "All other active sessions have been signed out." };
         },
         error: (e) => {
           setIsLoading(false);
@@ -53,18 +53,18 @@ export function RevokeOtherSessionsButton() {
               loading={isLoading}
               icon={{ base: <MonitorOffIcon /> }}
             />
-            Akhiri Semua Sesi Lain
+            Sign out all other sessions
           </Button>
         }
       />
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-x-2">
-            <MonitorOffIcon /> Akhiri Semua Sesi di Perangkat Lain
+            <MonitorOffIcon /> Sign out all sessions on other devices
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Semua sesi aktif di perangkat lain akan diakhiri, kecuali sesi ini.
-            Yakin ingin melanjutkan?
+            All active sessions on other devices will be signed out, except this
+            one. Do you want to continue?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

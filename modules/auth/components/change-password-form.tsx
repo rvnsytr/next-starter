@@ -26,11 +26,11 @@ const formSchema = passwordSchema
   })
   .extend({ revokeOtherSessions: z.boolean() })
   .refine((sc) => sc.newPassword === sc.confirmPassword, {
-    message: messages.thingNotMatch("Kata sandi"),
+    message: messages.thingNotMatch("Passwords"),
     path: ["confirmPassword"],
   });
 
-const formId = "change-password-form";
+const FORM_ID = "change-password-form";
 
 export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,7 +58,7 @@ export function ChangePasswordForm() {
         success: () => {
           setIsLoading(false);
           form.reset();
-          return { title: "Kata sandi Anda berhasil diperbarui." };
+          return { title: "Your password has been updated." };
         },
         error: (e) => {
           setIsLoading(false);
@@ -71,16 +71,16 @@ export function ChangePasswordForm() {
   return (
     <>
       <CardContent>
-        <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+        <Form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
           <Controller
             name="currentPassword"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Kata sandi saat ini</FieldLabel>
+                <FieldLabel>Current password</FieldLabel>
                 <PasswordInput
                   startAddon={<LockKeyholeOpenIcon />}
-                  placeholder="Masukan kata sandi saat ini"
+                  placeholder="Enter your current password"
                   required
                   {...field}
                 />
@@ -94,9 +94,9 @@ export function ChangePasswordForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Kata sandi baru</FieldLabel>
+                <FieldLabel>New password</FieldLabel>
                 <PasswordInput
-                  placeholder="Masukan kata sandi baru"
+                  placeholder="Enter your new password"
                   withValidationList
                   required
                   {...field}
@@ -111,9 +111,9 @@ export function ChangePasswordForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Konfirmasi kata sandi</FieldLabel>
+                <FieldLabel>Confirm password</FieldLabel>
                 <PasswordInput
-                  placeholder="Konfirmasi kata sandi baru anda"
+                  placeholder="Confirm your new password"
                   required
                   {...field}
                 />
@@ -133,7 +133,7 @@ export function ChangePasswordForm() {
                     onCheckedChange={onChange}
                     {...field}
                   />
-                  Keluar dari perangkat lainnya
+                  Sign out of other devices
                 </FieldLabel>
                 <FieldError error={fieldState.error} />
               </Field>
@@ -143,7 +143,7 @@ export function ChangePasswordForm() {
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" form={formId} disabled={isLoading}>
+        <Button type="submit" form={FORM_ID} disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>

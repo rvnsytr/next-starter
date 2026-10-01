@@ -27,7 +27,6 @@ import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
 import { useIsMobile } from "@/core/hooks/use-media-query";
 import { messages } from "@/shared/messages";
-import { defaultRole, roles } from "@/shared/permission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
@@ -35,24 +34,25 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createUser } from "../actions";
-import { roleMeta } from "../constants";
-import { passwordSchema, userSchema } from "../schema";
-import { mutateUserDataTable } from "./user-data-table";
+import { ROLE_META } from "../constants/role-meta";
+import { DEFAULT_ROLE, ROLES } from "../constants/roles";
+import { mutateListUsers } from "../hooks/use-list-users";
+import { passwordSchema, usersSchema } from "../schema";
 
 type FormSchema = z.infer<typeof formSchema>;
-const formSchema = userSchema
+const formSchema = usersSchema
   .pick({ name: true, email: true, role: true })
   .extend({
     newPassword: passwordSchema.shape.newPassword,
     confirmPassword: passwordSchema.shape.confirmPassword,
   })
   .refine((sc) => sc.newPassword === sc.confirmPassword, {
-    message: messages.thingNotMatch("Kata sandi"),
+    message: messages.thingNotMatch("Passwords"),
     path: ["confirmPassword"],
   });
 
 const CREATE_USER_DIALOG_HOTKEY: Hotkey = "N";
-const formId = "create-user-form";
+const FORM_ID = "create-user-form";
 
 export function CreateUserDialog() {
   const isMobile = useIsMobile();
@@ -68,7 +68,7 @@ export function CreateUserDialog() {
       email: "",
       newPassword: "",
       confirmPassword: "",
-      role: defaultRole,
+      role: DEFAULT_ROLE,
     },
   });
 
@@ -79,12 +79,14 @@ export function CreateUserDialog() {
       success: () => {
         setIsLoading(false);
         form.reset();
-        mutateUserDataTable();
+
+        mutateListUsers();
+
         return {
           title: messages.success,
           description: (
             <span>
-              Akun atas nama <b>{rest.name}</b> berhasil dibuat.
+              The account for <b>{rest.name}</b> has been created.
             </span>
           ),
         };
@@ -102,7 +104,7 @@ export function CreateUserDialog() {
         render={
           <Button size={isMobile ? "icon" : "default"} variant="outline">
             <UserRoundPlusIcon />
-            <span className="hidden lg:inline-flex">Tambah Pengguna</span>
+            <span className="hidden lg:inline-flex">Add user</span>
             <Kbd className="hidden lg:inline-flex">
               {formatForDisplay(CREATE_USER_DIALOG_HOTKEY)}
             </Kbd>
@@ -113,24 +115,24 @@ export function CreateUserDialog() {
       <DialogPopup>
         <DialogHeader>
           <DialogTitle>
-            <UserRoundPlusIcon /> Tambah Pengguna
+            <UserRoundPlusIcon /> Add user
           </DialogTitle>
           <DialogDescription>
-            Pastikan semua informasi sudah benar sebelum mengkonfirmasi.
+            Make sure all information is correct before confirming.
           </DialogDescription>
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+          <Form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="name"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Nama</FieldLabel>
+                  <FieldLabel>Name</FieldLabel>
                   <InputGroup>
                     <InputGroupInput
-                      placeholder="Masukan nama anda"
+                      placeholder="Enter the user's name"
                       required
                       {...field}
                     />
@@ -148,11 +150,11 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Alamat email</FieldLabel>
+                  <FieldLabel>Email address</FieldLabel>
                   <InputGroup>
                     <InputGroupInput
                       type="email"
-                      placeholder="Masukan email anda"
+                      placeholder="Enter the user's email"
                       required
                       {...field}
                     />
@@ -170,9 +172,9 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Kata sandi baru</FieldLabel>
+                  <FieldLabel>New password</FieldLabel>
                   <PasswordInput
-                    placeholder="Masukan kata sandi baru"
+                    placeholder="Enter a new password"
                     withValidationList
                     required
                     {...field}
@@ -187,9 +189,9 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Konfirmasi kata sandi</FieldLabel>
+                  <FieldLabel>Confirm password</FieldLabel>
                   <PasswordInput
-                    placeholder="Konfirmasi kata sandi baru anda"
+                    placeholder="Confirm the new password"
                     required
                     {...field}
                   />
@@ -210,8 +212,8 @@ export function CreateUserDialog() {
                     required
                     {...field}
                   >
-                    {roles.map((role) => {
-                      const { icon: Icon, ...config } = roleMeta[role];
+                    {ROLES.map((role) => {
+                      const { icon: Icon, ...config } = ROLE_META[role];
                       return (
                         <Label key={role} className="w-full flex-col" asCard>
                           <RadioGroupItem value={role} hidden />
@@ -238,7 +240,7 @@ export function CreateUserDialog() {
               <Button variant="outline">{messages.actions.cancel}</Button>
             }
           />
-          <Button type="submit" form={formId} disabled={isLoading}>
+          <Button type="submit" form={FORM_ID} disabled={isLoading}>
             <LoadingSpinner loading={isLoading} />
             {messages.actions.add}
           </Button>

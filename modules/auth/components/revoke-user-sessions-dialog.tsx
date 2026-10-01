@@ -44,7 +44,7 @@ export function RevokeUserSessionsDialog({
             title: messages.success,
             description: (
               <span>
-                Seluruh sesi <b>{data.name}</b> berhasil diakhiri.
+                All sessions for <b>{data.name}</b> have been ended.
               </span>
             ),
           };
@@ -62,11 +62,11 @@ export function RevokeUserSessionsDialog({
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <MonitorOffIcon /> Akhiri Semua Sesi {data.name}
+            <MonitorOffIcon /> End all sessions for {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Semua sesi aktif milik <b>{data.name}</b> akan diakhiri, termasuk
-            sesi saat ini. Yakin ingin melanjutkan?
+            All active sessions for <b>{data.name}</b> will be ended, including
+            the current session. Do you want to continue?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -119,8 +119,8 @@ export function ActionRevokeUserSessionsDialog({
             title: messages.success,
             description: (
               <span>
-                {successLength} dari {userIds.length} sesi pengguna berhasil
-                diakhiri.
+                {successLength} of {userIds.length} user sessions were ended
+                successfully.
               </span>
             ),
           };
@@ -138,12 +138,12 @@ export function ActionRevokeUserSessionsDialog({
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <MonitorOffIcon /> Akhiri Sesi untuk {userIds.length} Pengguna
+            <MonitorOffIcon /> End sessions for {userIds.length} users
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Ini akan menghentikan semua sesi aktif dari{" "}
-            <span>{userIds.length} pengguna</span> yang dipilih. Yakin ingin
-            melanjutkan?
+            This will end all active sessions for the{" "}
+            <span>{userIds.length} selected users</span>. Do you want to
+            continue?
           </AlertDialogDescription>
         </AlertDialogHeader>
 

@@ -4,10 +4,10 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { Role } from "@/shared/permission";
-import { roleMeta } from "../constants";
+import { ROLE_META } from "../constants/role-meta";
+import { Role } from "../constants/roles";
 
-export function RoleBadge({
+export function UserRoleBadge({
   value,
   withText = true,
   className,
@@ -16,7 +16,7 @@ export function RoleBadge({
   withText?: boolean;
   className?: string;
 }) {
-  const { label, description, icon: Icon, color } = roleMeta[value];
+  const { label, description, icon: Icon, color } = ROLE_META[value];
 
   return (
     <Tooltip>

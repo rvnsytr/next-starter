@@ -1,5 +1,4 @@
-import { index, snakeCase, uniqueIndex } from "drizzle-orm/pg-core";
-import { roles } from "../permission";
+import { index, snakeCase } from "drizzle-orm/pg-core";
 
 export const files = snakeCase.table(
   "files",
@@ -38,7 +37,10 @@ export const users = snakeCase.table(
     email: t.text().notNull().unique(),
     emailVerified: t.boolean().notNull().default(false),
     image: t.text(),
-    role: t.text({ enum: roles }).notNull().default("user"),
+    role: t
+      .text({ enum: ["user", "admin"] })
+      .notNull()
+      .default("user"),
 
     banned: t.boolean().default(false),
     banReason: t.text(),
@@ -52,8 +54,8 @@ export const users = snakeCase.table(
       .$onUpdate(() => new Date()),
   }),
   (t) => [
-    index("IDX_user_role").on(t.role),
-    index("IDX_user_banned").on(t.banned),
+    index("IDX_users_role").on(t.role),
+    index("IDX_users_banned").on(t.banned),
   ],
 );
 
@@ -62,7 +64,6 @@ export const accounts = snakeCase.table(
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
 
-    issuer: t.text().notNull(),
     accountId: t.text().notNull(),
     providerId: t.text().notNull(),
     userId: t
@@ -86,10 +87,7 @@ export const accounts = snakeCase.table(
       .defaultNow()
       .$onUpdate(() => new Date()),
   }),
-  (t) => [
-    uniqueIndex("UIDX_accounts_issuer_accountId").on(t.issuer, t.accountId),
-    index("IDX_accounts_userId").on(t.userId),
-  ],
+  (t) => [index("IDX_accounts_userId").on(t.userId)],
 );
 
 export const sessions = snakeCase.table(
@@ -116,11 +114,11 @@ export const sessions = snakeCase.table(
       .defaultNow()
       .$onUpdate(() => new Date()),
   }),
-  (t) => [index("IDX_session_userId").on(t.userId)],
+  (t) => [index("IDX_sessions_userId").on(t.userId)],
 );
 
-export const verification = snakeCase.table(
-  "verification",
+export const verifications = snakeCase.table(
+  "verifications",
   (t) => ({
     id: t.uuid().primaryKey().defaultRandom(),
 

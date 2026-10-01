@@ -25,9 +25,9 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { deleteUsers } from "../actions";
-import { mutateUserDataTable } from "./user-data-table";
+import { mutateListUsers } from "../hooks/use-list-users";
 
-const formId = "delete-user-form";
+const FORM_ID = "delete-user-form";
 const formActionId = "delete-user-action-form";
 
 export function DeleteUserDialog({
@@ -47,9 +47,9 @@ export function DeleteUserDialog({
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z
-    .object({ input: sharedSchemas.string({ label: "Nama" }) })
+    .object({ input: sharedSchemas.string({ label: "Name" }) })
     .refine((sc) => sc.input === data.name, {
-      message: messages.thingNotMatch("Nama"),
+      message: messages.thingNotMatch("Name"),
       path: ["input"],
     });
 
@@ -67,13 +67,15 @@ export function DeleteUserDialog({
       success: () => {
         form.reset();
         setIsLoading(false);
+
         setData(null);
-        mutateUserDataTable();
+        mutateListUsers();
+
         return {
           title: messages.success,
           description: (
             <span>
-              Akun atas nama <b>{data.name}</b> berhasil dihapus.
+              The account for <b>{data.name}</b> has been deleted.
             </span>
           ),
         };
@@ -90,17 +92,16 @@ export function DeleteUserDialog({
       <DialogPopup>
         <DialogHeader>
           <DialogTitle className="text-destructive-foreground">
-            <TriangleAlertIcon /> Hapus akun atas nama {data.name}
+            <TriangleAlertIcon /> Delete account: {data.name}
           </DialogTitle>
           <DialogDescription>
-            PERINGATAN: Tindakan ini akan menghapus akun <b>{data.name}</b>{" "}
-            beserta seluruh datanya secara permanen. Harap berhati-hati karena
-            aksi ini tidak dapat dibatalkan.
+            WARNING: This will permanently delete <b>{data.name}</b>'s account
+            and all associated data. This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+          <Form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="input"
               control={form.control}
@@ -108,8 +109,8 @@ export function DeleteUserDialog({
                 <Field name={field.name} invalid={fieldState.invalid}>
                   <FieldLabel className="text-muted-foreground font-normal">
                     <span>
-                      Untuk mengonfirmasi, ketik &quot;<b>{data.name}</b>&quot;
-                      pada kolom di bawah ini.
+                      To confirm, type &quot;<b>{data.name}</b>&quot; in the
+                      field below.
                     </span>
                   </FieldLabel>
                   <Input
@@ -134,7 +135,7 @@ export function DeleteUserDialog({
           />
           <Button
             type="submit"
-            form={formId}
+            form={FORM_ID}
             variant="destructive"
             disabled={input !== data.name}
           >
@@ -162,15 +163,15 @@ export function ActionDeleteUsersDialog({
   onSuccess: () => void;
 }) {
   const [input, setInput] = useState<string>("");
-  const inputValue = `Hapus ${String(userIds.length)} Pengguna`;
+  const inputValue = `Delete ${String(userIds.length)} Users`;
 
   type FormSchema = z.infer<typeof formSchema>;
   const formSchema = z
     .object({
-      input: sharedSchemas.string({ label: "Total pengguna yang dihapus" }),
+      input: sharedSchemas.string({ label: "Number of users to delete" }),
     })
     .refine((sc) => sc.input === inputValue, {
-      message: messages.thingNotMatch("Total pengguna yang dihapus"),
+      message: messages.thingNotMatch("Number of users to delete"),
       path: ["input"],
     });
 
@@ -191,7 +192,7 @@ export function ActionDeleteUsersDialog({
         return {
           title: messages.success,
           description: (
-            <span>{res.length} akun pengguna berhasil dihapus.</span>
+            <span>{res.length} user accounts have been deleted.</span>
           ),
         };
       },
@@ -207,12 +208,12 @@ export function ActionDeleteUsersDialog({
       <DialogPopup>
         <DialogHeader>
           <DialogTitle className="text-destructive-foreground flex items-center gap-x-2">
-            <TriangleAlertIcon /> Hapus {userIds.length} Akun
+            <TriangleAlertIcon /> Delete {userIds.length} Accounts
           </DialogTitle>
           <DialogDescription>
-            PERINGATAN: Tindakan ini akan menghapus <b>{userIds.length} akun</b>{" "}
-            yang dipilih beserta seluruh datanya secara permanen. Harap
-            berhati-hati karena aksi ini tidak dapat dibatalkan.
+            WARNING: This will permanently delete{" "}
+            <b>{userIds.length} selected accounts</b> and all associated data.
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
@@ -225,8 +226,8 @@ export function ActionDeleteUsersDialog({
                 <Field name={field.name} invalid={fieldState.invalid}>
                   <FieldLabel className="text-muted-foreground font-normal">
                     <span>
-                      Untuk mengonfirmasi, ketik &quot;<b>{inputValue}</b>&quot;
-                      pada kolom di bawah ini.
+                      To confirm, type &quot;<b>{inputValue}</b>&quot; in the
+                      field below.
                     </span>
                   </FieldLabel>
                   <Input

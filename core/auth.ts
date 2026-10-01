@@ -1,6 +1,7 @@
+import { DEFAULT_ROLE, ROLES } from "@/modules/auth/constants/roles";
 import { appConfig } from "@/shared/configs";
 import * as schema from "@/shared/db/schema";
-import { ac, authRoles, defaultRole, roles } from "@/shared/permission";
+import { ac, roles } from "@/shared/permission";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
@@ -36,7 +37,7 @@ export const auth = betterAuth({
 
   plugins: [
     openAPI(),
-    adminPlugin({ ac, roles: authRoles, defaultRole }),
+    adminPlugin({ ac, roles, defaultRole: DEFAULT_ROLE }),
     nextCookies(),
   ],
 
@@ -57,9 +58,9 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        type: [...roles],
+        type: [...ROLES],
         input: false,
-        defaultValue: defaultRole,
+        defaultValue: DEFAULT_ROLE,
       },
     },
   },

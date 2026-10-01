@@ -27,7 +27,7 @@ export function signOutClient({
       loading: { title: messages.loading },
       success: () => {
         onSuccess?.(createSignInURL(location));
-        return { title: "Berhasil keluar - Sampai jumpa!" };
+        return { title: "Signed out. See you soon!" };
       },
       error: (e) => {
         onError?.(e);
@@ -51,13 +51,13 @@ export function SignOutButton() {
 
   return (
     <SidebarMenuButton
-      tooltip="Keluar"
+      tooltip="Sign out"
       variant="destructive-ghost"
       onClick={onClick}
       disabled={isLoading}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <LogOutIcon /> }} />
-      Keluar
+      Sign out
     </SidebarMenuButton>
   );
 }

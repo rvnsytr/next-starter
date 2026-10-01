@@ -19,7 +19,7 @@ export function ImpersonateUserBadge({
     <div className="relative">
       <Badge variant="outline" className="relative">
         <Layers2Icon />
-        <span className="hidden md:flex">Mode Impersonasi</span>
+        <span className="hidden md:flex">Impersonation Mode</span>
       </Badge>
       <Ping />
     </div>

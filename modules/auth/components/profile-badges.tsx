@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "../hooks/use-session";
-import { RoleBadge } from "./role-badge";
+import { UserRoleBadge } from "./user-role-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
 export function ProfileBadges() {
@@ -9,7 +9,7 @@ export function ProfileBadges() {
   return (
     <>
       {user.emailVerified && <UserVerifiedBadge />}
-      <RoleBadge value={user.role} />
+      <UserRoleBadge value={user.role} />
     </>
   );
 }

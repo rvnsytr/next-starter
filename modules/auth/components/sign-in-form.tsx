@@ -20,11 +20,11 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
-import { passwordSchema, userSchema } from "../schema";
-import { ResetPasswordDialog } from "./reset-password";
+import { passwordSchema, usersSchema } from "../schema";
+import { ResetPasswordDialog } from "./reset-password-dialog";
 
 type FormSchema = z.infer<typeof formSchema>;
-const formSchema = userSchema.pick({ email: true }).extend({
+const formSchema = usersSchema.pick({ email: true }).extend({
   password: passwordSchema.shape.password,
   rememberMe: z.boolean(),
 });
@@ -51,14 +51,14 @@ export function SignInForm() {
       {
         loading: { title: messages.loading },
         success: (res) => {
-          const title = "Berhasil masuk!";
+          const title = "Signed in successfully!";
           const name = "user" in res ? res.user.name : null;
           if (!name) return { title };
           return {
-            title: "Berhasil masuk!",
+            title,
             description: (
               <span>
-                Selamat datang, <b>{name}</b>!
+                Welcome, <b>{name}</b>!
               </span>
             ),
           };
@@ -78,11 +78,11 @@ export function SignInForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Alamat email</FieldLabel>
+            <FieldLabel>Email address</FieldLabel>
             <InputGroup>
               <InputGroupInput
                 type="email"
-                placeholder="Masukan email anda"
+                placeholder="Enter your email"
                 required
                 {...field}
               />
@@ -100,9 +100,9 @@ export function SignInForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Kata sandi</FieldLabel>
+            <FieldLabel>Password</FieldLabel>
             <PasswordInput
-              placeholder="Masukan kata sandi anda"
+              placeholder="Enter your password"
               required
               {...field}
             />
@@ -123,7 +123,7 @@ export function SignInForm() {
                   onCheckedChange={onChange}
                   {...field}
                 />
-                Ingat saya
+                Remember me
               </FieldLabel>
               <FieldError error={fieldState.error} />
             </Field>
@@ -135,7 +135,7 @@ export function SignInForm() {
 
       <Button type="submit" className="relative" disabled={isLoading}>
         <LoadingSpinner loading={isLoading} icon={{ base: <LogInIcon /> }} />
-        Masuk ke Dashboard
+        Sign in to Dashboard
         {/* {wasLastUsed && (
           <Badge className="bg-primary absolute -top-3 right-1 border border-transparent shadow">
             {sharedText.lastUsed}

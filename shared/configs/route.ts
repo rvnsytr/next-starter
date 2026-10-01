@@ -1,4 +1,4 @@
-import { Role } from "@/shared/permission";
+import { Role } from "@/modules/auth/constants/roles";
 import { Route } from "next";
 
 export type RouteAccess = "public" | "authenticated" | Role[];

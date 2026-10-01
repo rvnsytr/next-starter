@@ -1,30 +1,14 @@
 "use client";
 
 import { User } from "@/core/auth";
-import { QueryDataTable } from "@/core/components/data-table";
-import { Button } from "@/core/components/ui/button";
-import {
-  Menu,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuItem,
-  MenuPopup,
-  MenuSeparator,
-  MenuTrigger,
-} from "@/core/components/ui/menu";
-import { LoadingSpinner } from "@/core/components/ui/spinner";
-import { mutateControlledData } from "@/core/hooks/use-data-controller";
-import { messages } from "@/shared/messages";
-import { BanIcon, MonitorOff, Settings2Icon, Trash2Icon } from "lucide-react";
+import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { useState } from "react";
-import { listUsersAction } from "../actions";
+import { useListUsers } from "../hooks/use-list-users";
 import { useSession } from "../hooks/use-session";
-import { authKeys } from "../keys";
-import { ActionDeleteUsersDialog } from "./delete-user-dialog";
-import { ActionRevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
 import { getUserColumns } from "./user-columns";
 import { UserDetailDialog } from "./user-detail-dialog";
 
+/**
 export const mutateUserDataTable = () =>
   mutateControlledData(authKeys.actions.users);
 
@@ -51,7 +35,7 @@ export function UserDataTable() {
         }}
         getRowId={(row) => row.id}
         enableRowSelection={(row) => row.original.id !== user.id}
-        placeholder={{ search: "Cari Pengguna..." }}
+        placeholder={{ search: "Search users..." }}
         shortcuts={{
           filter: "default",
           sort: "default",
@@ -81,7 +65,7 @@ export function UserDataTable() {
                 <MenuPopup>
                   <MenuGroup>
                     <MenuGroupLabel className="text-center">
-                      Akun dipilih: <b>{rowData.length}</b>
+                      Selected accounts: <b>{rowData.length}</b>
                     </MenuGroupLabel>
 
                     <MenuSeparator />
@@ -89,21 +73,20 @@ export function UserDataTable() {
                     <MenuItem
                       onClick={() => setIsRevokeSessionsDialogOpen(true)}
                     >
-                      <MonitorOff /> Akhiri Sesi
+                      <MonitorOff /> End sessions
                     </MenuItem>
 
                     <MenuSeparator />
 
-                    {/* // TODO */}
                     <MenuItem variant="destructive" disabled>
-                      <BanIcon /> Blokir
+                      <BanIcon /> Ban
                     </MenuItem>
 
                     <MenuItem
                       variant="destructive"
                       onClick={() => setIsDeleteUserDialogOpen(true)}
                     >
-                      <Trash2Icon /> Hapus
+                      <Trash2Icon /> Delete
                     </MenuItem>
                   </MenuGroup>
                 </MenuPopup>
@@ -138,6 +121,59 @@ export function UserDataTable() {
       />
 
       <UserDetailDialog data={data} setData={setData} />
+    </>
+  );
+}
+*/
+
+export function UsersDataGrid() {
+  const { user } = useSession();
+
+  const [detailData, setDetailData] = useState<User | null>(null);
+
+  const { data, isLoading } = useListUsers(user.role, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  const table = dataGrid.useAppTable({
+    data: data?.success ? data.data : [],
+    columns: getUserColumns({ onDetailClick: setDetailData }),
+    getRowId: (row) => row.id,
+    meta: {
+      loading: isLoading,
+
+      defaultValues: {
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        email: "",
+        emailVerified: false,
+        name: "",
+        image: null,
+        banExpires: null,
+        banReason: null,
+        banned: false,
+        role: "user",
+      },
+
+      enableCellEditForRow: (row) => row.id !== user.id,
+    },
+  });
+
+  return (
+    <>
+      <table.AppTable>
+        <table.Layout disabledAddRows>
+          <table.Table
+            variant="bordered"
+            containerProps={{ className: "border-x-0" }}
+          />
+        </table.Layout>
+      </table.AppTable>
+
+      <UserDetailDialog data={detailData} setData={setDetailData} />
     </>
   );
 }

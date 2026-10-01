@@ -1,12 +1,12 @@
+import { Role } from "@/modules/auth/constants/roles";
 import { appConfig, Menu, RouteAccess, routeConfig } from "@/shared/configs";
-import { Role } from "@/shared/permission";
 import { Route } from "next";
 
 type NormalizeRouteOptions = {
   /**
    * Include query string and hash fragment.
    *
-   * @default false
+   * @default `false`
    *
    * @example
    * normalizeRoute("/users?id=123#profile")
@@ -20,7 +20,7 @@ type NormalizeRouteOptions = {
   /**
    * Collapse repeated slashes into one.
    *
-   * @default true
+   * @default `true`
    *
    * @example
    * normalizeRoute("//users///profile")
@@ -34,7 +34,7 @@ type NormalizeRouteOptions = {
   /**
    * Remove trailing slash, except for root.
    *
-   * @default true
+   * @default `true`
    *
    * @example
    * normalizeRoute("/users/")
@@ -48,7 +48,7 @@ type NormalizeRouteOptions = {
   /**
    * Ensure route starts with a leading slash.
    *
-   * @default true
+   * @default `true`
    *
    * @example
    * normalizeRoute("users/profile")
@@ -216,14 +216,16 @@ export function getAccessibleMenus(menu: Menu[], role: Role): Menu[] {
         .map((item) => {
           if (!item.subItems) return item;
 
-          const filteredSubItems = item.subItems.filter((sub) => {
+          const { subItems, ...rest } = item;
+
+          const filteredSubItems = subItems.filter((sub) => {
+            if (!sub.access) return true;
             return hasAccess(sub.access, role);
           });
 
-          if (filteredSubItems.length <= 0) return null;
-          else return { ...item, subItems: filteredSubItems };
-        })
-        .filter((item) => !!item);
+          if (filteredSubItems.length <= 0) return rest;
+          else return { ...rest, subItems: filteredSubItems };
+        });
 
       if (filteredItems.length <= 0) return null;
       else return { group, items: filteredItems };

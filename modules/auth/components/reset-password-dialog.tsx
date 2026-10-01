@@ -38,12 +38,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { passwordSchema, userSchema } from "../schema";
+import { passwordSchema, usersSchema } from "../schema";
 
 type FormSchema = z.infer<typeof formSchema>;
-const formSchema = userSchema.pick({ email: true });
+const formSchema = usersSchema.pick({ email: true });
 
-const formId = "reset-password-form";
+const FORM_ID = "reset-password-form";
 const formDialogId = "reset-password-dialog-form";
 
 export function ResetPasswordDialog() {
@@ -68,7 +68,7 @@ export function ResetPasswordDialog() {
           setIsLoading(false);
           return {
             title: messages.success,
-            desc: "Tautan untuk mengatur ulang kata sandi telah dikirim ke email Anda.",
+            description: "A password reset link has been sent to your email.",
           };
         },
         error: (e) => {
@@ -82,17 +82,17 @@ export function ResetPasswordDialog() {
   return (
     <Dialog>
       <DialogTrigger className="link shrink-0">
-        <Label>Lupa kata sandi ?</Label>
+        <Label>Forgot password?</Label>
       </DialogTrigger>
 
       <DialogPopup>
         <DialogHeader>
           <DialogTitle>
-            <LockKeyholeOpenIcon /> Atur ulang kata sandi
+            <LockKeyholeOpenIcon /> Reset password
           </DialogTitle>
           <DialogDescription>
-            Masukan alamat email yang terdaftar pada akun Anda, dan kami akan
-            mengirimkan tautan untuk mengatur ulang kata sandi Anda.
+            Enter the email address registered to your account and we'll send
+            you a link to reset your password.
           </DialogDescription>
         </DialogHeader>
 
@@ -103,11 +103,11 @@ export function ResetPasswordDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Alamat email</FieldLabel>
+                  <FieldLabel>Email address</FieldLabel>
                   <InputGroup>
                     <InputGroupInput
                       type="email"
-                      placeholder="Masukan email anda"
+                      placeholder="Enter your email"
                       required
                       {...field}
                     />
@@ -131,7 +131,7 @@ export function ResetPasswordDialog() {
             onClick={form.handleSubmit(onSubmit)}
           >
             <LoadingSpinner loading={isLoading} icon={{ base: <SendIcon /> }} />
-            Atur ulang kata sandi
+            Reset password
           </Button>
         </DialogFooter>
       </DialogPopup>
@@ -143,7 +143,7 @@ type FormDialogSchema = z.infer<typeof formDialogSchema>;
 const formDialogSchema = passwordSchema
   .pick({ newPassword: true, confirmPassword: true })
   .refine((sc) => sc.newPassword === sc.confirmPassword, {
-    message: messages.thingNotMatch("Kata sandi"),
+    message: messages.thingNotMatch("Passwords"),
     path: ["confirmPassword"],
   });
 
@@ -171,7 +171,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
           router.push("/sign-in");
           return {
             title: messages.success,
-            desc: "Kata sandi berhasil diatur ulang. Silakan masuk kembali.",
+            description: "Your password has been reset. Please sign in again.",
           };
         },
         error: (e) => {
@@ -185,15 +185,15 @@ export function ResetPasswordForm({ token }: { token?: string }) {
   return (
     <>
       <CardContent>
-        <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+        <Form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
           <Controller
             name="newPassword"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Kata sandi baru</FieldLabel>
+                <FieldLabel>New password</FieldLabel>
                 <PasswordInput
-                  placeholder="Masukan kata sandi baru"
+                  placeholder="Enter your new password"
                   required
                   {...field}
                 />
@@ -207,9 +207,9 @@ export function ResetPasswordForm({ token }: { token?: string }) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Konfirmasi kata sandi</FieldLabel>
+                <FieldLabel>Confirm password</FieldLabel>
                 <PasswordInput
-                  placeholder="Konfirmasi kata sandi baru anda"
+                  placeholder="Confirm your new password"
                   required
                   {...field}
                 />
@@ -232,7 +232,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
 
         <div className="flex flex-col gap-2 md:flex-row">
           <ResetButton onClick={() => form.reset()} />
-          <Button type="submit" form={formId} disabled={isLoading}>
+          <Button type="submit" form={FORM_ID} disabled={isLoading}>
             <LoadingSpinner
               loading={isLoading}
               icon={{ base: <LockKeyholeIcon /> }}

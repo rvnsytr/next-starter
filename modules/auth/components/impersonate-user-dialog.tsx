@@ -1,4 +1,4 @@
-'use client";';
+"use client";
 
 import { User } from "@/core/auth";
 import {
@@ -16,7 +16,7 @@ import { messages } from "@/shared/messages";
 import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { impersonateUser } from "../actions";
-import { roleMeta } from "../constants";
+import { ROLE_META } from "../constants/role-meta";
 
 export function ImpersonateUserDialog({
   data,
@@ -42,7 +42,7 @@ export function ImpersonateUserDialog({
         router.push(to);
         return {
           title: messages.success,
-          description: <span>Anda sekarang masuk sebagai {data.name}.</span>,
+          description: <span>You are now signed in as {data.name}.</span>,
         };
       },
       error: (e) => {
@@ -57,19 +57,19 @@ export function ImpersonateUserDialog({
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <Layers2Icon /> Impersonasi {data.name}
+            <Layers2Icon /> Impersonate {data.name}
           </AlertDialogTitle>
           <div className="grid gap-y-2">
             <AlertDialogDescription>
-              <b>Mode Impersonasi</b> adalah fitur khusus{" "}
-              <b>{roleMeta.admin.label}</b> yang memungkinkan Anda masuk ke akun
-              pengguna lain tanpa harus mengetahui kata sandi mereka.
+              <b>Impersonation Mode</b> is an <b>{ROLE_META.admin.label}</b>
+              -only feature that lets you sign in to another user's account
+              without knowing their password.
             </AlertDialogDescription>
 
             <AlertDialogDescription>
-              Saat dalam <b>Mode Impersonasi</b>, Anda akan memiliki akses penuh
-              ke akun pengguna yang dipilih <b>( {data.name} )</b>. Yakin ingin
-              melanjutkan?
+              While in <b>Impersonation Mode</b>, you will have full access to
+              the selected user's account <b>({data.name})</b>. Do you want to
+              continue?
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>

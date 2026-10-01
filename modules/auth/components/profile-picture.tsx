@@ -58,7 +58,7 @@ export function ProfilePicture({
             loading: { title: messages.loading },
             success: () => {
               setIsChange(false);
-              return { title: "Foto profil berhasil diperbarui." };
+              return { title: "Profile photo updated." };
             },
             error: (e) => {
               setIsChange(false);
@@ -74,7 +74,7 @@ export function ProfilePicture({
     if (!data.image)
       return toast.add({
         type: "info",
-        title: messages.noChanges("foto profil"),
+        title: messages.noChanges("your profile photo"),
       });
 
     setIsRemoved(true);
@@ -87,7 +87,7 @@ export function ProfilePicture({
         loading: { title: messages.loading },
         success: () => {
           setIsRemoved(false);
-          return { title: "Foto profil berhasil dihapus." };
+          return { title: "Profile photo removed." };
         },
         error: (e) => {
           setIsRemoved(false);
@@ -116,7 +116,7 @@ export function ProfilePicture({
       </Avatar>
 
       <div className="flex flex-col gap-y-2">
-        <Label>Foto profil</Label>
+        <Label>Profile photo</Label>
         <div className="flex flex-wrap gap-2">
           <Button
             size="sm"
@@ -148,11 +148,11 @@ export function ProfilePicture({
             <AlertDialogPopup>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  <TriangleAlertIcon /> Hapus Foto Profil
+                  <TriangleAlertIcon /> Remove profile photo
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Apakah kamu yakin ingin menghapus foto profil ini? Tindakan
-                  ini dapat dibatalkan dengan mengunggah foto baru.
+                  Are you sure you want to remove this profile photo? You can
+                  undo this by uploading a new one.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 

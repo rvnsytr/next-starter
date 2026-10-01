@@ -1,22 +1,22 @@
-import { user } from "@/shared/db/schema";
+import { users } from "@/shared/db/schema";
 import { sharedSchemas } from "@/shared/schema";
 import { createSelectSchema } from "drizzle-orm/zod";
 import z from "zod";
 
 export const passwordSchema = z.object({
-  password: sharedSchemas.string({ label: "Kata sandi", min: 1 }),
+  password: sharedSchemas.string({ label: "Password", min: 1 }),
   newPassword: sharedSchemas.password,
   confirmPassword: sharedSchemas.string({
-    label: "Konfirmasi kata sandi",
+    label: "Confirm password",
     min: 1,
   }),
   currentPassword: sharedSchemas.string({
-    label: "Kata sandi saat ini",
+    label: "Current password",
     min: 1,
   }),
 });
 
-export const userSchema = createSelectSchema(user, {
+export const usersSchema = createSelectSchema(users, {
   email: sharedSchemas.email,
-  name: sharedSchemas.string({ label: "Nama", min: 1, withRequired: true }),
+  name: sharedSchemas.string({ label: "Name", min: 1, withRequired: true }),
 });

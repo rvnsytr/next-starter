@@ -20,7 +20,7 @@ export type MenuItem = {
 
   subItems?: {
     label: string;
-    access: RouteAccess;
+    access?: RouteAccess;
     /** if href is not defined, the Link href prop will be `/${route}#${toCase(label, "kebab")}` */
     href?: Route;
     disabled?: boolean;
@@ -55,7 +55,7 @@ export const menuConfig = {
         },
       ],
     },
-  ] as Menu[],
+  ] satisfies Menu[],
 
   "dashboard-footer": [
     { route: "/", icon: ExternalLinkIcon },

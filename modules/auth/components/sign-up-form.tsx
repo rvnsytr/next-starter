@@ -25,21 +25,21 @@ import { MailIcon, UserRoundIcon, UserRoundPlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
-import { passwordSchema, userSchema } from "../schema";
+import { passwordSchema, usersSchema } from "../schema";
 
 type FormSchema = z.infer<typeof formSchema>;
-const formSchema = userSchema
+const formSchema = usersSchema
   .pick({ name: true, email: true })
   .extend({
     newPassword: passwordSchema.shape.newPassword,
     confirmPassword: passwordSchema.shape.confirmPassword,
     agreement: z.boolean().refine((v) => v, {
       error:
-        "Mohon setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan.",
+        "Please accept the Terms of Service and Privacy Policy to continue.",
     }),
   })
   .refine((sc) => sc.newPassword === sc.confirmPassword, {
-    message: messages.thingNotMatch("Kata sandi"),
+    message: messages.thingNotMatch("Passwords"),
     path: ["confirmPassword"],
   });
 
@@ -70,8 +70,8 @@ export function SignUpForm() {
           setIsLoading(false);
           form.reset();
           return {
-            title: "Berhasil mendaftarkan Akun.",
-            description: "Silakan masuk untuk melanjutkan.",
+            title: "Account created successfully.",
+            description: "Please sign in to continue.",
           };
         },
         error: (e) => {
@@ -89,10 +89,10 @@ export function SignUpForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Nama</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <InputGroup>
               <InputGroupInput
-                placeholder="Masukan nama anda"
+                placeholder="Enter your name"
                 required
                 {...field}
               />
@@ -110,11 +110,11 @@ export function SignUpForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Alamat email</FieldLabel>
+            <FieldLabel>Email address</FieldLabel>
             <InputGroup>
               <InputGroupInput
                 type="email"
-                placeholder="Masukan email anda"
+                placeholder="Enter your email"
                 required
                 {...field}
               />
@@ -132,10 +132,10 @@ export function SignUpForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Kata sandi</FieldLabel>
+            <FieldLabel>Password</FieldLabel>
 
             <PasswordInput
-              placeholder="Masukan kata sandi anda"
+              placeholder="Enter your password"
               withValidationList
               required
               {...field}
@@ -151,9 +151,9 @@ export function SignUpForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field name={field.name} invalid={fieldState.invalid}>
-            <FieldLabel>Konfirmasi Kata sandi</FieldLabel>
+            <FieldLabel>Confirm password</FieldLabel>
             <PasswordInput
-              placeholder="Konfirmasi kata sandi anda"
+              placeholder="Confirm your password"
               required
               {...field}
             />
@@ -169,12 +169,12 @@ export function SignUpForm() {
           <Field name={field.name} invalid={fieldState.invalid}>
             <FieldLabel>
               <Checkbox checked={value} onCheckedChange={onChange} {...field} />
-              Setujui syarat dan ketentuan
+              Accept the terms and conditions
             </FieldLabel>
             <FieldDescription>
-              Saya menyetujui{" "}
+              I agree to{" "}
               <span className="text-foreground">
-                ketentuan layanan dan kebijakan privasi
+                the Terms of Service and Privacy Policy
               </span>{" "}
               {appConfig.name}.
             </FieldDescription>
@@ -188,7 +188,7 @@ export function SignUpForm() {
           loading={isLoading}
           icon={{ base: <UserRoundPlusIcon /> }}
         />
-        Daftar Sekarang
+        Sign up now
       </Button>
     </Form>
   );

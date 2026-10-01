@@ -4,7 +4,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import { cn } from "@/core/utils";
+import { cn } from "cn";
 import { BadgeCheckIcon } from "lucide-react";
 
 export function UserVerifiedBadge({
@@ -18,7 +18,7 @@ export function UserVerifiedBadge({
 }) {
   return withText ? (
     <Badge variant="success" className={cn("capitalize", classNames?.badge)}>
-      <BadgeCheckIcon className={classNames?.icon} /> Terverifikasi
+      <BadgeCheckIcon className={classNames?.icon} /> Verified
     </Badge>
   ) : (
     <Tooltip>
@@ -30,7 +30,7 @@ export function UserVerifiedBadge({
           />
         }
       />
-      <TooltipPopup>Terverifikasi</TooltipPopup>
+      <TooltipPopup>Verified</TooltipPopup>
     </Tooltip>
   );
 }

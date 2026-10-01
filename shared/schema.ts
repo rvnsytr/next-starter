@@ -18,13 +18,13 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
-    /** @default false */
+    /** @default `false` */
     coerce?: boolean;
-    /** @default true */
+    /** @default `true` */
     trim?: boolean;
-    /** @default true */
+    /** @default `true` */
     sanitize?: boolean;
-    /** @default false */
+    /** @default `false` */
     withRequired?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): z.ZodType<string, any> => {
@@ -67,9 +67,9 @@ export const sharedSchemas = {
     label?: string;
     min?: number;
     max?: number;
-    /** @default false */
+    /** @default `false` */
     coerce?: boolean;
-    /** @default false */
+    /** @default `false` */
     withRequired?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): z.ZodType<number, any> => {
@@ -115,7 +115,7 @@ export const sharedSchemas = {
     label?: string;
     min?: Date | "now";
     max?: Date | "now";
-    /** @default false */
+    /** @default `false` */
     coerce?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): z.ZodType<Date, any> => {
@@ -151,7 +151,7 @@ export const sharedSchemas = {
     max?: Date | "now";
     minDate?: number;
     maxDate?: number;
-    /** @default false */
+    /** @default `false` */
     coerce?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): z.ZodType<Date[], any> => {
@@ -203,7 +203,7 @@ export const sharedSchemas = {
     label?: string;
     min?: Date | "now";
     max?: Date | "now";
-    /** @default false */
+    /** @default `false` */
     coerce?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): z.ZodType<{ from: Date; to: Date }, any> => {

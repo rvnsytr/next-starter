@@ -30,7 +30,6 @@ import { ScrollArea } from "@/core/components/ui/scroll-area";
 import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/core/components/ui/tabs";
-import { UserActivityTimeline } from "@/modules/activity/components/activity-timeline";
 import { messages } from "@/shared/messages";
 import {
   BanIcon,
@@ -45,15 +44,15 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { userStatus } from "../constants";
 import { useSession } from "../hooks/use-session";
+import { getUserStatus } from "../utils";
 import { BanUserDialog } from "./ban-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { ImpersonateUserDialog } from "./impersonate-user-dialog";
 import { RevokeUserSessionsDialog } from "./revoke-user-sessions-dialog";
-import { RoleBadge } from "./role-badge";
 import { UserDetailSessionList } from "./session-list";
 import { UnbanUserDialog } from "./unban-user-dialog";
+import { UserRoleBadge } from "./user-role-badge";
 import { UserStatusBadge } from "./user-status-badge";
 import { UserVerifiedBadge } from "./user-verified-badge";
 
@@ -92,16 +91,16 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
 
   const profile: DetailListData = [
     {
-      label: "Terakhir diperbarui",
+      label: "Last updated",
       content: messages.dateRelative(data.updatedAt),
     },
-    { label: "Waktu dibuat", content: messages.dateRelative(data.createdAt) },
+    { label: "Created at", content: messages.dateRelative(data.createdAt) },
   ];
 
   const banInfo: DetailListData = [
-    { label: "Alasan diblokir", content: data.banReason ?? undefined },
+    { label: "Ban reason", content: data.banReason ?? undefined },
     {
-      label: "Tanggal blokir berakhir",
+      label: "Ban expiry date",
       content: data.banExpires ? (
         messages.dateRelative(data.banExpires, "future")
       ) : (
@@ -143,26 +142,26 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
             <MenuPopup align="end">
               {data.role !== "admin" && (
                 <MenuItem onClick={() => setIsImpersonateDialogOpen(true)}>
-                  <Layers2Icon /> Akses Akun
+                  <Layers2Icon /> Access account
                 </MenuItem>
               )}
 
               <MenuItem onClick={() => setIsRevokeSessionsDialogOpen(true)}>
-                <MonitorOffIcon /> Akhiri Sesi
+                <MonitorOffIcon /> End sessions
               </MenuItem>
 
               <MenuSeparator />
 
               {data.banned ? (
                 <MenuItem onClick={() => setIsUnbanDialogOpen(true)}>
-                  <LockKeyholeOpenIcon /> Buka Blokir
+                  <LockKeyholeOpenIcon /> Unban
                 </MenuItem>
               ) : (
                 <MenuItem
                   variant="destructive"
                   onClick={() => setIsBanDialogOpen(true)}
                 >
-                  <BanIcon /> Blokir
+                  <BanIcon /> Ban
                 </MenuItem>
               )}
 
@@ -170,7 +169,7 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
                 variant="destructive"
                 onClick={() => setIsDeleteDialogOpen(true)}
               >
-                <Trash2Icon /> Hapus
+                <Trash2Icon /> Delete
               </MenuItem>
             </MenuPopup>
           </Menu>
@@ -179,9 +178,9 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
 
       <DialogPanel className="flex flex-col gap-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          {isCurrentUser && <Badge variant="outline">Pengguna saat ini</Badge>}
-          <RoleBadge value={data.role} />
-          <UserStatusBadge value={userStatus.check(data)} />
+          {isCurrentUser && <Badge variant="outline">Current user</Badge>}
+          <UserStatusBadge value={getUserStatus(data)} />
+          <UserRoleBadge value={data.role} />
         </div>
 
         <Separator />
@@ -190,15 +189,15 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
           <ScrollArea scrollFade withScrollbar={false}>
             <TabsList>
               <TabsTab value="profile">
-                <UserRoundIcon /> Informasi Profil
+                <UserRoundIcon /> Profile information
               </TabsTab>
 
-              <TabsTab value="activity">
-                <HistoryIcon /> Aktivitas
+              <TabsTab value="history">
+                <HistoryIcon /> History
               </TabsTab>
 
               <TabsTab value="sessions">
-                <CookieIcon /> Sesi Terdaftar
+                <CookieIcon /> Active sessions
               </TabsTab>
             </TabsList>
           </ScrollArea>
@@ -213,8 +212,9 @@ function Content({ data, setData }: { data: User; setData: SetData }) {
             )}
           </TabsPanel>
 
-          <TabsPanel value="activity">
-            <UserActivityTimeline userId={data.id} />
+          <TabsPanel value="history">
+            {/* <UserActivityTimeline userId={data.id} /> */}
+            <pre>TODO</pre>
           </TabsPanel>
 
           <TabsPanel value="sessions">

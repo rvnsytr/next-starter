@@ -28,14 +28,14 @@ export function SignOnGithubButton() {
       {
         loading: { title: messages.loading },
         success: (res) => {
-          const title = "Berhasil masuk!";
+          const title = "Signed in successfully!";
           const name = "user" in res ? res.user.name : null;
           if (!name) return { title };
           return {
-            title: "Berhasil masuk!",
+            title,
             description: (
               <span>
-                Selamat datang, <b>{name}</b>!
+                Welcome, <b>{name}</b>!
               </span>
             ),
           };
@@ -56,7 +56,7 @@ export function SignOnGithubButton() {
       onClick={onClick}
     >
       <LoadingSpinner loading={isLoading} icon={{ base: <GithubIcon /> }} />
-      Lanjutankan dengan Github
+      Continue with GitHub
       {/* {wasLastUsed && (
         <Badge
           variant="outline"

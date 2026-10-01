@@ -31,9 +31,9 @@ import {
 import { Separator } from "@/core/components/ui/separator";
 import { LoadingSpinner } from "@/core/components/ui/spinner";
 import { toast } from "@/core/components/ui/toast";
-import { cn } from "@/core/utils";
 import { ErrorFallback, LoadingFallback } from "@/shared/components/fallback";
 import { messages } from "@/shared/messages";
+import { cn } from "cn";
 import {
   ChevronsUpDownIcon,
   Gamepad2Icon,
@@ -90,7 +90,7 @@ export function SessionListCollapsible({
     return (
       <div className="flex flex-col items-center gap-2 py-4">
         <ShieldBanIcon className="size-4" />
-        <small className="font-medium">Tidak ada Sesi yang terdaftar.</small>
+        <small className="font-medium">No sessions found.</small>
       </div>
     );
 
@@ -128,7 +128,7 @@ export function SessionListCollapsible({
           setRevokingSession(null);
           mutateListSessions();
           if (user?.id) mutateListUserSessions(user.id);
-          return { title: "Sesi berhasil diakhiri." };
+          return { title: "Session ended." };
         },
         error: (e) => {
           setRevokingSession(null);
@@ -150,13 +150,12 @@ export function SessionListCollapsible({
             ? new UAParser(s.userAgent).getResult()
             : null;
 
-          const browserName =
-            userAgent?.browser.name ?? "Browser tidak dikenal";
-          const osName = userAgent?.os.name ?? "OS tidak dikenal";
+          const browserName = userAgent?.browser.name ?? "Unknown browser";
+          const osName = userAgent?.os.name ?? "Unknown OS";
           const DeviceIcon = deviceIcons[userAgent?.device.type ?? "other"];
 
           const infoList: DetailListData = [
-            { label: "Alamat IP", content: s.ipAddress ?? undefined },
+            { label: "IP address", content: s.ipAddress ?? undefined },
             { label: "User Agent", content: userAgent?.ua },
           ];
 
@@ -187,8 +186,8 @@ export function SessionListCollapsible({
                     )}
                   >
                     {isCurrentSession
-                      ? "Sesi saat ini"
-                      : messages.thingAgo("Terakhir terlihat", s.updatedAt)}
+                      ? "Current session"
+                      : messages.thingAgo("Last seen", s.updatedAt)}
                   </ItemDescription>
                 </ItemContent>
 
@@ -217,12 +216,13 @@ export function SessionListCollapsible({
                         <AlertDialogPopup>
                           <AlertDialogHeader>
                             <AlertDialogTitle className="flex items-center gap-x-2">
-                              <MonitorOffIcon /> Akhiri Sesi {user?.name}
+                              <MonitorOffIcon /> End session for {user?.name}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Sesi pada perangkat <b>{user?.name ?? "Anda"}</b>{" "}
-                              akan diakhiri dan harus login kembali untuk
-                              mengakses sistem. Yakin ingin melanjutkan?
+                              The session on <b>{user?.name ?? "your"}</b>'s
+                              device will be ended, and you will need to sign in
+                              again to access the system. Do you want to
+                              continue?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

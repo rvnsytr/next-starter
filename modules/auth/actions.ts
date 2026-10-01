@@ -10,19 +10,19 @@ import {
 } from "@/core/s3";
 import { ActionResponse } from "@/core/types";
 import { isValidUrl } from "@/core/utils";
-import { activity, file as fileTable, user } from "@/shared/db/schema";
+import { files as fileTable, users } from "@/shared/db/schema";
 import { messages } from "@/shared/messages";
-import { Role } from "@/shared/permission";
 import { desc, eq, inArray } from "drizzle-orm";
 import { cacheTag, revalidatePath, updateTag } from "next/cache";
 import { headers as nextHeaders } from "next/headers";
-import { authKeys } from "./keys";
+import { Role } from "./constants/roles";
+import { AUTH_QUERY_KEYS } from "./query";
 
 async function listUsers(): Promise<User[]> {
   "use cache";
-  cacheTag(authKeys.actions.users);
+  cacheTag(AUTH_QUERY_KEYS.users);
 
-  const userData = await db.select().from(user).orderBy(desc(user.createdAt));
+  const userData = await db.select().from(users).orderBy(desc(users.createdAt));
 
   const userImageIds = userData
     .map((v) => v.image)
@@ -104,10 +104,12 @@ export async function updateProfileName(
   body: { name: string },
 ) {
   const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
-  await db.insert(activity).values({ userId, eventType: "profile-updated" });
+  // await db.insert(activity).values({ userId, eventType: "profile-updated" });
+
+  console.log("userId", userId);
 
   revalidatePath("/dashboard/profile");
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -127,9 +129,9 @@ export async function updateProfilePicture(file: File) {
 
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
-      .select({ fileId: user.image })
-      .from(user)
-      .where(eq(user.id, userId));
+      .select({ fileId: users.image })
+      .from(users)
+      .where(eq(users.id, userId));
 
     if (fileId) {
       const [{ path }] = await tx
@@ -141,9 +143,9 @@ export async function updateProfilePicture(file: File) {
 
     const [inserted] = await tx.insert(fileTable).values(records).returning();
 
-    await tx
-      .insert(activity)
-      .values({ userId, eventType: "profile-image-updated" });
+    // await tx
+    //   .insert(activity)
+    //   .values({ userId, eventType: "profile-image-updated" });
 
     const updateUser = await auth.api.updateUser({
       headers,
@@ -158,7 +160,7 @@ export async function updateProfilePicture(file: File) {
   });
 
   revalidatePath("/dashboard/profile");
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -172,9 +174,9 @@ export async function deleteProfilePicture() {
 
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
-      .select({ fileId: user.image })
-      .from(user)
-      .where(eq(user.id, userId));
+      .select({ fileId: users.image })
+      .from(users)
+      .where(eq(users.id, userId));
 
     if (fileId && !isValidUrl(fileId)) {
       const [{ path }] = await tx
@@ -184,14 +186,15 @@ export async function deleteProfilePicture() {
       if (path) await deleteFiles([path], { visibility: "public" });
     }
 
-    await tx
-      .insert(activity)
-      .values({ userId, eventType: "profile-image-updated" });
+    // await tx
+    //   .insert(activity)
+    //   .values({ userId, eventType: "profile-image-updated" });
+
     return await auth.api.updateUser({ headers, body: { image: null } });
   });
 
   revalidatePath("/dashboard/profile");
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -205,6 +208,7 @@ export async function listUserSessions(userId: string) {
     headers: await nextHeaders(),
     body: { userId },
   });
+
   return sessions as Session[];
 }
 
@@ -218,26 +222,26 @@ export async function createUser(body: {
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
-  const res = db.transaction(async (tx) => {
+  const res = db.transaction(async () => {
     const data = await auth.api.createUser({ headers, body });
 
-    await tx.insert(activity).values([
-      {
-        userId: data.user.id,
-        entityId: session.user.id,
-        eventType: "user-created",
-      },
-      {
-        userId: session.user.id,
-        entityId: data.user.id,
-        eventType: "admin-user-create",
-      },
-    ]);
+    // await tx.insert(activity).values([
+    //   {
+    //     userId: data.user.id,
+    //     entityId: session.user.id,
+    //     eventType: "user-created",
+    //   },
+    //   {
+    //     userId: session.user.id,
+    //     entityId: data.user.id,
+    //     eventType: "admin-user-create",
+    //   },
+    // ]);
 
     return data;
   });
 
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -247,27 +251,27 @@ export async function updateUserRole(body: { userId: string; role: Role }) {
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
-  const res = db.transaction(async (tx) => {
+  const res = db.transaction(async () => {
     const data = await auth.api.setRole({ headers, body });
 
-    await tx.insert(activity).values([
-      {
-        userId: data.user.id,
-        entityId: session.user.id,
-        eventType: "user-role-updated",
-        data: body.role,
-      },
-      {
-        userId: session.user.id,
-        entityId: data.user.id,
-        eventType: "admin-user-update-role",
-      },
-    ]);
+    // await tx.insert(activity).values([
+    //   {
+    //     userId: data.user.id,
+    //     entityId: session.user.id,
+    //     eventType: "user-role-updated",
+    //     data: body.role,
+    //   },
+    //   {
+    //     userId: session.user.id,
+    //     entityId: data.user.id,
+    //     eventType: "admin-user-update-role",
+    //   },
+    // ]);
 
     return data;
   });
 
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -281,22 +285,22 @@ export async function banUser(body: {
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
-  const res = db.transaction(async (tx) => {
+  const res = db.transaction(async () => {
     const data = await auth.api.banUser({ headers, body });
 
-    await tx.insert(activity).values([
-      { userId: data.user.id, eventType: "user-banned" },
-      {
-        userId: session.user.id,
-        data: data.user.name,
-        eventType: "admin-user-ban",
-      },
-    ]);
+    // await tx.insert(activity).values([
+    //   { userId: data.user.id, eventType: "user-banned" },
+    //   {
+    //     userId: session.user.id,
+    //     data: data.user.name,
+    //     eventType: "admin-user-ban",
+    //   },
+    // ]);
 
     return data;
   });
 
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -306,22 +310,22 @@ export async function unbanUser(body: { userId: string }) {
   const session = await auth.api.getSession({ headers });
   if (!session) throw new Error(messages.unauthorized);
 
-  const res = db.transaction(async (tx) => {
+  const res = db.transaction(async () => {
     const data = await auth.api.unbanUser({ headers, body });
 
-    await tx.insert(activity).values([
-      { userId: data.user.id, eventType: "user-unbanned" },
-      {
-        userId: session.user.id,
-        data: data.user.name,
-        eventType: "admin-user-unban",
-      },
-    ]);
+    // await tx.insert(activity).values([
+    //   { userId: data.user.id, eventType: "user-unbanned" },
+    //   {
+    //     userId: session.user.id,
+    //     data: data.user.name,
+    //     eventType: "admin-user-unban",
+    //   },
+    // ]);
 
     return data;
   });
 
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }
@@ -347,9 +351,9 @@ export async function deleteUsers(body: { userIds: string[] }) {
 
   const res = await db.transaction(async (tx) => {
     const deleted = await tx
-      .delete(user)
-      .where(inArray(user.id, body.userIds))
-      .returning({ name: user.name, fileId: user.image });
+      .delete(users)
+      .where(inArray(users.id, body.userIds))
+      .returning({ name: users.name, fileId: users.image });
 
     const fileIds = deleted
       .map((v) => v.fileId)
@@ -368,19 +372,17 @@ export async function deleteUsers(body: { userIds: string[] }) {
         );
     }
 
-    console.log(deleted[0].name);
-
-    await tx.insert(activity).values({
-      userId: session.user.id,
-      eventType:
-        deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
-      data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
-    });
+    // await tx.insert(activity).values({
+    //   userId: session.user.id,
+    //   eventType:
+    //     deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
+    //   data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
+    // });
 
     return deleted;
   });
 
-  updateTag(authKeys.actions.users);
+  updateTag(AUTH_QUERY_KEYS.users);
 
   return res;
 }

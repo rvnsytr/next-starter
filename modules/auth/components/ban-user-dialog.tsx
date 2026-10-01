@@ -30,17 +30,15 @@ import { TriangleAlertIcon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { banUser } from "../actions";
-import { mutateUserDataTable } from "./user-data-table";
+import { mutateListUsers } from "../hooks/use-list-users";
 
 type FormSchema = z.infer<typeof formSchema>;
 const formSchema = z.object({
-  banReason: sharedSchemas.string({ label: "Alasan diblokir" }).optional(),
-  banExpiresDate: sharedSchemas
-    .date({ label: "Tanggal blokir berakhir" })
-    .optional(),
+  banReason: sharedSchemas.string({ label: "Ban reason" }).optional(),
+  banExpiresDate: sharedSchemas.date({ label: "Ban expiry date" }).optional(),
 });
 
-const formId = "ban-user-form";
+const FORM_ID = "ban-user-form";
 
 export function BanUserDialog({
   data,
@@ -84,6 +82,7 @@ export function BanUserDialog({
         success: () => {
           form.reset();
           setIsLoading(false);
+
           setData({
             ...data,
             banned: true,
@@ -93,12 +92,14 @@ export function BanUserDialog({
                 ? endOfDay(banExpiresDate)
                 : undefined,
           });
-          mutateUserDataTable();
+
+          mutateListUsers();
+
           return {
             title: messages.success,
             description: (
               <span>
-                Akun atas nama <b>{data.name}</b> berhasil diblokir.
+                The account for <b>{data.name}</b> has been banned.
               </span>
             ),
           };
@@ -117,24 +118,24 @@ export function BanUserDialog({
       <DialogPopup>
         <DialogHeader>
           <DialogTitle className="text-destructive-foreground">
-            <TriangleAlertIcon /> Blokir akun atas nama {data.name}
+            <TriangleAlertIcon /> Ban account: {data.name}
           </DialogTitle>
           <DialogDescription>
-            PERINGATAN: Tindakan ini akan memblokir and menonaktifkan akun{" "}
-            <b>{data.name}</b>. Harap berhati-hati sebelum melanjutkan.
+            WARNING: This will ban and deactivate <b>{data.name}</b>'s account.
+            Proceed with caution.
           </DialogDescription>
         </DialogHeader>
 
         <DialogPanel>
-          <Form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+          <Form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
             <Controller
               name="banReason"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Alasan diblokir</FieldLabel>
+                  <FieldLabel>Ban reason</FieldLabel>
                   <Textarea
-                    placeholder="Masukan alasan pemblokiran akun ini"
+                    placeholder="Enter the reason for banning this account"
                     {...field}
                   />
                   <FieldError error={fieldState.error} />
@@ -147,7 +148,7 @@ export function BanUserDialog({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field name={field.name} invalid={fieldState.invalid}>
-                  <FieldLabel>Tanggal blokir berakhir</FieldLabel>
+                  <FieldLabel>Ban expiry date</FieldLabel>
                   <DatePicker
                     id={field.name}
                     selected={field.value}
@@ -155,7 +156,7 @@ export function BanUserDialog({
                     disabled={{ before: new Date() }}
                   />
                   <FieldDescription>
-                    * Opsional, Kosongkan jika blokir berlaku tanpa batas waktu.
+                    * Optional. Leave blank for a permanent ban.
                   </FieldDescription>
                   <FieldError error={fieldState.error} />
                 </Field>
@@ -168,7 +169,7 @@ export function BanUserDialog({
           <DialogClose
             render={<Button variant="ghost">{messages.actions.cancel}</Button>}
           />
-          <Button type="submit" form={formId} variant="destructive" autoFocus>
+          <Button type="submit" form={FORM_ID} variant="destructive" autoFocus>
             {messages.actions.confirm}
           </Button>
         </DialogFooter>

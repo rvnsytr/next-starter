@@ -5,4 +5,5 @@ export default defineConfig({
   out: "./drizzle",
   schema: "./shared/db/schema.ts",
   dbCredentials: { url: process.env.DATABASE_URL! },
+  schemaFilter: ["public"],
 });

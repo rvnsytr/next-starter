@@ -15,7 +15,7 @@ import { toast } from "@/core/components/ui/toast";
 import { messages } from "@/shared/messages";
 import { LockKeyholeOpenIcon } from "lucide-react";
 import { unbanUser } from "../actions";
-import { mutateUserDataTable } from "./user-data-table";
+import { mutateListUsers } from "../hooks/use-list-users";
 
 export function UnbanUserDialog({
   data,
@@ -36,13 +36,15 @@ export function UnbanUserDialog({
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);
+
         setData({ ...data, banned: false, banReason: null, banExpires: null });
-        mutateUserDataTable();
+        mutateListUsers();
+
         return {
           title: messages.success,
           description: (
             <span>
-              Akun atas nama <b>{data.name}</b> berhasil dibuka.
+              The account for <b>{data.name}</b> has been unbanned.
             </span>
           ),
         };
@@ -60,12 +62,11 @@ export function UnbanUserDialog({
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <LockKeyholeOpenIcon /> Buka Blokir {data.name}
+            <LockKeyholeOpenIcon /> Unban {data.name}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            PERINGATAN: Tindakan ini akan membuka blokir mengaktifkan kembali
-            akun milik <b>{data.name}</b>. Harap berhati-hati sebelum
-            melanjutkan.
+            WARNING: This will unban and reactivate <b>{data.name}</b>'s
+            account. Proceed with caution.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

@@ -11,7 +11,7 @@ import { Layers2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { stopImpersonateUser } from "../actions";
-import { roleMeta } from "../constants";
+import { ROLE_META } from "../constants/role-meta";
 import { useSession } from "../hooks/use-session";
 
 export function StopImpersonateUserMenuItem() {
@@ -32,7 +32,7 @@ export function StopImpersonateUserMenuItem() {
           title: messages.success,
           description: (
             <span>
-              Anda telah kembali ke sesi <b>{roleMeta.admin.label}</b> Anda.
+              You are back in your <b>{ROLE_META.admin.label}</b> session.
             </span>
           ),
         };
@@ -47,13 +47,13 @@ export function StopImpersonateUserMenuItem() {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        tooltip={`Keluar dari sesi ${user.name}`}
+        tooltip={`Exit ${user.name}'s session`}
         variant="destructive-ghost"
         onClick={onClick}
         disabled={isLoading}
       >
         <LoadingSpinner loading={isLoading} icon={{ base: <Layers2Icon /> }} />
-        Kembali ke akun saya
+        Back to my account
       </SidebarMenuButton>
     </SidebarMenuItem>
   );

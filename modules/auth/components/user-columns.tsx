@@ -4,130 +4,227 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/core/components/ui/avatar";
-import {
-  ColumnCellCheckbox,
-  ColumnCellNumber,
-  ColumnHeader,
-  ColumnHeaderCheckbox,
-} from "@/core/components/ui/column";
-import { DataControllerResult } from "@/core/hooks/use-data-controller";
-import { filterFn, formatLocalizedDate } from "@/core/utils";
-import { roles } from "@/shared/permission";
-import { createColumnHelper } from "@tanstack/react-table";
+import { Button } from "@/core/components/ui/button";
+import { dataGrid } from "@/core/modules/table/hooks/data-grid";
+import { sharedSchemas } from "@/shared/schema";
+import { format } from "date-fns";
 import {
   CalendarCheck2Icon,
   CalendarSyncIcon,
   CircleDotIcon,
+  InfoIcon,
   MailIcon,
   ShieldUserIcon,
   UserRoundIcon,
 } from "lucide-react";
-import { roleMeta, userStatus } from "../constants";
-import { RoleBadge } from "./role-badge";
-import { UserRoleColumn } from "./user-role-column";
+import { ROLE_META } from "../constants/role-meta";
+import { USER_STATUS_META } from "../constants/user-status-meta";
+import { getUserStatus } from "../utils";
+import { UserRoleBadge } from "./user-role-badge";
 import { UserStatusBadge } from "./user-status-badge";
-import { UserVerifiedBadge } from "./user-verified-badge";
 
-const columnHelper = createColumnHelper<User>();
-export const getUserColumns = (result?: DataControllerResult<User>) => [
-  columnHelper.display({
-    id: "select",
-    header: (c) => <ColumnHeaderCheckbox table={c.table} />,
-    cell: (c) => <ColumnCellCheckbox row={c.row} />,
-    enableHiding: false,
-    enableSorting: false,
-  }),
-  columnHelper.display({
-    id: "no",
-    header: "No",
-    cell: (c) => <ColumnCellNumber table={c.table} row={c.row} />,
-    enableHiding: false,
-  }),
-  columnHelper.accessor((ac) => ac.name, {
-    id: "name",
-    header: (c) => <ColumnHeader column={c.column}>Nama</ColumnHeader>,
-    cell: (c) => (
-      <div className="flex items-center gap-2">
-        <Avatar
-          radius="md"
-          className="overflow-hidden *:transition-transform *:group-hover/row:scale-105"
-        >
-          <AvatarImage src={c.row.original.image ?? undefined} />
-          <AvatarFallback>{c.getValue().slice(0, 2)}</AvatarFallback>
-        </Avatar>
-        <p>{c.getValue()}</p>
-      </div>
-    ),
-    filterFn: filterFn("text"),
-    meta: { label: "Nama", type: "text", icon: UserRoundIcon },
-  }),
-  columnHelper.accessor((ac) => ac.email, {
-    id: "email",
-    header: (c) => <ColumnHeader column={c.column}>Alamat Email</ColumnHeader>,
-    cell: (c) => (
-      <div className="flex items-center gap-x-2">
-        {c.cell.getValue()}
-        {c.row.original.emailVerified && <UserVerifiedBadge withText={false} />}
-      </div>
-    ),
-    filterFn: filterFn("text"),
-    meta: { label: "Alamat Email", type: "text", icon: MailIcon },
-  }),
-  columnHelper.accessor((ac) => userStatus.check(ac), {
-    id: "status",
-    header: (c) => <ColumnHeader column={c.column}>Status</ColumnHeader>,
-    cell: (c) => <UserStatusBadge value={c.cell.getValue()} />,
-    filterFn: filterFn("option"),
-    meta: {
-      label: "Status",
-      type: "option",
-      icon: CircleDotIcon,
-      options: userStatus.values.map((value) => {
-        const { label, icon } = userStatus.meta[value];
-        const count = result?.data?.count?.[value] ?? undefined;
-        return { value, label, icon, count };
-      }),
-    },
-  }),
-  columnHelper.accessor((ac) => ac.role, {
-    id: "role",
-    header: (c) => <ColumnHeader column={c.column}>Role</ColumnHeader>,
-    cell: (c) => (
-      <div className="flex items-center gap-2">
-        <UserRoleColumn data={c.row.original} />
-        <RoleBadge value={c.cell.getValue()} />
-      </div>
-    ),
-    filterFn: filterFn("option"),
-    meta: {
-      label: "Role",
-      type: "option",
-      icon: ShieldUserIcon,
-      options: roles.map((value) => {
-        const { label, icon } = roleMeta[value];
-        const count = result?.data?.count?.[value] ?? undefined;
-        return { value, label, icon, count };
-      }),
-    },
-  }),
-  columnHelper.accessor((ac) => ac.updatedAt, {
-    id: "updatedAt",
-    header: (c) => (
-      <ColumnHeader column={c.column}>Terakhir Diperbarui</ColumnHeader>
-    ),
-    cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: {
-      label: "Terakhir Diperbarui",
-      type: "date",
-      icon: CalendarSyncIcon,
-    },
-  }),
-  columnHelper.accessor((c) => c.createdAt, {
-    id: "createdAt",
-    header: (c) => <ColumnHeader column={c.column}>Waktu Dibuat</ColumnHeader>,
-    cell: (c) => formatLocalizedDate(c.cell.getValue(), "PPPp"),
-    filterFn: filterFn("date"),
-    meta: { label: "Waktu Dibuat", type: "date", icon: CalendarCheck2Icon },
-  }),
-];
+const columnHelper = dataGrid.createAppColumnHelper<User>();
+
+export const getUserColumns = ({
+  onDetailClick,
+}: {
+  onDetailClick: React.Dispatch<React.SetStateAction<User | null>>;
+}) =>
+  columnHelper.columns([
+    columnHelper.display({
+      id: "select",
+      header: (c) => <c.header.SelectAllCheckbox />,
+      cell: (c) => <c.cell.SelectRowCheckbox />,
+      size: 50,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      enableHiding: false,
+      enableMultiSort: false,
+      enablePinning: false,
+      enableResizing: false,
+      enableSorting: false,
+      enableCellSelection: false,
+    }),
+
+    columnHelper.display({
+      id: "no",
+      header: () => <div className="text-center">No</div>,
+      cell: (c) => <c.cell.RowNumber className="text-center" />,
+      size: 50,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      enableHiding: false,
+      enableMultiSort: false,
+      enablePinning: false,
+      enableResizing: false,
+      enableSorting: false,
+      enableCellSelection: false,
+    }),
+
+    columnHelper.display({
+      id: "action",
+      header: () => <div className="text-center">Action</div>,
+      cell: (c) => (
+        <div className="flex justify-center">
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onClick={() => onDetailClick(c.row.original)}
+          >
+            <InfoIcon />
+          </Button>
+        </div>
+      ),
+      size: 50,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      enableHiding: false,
+      enableMultiSort: false,
+      enablePinning: false,
+      enableResizing: false,
+      enableSorting: false,
+      enableCellSelection: false,
+    }),
+
+    columnHelper.accessor("name", {
+      header: (c) => <c.header.ColumnHeader label="Name" />,
+      cell: (c) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            radius="md"
+            className="overflow-hidden *:transition-transform *:group-hover/row:scale-105"
+          >
+            <AvatarImage src={c.row.original.image ?? undefined} />
+            <AvatarFallback>{c.getValue().slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          <p>{c.getValue()}</p>
+        </div>
+      ),
+
+      filterFn: "string",
+
+      minSize: 300,
+      size: 300,
+
+      meta: {
+        label: "Name",
+        icon: UserRoundIcon,
+
+        editor: {
+          type: "string",
+          schema: sharedSchemas.string({ min: 1 }),
+        },
+      },
+    }),
+
+    columnHelper.accessor("email", {
+      header: (c) => <c.header.ColumnHeader label="Email Address" />,
+      cell: (c) => c.getValue(),
+
+      filterFn: "string",
+
+      minSize: 300,
+      size: 300,
+
+      meta: {
+        label: "Email Address",
+        icon: MailIcon,
+
+        editor: {
+          type: "string",
+          schema: sharedSchemas.email,
+
+          scope: "insert-only",
+
+          inputProps: { type: "email" },
+        },
+      },
+    }),
+
+    columnHelper.accessor((ac) => getUserStatus(ac), {
+      id: "status",
+      header: (c) => <c.header.ColumnHeader label="Status" align="center" />,
+      cell: (c) => (
+        <div className="flex justify-center">
+          <UserStatusBadge value={c.cell.getValue()} />
+        </div>
+      ),
+
+      filterFn: "option",
+
+      minSize: 150,
+      size: 150,
+
+      meta: {
+        label: "Status",
+        icon: CircleDotIcon,
+
+        options: Object.entries(USER_STATUS_META).map(([k, v]) => ({
+          value: k,
+          label: v.label,
+          icon: v.icon,
+        })),
+      },
+    }),
+
+    columnHelper.accessor((ac) => ROLE_META[ac.role].label, {
+      id: "role",
+      header: (c) => <c.header.ColumnHeader label="Role" align="center" />,
+      cell: (c) => (
+        <div className="flex justify-center">
+          <UserRoleBadge value={c.row.original.role} />
+        </div>
+      ),
+
+      filterFn: "option",
+
+      minSize: 150,
+      size: 150,
+
+      meta: {
+        label: "Role",
+        icon: ShieldUserIcon,
+
+        options: Object.entries(ROLE_META).map(([k, v]) => ({
+          value: k,
+          label: v.label,
+          icon: v.icon,
+        })),
+
+        editor: {
+          type: "string:option",
+          props: { defaultOpen: true },
+        },
+      },
+    }),
+
+    columnHelper.accessor("updatedAt", {
+      header: (c) => <c.header.ColumnHeader label="Last Updated" />,
+      cell: (c) => format(c.cell.getValue(), "PPPp"),
+
+      filterFn: "temporal",
+
+      minSize: 300,
+      size: 300,
+
+      meta: {
+        label: "Last Updated",
+        icon: CalendarSyncIcon,
+      },
+    }),
+
+    columnHelper.accessor("createdAt", {
+      header: (c) => <c.header.ColumnHeader label="Created At" />,
+      cell: (c) => format(c.cell.getValue(), "PPPp"),
+
+      filterFn: "temporal",
+
+      minSize: 300,
+      size: 300,
+
+      meta: {
+        label: "Created At",
+        icon: CalendarCheck2Icon,
+      },
+    }),
+  ]);

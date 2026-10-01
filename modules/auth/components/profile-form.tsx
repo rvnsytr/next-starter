@@ -19,13 +19,13 @@ import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { updateProfileName } from "../actions";
 import { useSession } from "../hooks/use-session";
-import { userSchema } from "../schema";
+import { usersSchema } from "../schema";
 import { ProfilePicture } from "./profile-picture";
 
 type FormSchema = z.infer<typeof formSchema>;
-const formSchema = userSchema.pick({ name: true, email: true });
+const formSchema = usersSchema.pick({ name: true, email: true });
 
-const formId = "profile-form";
+const FORM_ID = "profile-form";
 
 export function ProfileForm() {
   const { user } = useSession();
@@ -40,7 +40,7 @@ export function ProfileForm() {
     if (name === user.name)
       return toast.add({
         type: "info",
-        title: messages.noChanges("profil Anda"),
+        title: messages.noChanges("your profile"),
       });
 
     setIsLoading(true);
@@ -48,7 +48,7 @@ export function ProfileForm() {
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);
-        return { title: "Profil Anda berhasil diperbarui." };
+        return { title: "Your profile has been updated." };
       },
       error: (e) => {
         setIsLoading(false);
@@ -63,7 +63,7 @@ export function ProfileForm() {
         <ProfilePicture data={user} />
 
         <Form
-          id={formId}
+          id={FORM_ID}
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid lg:grid-cols-2"
         >
@@ -72,11 +72,11 @@ export function ProfileForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Alamat email</FieldLabel>
+                <FieldLabel>Email address</FieldLabel>
                 <InputGroup>
                   <InputGroupInput
                     type="email"
-                    placeholder="Masukan email anda"
+                    placeholder="Enter your email"
                     required
                     disabled
                     {...field}
@@ -95,10 +95,10 @@ export function ProfileForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field name={field.name} invalid={fieldState.invalid}>
-                <FieldLabel>Nama</FieldLabel>
+                <FieldLabel>Name</FieldLabel>
                 <InputGroup>
                   <InputGroupInput
-                    placeholder="Masukan nama anda"
+                    placeholder="Enter your name"
                     required
                     {...field}
                   />
@@ -114,7 +114,7 @@ export function ProfileForm() {
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" form={formId} disabled={isLoading}>
+        <Button type="submit" form={FORM_ID} disabled={isLoading}>
           <LoadingSpinner loading={isLoading} icon={{ base: <SaveIcon /> }} />
           {messages.actions.update}
         </Button>
