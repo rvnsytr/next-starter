@@ -300,11 +300,7 @@ export function DataGrid({
 
           if (isColumnAlwaysEditable) return;
 
-          const isAddedRow = originalData.every((r, i) => {
-            const rowId = table.options.getRowId?.(r, i);
-            return row.id !== rowId;
-          });
-
+          const isAddedRow = !originalRowIds.has(row.id);
           const scope = columnEditorMeta.scope;
 
           const canEdit =
@@ -477,8 +473,10 @@ export function DataGrid({
             >
               {() => {
                 const isAddedRow = !originalRowIds.has(row.id);
+
                 const updatedRow = updatedRowsById.get(row.id);
                 const isEditedRow = !!updatedRow;
+
                 const isRemovedRow = removedRowIds.has(row.id);
 
                 return (
@@ -527,7 +525,7 @@ export function DataGrid({
 
                           const isCellEdited =
                             canEdit &&
-                            !!updatedRow &&
+                            isEditedRow &&
                             hasNestedKey(updatedRow.changes, cell.column.id);
 
                           const context: TableCellEditorContext | null = canEdit

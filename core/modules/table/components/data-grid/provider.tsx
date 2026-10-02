@@ -68,9 +68,9 @@ export const DataGridProvider = ({
     );
 
     return {
-      ...rowChanges.current,
       added: newRowsForm.getValues("rows"),
       updated: filteredUpdated,
+      removed: [...rowChanges.current.removed],
     };
   }, [newRowsForm]);
 
