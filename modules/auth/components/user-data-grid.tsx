@@ -1,8 +1,12 @@
 "use client";
 
 import { User } from "@/core/auth";
+import { Button } from "@/core/components/ui/button";
+import { toast } from "@/core/components/ui/toast";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import { useState } from "react";
+import { applyDataGridChanges } from "@/core/modules/table/utils";
+import { delay } from "@/core/utils";
+import { useMemo, useState } from "react";
 import { useListUsers } from "../hooks/use-list-users";
 import { useSession } from "../hooks/use-session";
 import { getUserColumns } from "./user-columns";
@@ -131,15 +135,24 @@ export function UsersDataGrid() {
 
   const [detailData, setDetailData] = useState<User | null>(null);
 
-  const { data, isLoading } = useListUsers(user.role, {
+  const {
+    data = [],
+    isLoading,
+    mutate,
+  } = useListUsers(user.role, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
+  const columns = useMemo(
+    () => getUserColumns({ onDetailClick: setDetailData }),
+    [],
+  );
+
   const table = dataGrid.useAppTable({
-    data: data?.success ? data.data : [],
-    columns: getUserColumns({ onDetailClick: setDetailData }),
+    data,
+    columns,
     getRowId: (row) => row.id,
     meta: {
       loading: isLoading,
@@ -159,11 +172,54 @@ export function UsersDataGrid() {
       },
 
       enableCellEditForRow: (row) => row.id !== user.id,
+
+      onSave: async (ctx) => {
+        ctx.clearEdit();
+        toast.add({ type: "success", title: "Changes saved successfully" });
+
+        await mutate(
+          async (prev) => {
+            await delay(1);
+            toast.add({ type: "error", title: "Failed to save changes" });
+            return prev;
+          },
+          {
+            optimisticData: (currentData) =>
+              applyDataGridChanges({
+                currentData,
+                changes: ctx.changes,
+                getRowId: (r) => r.id,
+              }),
+          },
+        );
+
+        return true;
+      },
     },
   });
 
   return (
     <>
+      <Button
+        size="sm"
+        variant="outline"
+        className="w-fit"
+        onClick={() => {
+          mutate(
+            async () => {
+              await delay(1);
+              throw new Error("Meh");
+            },
+            {
+              rollbackOnError: true,
+              optimisticData: [],
+            },
+          );
+        }}
+      >
+        Mutate
+      </Button>
+
       <table.AppTable>
         <table.Layout disabledAddRows>
           <table.Table

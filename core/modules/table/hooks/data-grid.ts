@@ -102,10 +102,9 @@ const useAppTable = <
       const rowId = getRowId?.(row, rowIndex);
       if (!rowId) return row;
 
-      const change = changes.updated.find((c, ci) => {
-        const rowDataId = getRowId?.(c.rowData, ci);
-        return rowDataId === rowId;
-      });
+      const change = changes.updated.find(
+        (c, ci) => getRowId?.(c.rowData, ci) === rowId,
+      );
 
       return change ? mergeNested(row, change.changes) : row;
     });
@@ -124,9 +123,9 @@ const useAppTable = <
       meta: {
         ...restMeta,
         original: data,
-        onEditChange: (ctx: DataGridChanges<TData>, silent) => {
-          if (!silent) setChanges(ctx);
-          onEditChange?.(ctx, silent);
+        onEditChange: (c: DataGridChanges<TData>, silent) => {
+          if (!silent) setChanges(c);
+          onEditChange?.(c, silent);
         },
       } as DataGridTableMeta<RowData> & { original: TData },
     },

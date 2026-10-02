@@ -8,7 +8,11 @@ import { AUTH_QUERY_KEYS } from "../query";
 export const useListUsers = (role: Role, config?: SWRConfiguration) =>
   useSWR(
     AUTH_QUERY_KEYS.users,
-    async () => await listUsersAction(role),
+    async () => {
+      const res = await listUsersAction(role);
+      if (!res.success) throw res;
+      return res.data;
+    },
     config,
   );
 

@@ -38,17 +38,23 @@ export type DataGridTableMeta<TData extends RowData> = TableMeta & {
    *
    * Return `true` to confirm and apply the changes, or `false` to reject them.
    */
-  onSave?: (context: DataGridChanges<TData>) => boolean;
+  onSave?: (context: {
+    /** The accumulated changes for the current Data Grid edit session. */
+    changes: DataGridChanges<TData>;
+
+    /** Clears the current edit session, discarding any accumulated changes. */
+    clearEdit: () => void;
+  }) => Promise<boolean> | boolean;
 
   /** Callback invoked when the Data Grid data changes, either through row additions/removals or cell edits. */
-  onEditChange?: (context: DataGridChanges<TData>, silent?: boolean) => void;
+  onEditChange?: (changes: DataGridChanges<TData>, silent?: boolean) => void;
 
   /**
    * Determines whether cell editing is enabled for the current row.
    *
    * When omitted, cell editing is enabled for all rows.
    */
-  enableCellEditForRow?: (context: TData) => boolean;
+  enableCellEditForRow?: (rowData: TData) => boolean;
 };
 
 export type DataGridColumnMeta = ColumnMeta & {

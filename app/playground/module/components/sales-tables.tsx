@@ -5,7 +5,7 @@ import { useIsMounted } from "@/core/hooks/use-is-mounted";
 import { dataController } from "@/core/modules/table/hooks/data-controller";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { dataTable } from "@/core/modules/table/hooks/data-table";
-import { mergeNested } from "@/core/modules/table/utils";
+import { applyDataGridChanges } from "@/core/modules/table/utils";
 import { LoadingFallback } from "@/shared/components/fallback";
 import useSWR from "swr";
 import { getSales } from "../actions";
@@ -132,24 +132,12 @@ export function SaleDataGrid() {
 
       onSave: (ctx) => {
         mutate(
-          (prev) => {
-            if (!prev) return prev;
-            let newData = prev;
-
-            ctx.added.forEach((r) => newData.unshift(r));
-
-            ctx.updated.forEach((c) => {
-              const rowIndex = newData.findIndex((r) => r.id === c.rowId);
-              if (rowIndex >= 0)
-                newData[rowIndex] = mergeNested(newData[rowIndex], c.changes);
-            });
-
-            ctx.removed.forEach((c) => {
-              newData = newData.filter((r) => r.id !== c.rowData.id);
-            });
-
-            return newData;
-          },
+          (currentData) =>
+            applyDataGridChanges({
+              currentData,
+              changes: ctx.changes,
+              getRowId: (r) => r.id,
+            }),
           { revalidate: false },
         );
 

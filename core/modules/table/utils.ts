@@ -13,20 +13,32 @@ import { filterSchema, filterTypeSchema } from "./filter-schema";
 import {
   CellEditorScope,
   ColumnMeta,
+  DataGridChanges,
   DataGridTableMeta,
   Filter,
   FilterPopupType,
   FilterType,
 } from "./types";
 
-export function saveChanges(
+export async function saveChanges(
   context: DataGridContextValue,
   tableMeta?: DataGridTableMeta<RowData>,
 ) {
-  const res = tableMeta?.onSave?.(context.getChanges()) ?? true;
-  if (!res) return;
-  context.clearChanges();
-  tableMeta?.onEditChange?.(context.getChanges());
+  const onSave = () => {
+    context.clearChanges();
+    tableMeta?.onEditChange?.(context.getChanges());
+  };
+
+  if (!tableMeta?.onSave) return onSave();
+
+  const success = await tableMeta.onSave({
+    changes: context.getChanges(),
+    clearEdit: () => context.clearChanges(),
+  });
+
+  if (!success) return;
+
+  onSave();
 }
 
 export function calculateRowNumber(
@@ -238,4 +250,29 @@ export function mergeNested<T extends Record<string, any>>(
   }
 
   return result as T;
+}
+
+export function applyDataGridChanges<TData extends RowData, TDataId>(context: {
+  currentData?: TData[];
+  changes: DataGridChanges<TData>;
+  getRowId: (row: TData) => TDataId;
+}): TData[] {
+  if (!context.currentData) return [];
+  let newData = [...context.currentData];
+
+  context.changes.added.forEach((r) => newData.unshift(r));
+
+  context.changes.updated.forEach((c) => {
+    const rowIndex = newData.findIndex((r) => context.getRowId(r) === c.rowId);
+    if (rowIndex >= 0)
+      newData[rowIndex] = mergeNested(newData[rowIndex], c.changes);
+  });
+
+  context.changes.removed.forEach((c) => {
+    newData = newData.filter(
+      (r) => context.getRowId(r) !== context.getRowId(c.rowData),
+    );
+  });
+
+  return newData;
 }

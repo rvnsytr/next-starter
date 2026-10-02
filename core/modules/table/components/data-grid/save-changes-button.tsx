@@ -40,14 +40,16 @@ export function DataGridSaveChangesButton({
   const dataGridContext = useDataGrid();
 
   const onSave = useCallback(
-    () => saveChanges(dataGridContext, table.options.meta),
+    async () => await saveChanges(dataGridContext, table.options.meta),
     [table.options.meta, dataGridContext],
   );
 
   const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => onSave(), {
-    enabled: !!hotkeySequence,
-  });
+  useHotkeySequence(
+    hotkeySequence ?? DEFAULT_SHORTCUT,
+    async () => await onSave(),
+    { enabled: !!hotkeySequence },
+  );
 
   return (
     <Tooltip>
@@ -56,9 +58,9 @@ export function DataGridSaveChangesButton({
           <Button
             size={size}
             variant={variant}
-            onClick={(e) => {
-              onSave();
+            onClick={async (e) => {
               onClick?.(e);
+              await onSave();
             }}
             {...props}
           >
