@@ -141,15 +141,6 @@ export function DataGrid({
     [rowChanges.removed],
   );
 
-  const canCellEditForRow = useCallback(
-    (rowData: RowData) => {
-      const tableMeta = table.options.meta;
-      if (!tableMeta?.enableCellEditForRow) return true;
-      return tableMeta.enableCellEditForRow(rowData);
-    },
-    [table.options.meta],
-  );
-
   const exitCellEdit = useCallback(() => {
     if (currentEdit) {
       setTimeout(() => {
@@ -161,6 +152,32 @@ export function DataGrid({
       table.resetCellSelection(true);
     }
   }, [currentEdit, table]);
+
+  const canCellEditForRow = useCallback(
+    (rowData: RowData) => {
+      const tableMeta = table.options.meta;
+      if (tableMeta?.enableCellEditForRow === undefined) return true;
+
+      if (typeof tableMeta.enableCellEditForRow === "boolean")
+        return tableMeta.enableCellEditForRow;
+
+      return tableMeta.enableCellEditForRow(rowData);
+    },
+    [table.options.meta],
+  );
+
+  const canCellRemoveForRow = useCallback(
+    (rowData: RowData) => {
+      const tableMeta = table.options.meta;
+      if (tableMeta?.enableCellRemoveForRow === undefined) return true;
+
+      if (typeof tableMeta.enableCellRemoveForRow === "boolean")
+        return tableMeta.enableCellRemoveForRow;
+
+      return tableMeta.enableCellRemoveForRow(rowData);
+    },
+    [table.options.meta],
+  );
 
   const handleCellEdit = useCallback(
     (
@@ -330,7 +347,7 @@ export function DataGrid({
 
           const rowIds = table
             .getCellSelectionRowIds()
-            .filter((id) => canCellEditForRow(table.getRow(id).original));
+            .filter((id) => canCellRemoveForRow(table.getRow(id).original));
 
           if (!rowIds.length) return;
 

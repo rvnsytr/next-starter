@@ -54,7 +54,14 @@ export type DataGridTableMeta<TData extends RowData> = TableMeta & {
    *
    * When omitted, cell editing is enabled for all rows.
    */
-  enableCellEditForRow?: (rowData: TData) => boolean;
+  enableCellEditForRow?: boolean | ((rowData: TData) => boolean);
+
+  /**
+   * Determines whether row removal is enabled for the current row.
+   *
+   * When omitted, row removal is enabled for all rows.
+   */
+  enableCellRemoveForRow?: boolean | ((rowData: TData) => boolean);
 };
 
 export type DataGridColumnMeta = ColumnMeta & {
