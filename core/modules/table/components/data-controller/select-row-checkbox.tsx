@@ -10,6 +10,9 @@ export function DataControllerSelectRowCheckbox({
 }: SelectRowCheckboxProps) {
   const table = dataController.useTableContext();
   const cell = dataController.useCellContext();
+
+  if (!cell.row.getCanSelect()) return null;
+
   return (
     <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
       {(selected) => (

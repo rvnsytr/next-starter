@@ -10,6 +10,9 @@ export function DataGridSelectRowCheckbox({
 }: SelectRowCheckboxProps) {
   const table = dataGrid.useTableContext();
   const cell = dataGrid.useCellContext();
+
+  if (!cell.row.getCanSelect()) return null;
+
   return (
     <table.Subscribe selector={(s) => s.rowSelection[cell.row.id] ?? false}>
       {(selected) => (
