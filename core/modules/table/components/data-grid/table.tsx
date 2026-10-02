@@ -301,9 +301,12 @@ export function DataGrid({
           if (isColumnAlwaysEditable) return;
 
           const isAddedRow = !originalRowIds.has(row.id);
+          const isRemovedRow = removedRowIds.has(row.id);
+
           const scope = columnEditorMeta.scope;
 
           const canEdit =
+            !isRemovedRow &&
             canCellEditForRow(row.original) &&
             canCellEditForScope({ scope, isAddedRow });
 
@@ -525,6 +528,7 @@ export function DataGrid({
                           const scope = columnMeta?.editor?.scope;
 
                           const canEdit =
+                            !isRemovedRow &&
                             canCellEditForRow(row.original) &&
                             canCellEditForScope({ scope, isAddedRow });
 
@@ -589,7 +593,6 @@ export function DataGrid({
                                 cellClassName,
 
                                 isCellEdited &&
-                                  !isRemovedRow &&
                                   "bg-warning/32 dark:bg-warning/32",
                               )}
                               {...restCellProps}
