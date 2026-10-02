@@ -217,7 +217,7 @@ export function DataGridLayout({
               {caption}
             </small>
           ) : (
-            isDesktop && <div className="order-3 mx-auto" />
+            <div className="order-3 mx-auto hidden lg:flex" />
           )}
 
           <table.Subscribe selector={(s) => s.pagination}>

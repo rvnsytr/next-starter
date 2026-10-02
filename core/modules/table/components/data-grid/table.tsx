@@ -34,7 +34,7 @@ import {
   RowData,
 } from "@tanstack/react-table";
 import { cn } from "cn";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { useDataGrid } from "./provider";
 import {
@@ -98,6 +98,7 @@ export function DataGrid({
   { containerProps?: Omit<React.ComponentProps<"div">, "ref" | "tabIndex"> }
 >) {
   const table = dataGrid.useTableContext();
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const dataGridContext = useDataGrid();
   const [currentEdit, setCurrentEdit] = useState<DataGridEditState | null>(
@@ -137,6 +138,7 @@ export function DataGrid({
   const exitCellEdit = useCallback(() => {
     if (currentEdit) {
       setTimeout(() => {
+        tableRef.current?.focus();
         table.setFocusedCell(currentEdit.rowId, currentEdit.columnId);
       }, 0);
       setCurrentEdit(null);
@@ -208,133 +210,136 @@ export function DataGrid({
   }, [currentEdit, table]);
 
   useHotkey("Escape", () => exitCellEdit());
-  useHotkeys([
-    {
-      hotkey: "ArrowUp",
-      callback: () => table.moveCellSelection("up"),
-    },
-    {
-      hotkey: "ArrowDown",
-      callback: () => table.moveCellSelection("down"),
-    },
-    {
-      hotkey: "ArrowLeft",
-      callback: () => table.moveCellSelection("left"),
-    },
-    {
-      hotkey: "ArrowRight",
-      callback: () => table.moveCellSelection("right"),
-    },
-    {
-      hotkey: "Tab",
-      callback: () => table.moveCellSelection("right"),
-      options: { conflictBehavior: "allow" },
-    },
-    {
-      hotkey: "Shift+ArrowUp",
-      callback: () => table.extendCellSelection("up"),
-    },
-    {
-      hotkey: "Shift+ArrowDown",
-      callback: () => table.extendCellSelection("down"),
-    },
-    {
-      hotkey: "Shift+ArrowLeft",
-      callback: () => table.extendCellSelection("left"),
-    },
-    {
-      hotkey: "Shift+ArrowRight",
-      callback: () => table.extendCellSelection("right"),
-    },
-    {
-      hotkey: "Mod+A",
-      callback: () => table.selectAllCells(),
-      options: { enabled: !currentEdit },
-    },
-    {
-      hotkey: "Mod+C",
-      callback: () => {
-        void navigator.clipboard.writeText(
-          toTsv(table.getSelectedCellRangesData()),
-        );
-        toast.add({ type: "info", title: "Copied to clipboard" });
+  useHotkeys(
+    [
+      {
+        hotkey: "ArrowUp",
+        callback: () => table.moveCellSelection("up"),
       },
-      options: { enabled: !currentEdit },
-    },
-    {
-      hotkey: "Enter",
-      callback: () => {
-        const cellSelectionState = table.state.cellSelection;
-
-        if (!cellSelectionState.length) return;
-
-        const css = cellSelectionState[0];
-
-        const row = table.getRow(css.anchorRowId);
-        const column = table.getColumn(css.anchorColumnId);
-
-        const columnEditorMeta = column?.columnDef.meta?.editor;
-        if (!columnEditorMeta) return;
-
-        const isColumnAlwaysEditable =
-          "alwaysEditable" in columnEditorMeta &&
-          columnEditorMeta.alwaysEditable;
-
-        if (isColumnAlwaysEditable) return;
-
-        const isAddedRow = originalData.every((r, i) => {
-          const rowId = table.options.getRowId?.(r, i);
-          return row.id !== rowId;
-        });
-
-        const scope = columnEditorMeta.scope;
-
-        const canEdit =
-          canCellEditForScope({ scope, isAddedRow }) &&
-          canCellEditForRow(row.original);
-
-        if (!canEdit) return;
-
-        const cellId = table.getFocusedCell()?.id;
-
-        if (
-          row.id === css.focusRowId &&
-          column.id === css.focusColumnId &&
-          cellId
-        ) {
-          setCurrentEdit({ rowId: row.id, columnId: column.id, cellId });
-        }
+      {
+        hotkey: "ArrowDown",
+        callback: () => table.moveCellSelection("down"),
       },
-    },
-    {
-      hotkey: "Delete",
-      callback: () => {
-        const { newRows, removeRows } = dataGridContext;
+      {
+        hotkey: "ArrowLeft",
+        callback: () => table.moveCellSelection("left"),
+      },
+      {
+        hotkey: "ArrowRight",
+        callback: () => table.moveCellSelection("right"),
+      },
+      {
+        hotkey: "Tab",
+        callback: () => table.moveCellSelection("right"),
+        options: { conflictBehavior: "allow" },
+      },
+      {
+        hotkey: "Shift+ArrowUp",
+        callback: () => table.extendCellSelection("up"),
+      },
+      {
+        hotkey: "Shift+ArrowDown",
+        callback: () => table.extendCellSelection("down"),
+      },
+      {
+        hotkey: "Shift+ArrowLeft",
+        callback: () => table.extendCellSelection("left"),
+      },
+      {
+        hotkey: "Shift+ArrowRight",
+        callback: () => table.extendCellSelection("right"),
+      },
+      {
+        hotkey: "Mod+A",
+        callback: () => table.selectAllCells(),
+        options: { enabled: !currentEdit },
+      },
+      {
+        hotkey: "Mod+C",
+        callback: () => {
+          void navigator.clipboard.writeText(
+            toTsv(table.getSelectedCellRangesData()),
+          );
+          toast.add({ type: "info", title: "Copied to clipboard" });
+        },
+        options: { enabled: !currentEdit },
+      },
+      {
+        hotkey: "Enter",
+        callback: () => {
+          const cellSelectionState = table.state.cellSelection;
 
-        const rowIds = table.getCellSelectionRowIds();
-        const addedRows = newRows.form.getValues("rows");
+          if (!cellSelectionState.length) return;
 
-        const removedRows = rowIds
-          .map((rowId) => ({ rowId, rowData: table.getRow(rowId).original }))
-          .filter((row) => {
-            const addedRowIndex = addedRows.findIndex(
-              (r, i) => table.options.getRowId?.(r, i) === row.rowId,
-            );
+          const css = cellSelectionState[0];
 
-            const isAddedRow = addedRowIndex >= 0;
-            if (isAddedRow) newRows.fieldArray.remove(addedRowIndex);
+          const row = table.getRow(css.anchorRowId);
+          const column = table.getColumn(css.anchorColumnId);
 
-            return !isAddedRow;
+          const columnEditorMeta = column?.columnDef.meta?.editor;
+          if (!columnEditorMeta) return;
+
+          const isColumnAlwaysEditable =
+            "alwaysEditable" in columnEditorMeta &&
+            columnEditorMeta.alwaysEditable;
+
+          if (isColumnAlwaysEditable) return;
+
+          const isAddedRow = originalData.every((r, i) => {
+            const rowId = table.options.getRowId?.(r, i);
+            return row.id !== rowId;
           });
 
-        removeRows(removedRows);
+          const scope = columnEditorMeta.scope;
 
-        const hasAddedRows = rowIds.length !== removedRows.length;
-        if (hasAddedRows)
-          table.options.meta?.onEditChange?.(dataGridContext.getChanges());
+          const canEdit =
+            canCellEditForScope({ scope, isAddedRow }) &&
+            canCellEditForRow(row.original);
+
+          if (!canEdit) return;
+
+          const cellId = table.getFocusedCell()?.id;
+
+          if (
+            row.id === css.focusRowId &&
+            column.id === css.focusColumnId &&
+            cellId
+          ) {
+            setCurrentEdit({ rowId: row.id, columnId: column.id, cellId });
+          }
+        },
       },
-    },
-  ]);
+      {
+        hotkey: "Delete",
+        callback: () => {
+          const { newRows, removeRows } = dataGridContext;
+
+          const rowIds = table.getCellSelectionRowIds();
+          const addedRows = newRows.form.getValues("rows");
+
+          const removedRows = rowIds
+            .map((rowId) => ({ rowId, rowData: table.getRow(rowId).original }))
+            .filter((row) => {
+              const addedRowIndex = addedRows.findIndex(
+                (r, i) => table.options.getRowId?.(r, i) === row.rowId,
+              );
+
+              const isAddedRow = addedRowIndex >= 0;
+              if (isAddedRow) newRows.fieldArray.remove(addedRowIndex);
+
+              return !isAddedRow;
+            });
+
+          removeRows(removedRows);
+
+          const hasAddedRows = rowIds.length !== removedRows.length;
+          if (hasAddedRows)
+            table.options.meta?.onEditChange?.(dataGridContext.getChanges());
+        },
+      },
+    ],
+    { target: tableRef, enabled: !currentEdit },
+  );
 
   const { className: containerClassName, ...restContainerProps } =
     containerProps ?? {};
@@ -343,6 +348,7 @@ export function DataGrid({
     <Table
       style={{ width: table.getTotalSize(), ...style }}
       containerProps={{
+        ref: tableRef,
         tabIndex: 0,
         className: cn("outline-none", containerClassName),
         ...restContainerProps,

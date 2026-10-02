@@ -167,12 +167,12 @@ export const getUserColumns = ({
       },
     }),
 
-    columnHelper.accessor((ac) => ROLE_META[ac.role].label, {
+    columnHelper.accessor("role", {
       id: "role",
       header: (c) => <c.header.ColumnHeader label="Role" align="center" />,
       cell: (c) => (
         <div className="flex justify-center">
-          <UserRoleBadge value={c.row.original.role} />
+          <UserRoleBadge value={c.getValue()} />
         </div>
       ),
 
