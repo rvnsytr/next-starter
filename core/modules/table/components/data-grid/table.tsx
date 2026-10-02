@@ -126,6 +126,21 @@ export function DataGrid({
     [dataGridContext],
   );
 
+  const originalRowIds = useMemo(
+    () => new Set(originalData.map((r, i) => table.options.getRowId?.(r, i))),
+    [originalData, table.options],
+  );
+
+  const updatedRowsById = useMemo(
+    () => new Map(rowChanges.updated.map((r) => [r.rowId, r])),
+    [rowChanges.updated],
+  );
+
+  const removedRowIds = useMemo(
+    () => new Set(rowChanges.removed.map((r) => r.rowId)),
+    [rowChanges.removed],
+  );
+
   const canCellEditForRow = useCallback(
     (rowData: RowData) => {
       const tableMeta = table.options.meta;
@@ -358,6 +373,12 @@ export function DataGrid({
       {caption && <TableCaption>{caption}</TableCaption>}
 
       <TableHeader>
+        <table.Subscribe
+          selector={(state) => !!state.columnResizing.isResizingColumn}
+        >
+          {(resizing) => <TableResizeCursor resizing={resizing} />}
+        </table.Subscribe>
+
         {table.getHeaderGroups().map((headerGroup) => (
           <table.Subscribe
             key={headerGroup.id}
@@ -382,63 +403,49 @@ export function DataGrid({
                         withResizeIndicator && header.column.getIsResizing();
 
                       return (
-                        <>
-                          <table.Subscribe
-                            selector={(s) =>
-                              !!s.columnResizing.isResizingColumn
-                            }
-                          >
-                            {(s) => <TableResizeCursor resizing={s} />}
-                          </table.Subscribe>
+                        <TableHead
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          rowSpan={header.rowSpan}
+                          style={{
+                            ...headerStyle,
+                            width: header.getSize(),
+                            left: header.column.getStart("start"),
+                            right: header.column.getAfter("end"),
+                          }}
+                          className={cn(
+                            TABLE_CELL_CLASS.base,
 
-                          <TableHead
-                            key={header.id}
-                            colSpan={header.colSpan}
-                            rowSpan={header.rowSpan}
-                            style={{
-                              ...headerStyle,
-                              width: header.getSize(),
-                              left: header.column.getStart("start"),
-                              right: header.column.getAfter("end"),
-                            }}
-                            className={cn(
-                              TABLE_CELL_CLASS.base,
+                            !!pinPosition && TABLE_CELL_CLASS.pin,
+                            pinPosition === "start" && TABLE_CELL_CLASS.pinLeft,
+                            pinPosition === "end" && TABLE_CELL_CLASS.pinRight,
 
-                              !!pinPosition && TABLE_CELL_CLASS.pin,
-                              pinPosition === "start" &&
-                                TABLE_CELL_CLASS.pinLeft,
-                              pinPosition === "end" &&
-                                TABLE_CELL_CLASS.pinRight,
+                            headerClassName,
+                          )}
+                          {...restHeaderProps}
+                        >
+                          <header.FlexRender />
 
-                              headerClassName,
-                            )}
-                            {...restHeaderProps}
-                          >
-                            <header.FlexRender />
+                          {header.column.getCanResize() && (
+                            <>
+                              <div
+                                onMouseDown={header.getResizeHandler()}
+                                onTouchStart={header.getResizeHandler()}
+                                onDoubleClick={() => header.column.resetSize()}
+                                className={TABLE_CELL_CLASS.resizeHandler}
+                              />
 
-                            {header.column.getCanResize() && (
-                              <>
+                              {isResizing && (
                                 <div
-                                  onMouseDown={header.getResizeHandler()}
-                                  onTouchStart={header.getResizeHandler()}
-                                  onDoubleClick={() =>
-                                    header.column.resetSize()
-                                  }
-                                  className={TABLE_CELL_CLASS.resizeHandler}
+                                  style={{
+                                    transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
+                                  }}
+                                  className={TABLE_CELL_CLASS.resizeIndicator}
                                 />
-
-                                {isResizing && (
-                                  <div
-                                    style={{
-                                      transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
-                                    }}
-                                    className={TABLE_CELL_CLASS.resizeIndicator}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </TableHead>
-                        </>
+                              )}
+                            </>
+                          )}
+                        </TableHead>
                       );
                     }}
                   </table.AppHeader>
@@ -469,18 +476,10 @@ export function DataGrid({
               }}
             >
               {() => {
-                const isAddedRow = originalData.every((r, i) => {
-                  const rowId = table.options.getRowId?.(r, i);
-                  return row.id !== rowId;
-                });
-
-                const isEditedRow = rowChanges.updated.some(
-                  (r) => r.rowId === row.id,
-                );
-
-                const isRemovedRow = rowChanges.removed.some(
-                  (r) => r.rowId === row.id,
-                );
+                const isAddedRow = !originalRowIds.has(row.id);
+                const updatedRow = updatedRowsById.get(row.id);
+                const isEditedRow = !!updatedRow;
+                const isRemovedRow = removedRowIds.has(row.id);
 
                 return (
                   <TableRow
@@ -528,11 +527,8 @@ export function DataGrid({
 
                           const isCellEdited =
                             canEdit &&
-                            rowChanges.updated.some(
-                              (r) =>
-                                r.rowId === row.id &&
-                                hasNestedKey(r.changes, cell.column.id),
-                            );
+                            !!updatedRow &&
+                            hasNestedKey(updatedRow.changes, cell.column.id);
 
                           const context: TableCellEditorContext | null = canEdit
                             ? {

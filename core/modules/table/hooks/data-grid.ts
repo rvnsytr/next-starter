@@ -97,23 +97,27 @@ const useAppTable = <
     removed: [],
   });
 
+  const updatedChangesByRowId = useMemo(
+    () => new Map(changes.updated.map((change) => [change.rowId, change])),
+    [changes.updated],
+  );
+
   const resolvedData = useMemo(() => {
     const rowData = data.map((row, rowIndex) => {
       const rowId = getRowId?.(row, rowIndex);
       if (!rowId) return row;
 
-      const change = changes.updated.find(
-        (c, ci) => getRowId?.(c.rowData, ci) === rowId,
-      );
+      const change = updatedChangesByRowId.get(rowId);
 
       return change ? mergeNested(row, change.changes) : row;
     });
 
-    if (changes.added.length > 0) rowData.unshift(...changes.added.reverse());
+    if (changes.added.length > 0)
+      rowData.unshift(...[...changes.added].reverse());
 
     return rowData;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, changes]);
+  }, [changes.added, data, updatedChangesByRowId]);
 
   return dataGridUseAppTable(
     {

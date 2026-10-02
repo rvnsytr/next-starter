@@ -41,6 +41,12 @@ export function DataTable({
       {caption && <TableCaption>{caption}</TableCaption>}
 
       <TableHeader>
+        <table.Subscribe
+          selector={(state) => !!state.columnResizing.isResizingColumn}
+        >
+          {(resizing) => <TableResizeCursor resizing={resizing} />}
+        </table.Subscribe>
+
         {table.getHeaderGroups().map((headerGroup) => (
           <table.Subscribe
             key={headerGroup.id}
@@ -65,16 +71,7 @@ export function DataTable({
                         withResizeIndicator && header.column.getIsResizing();
 
                       return (
-                        <>
-                          <table.Subscribe
-                            selector={(s) =>
-                              !!s.columnResizing.isResizingColumn
-                            }
-                          >
-                            {(s) => <TableResizeCursor resizing={s} />}
-                          </table.Subscribe>
-
-                          <TableHead
+                        <TableHead
                             key={header.id}
                             colSpan={header.colSpan}
                             rowSpan={header.rowSpan}
@@ -120,8 +117,7 @@ export function DataTable({
                                 )}
                               </>
                             )}
-                          </TableHead>
-                        </>
+                        </TableHead>
                       );
                     }}
                   </table.AppHeader>
