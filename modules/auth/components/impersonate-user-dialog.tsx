@@ -37,9 +37,12 @@ export function ImpersonateUserDialog({
       loading: { title: messages.loading },
       success: (res) => {
         setIsLoading(false);
+        setOpen(false);
+
         const to =
           res.user.role === "admin" ? "/dashboard/users" : "/dashboard";
         router.push(to);
+
         return {
           title: messages.success,
           description: <span>You are now signed in as {data.name}.</span>,
@@ -47,6 +50,8 @@ export function ImpersonateUserDialog({
       },
       error: (e) => {
         setIsLoading(false);
+        setOpen(false);
+
         return { title: messages.error, description: e.message };
       },
     });

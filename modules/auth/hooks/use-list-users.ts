@@ -2,14 +2,13 @@
 
 import useSWR, { mutate, SWRConfiguration } from "swr";
 import { listUsersAction } from "../actions";
-import { Role } from "../constants/roles";
 import { AUTH_QUERY_KEYS } from "../query";
 
-export const useListUsers = (role: Role, config?: SWRConfiguration) =>
+export const useListUsers = (config?: SWRConfiguration) =>
   useSWR(
     AUTH_QUERY_KEYS.users,
     async () => {
-      const res = await listUsersAction(role);
+      const res = await listUsersAction();
       if (!res.success) throw res;
       return res.data;
     },

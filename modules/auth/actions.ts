@@ -85,12 +85,10 @@ async function listUsers(): Promise<User[]> {
   // return { success: true, count, data: data as User[] };
 }
 
-export async function listUsersAction(
-  role: Role,
-): Promise<ActionResponse<User[]>> {
+export async function listUsersAction(): Promise<ActionResponse<User[]>> {
   const hasPermission = await auth.api.userHasPermission({
     headers: await nextHeaders(),
-    body: { permissions: { user: ["list"] }, role },
+    body: { permissions: { user: ["list"] } },
   });
 
   if (!hasPermission.success)
@@ -99,14 +97,8 @@ export async function listUsersAction(
   return { success: true, data: await listUsers() };
 }
 
-export async function updateProfileName(
-  userId: string,
-  body: { name: string },
-) {
+export async function updateProfileName(body: { name: string }) {
   const res = await auth.api.updateUser({ headers: await nextHeaders(), body });
-  // await db.insert(activity).values({ userId, eventType: "profile-updated" });
-
-  console.log("userId", userId);
 
   revalidatePath("/dashboard/profile");
   updateTag(AUTH_QUERY_KEYS.users);
@@ -114,12 +106,7 @@ export async function updateProfileName(
   return res;
 }
 
-export async function updateProfilePicture(file: File) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
-  const userId = session.user.id;
+export async function updateProfilePicture(userId: string, file: File) {
   const oldPicturePaths: string[] = [];
 
   const { upload, records } = createFilePayloads([{ id: userId, file }], {
@@ -143,12 +130,8 @@ export async function updateProfilePicture(file: File) {
 
     const [inserted] = await tx.insert(fileTable).values(records).returning();
 
-    // await tx
-    //   .insert(activity)
-    //   .values({ userId, eventType: "profile-image-updated" });
-
     const updateUser = await auth.api.updateUser({
-      headers,
+      headers: await nextHeaders(),
       body: { image: inserted.id },
     });
 
@@ -165,13 +148,7 @@ export async function updateProfilePicture(file: File) {
   return res;
 }
 
-export async function deleteProfilePicture() {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
-  const userId = session.user.id;
-
+export async function deleteProfilePicture(userId: string) {
   const res = await db.transaction(async (tx) => {
     const [{ fileId }] = await tx
       .select({ fileId: users.image })
@@ -186,11 +163,10 @@ export async function deleteProfilePicture() {
       if (path) await deleteFiles([path], { visibility: "public" });
     }
 
-    // await tx
-    //   .insert(activity)
-    //   .values({ userId, eventType: "profile-image-updated" });
-
-    return await auth.api.updateUser({ headers, body: { image: null } });
+    return await auth.api.updateUser({
+      headers: await nextHeaders(),
+      body: { image: null },
+    });
   });
 
   revalidatePath("/dashboard/profile");
@@ -218,27 +194,9 @@ export async function createUser(body: {
   name: string;
   role: Role;
 }) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
-  const res = db.transaction(async () => {
-    const data = await auth.api.createUser({ headers, body });
-
-    // await tx.insert(activity).values([
-    //   {
-    //     userId: data.user.id,
-    //     entityId: session.user.id,
-    //     eventType: "user-created",
-    //   },
-    //   {
-    //     userId: session.user.id,
-    //     entityId: data.user.id,
-    //     eventType: "admin-user-create",
-    //   },
-    // ]);
-
-    return data;
+  const res = await auth.api.createUser({
+    headers: await nextHeaders(),
+    body,
   });
 
   updateTag(AUTH_QUERY_KEYS.users);
@@ -246,34 +204,29 @@ export async function createUser(body: {
   return res;
 }
 
-export async function updateUserRole(body: { userId: string; role: Role }) {
+export async function updateUserRoles(
+  body: { userId: string; role: Role }[],
+): Promise<ActionResponse<User[]>> {
   const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
 
-  const res = db.transaction(async () => {
-    const data = await auth.api.setRole({ headers, body });
+  try {
+    const res = await Promise.all(
+      body.map((b) => auth.api.setRole({ headers, body: b })),
+    );
 
-    // await tx.insert(activity).values([
-    //   {
-    //     userId: data.user.id,
-    //     entityId: session.user.id,
-    //     eventType: "user-role-updated",
-    //     data: body.role,
-    //   },
-    //   {
-    //     userId: session.user.id,
-    //     entityId: data.user.id,
-    //     eventType: "admin-user-update-role",
-    //   },
-    // ]);
+    updateTag(AUTH_QUERY_KEYS.users);
 
-    return data;
-  });
-
-  updateTag(AUTH_QUERY_KEYS.users);
-
-  return res;
+    return {
+      success: true,
+      data: res.map((r) => r.user as User),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : String(e),
+      error: e,
+    };
+  }
 }
 
 export async function banUser(body: {
@@ -281,74 +234,37 @@ export async function banUser(body: {
   banReason?: string;
   banExpiresIn?: number;
 }) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
-  const res = db.transaction(async () => {
-    const data = await auth.api.banUser({ headers, body });
-
-    // await tx.insert(activity).values([
-    //   { userId: data.user.id, eventType: "user-banned" },
-    //   {
-    //     userId: session.user.id,
-    //     data: data.user.name,
-    //     eventType: "admin-user-ban",
-    //   },
-    // ]);
-
-    return data;
-  });
-
+  const res = await auth.api.banUser({ headers: await nextHeaders(), body });
   updateTag(AUTH_QUERY_KEYS.users);
-
   return res;
 }
 
 export async function unbanUser(body: { userId: string }) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
-  const res = db.transaction(async () => {
-    const data = await auth.api.unbanUser({ headers, body });
-
-    // await tx.insert(activity).values([
-    //   { userId: data.user.id, eventType: "user-unbanned" },
-    //   {
-    //     userId: session.user.id,
-    //     data: data.user.name,
-    //     eventType: "admin-user-unban",
-    //   },
-    // ]);
-
-    return data;
-  });
-
+  const res = await auth.api.unbanUser({ headers: await nextHeaders(), body });
   updateTag(AUTH_QUERY_KEYS.users);
-
   return res;
 }
 
 export async function impersonateUser(userId: string) {
-  const headers = await nextHeaders();
-  const res = await auth.api.impersonateUser({ headers, body: { userId } });
+  const res = await auth.api.impersonateUser({
+    headers: await nextHeaders(),
+    body: { userId },
+  });
+
   revalidatePath("/dashboard");
   return res;
 }
 
 export async function stopImpersonateUser() {
-  const headers = await nextHeaders();
-  const res = await auth.api.stopImpersonating({ headers });
+  const res = await auth.api.stopImpersonating({
+    headers: await nextHeaders(),
+  });
+
   revalidatePath("/dashboard/users");
   return res;
 }
 
 export async function deleteUsers(body: { userIds: string[] }) {
-  const headers = await nextHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error(messages.unauthorized);
-
   const res = await db.transaction(async (tx) => {
     const deleted = await tx
       .delete(users)
@@ -371,13 +287,6 @@ export async function deleteUsers(body: { userIds: string[] }) {
           { visibility: "public" },
         );
     }
-
-    // await tx.insert(activity).values({
-    //   userId: session.user.id,
-    //   eventType:
-    //     deleted.length > 1 ? "admin-users-delete" : "admin-user-delete",
-    //   data: deleted.length > 1 ? deleted.length.toString() : deleted[0].name,
-    // });
 
     return deleted;
   });

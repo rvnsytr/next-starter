@@ -44,7 +44,7 @@ export function ProfileForm() {
       });
 
     setIsLoading(true);
-    toast.promise(updateProfileName(user.id, { name }), {
+    toast.promise(updateProfileName({ name }), {
       loading: { title: messages.loading },
       success: () => {
         setIsLoading(false);

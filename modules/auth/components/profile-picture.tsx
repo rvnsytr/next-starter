@@ -50,7 +50,7 @@ export function ProfilePicture({
       if (file instanceof File && !isChange) {
         setIsChange(true);
         toast.promise(
-          updateProfilePicture(file).then((res) => {
+          updateProfilePicture(data.id, file).then((res) => {
             if (!res.status) throw res;
             return res;
           }),
@@ -79,7 +79,7 @@ export function ProfilePicture({
 
     setIsRemoved(true);
     toast.promise(
-      deleteProfilePicture().then((res) => {
+      deleteProfilePicture(data.id).then((res) => {
         if (!res.status) throw res;
         return res;
       }),

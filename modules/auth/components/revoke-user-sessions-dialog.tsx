@@ -87,7 +87,7 @@ export function RevokeUserSessionsDialog({
   );
 }
 
-export function ActionRevokeUserSessionsDialog({
+export function RevokeUserSessionsActionDialog({
   userIds,
   open,
   setOpen,

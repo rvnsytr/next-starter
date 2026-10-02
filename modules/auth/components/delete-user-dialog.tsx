@@ -81,7 +81,9 @@ export function DeleteUserDialog({
         };
       },
       error: (e) => {
+        form.reset();
         setIsLoading(false);
+
         return { title: messages.error, description: e.message };
       },
     });
@@ -147,7 +149,7 @@ export function DeleteUserDialog({
   );
 }
 
-export function ActionDeleteUsersDialog({
+export function DeleteUsersActionDialog({
   userIds,
   open,
   loading,
@@ -187,7 +189,9 @@ export function ActionDeleteUsersDialog({
     toast.promise(deleteUsers({ userIds }), {
       loading: { title: messages.loading },
       success: (res) => {
+        form.reset();
         setIsLoading(false);
+
         onSuccess();
         return {
           title: messages.success,
@@ -197,7 +201,9 @@ export function ActionDeleteUsersDialog({
         };
       },
       error: (e) => {
+        form.reset();
         setIsLoading(false);
+
         return { title: messages.error, description: e.message };
       },
     });
