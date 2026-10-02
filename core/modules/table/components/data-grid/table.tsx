@@ -1,3 +1,4 @@
+import { Scales } from "@/core/components/ui/scales";
 import {
   Table,
   TableBody,
@@ -34,6 +35,7 @@ import {
   RowData,
 } from "@tanstack/react-table";
 import { cn } from "cn";
+import { PenIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableResizeCursor } from "../base/table-resize-cursor";
 import { useDataGrid } from "./provider";
@@ -545,9 +547,12 @@ export function DataGrid({
                           const scope = columnMeta?.editor?.scope;
 
                           const canEdit =
+                            !!columnMeta?.editor &&
                             !isRemovedRow &&
                             canCellEditForRow(row.original) &&
                             canCellEditForScope({ scope, isAddedRow });
+
+                          const isNotEditableAddedRow = !canEdit && isAddedRow;
 
                           const isCellEdited =
                             canEdit &&
@@ -607,6 +612,8 @@ export function DataGrid({
                                   "cell-edge-bottom",
                                 !isFocused && edges?.left && "cell-edge-left",
 
+                                isNotEditableAddedRow && "opacity-64",
+
                                 cellClassName,
 
                                 isCellEdited &&
@@ -614,6 +621,12 @@ export function DataGrid({
                               )}
                               {...restCellProps}
                             >
+                              {isNotEditableAddedRow && <Scales />}
+
+                              {canEdit && isFocused && (
+                                <PenIcon className="text-muted-foreground absolute top-2 right-2 size-2.5" />
+                              )}
+
                               <cell.FlexRender />
                             </TableCellEditorController>
                           );
