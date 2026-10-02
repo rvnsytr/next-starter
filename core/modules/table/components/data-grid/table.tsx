@@ -304,8 +304,8 @@ export function DataGrid({
           const scope = columnEditorMeta.scope;
 
           const canEdit =
-            canCellEditForScope({ scope, isAddedRow }) &&
-            canCellEditForRow(row.original);
+            canCellEditForRow(row.original) &&
+            canCellEditForScope({ scope, isAddedRow });
 
           if (!canEdit) return;
 
@@ -325,7 +325,12 @@ export function DataGrid({
         callback: () => {
           const { newRows, removeRows } = dataGridContext;
 
-          const rowIds = table.getCellSelectionRowIds();
+          const rowIds = table
+            .getCellSelectionRowIds()
+            .filter((id) => canCellEditForRow(table.getRow(id).original));
+
+          if (!rowIds.length) return;
+
           const addedRows = newRows.form.getValues("rows");
 
           const removedRows = rowIds
@@ -520,8 +525,8 @@ export function DataGrid({
                           const scope = columnMeta?.editor?.scope;
 
                           const canEdit =
-                            canCellEditForScope({ scope, isAddedRow }) &&
-                            canCellEditForRow(row.original);
+                            canCellEditForRow(row.original) &&
+                            canCellEditForScope({ scope, isAddedRow });
 
                           const isCellEdited =
                             canEdit &&
