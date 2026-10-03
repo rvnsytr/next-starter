@@ -2,7 +2,7 @@
 
 import { SignOutButton } from "@/modules/auth/components/sign-out-button";
 import { StopImpersonateUserMenuItem } from "@/modules/auth/components/stop-impersonate-user-button";
-import { menuConfig, routeConfig } from "@/shared/configs";
+import { DASHBOARD_FOOTER_MENU, ROUTE_CONFIG } from "@/shared/configs";
 import { formatForDisplay } from "@tanstack/react-hotkeys";
 import Link from "next/link";
 import { Kbd } from "../ui/kbd";
@@ -19,10 +19,10 @@ export function SidebarAppFooter() {
   return (
     <SidebarFooter>
       <SidebarMenu className="gap-2">
-        {menuConfig["dashboard-footer"].map(
+        {DASHBOARD_FOOTER_MENU.map(
           ({ route, icon: Icon, disabled, shortcut }) => {
             const iconElement = Icon && <Icon />;
-            const { title } = routeConfig[route];
+            const { title } = ROUTE_CONFIG[route];
 
             return (
               <SidebarMenuItem key={route}>

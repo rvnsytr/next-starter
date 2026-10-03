@@ -21,7 +21,7 @@ import { EMPTY_FILTER_OPERATOR_VALUES } from "@/core/modules/table/filter-operat
 import { ColumnFilterContext, FilterType } from "@/core/modules/table/types";
 import { formatNumber } from "@/core/utils";
 import { ErrorFallback } from "@/shared/components/fallback";
-import { appConfig } from "@/shared/configs";
+import { DEFAULT_NUMBER_LOCALE } from "@/shared/configs";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
@@ -255,7 +255,7 @@ function FilterValueControllerNumber({
               max={sliderScale.max}
               value={value[0] ?? 0}
               onValueChange={(v) => setValue((prev) => [v ?? 0, prev[1] ?? 0])}
-              locale={appConfig.default.numberLocale}
+              locale={DEFAULT_NUMBER_LOCALE}
               disabled={disabled}
               autoFocus
             >
@@ -272,7 +272,7 @@ function FilterValueControllerNumber({
               max={sliderScale.max}
               value={value[1] ?? 0}
               onValueChange={(v) => setValue((prev) => [prev[0] ?? 0, v ?? 0])}
-              locale={appConfig.default.numberLocale}
+              locale={DEFAULT_NUMBER_LOCALE}
               disabled={disabled}
             >
               <NumberFieldGroup>
@@ -288,7 +288,7 @@ function FilterValueControllerNumber({
           size="sm"
           value={value[0] ?? 0}
           onValueChange={(v) => setValue(() => [v ?? 0])}
-          locale={appConfig.default.numberLocale}
+          locale={DEFAULT_NUMBER_LOCALE}
           disabled={disabled}
           autoFocus
         >

@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/core/components/theme-toggle";
 import { Button } from "@/core/components/ui/button";
 import { LinkSpinner } from "@/core/components/ui/spinner";
 import { GithubIcon } from "@/shared/components/icons";
-import { appConfig } from "@/shared/configs";
+import { APP_DESCRIPTION, APP_NAME } from "@/shared/constants";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -21,8 +21,8 @@ export default function Page() {
         <small className="text-muted-foreground text-xs font-light tracking-widest">
           RvnSytR
         </small>
-        <h1 className="text-2xl font-medium">{appConfig.name}</h1>
-        <p className="text-muted-foreground text-sm">{appConfig.description}</p>
+        <h1 className="text-2xl font-medium">{APP_NAME}</h1>
+        <p className="text-muted-foreground text-sm">{APP_DESCRIPTION}</p>
       </div>
 
       <div className="flex gap-2">

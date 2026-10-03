@@ -1,5 +1,5 @@
 import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user-badge";
-import { appConfig } from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
 import { ThemeToggle } from "../theme-toggle";
@@ -18,7 +18,7 @@ export function SidebarAppSiteHeader() {
             href="/dashboard"
             className="shimmer mx-2 font-mono text-sm font-medium tracking-tight"
           >
-            {appConfig.name}
+            {APP_NAME}
           </Link>
 
           <DynamicBreadcrumb className="hidden md:flex" fallback />

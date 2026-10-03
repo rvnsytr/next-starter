@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, MenuItem, routeConfig } from "@/shared/configs";
+import { Menu, MenuItem, ROUTE_CONFIG } from "@/shared/configs";
 import { messages } from "@/shared/messages";
 import {
   formatForDisplay,
@@ -80,7 +80,7 @@ const DEFAULT_SHORTCUT: HotkeySequence = ["Control+K"];
 function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
   return items.flatMap((item) => {
     if ("label" in item) return item;
-    const config = routeConfig[item.route];
+    const config = ROUTE_CONFIG[item.route];
 
     const baseItem: QuickSearchItem = {
       type: "nav",

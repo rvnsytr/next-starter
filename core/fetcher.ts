@@ -1,4 +1,4 @@
-import { apiConfig } from "@/shared/configs";
+import { API_BASE_URL } from "@/shared/configs";
 import z from "zod";
 import { getApiResponseSchema } from "./schema";
 import { ApiResponse } from "./types";
@@ -42,7 +42,7 @@ fetcher.api = async <T>(
   path: string,
   config?: ApiFetcherConfig<T>,
 ): Promise<ApiResponse<T>> =>
-  await fetcher(`${apiConfig.baseUrl}${path}`, {
+  await fetcher(`${API_BASE_URL}${path}`, {
     ...config,
     credentials: "include",
     schema: getApiResponseSchema(config?.schema ?? z.any()),

@@ -1,5 +1,5 @@
 import { DEFAULT_ROLE, ROLES } from "@/modules/auth/constants/roles";
-import { appConfig } from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import * as schema from "@/shared/db/schema";
 import { ac, roles } from "@/shared/permission";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
@@ -22,7 +22,7 @@ export type Session = AuthSession["session"];
 export type User = AuthSession["user"];
 
 export const auth = betterAuth({
-  appName: appConfig.name,
+  appName: APP_NAME,
 
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,

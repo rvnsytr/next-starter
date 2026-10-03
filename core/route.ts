@@ -1,5 +1,11 @@
 import { Role } from "@/modules/auth/constants/roles";
-import { appConfig, Menu, RouteAccess, routeConfig } from "@/shared/configs";
+import {
+  CALLBACK_URLS,
+  Menu,
+  ROUTE_CONFIG,
+  RouteAccess,
+} from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import { Route } from "next";
 
 type NormalizeRouteOptions = {
@@ -155,7 +161,7 @@ export function createSignInURL({
   if (!origin || !pathname) return baseUrl;
   const url = new URL(baseUrl, origin);
 
-  if (!appConfig.default.callbackUrls.includes(pathname as Route))
+  if (!CALLBACK_URLS.includes(pathname as Route))
     url.searchParams.set("callbackURL", `${pathname}${search}${hash}`);
 
   return url.toString();
@@ -170,17 +176,19 @@ export function hasAccess(access: RouteAccess, role?: Role) {
 }
 
 export function hasRouteAccess(route: string | null, role: Role) {
-  const config = route ? routeConfig[route as keyof typeof routeConfig] : null;
+  const config = route
+    ? ROUTE_CONFIG[route as keyof typeof ROUTE_CONFIG]
+    : null;
   if (!config) return false;
   return hasAccess(config.access, role);
 }
 
 export function setRouteTitle(title: string) {
-  return `${title} | ${appConfig.name}`;
+  return `${title} | ${APP_NAME}`;
 }
 
 export function getRouteTitle(route: Route) {
-  return setRouteTitle(routeConfig[route].title);
+  return setRouteTitle(ROUTE_CONFIG[route].title);
 }
 
 export function getRouteHierarchy(path: string): Route[] {
@@ -189,7 +197,7 @@ export function getRouteHierarchy(path: string): Route[] {
 }
 
 export function getActiveRoute(menu: Menu[], pathname: string): Route | null {
-  const allRoutes = Object.keys(routeConfig) as Route[];
+  const allRoutes = Object.keys(ROUTE_CONFIG) as Route[];
   const allMenuRoutes = menu.flatMap((m) => m.items.map((c) => c.route));
 
   const parts = pathname.split("/").filter(Boolean);

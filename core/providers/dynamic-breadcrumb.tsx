@@ -1,6 +1,6 @@
 "use client";
 
-import { routeConfig } from "@/shared/configs";
+import { ROUTE_CONFIG } from "@/shared/configs";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useMemo, useState } from "react";
@@ -32,7 +32,7 @@ export function DynamicBreadcrumbProvider({
   const routeBreadcrumbs = useMemo(
     () =>
       getRouteHierarchy(normalizeRoute(pathname)).flatMap((r) => {
-        const config = r in routeConfig ? routeConfig[r] : null;
+        const config = r in ROUTE_CONFIG ? ROUTE_CONFIG[r] : null;
         return config ? [{ href: r, label: config.title }] : [];
       }),
     [pathname],

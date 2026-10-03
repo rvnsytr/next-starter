@@ -1,4 +1,4 @@
-import { appConfig } from "@/shared/configs";
+import { DEFAULT_NUMBER_LOCALE } from "@/shared/configs";
 import { Language, LANGUAGE_META } from "@/shared/constants";
 
 export function toBytes(mb: number) {
@@ -36,7 +36,7 @@ export function formatNumber(
   number: number,
   options?: Intl.NumberFormatOptions & { lang?: Language },
 ) {
-  const config = LANGUAGE_META[options?.lang ?? appConfig.default.numberLocale];
+  const config = LANGUAGE_META[options?.lang ?? DEFAULT_NUMBER_LOCALE];
   const value = new Intl.NumberFormat(config.locale, options).format(number);
   return value === "0" ? "0" : value;
 }

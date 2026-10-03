@@ -3,7 +3,8 @@ import {
   AnchoredToastProvider,
   ToastProvider,
 } from "@/core/components/ui/toast";
-import { appConfig } from "@/shared/configs";
+import { DEFAULT_LANGUAGE } from "@/shared/configs";
+import { APP_DESCRIPTION, APP_KEYWORDS, APP_NAME } from "@/shared/constants";
 import { GlobalShortcuts } from "@/shared/providers/global-shortcuts";
 import "@/styles/globals.css";
 import { cn } from "cn";
@@ -29,16 +30,16 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: appConfig.name,
-  description: appConfig.description,
-  keywords: appConfig.keywords,
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
+  keywords: APP_KEYWORDS,
   manifest: "/manifest.json",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang={appConfig.default.language}
+      lang={DEFAULT_LANGUAGE}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

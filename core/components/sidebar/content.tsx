@@ -3,7 +3,7 @@
 import { getAccessibleMenus, getActiveRoute } from "@/core/route";
 import { toCase } from "@/core/utils";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { menuConfig, MenuItem, routeConfig } from "@/shared/configs";
+import { DASHBOARD_MENU, MenuItem, ROUTE_CONFIG } from "@/shared/configs";
 import { ChevronRightIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";
@@ -34,7 +34,7 @@ export function SidebarAppContent() {
   const pathname = usePathname();
 
   const menu = useMemo(
-    () => getAccessibleMenus(menuConfig.dashboard, user.role),
+    () => getAccessibleMenus(DASHBOARD_MENU, user.role),
     [user.role],
   );
 
@@ -76,7 +76,7 @@ function SidebarAppContentCollapsible({
   const isActive = data.route === activeRoute;
 
   const { isMobile, toggleSidebar } = useSidebar();
-  const { title } = routeConfig[data.route];
+  const { title } = ROUTE_CONFIG[data.route];
 
   const Icon = data.icon && <data.icon />;
 

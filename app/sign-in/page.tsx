@@ -14,7 +14,7 @@ import { SignOnGithubButton } from "@/modules/auth/components/sign-on-github";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { LoadingFallback } from "@/shared/components/fallback";
 import { FooterNote } from "@/shared/components/footer-note";
-import { appConfig } from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -28,10 +28,10 @@ export default function Page() {
       <Card className="w-full max-w-lg" asPageCard>
         <CardHeader className="flex flex-col items-center text-center">
           <CardTitle className="text-lg font-semibold">
-            <Link href="/">{appConfig.name}</Link>
+            <Link href="/">{APP_NAME}</Link>
           </CardTitle>
           <CardDescription>
-            Sign in to {appConfig.name} securely using your account.
+            Sign in to {APP_NAME} securely using your account.
           </CardDescription>
         </CardHeader>
 

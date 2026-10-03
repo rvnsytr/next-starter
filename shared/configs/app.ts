@@ -1,33 +1,10 @@
 import { FileVisibility } from "@/core/s3";
 import { Route } from "next";
 
-const callbackUrls: Route[] = ["/", "/dashboard"];
-const s3FileVisibility: FileVisibility = "private";
+export const CALLBACK_URLS: Route[] = ["/", "/dashboard"];
 
-export const appConfig = {
-  name: "Next Starter",
-  description:
-    "Personalized Next.js 16 starter template bundled with my go-to tools and configs for kickstarting new projects.",
+export const DEFAULT_LANGUAGE = "id";
+export const DEFAULT_NUMBER_LOCALE = "id";
 
-  keywords: ["next", "next starter"] as string[],
-
-  logo: {
-    default: "/logo.png",
-    withText: "/logo-text.png",
-  },
-
-  default: {
-    language: "id",
-
-    numberLocale: "id",
-
-    /** @see [route.ts](../../core/route.ts) / createSignInURL */
-    callbackUrls,
-
-    /** @see [s3.ts](../../core/s3/utils.ts) */
-    s3FileDirectory: "global",
-
-    /** @see [s3.ts](../../core/s3/utils.ts) */
-    s3FileVisibility,
-  },
-} as const;
+export const DEFAULT_S3_FILE_DIRECTORY = "global";
+export const DEFAULT_S3_FILE_VISIBILITY: FileVisibility = "private";

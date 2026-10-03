@@ -15,7 +15,8 @@ import { getRouteTitle } from "@/core/route";
 import { ChangePasswordForm } from "@/modules/auth/components/change-password-form";
 import { RevokeOtherSessionsButton } from "@/modules/auth/components/revoke-other-session-button";
 import { SessionList } from "@/modules/auth/components/session-list";
-import { appConfig } from "@/shared/configs";
+import {} from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import { LockKeyholeIcon, ShieldIcon, SunMoonIcon } from "lucide-react";
 import { Metadata } from "next";
 
@@ -32,7 +33,7 @@ export default function Page() {
             <SunMoonIcon /> Theme
           </CardTitle>
           <CardDescription>
-            Customize the look and feel of <b>{appConfig.name}</b> to match your
+            Customize the look and feel of <b>{APP_NAME}</b> to match your
             preferences.
           </CardDescription>
 

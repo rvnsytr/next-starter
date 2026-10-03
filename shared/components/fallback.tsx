@@ -6,7 +6,7 @@ import {
 import { Spinner, SpinnerProps } from "@/core/components/ui/spinner";
 import { cn } from "cn";
 import { TriangleAlertIcon } from "lucide-react";
-import { appConfig } from "../configs";
+import { APP_NAME } from "../constants";
 
 export type LoadingFallback = SpinnerProps & { containerClassName?: string };
 
@@ -51,7 +51,7 @@ export function ErrorFallback({
     errorMessage = `${name}: ${message}`;
   }
 
-  const errorTitle = title ?? (errorOnly ? errorMessage : appConfig.name);
+  const errorTitle = title ?? (errorOnly ? errorMessage : APP_NAME);
 
   return (
     <Alert variant="destructive" className={className}>

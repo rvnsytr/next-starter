@@ -27,38 +27,36 @@ export type MenuItem = {
   }[];
 };
 
-export const menuConfig = {
-  dashboard: [
-    {
-      group: "General",
-      items: [
-        { route: "/dashboard", icon: LayoutDashboardIcon },
-        { route: "/dashboard/users", icon: UsersRoundIcon },
-      ],
-    },
-    {
-      group: "Others",
-      items: [
-        {
-          route: "/dashboard/profile",
-          icon: UserRoundIcon,
-          subItems: [{ label: "Personal Information" }],
-        },
-        {
-          route: "/dashboard/settings",
-          icon: SettingsIcon,
-          subItems: [
-            { label: "Theme" },
-            { label: "Active Sessions" },
-            { label: "Change Password" },
-          ],
-        },
-      ],
-    },
-  ] satisfies Menu[],
+export const DASHBOARD_MENU: Menu[] = [
+  {
+    group: "General",
+    items: [
+      { route: "/dashboard", icon: LayoutDashboardIcon },
+      { route: "/dashboard/users", icon: UsersRoundIcon },
+    ],
+  },
+  {
+    group: "Others",
+    items: [
+      {
+        route: "/dashboard/profile",
+        icon: UserRoundIcon,
+        subItems: [{ label: "Personal Information" }],
+      },
+      {
+        route: "/dashboard/settings",
+        icon: SettingsIcon,
+        subItems: [
+          { label: "Theme" },
+          { label: "Active Sessions" },
+          { label: "Change Password" },
+        ],
+      },
+    ],
+  },
+];
 
-  "dashboard-footer": [
-    { route: "/", icon: ExternalLinkIcon },
-    // { route: "/about", icon: ExternalLinkIcon }
-  ] as Omit<MenuItem, "subItems">[],
-} satisfies Record<string, Menu[] | MenuItem[]>;
+export const DASHBOARD_FOOTER_MENU: Omit<MenuItem, "subItems">[] = [
+  { route: "/", icon: ExternalLinkIcon },
+  // { route: "/about", icon: ExternalLinkIcon }
+];

@@ -1,4 +1,7 @@
-import { appConfig } from "@/shared/configs";
+import {
+  DEFAULT_S3_FILE_DIRECTORY,
+  DEFAULT_S3_FILE_VISIBILITY,
+} from "@/shared/configs";
 import { FileTable } from "@/shared/db/types";
 import {
   DeleteObjectsCommand,
@@ -123,11 +126,9 @@ export function createFilePayloads(
   const upload: CreateFilePayloadsResponse["upload"] = [];
   const records: CreateFilePayloadsResponse["records"] = [];
 
-  const { s3FileDirectory, s3FileVisibility } = appConfig.default;
-
   files.forEach((item, index) => {
-    let path = `${s3FileDirectory}/${item.file.name}`;
-    let visibility: FileVisibility = s3FileVisibility;
+    let path = `${DEFAULT_S3_FILE_DIRECTORY}/${item.file.name}`;
+    let visibility: FileVisibility = DEFAULT_S3_FILE_VISIBILITY;
 
     if (item.file instanceof File) {
       if (options?.path) {
@@ -185,12 +186,11 @@ export async function uploadFiles(
 ): Promise<UploadFilesResponse[]> {
   "use server";
 
-  const { s3FileDirectory, s3FileVisibility } = appConfig.default;
-
   return await Promise.all(
     payloads.map(async (payload) => {
-      const Key = payload.path ?? `${s3FileDirectory}/${payload.file.name}`;
-      const visibility = payload.visibility ?? s3FileVisibility;
+      const Key =
+        payload.path ?? `${DEFAULT_S3_FILE_DIRECTORY}/${payload.file.name}`;
+      const visibility = payload.visibility ?? DEFAULT_S3_FILE_VISIBILITY;
 
       const command = new PutObjectCommand({
         Key,

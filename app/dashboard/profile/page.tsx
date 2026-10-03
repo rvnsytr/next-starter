@@ -9,7 +9,7 @@ import {
 import { getRouteTitle } from "@/core/route";
 import { ProfileBadges } from "@/modules/auth/components/profile-badges";
 import { ProfileForm } from "@/modules/auth/components/profile-form";
-import { appConfig } from "@/shared/configs";
+import { APP_NAME } from "@/shared/constants";
 import { UserRoundIcon } from "lucide-react";
 import { Metadata } from "next";
 
@@ -26,7 +26,7 @@ export default function Page() {
             <UserRoundIcon /> Personal information
           </CardTitle>
           <CardDescription>
-            Update and manage your <b>{appConfig.name}</b> profile information.
+            Update and manage your <b>{APP_NAME}</b> profile information.
           </CardDescription>
           <CardAction className="flex flex-col items-end gap-2 md:flex-row-reverse">
             <ProfileBadges />

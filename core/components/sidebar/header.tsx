@@ -5,7 +5,7 @@ import { stopImpersonateUser } from "@/modules/auth/actions";
 import { signOutClient } from "@/modules/auth/components/sign-out-button";
 import { UserVerifiedBadge } from "@/modules/auth/components/user-verified-badge";
 import { useSession } from "@/modules/auth/hooks/use-session";
-import { menuConfig } from "@/shared/configs";
+import { DASHBOARD_FOOTER_MENU, DASHBOARD_MENU } from "@/shared/configs";
 import { Layers2Icon, LogOutIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";
@@ -50,8 +50,8 @@ export function SidebarAppHeader() {
       });
 
     return [
-      ...getAccessibleMenus(menuConfig.dashboard, user.role),
-      { group: "Navigation", items: menuConfig["dashboard-footer"] },
+      ...getAccessibleMenus(DASHBOARD_MENU, user.role),
+      { group: "Navigation", items: DASHBOARD_FOOTER_MENU },
       { group: "Actions", items: actionItems },
     ];
   }, [router, user.role, session.impersonatedBy]);
