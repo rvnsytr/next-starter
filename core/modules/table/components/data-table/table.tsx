@@ -72,51 +72,47 @@ export function DataTable({
 
                       return (
                         <TableHead
-                            key={header.id}
-                            colSpan={header.colSpan}
-                            rowSpan={header.rowSpan}
-                            style={{
-                              ...headerStyle,
-                              width: header.getSize(),
-                              left: header.column.getStart("start"),
-                              right: header.column.getAfter("end"),
-                            }}
-                            className={cn(
-                              TABLE_CELL_CLASS.base,
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          rowSpan={header.rowSpan}
+                          style={{
+                            ...headerStyle,
+                            width: header.getSize(),
+                            left: header.column.getStart("start"),
+                            right: header.column.getAfter("end"),
+                          }}
+                          className={cn(
+                            TABLE_CELL_CLASS.base,
 
-                              !!pinPosition && TABLE_CELL_CLASS.pin,
-                              pinPosition === "start" &&
-                                TABLE_CELL_CLASS.pinLeft,
-                              pinPosition === "end" &&
-                                TABLE_CELL_CLASS.pinRight,
+                            !!pinPosition && TABLE_CELL_CLASS.pin,
+                            pinPosition === "start" && TABLE_CELL_CLASS.pinLeft,
+                            pinPosition === "end" && TABLE_CELL_CLASS.pinRight,
 
-                              headerClassName,
-                            )}
-                            {...restHeaderProps}
-                          >
-                            <header.FlexRender />
+                            headerClassName,
+                          )}
+                          {...restHeaderProps}
+                        >
+                          <header.FlexRender />
 
-                            {header.column.getCanResize() && (
-                              <>
+                          {header.column.getCanResize() && (
+                            <>
+                              <div
+                                onMouseDown={header.getResizeHandler()}
+                                onTouchStart={header.getResizeHandler()}
+                                onDoubleClick={() => header.column.resetSize()}
+                                className={TABLE_CELL_CLASS.resizeHandler}
+                              />
+
+                              {isResizing && (
                                 <div
-                                  onMouseDown={header.getResizeHandler()}
-                                  onTouchStart={header.getResizeHandler()}
-                                  onDoubleClick={() =>
-                                    header.column.resetSize()
-                                  }
-                                  className={TABLE_CELL_CLASS.resizeHandler}
+                                  style={{
+                                    transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
+                                  }}
+                                  className={TABLE_CELL_CLASS.resizeIndicator}
                                 />
-
-                                {isResizing && (
-                                  <div
-                                    style={{
-                                      transform: `translateX(${resizing.deltaOffset ?? 0}px)`,
-                                    }}
-                                    className={TABLE_CELL_CLASS.resizeIndicator}
-                                  />
-                                )}
-                              </>
-                            )}
+                              )}
+                            </>
+                          )}
                         </TableHead>
                       );
                     }}

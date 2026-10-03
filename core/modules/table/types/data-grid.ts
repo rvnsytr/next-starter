@@ -31,7 +31,7 @@ export type DataGridTableComponents = DataTableTableComponents & {
 
 export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   /** Default values used when adding a new row. */
-  defaultValues: TData;
+  getDefaultValues: () => TData;
 
   /**
    * Callback invoked when accumulated Data Grid changes are submitted.

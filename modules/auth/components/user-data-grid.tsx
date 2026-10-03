@@ -63,8 +63,10 @@ export function UsersDataGrid() {
 
     meta: {
       loading: isLoading,
+      enableCellEditForRow: (row) => row.id !== user.id,
+      enableCellRemoveForRow: false,
 
-      defaultValues: {
+      getDefaultValues: () => ({
         id: crypto.randomUUID(),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -75,11 +77,8 @@ export function UsersDataGrid() {
         banExpires: null,
         banReason: null,
         banned: false,
-        role: "user",
-      },
-
-      enableCellEditForRow: (row) => row.id !== user.id,
-      enableCellRemoveForRow: false,
+        role: "user" as const,
+      }),
 
       onSave: async (ctx) => {
         const updated = ctx.changes.updated

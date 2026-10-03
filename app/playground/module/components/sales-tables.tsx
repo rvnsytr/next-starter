@@ -101,7 +101,7 @@ export function SaleDataGrid() {
     meta: {
       loading: isLoading,
 
-      defaultValues: {
+      getDefaultValues: () => ({
         id: crypto.randomUUID(),
         customerName: "",
         customerEmail: "",
@@ -111,7 +111,7 @@ export function SaleDataGrid() {
         amount: 0,
         isPaid: false,
         purchasedAt: new Date(),
-        status: "pending",
+        status: "pending" as const,
         products: [],
         shippingAddress: {
           city: "",
@@ -124,7 +124,7 @@ export function SaleDataGrid() {
         availableDates: [],
         preferredTime: "",
         deliveryTimes: [],
-      },
+      }),
 
       onEditChange: () => {
         console.log("Edit!");
