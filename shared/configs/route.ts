@@ -30,9 +30,4 @@ export const routeConfig: RouteConfig = {
     title: "Users",
     access: ["admin"],
   },
-
-  "/playground": {
-    title: "Playground",
-    access: "public",
-  },
 };

@@ -12,12 +12,7 @@
     "**/app/layout.tsx": true,
     "**/app/dashboard/layout.tsx": true,
 
-    "**/modules/auth/**": true,
-    "**/modules/activity/**": true
-  },
-
-  "files.readonlyExclude": {
-    "**/modules/activity/config.tsx": true
+    "**/modules/auth/**": true
   },
 
   "js/ts.preferences.importModuleSpecifier": "shortest",
