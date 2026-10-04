@@ -80,7 +80,7 @@ export function DataTableLayout({
 
   return (
     <div
-      className={cn("relative flex w-full flex-col gap-y-4", className)}
+      className={cn("relative z-60 flex w-full flex-col gap-y-4", className)}
       {...props}
     >
       <div

@@ -10,7 +10,7 @@ export function DashboardPage({
     <div
       data-slot="dashboard-page"
       className={cn(
-        "group/dashboard-page relative z-10 flex flex-1 flex-col gap-4 p-4",
+        "group/dashboard-page relative flex flex-1 flex-col gap-4 p-4",
         className,
       )}
       {...props}
