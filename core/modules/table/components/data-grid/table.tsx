@@ -345,7 +345,7 @@ export function DataGrid({
       {
         hotkey: "Delete",
         callback: () => {
-          const { newRows, removeRows } = dataGridContext;
+          const { newRows, removeRows, getChanges } = dataGridContext;
 
           const rowIds = table
             .getCellSelectionRowIds()
@@ -371,8 +371,7 @@ export function DataGrid({
           removeRows(removedRows);
 
           const hasAddedRows = rowIds.length !== removedRows.length;
-          if (hasAddedRows)
-            table.options.meta?.onEditChange?.(dataGridContext.getChanges());
+          if (hasAddedRows) table.options.meta?.onEditChange?.(getChanges());
         },
       },
     ],

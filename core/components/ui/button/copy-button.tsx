@@ -6,8 +6,6 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { TextMorph } from "torph/react";
 import { Button, ButtonProps } from "./button";
 
-const defaultLabel = { copy: "Copy", copied: "Copied" };
-
 export function CopyButton({
   value,
   label,
@@ -29,7 +27,7 @@ export function CopyButton({
   return (
     <Button
       data-slot="copy-button"
-      aria-label={isCopied ? defaultLabel.copied : defaultLabel.copy}
+      aria-label={isCopied ? labels.copied : labels.copy}
       size={size ?? (label ? "default" : "icon")}
       disabled={isCopied || disabled}
       onClick={(e) => {
