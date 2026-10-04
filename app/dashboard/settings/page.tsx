@@ -1,4 +1,4 @@
-import { DashboardPage } from "@/core/components/layout/dashboard-page";
+import { ContentLayout } from "@/core/components/layout/content-layout";
 import { ThemeSettings } from "@/core/components/theme-settings";
 import { THEME_TOGGLE_HOTKEY_DISPLAY } from "@/core/components/theme-toggle";
 import {
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <DashboardPage className="items-center">
+    <ContentLayout className="items-center">
       <Card id="theme" className="w-full lg:max-w-xl" asPageCard>
         <CardHeader>
           <CardTitle>
@@ -80,6 +80,6 @@ export default function Page() {
 
         <ChangePasswordForm />
       </Card>
-    </DashboardPage>
+    </ContentLayout>
   );
 }

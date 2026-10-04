@@ -1,10 +1,10 @@
 import {
-  DashboardPage,
-  DashboardPageDescription,
-  DashboardPageHeader,
-  DashboardPageTitle,
-} from "@/core/components/layout/dashboard-page";
-import { CardAction } from "@/core/components/ui/card";
+  ContentLayout,
+  ContentLayoutAction,
+  ContentLayoutDescription,
+  ContentLayoutHeader,
+  ContentLayoutTitle,
+} from "@/core/components/layout/content-layout";
 import { Separator } from "@/core/components/ui/separator";
 import { getRouteTitle } from "@/core/route";
 import { CreateUserDialog } from "@/modules/auth/components/create-user-dialog";
@@ -15,21 +15,21 @@ export const metadata: Metadata = { title: getRouteTitle("/dashboard/users") };
 
 export default function Page() {
   return (
-    <DashboardPage className="px-0">
-      <DashboardPageHeader className="px-4">
-        <DashboardPageTitle>User management</DashboardPageTitle>
-        <DashboardPageDescription>
+    <ContentLayout className="px-0">
+      <ContentLayoutHeader className="px-4">
+        <ContentLayoutTitle>User management</ContentLayoutTitle>
+        <ContentLayoutDescription>
           Manage and view details for all registered users.
-        </DashboardPageDescription>
+        </ContentLayoutDescription>
 
-        <CardAction>
+        <ContentLayoutAction>
           <CreateUserDialog />
-        </CardAction>
-      </DashboardPageHeader>
+        </ContentLayoutAction>
+      </ContentLayoutHeader>
 
       <Separator />
 
       <UsersDataGrid />
-    </DashboardPage>
+    </ContentLayout>
   );
 }

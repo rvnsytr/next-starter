@@ -2,15 +2,15 @@
 
 import { cn } from "cn";
 
-export function DashboardPage({
+export function ContentLayout({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="dashboard-page"
+      data-slot="content-layout"
       className={cn(
-        "group/dashboard-page relative flex flex-1 flex-col gap-4 p-4",
+        "group/content-layout relative flex flex-1 flex-col gap-4 p-4",
         className,
       )}
       {...props}
@@ -18,15 +18,15 @@ export function DashboardPage({
   );
 }
 
-export function DashboardPageHeader({
+export function ContentLayoutHeader({
   className,
   ...props
 }: React.ComponentProps<"header">) {
   return (
     <header
-      data-slot="dashboard-page-header"
+      data-slot="content-layout-header"
       className={cn(
-        "group/dashboard-page-header @container/dashboard-page-header grid auto-rows-min items-start gap-1 px-4 has-data-[slot=dashboard-page-action]:grid-cols-[1fr_auto] has-data-[slot=dashboard-page-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
+        "group/content-layout-header @container/content-layout-header grid auto-rows-min items-start gap-1 px-4 has-data-[slot=content-layout-action]:grid-cols-[1fr_auto] has-data-[slot=content-layout-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
         className,
       )}
       {...props}
@@ -34,14 +34,14 @@ export function DashboardPageHeader({
   );
 }
 
-export function DashboardPageTitle({
+export function ContentLayoutTitle({
   as: Comp = "h1",
   className,
   ...props
 }: React.ComponentProps<"h1"> & { as?: "h1" | "h2" | "h3" }) {
   return (
     <Comp
-      data-slot="dashboard-page-title"
+      data-slot="content-layout-title"
       className={cn(
         "flex items-center gap-2 text-base leading-tight font-semibold **:[svg:not([class*='size-'])]:size-4",
         className,
@@ -51,13 +51,13 @@ export function DashboardPageTitle({
   );
 }
 
-export function DashboardPageDescription({
+export function ContentLayoutDescription({
   className,
   ...props
 }: React.ComponentProps<"p">) {
   return (
     <p
-      data-slot="dashboard-page-description"
+      data-slot="content-layout-description"
       className={cn(
         "text-muted-foreground *:[a]:hover:text-foreground text-sm text-pretty *:[a]:underline *:[a]:underline-offset-3",
         className,
@@ -67,13 +67,13 @@ export function DashboardPageDescription({
   );
 }
 
-export function DashboardPageAction({
+export function ContentLayoutAction({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="dashboard-page-action"
+      data-slot="content-layout-action"
       className={cn(
         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
         className,
