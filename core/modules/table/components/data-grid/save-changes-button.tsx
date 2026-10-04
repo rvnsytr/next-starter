@@ -16,7 +16,7 @@ import { ListCheckIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useDataGrid } from "./provider";
 
-export type SaveChangesButtonProps = ButtonProps & {
+export type DataGridSaveChangesButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 
   /**
@@ -35,7 +35,7 @@ export function DataGridSaveChangesButton({
   variant = "outline",
   onClick,
   ...props
-}: SaveChangesButtonProps) {
+}: DataGridSaveChangesButtonProps) {
   const table = dataGrid.useTableContext();
   const dataGridContext = useDataGrid();
 

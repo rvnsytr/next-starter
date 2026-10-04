@@ -28,12 +28,11 @@ import { DataGridSelectRowCheckbox } from "../components/data-grid/select-row-ch
 import { DataGrid } from "../components/data-grid/table";
 import { dataGridFeatures } from "../features/data-grid";
 import {
+  DataGridCellComponents,
   DataGridChanges,
+  DataGridHeaderComponents,
   DataGridTableComponents,
   DataGridTableMeta,
-  TableCellComponents,
-  TableComponents,
-  TableHeaderComponents,
 } from "../types";
 import { mergeNested } from "../utils";
 
@@ -56,15 +55,15 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
     AddRowButton: DataGridAddRowButton,
     ClearChangesButton: DataGridClearChangesButton,
     SaveChangesButton: DataGridSaveChangesButton,
-  } satisfies TableComponents & DataGridTableComponents,
+  } satisfies DataGridTableComponents,
   headerComponents: {
     ColumnHeader: DataGridColumnHeader,
     SelectAllCheckbox: DataGridSelectAllCheckbox,
-  } satisfies TableHeaderComponents,
+  } satisfies DataGridHeaderComponents,
   cellComponents: {
     SelectRowCheckbox: DataGridSelectRowCheckbox,
     RowNumber: DataGridRowNumber,
-  } satisfies TableCellComponents,
+  } satisfies DataGridCellComponents,
 });
 
 type AppTableOptions<TData extends RowData, TSelected> = Parameters<

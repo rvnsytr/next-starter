@@ -13,10 +13,10 @@ import { cn } from "cn";
 import { InfoIcon } from "lucide-react";
 import { useMemo } from "react";
 import { DataTableLayoutProps } from "../data-table/layout";
-import { AddRowButtonProps } from "./add-row-button";
-import { ClearChangesButtonProps } from "./clear-changes-button";
+import { DataGridAddRowButtonProps } from "./add-row-button";
+import { DataGridClearChangesButtonProps } from "./clear-changes-button";
 import { useDataGrid } from "./provider";
-import { SaveChangesButtonProps } from "./save-changes-button";
+import { DataGridSaveChangesButtonProps } from "./save-changes-button";
 
 export type DataGridLayoutProps = DataTableLayoutProps & {
   /**
@@ -26,9 +26,9 @@ export type DataGridLayoutProps = DataTableLayoutProps & {
    */
   disabledAddRows?: boolean;
 
-  addRowButtonProps?: AddRowButtonProps;
-  clearChangesButtonProps?: ClearChangesButtonProps;
-  saveChangesButtonProps?: SaveChangesButtonProps;
+  addRowButtonProps?: DataGridAddRowButtonProps;
+  clearChangesButtonProps?: DataGridClearChangesButtonProps;
+  saveChangesButtonProps?: DataGridSaveChangesButtonProps;
 };
 
 export function DataGridLayout({

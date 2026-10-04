@@ -17,10 +17,9 @@ import { DataTableSelectRowCheckbox } from "../components/data-table/select-row-
 import { DataTable } from "../components/data-table/table";
 import { dataTableFeatures } from "../features/data-table";
 import {
+  DataTableCellComponents,
+  DataTableHeaderComponents,
   DataTableTableComponents,
-  TableCellComponents,
-  TableComponents,
-  TableHeaderComponents,
 } from "../types";
 
 export const dataTable = createTableHook({
@@ -38,13 +37,13 @@ export const dataTable = createTableHook({
     ResetTableButton: DataTableResetTableButton,
     Search: DataTableSearch,
     Table: DataTable,
-  } satisfies TableComponents & DataTableTableComponents,
+  } satisfies DataTableTableComponents,
   headerComponents: {
     ColumnHeader: DataTableColumnHeader,
     SelectAllCheckbox: DataTableSelectAllCheckbox,
-  } satisfies TableHeaderComponents,
+  } satisfies DataTableHeaderComponents,
   cellComponents: {
     RowNumber: DataTableRowNumber,
     SelectRowCheckbox: DataTableSelectRowCheckbox,
-  } satisfies TableCellComponents,
+  } satisfies DataTableCellComponents,
 });

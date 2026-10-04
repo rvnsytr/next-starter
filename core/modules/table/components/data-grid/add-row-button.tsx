@@ -16,7 +16,7 @@ import {
 import { ListPlusIcon } from "lucide-react";
 import { useCallback } from "react";
 
-export type AddRowButtonProps = ButtonProps & {
+export type DataGridAddRowButtonProps = ButtonProps & {
   align?: React.ComponentProps<typeof TooltipPopup>["align"];
 
   /**
@@ -35,7 +35,7 @@ export function DataGridAddRowButton({
   variant = "outline",
   onClick,
   ...props
-}: AddRowButtonProps) {
+}: DataGridAddRowButtonProps) {
   const table = dataGrid.useTableContext();
   const { getChanges, newRows } = useDataGrid();
 
@@ -67,8 +67,8 @@ export function DataGridAddRowButton({
             size={size}
             variant={variant}
             onClick={(e) => {
-              addNewRow();
               onClick?.(e);
+              addNewRow();
             }}
             {...props}
           >

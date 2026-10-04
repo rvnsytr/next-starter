@@ -4,14 +4,14 @@ import { Button, ButtonProps } from "@/core/components/ui/button";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { ListXIcon } from "lucide-react";
 
-export type ClearChangesButtonProps = ButtonProps;
+export type DataGridClearChangesButtonProps = ButtonProps;
 
 export function DataGridClearChangesButton({
   size = "default",
   variant = "destructive-outline",
   onClick,
   ...props
-}: ClearChangesButtonProps) {
+}: DataGridClearChangesButtonProps) {
   const table = dataGrid.useTableContext();
   const { getChanges, clearChanges } = useDataGrid();
 
@@ -20,9 +20,9 @@ export function DataGridClearChangesButton({
       size={size}
       variant={variant}
       onClick={(e) => {
+        onClick?.(e);
         clearChanges();
         table.options.meta?.onEditChange?.(getChanges());
-        onClick?.(e);
       }}
       {...props}
     >

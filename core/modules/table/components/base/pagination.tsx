@@ -48,8 +48,8 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          context.firstPageControl.onClick();
           onClick?.(e);
+          context.firstPageControl.onClick();
         }}
         disabled={disabled || context.firstPageControl.disabled}
       >
@@ -60,8 +60,8 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          context.previousPageControl.onClick();
           onClick?.(e);
+          context.previousPageControl.onClick();
         }}
         disabled={disabled || context.previousPageControl.disabled}
       >
@@ -72,8 +72,8 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          context.nextPageControl.onClick();
           onClick?.(e);
+          context.nextPageControl.onClick();
         }}
         disabled={disabled || context.nextPageControl.disabled}
       >
@@ -84,8 +84,8 @@ export function Pagination({
         size={size}
         variant={variant}
         onClick={(e) => {
-          context.lastPageControl.onClick();
           onClick?.(e);
+          context.lastPageControl.onClick();
         }}
         disabled={disabled || context.lastPageControl.disabled}
       >

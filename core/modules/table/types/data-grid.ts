@@ -29,6 +29,10 @@ export type DataGridTableComponents = DataTableTableComponents & {
   SaveChangesButton: React.ComponentType<any>;
 };
 
+export type DataGridHeaderComponents = TableHeaderComponents;
+
+export type DataGridCellComponents = TableCellComponents & {};
+
 export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   /** Default values used when adding a new row. */
   getDefaultValues: () => TData;

@@ -52,8 +52,8 @@ export function ResetTableButton({
             size={size}
             variant={variant}
             onClick={(e) => {
-              context.onReset();
               onClick?.(e);
+              context.onReset();
             }}
             {...props}
           >

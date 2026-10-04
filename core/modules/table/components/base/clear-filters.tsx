@@ -55,8 +55,8 @@ export function ClearFilters({
             size={size}
             variant={variant}
             onClick={(e) => {
-              context.onClear();
               onClick?.(e);
+              context.onClear();
             }}
             {...props}
           >
