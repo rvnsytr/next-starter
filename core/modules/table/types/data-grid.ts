@@ -19,6 +19,7 @@ import { DeepPartial, Override } from "@/core/types";
 import { CellData, RowData } from "@tanstack/react-table";
 import { SWRConfiguration } from "swr";
 import { z } from "zod";
+import { TableCellComponents, TableHeaderComponents } from "./components";
 import { DataTableTableComponents } from "./data-table";
 import { ColumnMeta, TableMeta } from "./meta";
 
@@ -31,7 +32,9 @@ export type DataGridTableComponents = DataTableTableComponents & {
 
 export type DataGridHeaderComponents = TableHeaderComponents;
 
-export type DataGridCellComponents = TableCellComponents & {};
+export type DataGridCellComponents = TableCellComponents & {
+  RemoveRowButton: React.ComponentType<any>;
+};
 
 export type DataGridTableMeta<TData extends RowData> = TableMeta & {
   /** Default values used when adding a new row. */

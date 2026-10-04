@@ -19,6 +19,7 @@ import { DataGridLayout } from "../components/data-grid/layout";
 import { DataGridPageSizeSelector } from "../components/data-grid/page-size-selector";
 import { DataGridPagination } from "../components/data-grid/pagination";
 import { DataGridProvider } from "../components/data-grid/provider";
+import { DataGridRemoveRowButton } from "../components/data-grid/remove-row-button";
 import { DataGridResetTableButton } from "../components/data-grid/reset-table-button";
 import { DataGridRowNumber } from "../components/data-grid/row-number";
 import { DataGridSaveChangesButton } from "../components/data-grid/save-changes-button";
@@ -63,6 +64,7 @@ const { useAppTable: dataGridUseAppTable, ...rest } = createTableHook({
   cellComponents: {
     SelectRowCheckbox: DataGridSelectRowCheckbox,
     RowNumber: DataGridRowNumber,
+    RemoveRowButton: DataGridRemoveRowButton,
   } satisfies DataGridCellComponents,
 });
 
