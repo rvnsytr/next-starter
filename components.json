@@ -5,22 +5,22 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "@/styles/globals.css",
+    "css": "./styles/globals.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "iconLibrary": "lucide",
   "rtl": false,
+  "aliases": {
+    "components": "./core/components",
+    "utils": "./core/ut ils",
+    "ui": "./core/components/ui",
+    "lib": "./core",
+    "hooks": "./core/hooks"
+  },
   "menuColor": "default-translucent",
   "menuAccent": "subtle",
-  "aliases": {
-    "lib": "@/core",
-    "utils": "@/core/utils",
-    "components": "@/core/components",
-    "ui": "@/core/components/ui",
-    "hooks": "@/core/hooks"
-  },
   "registries": {
     "@coss": "https://coss.com/ui/r/{name}.json"
   }

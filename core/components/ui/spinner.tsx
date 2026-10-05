@@ -33,7 +33,8 @@ export function Spinner({
     orbit: OrbitIcon,
   };
 
-  const reverseArr: SpinnerVariant[] = ["orbit"];
+  const reverseVariant: SpinnerVariant[] = ["orbit"];
+
   const Icon = iconMap[variant];
 
   return (
@@ -43,7 +44,7 @@ export function Spinner({
       aria-label="Loading"
       className={cn(
         "size-4 animate-spin",
-        reverseArr.includes(variant) && "animate-reverse",
+        reverseVariant.includes(variant) && "animate-reverse",
         className,
       )}
       {...props}

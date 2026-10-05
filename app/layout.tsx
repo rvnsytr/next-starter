@@ -33,7 +33,6 @@ export const metadata: Metadata = {
   title: APP_NAME,
   description: APP_DESCRIPTION,
   keywords: APP_KEYWORDS,
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
