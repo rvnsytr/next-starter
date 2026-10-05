@@ -12,15 +12,12 @@ export default defineConfig([
     rules: {
       ...nextPlugin.configs.recommended.rules,
 
-      /** Enabled rules (error) */
       "@typescript-eslint/no-explicit-any": "error",
 
-      /** Enabled rules (warn) */
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/array-type": ["warn", { default: "array" }],
 
-      /** Disabled rules */
       "import/order": "off",
       "sort-imports": "off",
       "@typescript-eslint/consistent-type-imports": "off",
