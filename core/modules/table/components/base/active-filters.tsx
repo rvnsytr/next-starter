@@ -21,9 +21,9 @@ export function ActiveFiltersContainer({
 }: ActiveFiltersContainerProps) {
   return (
     <ScrollArea
-      className="border-t border-b border-dashed"
-      scrollFade
+      className="h-fit border-t border-b border-dashed"
       withScrollbar={false}
+      scrollFade
     >
       <div
         className={cn("flex items-center gap-2 px-4 py-2", className)}
