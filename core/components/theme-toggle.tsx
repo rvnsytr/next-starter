@@ -12,6 +12,11 @@ import { Kbd } from "./ui/kbd";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 
+export type ThemeToggleProps = Omit<ButtonProps, "children"> &
+  Pick<ComponentProps<typeof TooltipPopup>, "align"> & {
+    withTooltip?: boolean;
+  };
+
 export const THEME_TOGGLE_HOTKEY_DISPLAY =
   formatForDisplay(THEME_TOGGLE_HOTKEY);
 
@@ -25,15 +30,12 @@ export function ThemeToggle({
   withTooltip = true,
   align,
   size = "icon",
-  variant = "ghost",
+  variant = "outline",
   onClick,
   className,
   disabled = false,
   ...props
-}: Omit<ButtonProps, "children"> &
-  Pick<ComponentProps<typeof TooltipPopup>, "align"> & {
-    withTooltip?: boolean;
-  }) {
+}: ThemeToggleProps) {
   const isMobile = useIsMobile();
   const isMounted = useIsMounted();
   const { theme, setTheme } = useTheme();

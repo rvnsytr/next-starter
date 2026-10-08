@@ -8,7 +8,7 @@ export function Ping({
   classNames?: { container?: string; ping?: string; dot?: string };
 }) {
   return (
-    <div className={cn("absolute -top-0.75 -left-0.75", className)}>
+    <div className={cn("absolute -top-0.5 -right-0.5", className)}>
       <span
         className={cn(
           "relative flex size-3 items-center justify-center",
@@ -17,14 +17,14 @@ export function Ping({
       >
         <span
           className={cn(
-            "bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+            "bg-primary opacity absolute inline-flex h-full w-full animate-ping rounded-full",
             classNames?.ping,
           )}
         />
 
         <span
           className={cn(
-            "bg-primary relative inline-flex size-2 rounded-full",
+            "bg-primary relative inline-flex size-2.5 rounded-full",
             classNames?.dot,
           )}
         />

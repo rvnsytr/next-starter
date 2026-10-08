@@ -18,6 +18,8 @@ import { LinkSpinner } from "../ui/spinner";
 export function SidebarAppFooter() {
   return (
     <SidebarFooter>
+      <SidebarSeparator />
+
       <SidebarMenu className="gap-2">
         {DASHBOARD_FOOTER_MENU.map(
           ({ route, icon: Icon, disabled, shortcut }) => {

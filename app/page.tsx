@@ -26,7 +26,7 @@ export default function Page() {
       </div>
 
       <div className="flex gap-2">
-        <ThemeToggle variant="outline" />
+        <ThemeToggle />
 
         <Button
           size="icon"

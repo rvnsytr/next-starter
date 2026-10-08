@@ -1,11 +1,14 @@
 import { ImpersonateUserBadge } from "@/modules/auth/components/impersonate-user-badge";
 import { APP_NAME } from "@/shared/constants";
+import { BellIcon } from "lucide-react";
 import Link from "next/link";
 import { DynamicBreadcrumb } from "../dynamic-breadcrumb";
 import { ThemeToggle } from "../theme-toggle";
+import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { SidebarToggle } from "../ui/sidebar";
 import { SidebarAppSiteHeaderAvatar } from "./site-header-avatar";
+import { SiteHeaderQuickSearch } from "./site-header-quick-search";
 
 export function SidebarAppSiteHeader() {
   return (
@@ -26,6 +29,13 @@ export function SidebarAppSiteHeader() {
 
         <div className="flex items-center gap-x-2">
           <ImpersonateUserBadge />
+
+          <SiteHeaderQuickSearch />
+
+          <Button size="icon" variant="outline" disabled>
+            {/* <Ping /> */}
+            <BellIcon />
+          </Button>
 
           <ThemeToggle align="end" />
 

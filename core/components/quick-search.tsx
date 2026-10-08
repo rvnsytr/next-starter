@@ -213,8 +213,7 @@ export function QuickSearch({
             size={size}
             variant="outline"
             className={cn(
-              "text-muted-foreground hidden justify-start transition *:transition md:inline-flex",
-              "group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:*:not-[svg]:hidden",
+              "text-muted-foreground justify-start transition *:transition",
               className,
             )}
           >
