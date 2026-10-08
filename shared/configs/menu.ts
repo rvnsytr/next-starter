@@ -10,7 +10,10 @@ import {
 import { Route } from "next";
 import { RouteAccess } from ".";
 
-export type Menu = { group: string; items: MenuItem[] };
+export type Menu = {
+  group: string;
+  items: MenuItem[];
+};
 
 export type MenuItem = {
   route: Route;
