@@ -4,9 +4,10 @@ import { Menu, MenuItem, ROUTE_CONFIG } from "@/shared/configs";
 import { messages } from "@/shared/messages";
 import {
   formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-  useHotkeySequences,
+  Hotkey,
+  useHotkey,
+  UseHotkeyDefinition,
+  useHotkeys,
 } from "@tanstack/react-hotkeys";
 import { cn } from "cn";
 import {
@@ -52,7 +53,7 @@ export type QuickSearchItemType =
 
 export type QuickSearchItem = QuickSearchItemType & {
   label: string;
-  shortcut?: HotkeySequence;
+  shortcut?: Hotkey;
   disabled?: boolean;
   icon?: React.ReactNode;
 };
@@ -70,12 +71,12 @@ export type QuickSearchProps = (
   | { type: "list"; data: QuickSearchDataList }
 ) &
   Pick<ButtonProps, "size" | "className"> & {
-    shortcut?: HotkeySequence;
+    shortcut?: "default" | Hotkey;
     placeholder?: string;
     shortcutsOnlyWhenOpen?: boolean;
   };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["Control+K"];
+const DEFAULT_SHORTCUT: Hotkey = ["Control+K"];
 
 function handleDataItems(items: QuickSearchDataList): QuickSearchItem[] {
   return items.flatMap((item) => {
@@ -127,16 +128,6 @@ export function QuickSearch({
     }));
   }, [type, propData]);
 
-  const itemShortcuts: QuickSearchItem[] = useMemo(() => {
-    const handler = (item: QuickSearchItem) =>
-      item.shortcut ? { ...item, shortcut: item.shortcut } : null;
-    return data
-      .flatMap((v) =>
-        "label" in v ? handler(v) : v.items.map((it) => handler(it)),
-      )
-      .filter((v) => !!v);
-  }, [data]);
-
   const actionHandler = useCallback(
     (item: QuickSearchItem) => {
       if (item.type === "nav") startTransition(() => router.push(item.value));
@@ -153,22 +144,24 @@ export function QuickSearch({
     [router, copy],
   );
 
-  useHotkeySequence(
-    shortcut ?? DEFAULT_SHORTCUT,
-    () => setIsOpen((prev) => !prev),
-    { enabled: !!shortcut && isMounted },
-  );
+  const itemShortcuts: UseHotkeyDefinition[] = useMemo(() => {
+    const handler = (item: QuickSearchItem) =>
+      item.shortcut ? { ...item, shortcut: item.shortcut } : null;
 
-  useHotkeySequences(
-    itemShortcuts
-      .map((it) =>
-        it.shortcut
-          ? { sequence: it.shortcut, callback: () => actionHandler(it) }
-          : null,
+    return data
+      .flatMap((v) =>
+        "label" in v ? handler(v) : v.items.map((it) => handler(it)),
       )
-      .filter((v) => !!v),
-    { enabled: shortcutsOnlyWhenOpen ? isOpen : true },
-  );
+      .filter((v) => !!v)
+      .map((v) => ({ hotkey: v.shortcut, callback: () => actionHandler(v) }));
+  }, [actionHandler, data]);
+
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => setIsOpen((prev) => !prev), {
+    enabled: !!hotkey,
+  });
+
+  useHotkeys(itemShortcuts, { enabled: shortcutsOnlyWhenOpen ? isOpen : true });
 
   if (!isMounted)
     return <Skeleton className={cn(buttonVariants({ size }), className)} />;
@@ -197,9 +190,7 @@ export function QuickSearch({
         })}
 
         {item.shortcut && (
-          <CommandShortcut>
-            {item.shortcut.map((k) => formatForDisplay(k)).join("+")}
-          </CommandShortcut>
+          <CommandShortcut>{formatForDisplay(item.shortcut)}</CommandShortcut>
         )}
       </CommandItem>
     );
@@ -225,9 +216,7 @@ export function QuickSearch({
             <span>{placeholder}</span>
 
             {shortcut && (
-              <Kbd className="ml-auto">
-                {shortcut.map((k) => formatForDisplay(k)).join("+")}
-              </Kbd>
+              <Kbd className="ml-auto">{formatForDisplay(shortcut)}</Kbd>
             )}
           </Button>
         }

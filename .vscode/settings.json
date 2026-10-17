@@ -5,15 +5,15 @@
 
   "search.exclude": { "**/api/auth/**": true },
 
-  "files.readonlyInclude": {
-    "**/core/**": true,
+  // "files.readonlyInclude": {
+  //   "**/core/**": true,
 
-    "**/app/api/auth/**": true,
-    "**/app/layout.tsx": true,
-    "**/app/dashboard/layout.tsx": true,
+  //   "**/app/api/auth/**": true,
+  //   "**/app/layout.tsx": true,
+  //   "**/app/dashboard/layout.tsx": true,
 
-    "**/modules/auth/**": true
-  },
+  //   "**/modules/auth/**": true
+  // },
 
   "js/ts.preferences.importModuleSpecifier": "shortest",
   "js/ts.preferences.autoImportFileExcludePatterns": [

@@ -7,11 +7,7 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { ColumnMeta } from "@/core/modules/table/types";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { cn } from "cn";
 import { EyeIcon } from "lucide-react";
 import { useState } from "react";
@@ -23,12 +19,12 @@ export type ColumnVisibilityMenuProps = Omit<ButtonProps, "children"> & {
    * Keyboard shortcut used to open the column visibility menu.
    * If set to "default", the default shortcut (V) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 
   renderTrigger?: React.ReactElement;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["V"];
+const DEFAULT_SHORTCUT: Hotkey = ["V"];
 
 export function ColumnVisibilityMenu({
   align = "center",
@@ -41,12 +37,10 @@ export function ColumnVisibilityMenu({
 }: ColumnVisibilityMenuProps & { renderPopupContent: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
-    () => setIsOpen((prev) => !prev),
-    { enabled: !!hotkeySequence },
-  );
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => setIsOpen((prev) => !prev), {
+    enabled: !!hotkey,
+  });
 
   return (
     <Menu open={isOpen} onOpenChange={setIsOpen}>
@@ -67,11 +61,7 @@ export function ColumnVisibilityMenu({
 
         <TooltipPopup align={align}>
           View Columns
-          {hotkeySequence && (
-            <Kbd className="ml-1">
-              {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-            </Kbd>
-          )}
+          {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
         </TooltipPopup>
       </Tooltip>
 

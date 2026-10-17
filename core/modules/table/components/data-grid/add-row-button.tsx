@@ -8,11 +8,7 @@ import {
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ListPlusIcon } from "lucide-react";
 import { useCallback } from "react";
 
@@ -23,10 +19,10 @@ export type DataGridAddRowButtonProps = ButtonProps & {
    * Keyboard shortcut used to trigger the table add new row action.
    * If set to "default", the default shortcut (Alt+N) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["Alt+N"];
+const DEFAULT_SHORTCUT: Hotkey = ["Alt+N"];
 
 export function DataGridAddRowButton({
   shortcut,
@@ -55,9 +51,9 @@ export function DataGridAddRowButton({
     }
   }, [table, newRows.fieldArray, getChanges]);
 
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(hotkeySequence ?? DEFAULT_SHORTCUT, () => addNewRow(), {
-    enabled: !!hotkeySequence,
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => addNewRow(), {
+    enabled: !!hotkey,
   });
 
   return (
@@ -84,11 +80,7 @@ export function DataGridAddRowButton({
 
       <TooltipPopup align={align}>
         Add New Row
-        {hotkeySequence && (
-          <Kbd className="ml-1">
-            {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-          </Kbd>
-        )}
+        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
       </TooltipPopup>
     </Tooltip>
   );

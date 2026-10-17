@@ -18,11 +18,7 @@ import {
   ColumnFilterResult,
 } from "@/core/modules/table/types";
 import { ErrorFallback } from "@/shared/components/fallback";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ChevronRightIcon, FilterIcon } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { FilterValueController } from "./filter-value-controller";
@@ -39,12 +35,12 @@ export type FilterSelectorProps = Omit<ButtonProps, "children"> & {
    * Keyboard shortcut used to open the filter selector.
    * If set to "default", the default shortcut (F) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 
   renderTrigger?: React.ReactElement;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["F"];
+const DEFAULT_SHORTCUT: Hotkey = ["F"];
 const ANIMATION_DELAY = 50;
 
 export function FilterSelector({
@@ -73,11 +69,11 @@ export function FilterSelector({
     return column?.success ? column : null;
   }, [context.columns, selectedColumnId]);
 
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(
+    hotkey ?? DEFAULT_SHORTCUT,
     () => setIsSelectorOpen((prev) => !prev),
-    { enabled: !!hotkeySequence },
+    { enabled: !!hotkey },
   );
 
   return (
@@ -101,11 +97,7 @@ export function FilterSelector({
 
           <TooltipPopup align={align}>
             Filter Columns
-            {hotkeySequence && (
-              <Kbd className="ml-1">
-                {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-              </Kbd>
-            )}
+            {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
           </TooltipPopup>
         </Tooltip>
 

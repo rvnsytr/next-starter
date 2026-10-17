@@ -7,11 +7,7 @@ import {
 } from "@/core/components/ui/tooltip";
 import { dataGrid } from "@/core/modules/table/hooks/data-grid";
 import { saveChanges } from "@/core/modules/table/utils";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { ListCheckIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useDataGrid } from "./provider";
@@ -23,10 +19,10 @@ export type DataGridSaveChangesButtonProps = ButtonProps & {
    * Keyboard shortcut used to trigger the table reset action.
    * If set to "default", the default shortcut (Control+S) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["Control+S"];
+const DEFAULT_SHORTCUT: Hotkey = ["Control+S"];
 
 export function DataGridSaveChangesButton({
   shortcut,
@@ -44,12 +40,10 @@ export function DataGridSaveChangesButton({
     [table.options.meta, dataGridContext],
   );
 
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
-    async () => await onSave(),
-    { enabled: !!hotkeySequence },
-  );
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, async () => await onSave(), {
+    enabled: !!hotkey,
+  });
 
   return (
     <Tooltip>
@@ -71,11 +65,7 @@ export function DataGridSaveChangesButton({
 
       <TooltipPopup align={align}>
         Save All Changes
-        {hotkeySequence && (
-          <Kbd className="ml-1">
-            {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-          </Kbd>
-        )}
+        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
       </TooltipPopup>
     </Tooltip>
   );

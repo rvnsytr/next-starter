@@ -4,11 +4,7 @@ import {
   InputGroupInput,
 } from "@/core/components/ui/input-group";
 import { Kbd } from "@/core/components/ui/kbd";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { cn } from "cn";
 import { SearchIcon } from "lucide-react";
 import { useRef } from "react";
@@ -20,10 +16,10 @@ export type SearchProps = React.ComponentProps<typeof InputGroupInput> & {
    *
    * @default "default"
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["/"];
+const DEFAULT_SHORTCUT: Hotkey = ["/"];
 
 export function Search({
   shortcut,
@@ -33,12 +29,10 @@ export function Search({
 }: SearchProps) {
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
-    () => searchRef.current?.focus(),
-    { enabled: !!hotkeySequence },
-  );
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => searchRef.current?.focus(), {
+    enabled: !!hotkey,
+  });
 
   return (
     <InputGroup className={cn(className)}>
@@ -48,9 +42,9 @@ export function Search({
         <SearchIcon />
       </InputGroupAddon>
 
-      {hotkeySequence && (
+      {hotkey && (
         <InputGroupAddon align="inline-end">
-          <Kbd>{hotkeySequence.map((k) => formatForDisplay(k)).join("+")}</Kbd>
+          <Kbd>{formatForDisplay(hotkey)}</Kbd>
         </InputGroupAddon>
       )}
     </InputGroup>

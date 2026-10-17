@@ -29,6 +29,7 @@ export function SiteHeaderQuickSearch() {
         // TODO: variant: "destructive",
         icon: <LogOutIcon />,
         callback: () =>
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           signOutClient({ onSuccess: (url) => router.push(url as Route) }),
       },
     ];

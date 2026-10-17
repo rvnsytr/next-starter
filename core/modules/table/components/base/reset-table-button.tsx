@@ -5,11 +5,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { RotateCcwIcon } from "lucide-react";
 
 export type ResetTableButtonProps = ButtonProps & {
@@ -19,14 +15,14 @@ export type ResetTableButtonProps = ButtonProps & {
    * Keyboard shortcut used to trigger the table reset action.
    * If set to "default", the default shortcut (Alt+R) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 };
 
 type ResetTableButtonPropsContext = {
   onReset: () => void;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["Alt+R"];
+const DEFAULT_SHORTCUT: Hotkey = ["Alt+R"];
 
 export function ResetTableButton({
   context,
@@ -37,12 +33,10 @@ export function ResetTableButton({
   onClick,
   ...props
 }: ResetTableButtonProps & { context: ResetTableButtonPropsContext }) {
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
-    () => context.onReset(),
-    { enabled: !!hotkeySequence },
-  );
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => context.onReset(), {
+    enabled: !!hotkey,
+  });
 
   return (
     <Tooltip>
@@ -64,11 +58,7 @@ export function ResetTableButton({
 
       <TooltipPopup align={align}>
         Reset Table
-        {hotkeySequence && (
-          <Kbd className="ml-1">
-            {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-          </Kbd>
-        )}
+        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
       </TooltipPopup>
     </Tooltip>
   );

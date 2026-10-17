@@ -5,11 +5,7 @@ import {
   TooltipPopup,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip";
-import {
-  formatForDisplay,
-  HotkeySequence,
-  useHotkeySequence,
-} from "@tanstack/react-hotkeys";
+import { formatForDisplay, Hotkey, useHotkey } from "@tanstack/react-hotkeys";
 import { FilterXIcon } from "lucide-react";
 
 export type ClearFiltersProps = ButtonProps & {
@@ -20,14 +16,14 @@ export type ClearFiltersProps = ButtonProps & {
    * Keyboard shortcut used to trigger the clear filters action.
    * If set to "default", the default shortcut (C) is used.
    */
-  shortcut?: "default" | HotkeySequence;
+  shortcut?: "default" | Hotkey;
 };
 
 type ClearFiltersContext = {
   onClear: () => void;
 };
 
-const DEFAULT_SHORTCUT: HotkeySequence = ["C"];
+const DEFAULT_SHORTCUT: Hotkey = ["C"];
 
 export function ClearFilters({
   context,
@@ -40,12 +36,10 @@ export function ClearFilters({
   children,
   ...props
 }: ClearFiltersProps & { context: ClearFiltersContext }) {
-  const hotkeySequence = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
-  useHotkeySequence(
-    hotkeySequence ?? DEFAULT_SHORTCUT,
-    () => context.onClear(),
-    { enabled: !!hotkeySequence },
-  );
+  const hotkey = shortcut === "default" ? DEFAULT_SHORTCUT : shortcut;
+  useHotkey(hotkey ?? DEFAULT_SHORTCUT, () => context.onClear(), {
+    enabled: !!hotkey,
+  });
 
   return (
     <Tooltip>
@@ -70,11 +64,7 @@ export function ClearFilters({
       />
       <TooltipPopup align={align} side={side}>
         Clear All Filters
-        {hotkeySequence && (
-          <Kbd className="ml-1">
-            {hotkeySequence.map((k) => formatForDisplay(k)).join("+")}
-          </Kbd>
-        )}
+        {hotkey && <Kbd className="ml-1">{formatForDisplay(hotkey)}</Kbd>}
       </TooltipPopup>
     </Tooltip>
   );
